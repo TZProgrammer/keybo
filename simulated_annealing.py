@@ -475,25 +475,31 @@ class Optimizer:
             + tg_p[10]
         )
 
-# Optimize
-best_kb = None
-best_score = float("inf")
 
-for _ in range(10):
-    o = Optimizer()
-    o.optimize()
+def main():
+    # Optimize
+    best_kb = None
+    best_score = float("inf")
 
-    print("Fitness", int(o.fitness))
+    for _ in range(10):
+        o = Optimizer()
+        o.optimize()
 
-    if o.fitness < best_score:
-        best_score = o.fitness
-        print("new best")
-        best_kb = o.keyboard
+        print("Fitness", int(o.fitness))
 
-        with open("logfile.txt", "a") as f:
-            # Write to the file
-            f.write(f"{best_score} @{tg_coverage}\n")
-            f.write(repr(best_kb) + "\n")
+        if o.fitness < best_score:
+            best_score = o.fitness
+            print("new best")
+            best_kb = o.keyboard
 
-print("best score")
-print(best_kb)
+            with open("logfile.txt", "a") as f:
+                # Write to the file
+                f.write(f"{best_score} @{tg_coverage}\n")
+                f.write(repr(best_kb) + "\n")
+
+    print("best score")
+    print(best_kb)
+
+
+if __name__ == "__main__":
+    main()
