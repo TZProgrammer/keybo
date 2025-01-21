@@ -158,12 +158,12 @@ class Optimizer(IOptimizer):
         self.accept()
 
         self.temp = self.get_initial_temperature(0.8, 0.01)
-        self.stopping_point = self.get_stopping_point(keyboard=keyboard)
 
     def optimize(self, keyboard):
-        stays = 0
+        stopping_point = self.get_stopping_point(keyboard=keyboard)
 
-        while stays < self.stopping_point:
+        stays = 0
+        while stays < stopping_point:
             # markov chain
             for _ in range(keyboard.key_count):
                 self.swap(keyboard=keyboard)
