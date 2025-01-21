@@ -190,7 +190,7 @@ class Optimizer(IOptimizer):
 
 
     def swap(self, k1=None, k2=None):
-        if k1 != None and k2 != None:
+        if (k1 is not None) and (k2 is not None):
             self.keyboard.swap(k1, k2)
         else:
             self.keyboard.random_swap()
