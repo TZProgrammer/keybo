@@ -91,7 +91,7 @@ class Keyboard:
         return abs(self.key_to_pos[k][0]) / self.key_to_pos[k][0]
 
 
-class classifier:
+class Classifier:
     def __init__(self, kb="qwerty"):
         self.keyboards = {
             "qwerty": Keyboard(
@@ -223,7 +223,7 @@ class classifier:
 
 
 def test():
-    c = classifier()
+    c = Classifier()
 
     for i in range(len(c.keyboards)):
         for j in range(i + 1, len(c.keyboards)):
