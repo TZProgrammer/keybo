@@ -1,5 +1,6 @@
 from optimizer import Optimizer
 from classifier import Keyboard
+from scorer import FreyaScorer
 
 keyboard_chars = "qwertyuiopasdfghjkl'zxcvbnm,.-"
 
@@ -10,8 +11,9 @@ def generate(num_attempts):
 
     for _ in range(num_attempts):
         keyboard = Keyboard(keyboard_chars)
-        optimizer = Optimizer(keyboard)
-        optimizer.optimize(keyboard)
+        scorer = FreyaScorer()
+        optimizer = Optimizer(keyboard, scorer)
+        optimizer.optimize(keyboard, scorer)
 
         print("Fitness", int(optimizer.fitness))
 
