@@ -476,7 +476,7 @@ class Optimizer:
         )
 
 
-def main():
+def generate():
     # Optimize
     best_kb = None
     best_score = float("inf")
@@ -500,6 +500,8 @@ def main():
     print("best score")
     print(best_kb)
 
+def main():
+    generate()
 
 if __name__ == "__main__":
     main()
