@@ -482,15 +482,15 @@ def generate():
     best_score = float("inf")
 
     for _ in range(10):
-        o = Optimizer()
-        o.optimize()
+        optimizer = Optimizer()
+        optimizer.optimize()
 
-        print("Fitness", int(o.fitness))
+        print("Fitness", int(optimizer.fitness))
 
-        if o.fitness < best_score:
-            best_score = o.fitness
+        if optimizer.fitness < best_score:
+            best_score = optimizer.fitness
             print("new best")
-            best_kb = o.keyboard
+            best_kb = optimizer.keyboard
 
             with open("logfile.txt", "a") as f:
                 # Write to the file
