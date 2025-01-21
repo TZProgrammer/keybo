@@ -26,7 +26,7 @@ def generate(num_attempts):
 
 def main():
     num_attempts = 10
-    generate(num_attempts=10)
+    generate(num_attempts=num_attempts)
 
 if __name__ == "__main__":
     main()
