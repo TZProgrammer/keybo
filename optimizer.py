@@ -167,6 +167,7 @@ class Optimizer(IOptimizer):
             # markov chain
             for _ in range(keyboard.key_count):
                 self.swap(keyboard=keyboard)
+                self.get_fitness(keyboard)
 
                 delta = self.fitness - self.prev_fitness
 
@@ -200,8 +201,6 @@ class Optimizer(IOptimizer):
             if any([c in keyboard.swap_pair for c in tg])
         ]
 
-        self.get_fitness(keyboard)
-
     def accept(self):
         self.bg_scores.update(self.new_bg_scores)
 
@@ -227,6 +226,7 @@ class Optimizer(IOptimizer):
             for i, k1 in enumerate(keyboard.lowercase[:-1]):
                 for k2 in keyboard.lowercase[i + 1 :]:
                     self.swap(keyboard, k1, k2)
+                    self.get_fitness(keyboard)
 
                     delta = self.fitness - self.prev_fitness
 
