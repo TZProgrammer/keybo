@@ -176,15 +176,13 @@ class Optimizer(IOptimizer):
                 if delta < 0:
                     self.accept()
                     stays = 0
-
                 # Metropolis criterion
-                if delta > 0:
-                    if random() < exp(-delta / self.temp):
-                        self.accept()
-                        stays -= 1
-                    else:
-                        self.reject()
-                        stays += 1
+                elif random() < exp(-delta / self.temp):
+                    self.accept()
+                    stays -= 1
+                else:
+                    self.reject()
+                    stays += 1
 
             self.cool()
             print(self.fitness, f"@{self.tg_coverage}% a={self.a}")
