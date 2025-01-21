@@ -1,7 +1,7 @@
 from abc import ABC
 
 import numpy as np
-from classifier import classifier, keyboard
+from classifier import classifier, Keyboard
 from math import ceil, exp, log
 from random import shuffle, random
 from collections import defaultdict
@@ -147,7 +147,7 @@ class Optimizer(IOptimizer):
         self.a = a
         self.t0 = 0
         self.cooling_schedule = "default"
-        self.keyboard = keyboard(keyboard_chars)
+        self.keyboard = Keyboard(keyboard_chars)
         self.classifier = classifier()
         self.affected_indices = range(data_size)
         self.bg_scores = {bg : 0 for bg in self.keyboard.get_ngrams(2)}

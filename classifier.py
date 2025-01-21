@@ -3,7 +3,7 @@ from random import sample
 from itertools import product
 
 
-class keyboard:
+class Keyboard:
     def __init__(
         self, layout="qwertyuiopasdfghjkl;zxcvbnm,./QWERTYUIOPASDFGHJKL:ZXCVBNM<>?"
     ):
@@ -94,16 +94,16 @@ class keyboard:
 class classifier:
     def __init__(self, kb="qwerty"):
         self.keyboards = {
-            "qwerty": keyboard(
+            "qwerty": Keyboard(
                 "qwertyuiopasdfghjkl;zxcvbnm,./QWERTYUIOPASDFGHJKL:ZXCVBNM<>?"
             ),
-            "azerty": keyboard(
+            "azerty": Keyboard(
                 "azertyuiopqsdfghjkl;wxcvbnm,./AZERTYUIOPQSDFGHJKL:WXCVBNM<>?"
             ),
-            "dvorak": keyboard(
+            "dvorak": Keyboard(
                 "',.pyfgcrlaoeuidhtns;qjkxbmwvzPYFGCRL?+|AOEUIDHTNS:QJKXBMWVZ"
             ),
-            "qwertz": keyboard(
+            "qwertz": Keyboard(
                 "qwertzuiopasdfghjklöyxcvbnm,.-QWERTZUIOPASDFGHJKLÖYXCVBNM;:_"
             ),
         }
