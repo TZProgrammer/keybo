@@ -163,6 +163,34 @@ class Optimizer(IOptimizer):
         self.temp = self.get_initial_temperature(0.8, 0.01)
         self.stopping_point = self.get_stopping_point()
 
+    def optimize(self):
+        stays = 0
+
+        while stays < self.stopping_point:
+            # markov chain
+            for _ in range(self.keyboard.key_count):
+                self.swap()
+
+                delta = self.fitness - self.prev_fitness
+
+                if delta < 0:
+                    self.accept()
+                    stays = 0
+
+                # Metropolis criterion
+                if delta > 0:
+                    if random() < exp(-delta / self.temp):
+                        self.accept()
+                        stays -= 1
+                    else:
+                        self.reject()
+                        stays += 1
+
+            self.cool()
+            print(self.fitness, f"@{self.tg_coverage}% a={self.a}")
+            print(self.keyboard)
+
+
     def swap(self, k1=None, k2=None):
         if k1 != None and k2 != None:
             self.keyboard.swap(k1, k2)
@@ -236,33 +264,6 @@ class Optimizer(IOptimizer):
     def get_fitness(self):
         self.prev_fitness = self.fitness
         self.fitness = int(np.sum(self.update_trigram_times() * tg_freqs))
-
-    def optimize(self):
-        stays = 0
-
-        while stays < self.stopping_point:
-            # markov chain
-            for _ in range(self.keyboard.key_count):
-                self.swap()
-
-                delta = self.fitness - self.prev_fitness
-
-                if delta < 0:
-                    self.accept()
-                    stays = 0
-
-                # Metropolis criterion
-                if delta > 0:
-                    if random() < exp(-delta / self.temp):
-                        self.accept()
-                        stays -= 1
-                    else:
-                        self.reject()
-                        stays += 1
-
-            self.cool()
-            print(self.fitness, f"@{self.tg_coverage}% a={self.a}")
-            print(self.keyboard)
 
     def get_bg_features(self, bg):
         ((ax, ay), (bx, by)) = [self.keyboard.get_pos(c) for c in bg]
