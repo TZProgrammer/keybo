@@ -25,7 +25,6 @@ def generate(num_attempts):
     print(best_kb)
 
 def main():
-    optimizer = Optimizer()
     num_attempts = 10
     generate(num_attempts=10)
 
