@@ -1,15 +1,14 @@
 from abc import ABC
 
 import numpy as np
-from classifier import Classifier, Keyboard
 from math import ceil, exp, log
-from random import shuffle, random
+from random import random
 from collections import defaultdict
 
 ### INIT ###
-keyboard_chars = "qwertyuiopasdfghjkl'zxcvbnm,.-"
 initial_temp = None
 tg_coverage = 100  # the percentage of tg's to use
+keyboard_chars = "qwertyuiopasdfghjkl'zxcvbnm,.-"
 
 # Penalties
 bg_p = [
@@ -139,37 +138,35 @@ print("Processed bigram data")
 
 
 class IOptimizer(ABC):
-    def optimize(self):
+    def optimize(self, keyboard):
         ...
 
 class Optimizer(IOptimizer):
-    def __init__(self, a=0.995):
+    def __init__(self, keyboard, a=0.995):
         self.a = a
         self.t0 = 0
         self.cooling_schedule = "default"
-        self.keyboard = Keyboard(keyboard_chars)
-        self.classifier = Classifier()
         self.affected_indices = range(data_size)
-        self.bg_scores = {bg : 0 for bg in self.keyboard.get_ngrams(2)}
+        self.bg_scores = {bg : 0 for bg in keyboard.get_ngrams(2)}
         self.new_bg_scores = {}
         self.fitness = 0
         self.prev_fitness = 0
         self.bg_times = {}
         self.tg_coverage = tg_coverage  # the percentage of tg's to use
 
-        self.get_fitness()
+        self.get_fitness(keyboard)
         self.accept()
 
         self.temp = self.get_initial_temperature(0.8, 0.01)
-        self.stopping_point = self.get_stopping_point()
+        self.stopping_point = self.get_stopping_point(keyboard=keyboard)
 
-    def optimize(self):
+    def optimize(self, keyboard):
         stays = 0
 
         while stays < self.stopping_point:
             # markov chain
-            for _ in range(self.keyboard.key_count):
-                self.swap()
+            for _ in range(keyboard.key_count):
+                self.swap(keyboard=keyboard)
 
                 delta = self.fitness - self.prev_fitness
 
@@ -181,38 +178,40 @@ class Optimizer(IOptimizer):
                     self.accept()
                     stays -= 1
                 else:
-                    self.reject()
+                    self.reject(keyboard=keyboard)
                     stays += 1
 
             self.cool()
             print(self.fitness, f"@{self.tg_coverage}% a={self.a}")
-            print(self.keyboard)
+            print(keyboard)
+
+        return keyboard
 
 
-    def swap(self, k1=None, k2=None):
+    def swap(self, keyboard, k1=None, k2=None):
         if (k1 is not None) and (k2 is not None):
-            self.keyboard.swap(k1, k2)
+            keyboard.swap(k1, k2)
         else:
-            self.keyboard.random_swap()
+            keyboard.random_swap()
 
         self.affected_indices = [
             i
             for i, tg in enumerate(trigrams)
-            if any([c in self.keyboard.swap_pair for c in tg])
+            if any([c in keyboard.swap_pair for c in tg])
         ]
 
-        self.get_fitness()
+        self.get_fitness(keyboard)
 
     def accept(self):
         self.bg_scores.update(self.new_bg_scores)
 
-    def reject(self):
-        self.keyboard.undo_swap()
-        self.update_trigram_times()
+    def reject(self, keyboard):
+        keyboard.undo_swap()
+        self.update_trigram_times(keyboard)
         self.fitness = self.prev_fitness
         self.new_bg_scores = {}
 
-    def get_initial_temperature(self, x0, epsilon=0.01):
+    def get_initial_temperature(self, keyboard, x0, epsilon=0.01):
         global initial_temp
         print("getting initial temperature")
 
@@ -225,9 +224,9 @@ class Optimizer(IOptimizer):
             energies = []
 
             # test all possible swaps
-            for i, k1 in enumerate(self.keyboard.lowercase[:-1]):
-                for k2 in self.keyboard.lowercase[i + 1 :]:
-                    self.swap(k1, k2)
+            for i, k1 in enumerate(keyboard.lowercase[:-1]):
+                for k2 in keyboard.lowercase[i + 1 :]:
+                    self.swap(keyboard, k1, k2)
 
                     delta = self.fitness - self.prev_fitness
 
@@ -235,7 +234,7 @@ class Optimizer(IOptimizer):
                     if delta > 0:
                         energies.append(self.fitness)
 
-                    self.reject()
+                    self.reject(keyboard=keyboard)
 
             # Calculate acceptance probability
             acceptance_probability = sum(
@@ -253,18 +252,18 @@ class Optimizer(IOptimizer):
         self.temp *= self.a
 
     # Calculate a stopping time for the annealing process based on the number of swaps (coupon collector's problem).
-    def get_stopping_point(self):
-        swaps = self.keyboard.key_count * (self.keyboard.key_count - 1) / 2
+    def get_stopping_point(self, keyboard):
+        swaps = keyboard.key_count * (keyboard.key_count - 1) / 2
         euler_mascheroni = 0.5772156649
 
         return ceil(swaps * (log(swaps) + euler_mascheroni) + 0.5)
 
-    def get_fitness(self):
+    def get_fitness(self, keyboard):
         self.prev_fitness = self.fitness
-        self.fitness = int(np.sum(self.update_trigram_times() * tg_freqs))
+        self.fitness = int(np.sum(self.update_trigram_times(keyboard) * tg_freqs))
 
-    def get_bg_features(self, bg):
-        ((ax, ay), (bx, by)) = [self.keyboard.get_pos(c) for c in bg]
+    def get_bg_features(self, keyboard, bg):
+        ((ax, ay), (bx, by)) = [keyboard.get_pos(c) for c in bg]
 
         freq = bigram_to_freq[bg]
 
@@ -304,7 +303,7 @@ class Optimizer(IOptimizer):
             dy,
         )
 
-    def get_bg_time(self, bg):
+    def get_bg_time(self, keyboard, bg):
         if bg not in self.bg_times:
             (
                 bg_freq,
@@ -320,7 +319,7 @@ class Optimizer(IOptimizer):
                 bg_lateral,
                 bg_dx,
                 bg_dy,
-            ) = self.get_bg_features(bg)
+            ) = self.get_bg_features(keyboard, bg)
 
             freq_pen = (
                 bg_p[0] * np.log(np.clip(bg_freq + bg_p[1], a_min=1, a_max=None))
@@ -395,16 +394,16 @@ class Optimizer(IOptimizer):
 
         return self.bg_times[bg]
 
-    def update_tg_features(self):
+    def update_tg_features(self, keyboard):
         for i in self.affected_indices:
             tg = trigrams[i]
 
             # extracting position
-            ((ax, ay), (bx, by), (cx, cy)) = [self.keyboard.get_pos(c) for c in tg]
+            ((ax, ay), (bx, by), (cx, cy)) = [keyboard.get_pos(c) for c in tg]
 
             # getting bigram times
-            tg_bg1_prediction[i] = self.get_bg_time(tg[:2])
-            tg_bg2_prediction[i] = self.get_bg_time(tg[1:])
+            tg_bg1_prediction[i] = self.get_bg_time(keyboard, tg[:2])
+            tg_bg2_prediction[i] = self.get_bg_time(keyboard, tg[1:])
 
             # Skipgram Penalties
 
@@ -442,7 +441,7 @@ class Optimizer(IOptimizer):
             sg_sfs,
         )
 
-    def update_trigram_times(self):
+    def update_trigram_times(self, keyboard):
         (
             tg_bg1_prediction,
             tg_bg2_prediction,
@@ -455,7 +454,7 @@ class Optimizer(IOptimizer):
             sg_index,
             sg_lateral,
             sg_sfs,
-        ) = self.update_tg_features()
+        ) = self.update_tg_features(keyboard)
 
         # finger penalty
         sfs_row_pen = tg_p[3] * (sg_top + sg_home) + tg_p[4] * (sg_top + sg_bottom)

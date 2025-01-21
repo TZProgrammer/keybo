@@ -1,4 +1,7 @@
 from optimizer import Optimizer
+from classifier import Keyboard
+
+keyboard_chars = "qwertyuiopasdfghjkl'zxcvbnm,.-"
 
 def generate(num_attempts):
     # Optimize
@@ -6,8 +9,9 @@ def generate(num_attempts):
     best_score = float("inf")
 
     for _ in range(num_attempts):
-        optimizer = Optimizer()
-        optimizer.optimize()
+        keyboard = Keyboard(keyboard_chars)
+        optimizer = Optimizer(keyboard)
+        optimizer.optimize(keyboard)
 
         print("Fitness", int(optimizer.fitness))
 
