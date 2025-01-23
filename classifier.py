@@ -5,11 +5,12 @@ from itertools import product
 
 class Keyboard:
     def __init__(
-        self, layout="qwertyuiopasdfghjkl;zxcvbnm,./QWERTYUIOPASDFGHJKL:ZXCVBNM<>?"
+        self, data_size, layout="qwertyuiopasdfghjkl;zxcvbnm,./QWERTYUIOPASDFGHJKL:ZXCVBNM<>?"
     ):
         self.row_offsets = [-0.25, 0, 0.5]
         self.chars = layout
         self.swap_pair = ["", ""]
+        self.affected_indices = range(data_size)
         self.key_count = 30
         self.lowercase = layout[:30]
         self.uppercase = layout[30:]

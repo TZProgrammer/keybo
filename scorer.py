@@ -137,7 +137,6 @@ class IScorer(ABC):
 class FreyaScorer(IScorer):
     def __init__(self) -> None:
         self.bg_times = {}
-        self.affected_indices = range(data_size)
 
     def get_fitness(self, keyboard) -> int:
         return int(np.sum(self.update_trigram_times(keyboard) * tg_freqs))
@@ -275,7 +274,7 @@ class FreyaScorer(IScorer):
         return self.bg_times[bg]
 
     def update_tg_features(self, keyboard):
-        for i in self.affected_indices:
+        for i in keyboard.affected_indices:
             tg = trigrams[i]
 
             # extracting position

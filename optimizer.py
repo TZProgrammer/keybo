@@ -66,7 +66,7 @@ class Optimizer(IOptimizer):
         while stays < stopping_point:
             # markov chain
             for _ in range(keyboard.key_count):
-                self.swap(keyboard=keyboard, scorer=scorer)
+                self.swap(keyboard=keyboard)
                 self.get_fitness(keyboard, scorer)
 
                 delta = self.fitness - self.prev_fitness
@@ -89,13 +89,13 @@ class Optimizer(IOptimizer):
         return keyboard
 
 
-    def swap(self, keyboard, scorer, k1=None, k2=None):
+    def swap(self, keyboard, k1=None, k2=None):
         if (k1 is not None) and (k2 is not None):
             keyboard.swap(k1, k2)
         else:
             keyboard.random_swap()
 
-        scorer.affected_indices = [
+        keyboard.affected_indices = [
             i
             for i, tg in enumerate(trigrams)
             if any([c in keyboard.swap_pair for c in tg])
@@ -126,7 +126,7 @@ class Optimizer(IOptimizer):
             # test all possible swaps
             for i, k1 in enumerate(keyboard.lowercase[:-1]):
                 for k2 in keyboard.lowercase[i + 1 :]:
-                    self.swap(keyboard, scorer, k1, k2)
+                    self.swap(keyboard, k1, k2)
                     self.get_fitness(keyboard, scorer)
 
                     delta = self.fitness - self.prev_fitness
