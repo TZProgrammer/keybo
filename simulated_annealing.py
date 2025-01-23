@@ -17,15 +17,17 @@ def generate(num_attempts):
 
         print("Fitness", int(optimizer.fitness))
 
-        if optimizer.fitness < best_score:
-            best_score = optimizer.fitness
-            print("new best")
-            best_kb = optimizer.keyboard
+        if optimizer.fitness >= best_score:
+            continue
 
-            with open("logfile.txt", "a") as f:
-                # Write to the file
-                f.write(f"{best_score} @{optimizer.tg_coverage}\n")
-                f.write(repr(best_kb) + "\n")
+        best_score = optimizer.fitness
+        print("new best")
+        best_kb = optimizer.keyboard
+
+        with open("logfile.txt", "a") as f:
+            # Write to the file
+            f.write(f"{best_score} @{optimizer.tg_coverage}\n")
+            f.write(repr(best_kb) + "\n")
 
     print("best score")
     print(best_kb)
