@@ -1,12 +1,11 @@
 """
 typing_model.py – An improved typing analysis script with extra features,
-regularized XGBoost hyperparameters, and an option to predict the last‐letter time vs. the full sequence.
+using XGBoost and predicting full trigram times.
 
 Usage:
-    python typing_model.py --model curve_fit|xgboost [--predict_mode full|last]
-      [--trigrams_file TRIGRAMS] [--bigrams_file BIGRAMS]
-      [--skip_file SKIP] [--tristrokes_file TRISTROKES]
-      [--bistrokes_file BISTROKES]
+    python typing_model.py [--trigrams_file TRIGRAMS] [--bigrams_file BIGRAMS]
+         [--skip_file SKIP] [--tristrokes_file TRISTROKES]
+         [--bistrokes_file BISTROKES]
 """
 
 import argparse
@@ -18,7 +17,7 @@ from typing import Any, List, Tuple
 
 import numpy as np
 import matplotlib.pyplot as plt
-from scipy.optimize import curve_fit
+from scipy.optimize import curve_fit  # (no longer used, but kept if needed for debugging)
 from sklearn.model_selection import KFold
 
 try:
@@ -190,7 +189,7 @@ def load_bistroke_data(
 
 
 ##########################################################################
-# Feature Extraction (with predict_mode option)
+# Feature Extraction (full mode only)
 ##########################################################################
 
 # Instantiate the classifier once.
@@ -321,13 +320,11 @@ def get_bistroke_features(pos: Tuple[Any, Any], bigram: str) -> Tuple[Any, ...]:
 
 
 def extract_bigram_features(
-    bistroke_data: List[Any], predict_mode: str = "full"
+    bistroke_data: List[Any]
 ) -> Tuple[Tuple[np.ndarray, ...], np.ndarray, List[str], List[str]]:
     """
     Loops over all bistroke data and extracts extended bigram features.
-    For bigrams the target is computed as the IQR average of the last bigram
-    measurement for each trial—thus, regardless of the predict_mode, the result
-    is the same.
+    The target is computed as the IQR average of the last bigram measurement for each trial.
     """
     orig_list = [[] for _ in range(27)]
     derived_list = [[] for _ in range(4)]
@@ -373,16 +370,10 @@ def extract_trigram_features(
     bg_model: Any,
     trigram_to_freq: dict,
     skipgram_to_freq: dict,
-    predict_mode: str = "full",
 ) -> Tuple[Tuple[np.ndarray, ...], np.ndarray, List[str], List[str]]:
     """
     For each tristroke, extract features.
-    In "full" mode, the target is defined as the IQR average of the full trigram times.
-    In "last" mode, the target is defined as the IQR average of the last bigram times,
-    computed for each trial as:
-          last_bigram_time = full_trigram_time - first_bigram_time
-    (It is assumed that each trial in the tristroke data provides either two measurements:
-     [first_bigram_time, full_trigram_time] or one measurement, in which case that value is used.)
+    The target is defined as the IQR average of the full trigram times.
     """
     tg_freqs = []
     tg_bg1_prediction = []
@@ -405,7 +396,7 @@ def extract_trigram_features(
 
         bg1 = trigram[:2]
         bg2 = trigram[1:]
-        # placeholders for bigram predictions
+        # Placeholders for bigram predictions.
         _ = get_bistroke_features((pos1, pos2), bg1)[:-2]
         _ = get_bistroke_features((pos2, pos3), bg2)[:-2]
         tg_bg1_prediction.append(0)
@@ -446,34 +437,17 @@ def extract_trigram_features(
         tg_colors.append(col)
         tg_labels.append(trigram)
 
-        # --- Corrected target computation for trigram features ---
-        if predict_mode == "last":
-            # For each trial in the tristroke data, compute the duration of the last bigram.
-            last_bigram_durations = []
-            for t in time_info:
-                try:
-                    if len(t) >= 2:
-                        # Assume t[0] is the time for the first bigram and t[1] is the full trigram time.
-                        last_bigram_durations.append(t[1] - t[0])
-                    elif len(t) == 1:
-                        # If only one measurement is available, use it.
-                        last_bigram_durations.append(t[0])
-                except Exception:
-                    continue
-            tg_times.append(get_iqr_avg(last_bigram_durations))
-        else:
-            # Full mode: use the full trigram times.
-            full_times = []
-            for t in time_info:
-                try:
-                    if len(t) >= 2:
-                        full_times.append(t[1])
-                    elif len(t) == 1:
-                        full_times.append(t[0])
-                except Exception:
-                    continue
-            tg_times.append(get_iqr_avg(full_times))
-        # ----------------------------------------------------------
+        # Full mode: use the full trigram times.
+        full_times = []
+        for t in time_info:
+            try:
+                if len(t) >= 2:
+                    full_times.append(t[1])
+                elif len(t) == 1:
+                    full_times.append(t[0])
+            except Exception:
+                continue
+        tg_times.append(get_iqr_avg(full_times))
 
     skip_features_array = np.array(skip_features_list)
     num_skip_features = skip_features_array.shape[1]
@@ -492,102 +466,26 @@ def extract_trigram_features(
     return features_tuple, np.array(tg_times), tg_labels, tg_colors
 
 
-def model_predict_single(model: Any, feature_tuple: Tuple[Any, ...]) -> float:
-    wrapped = tuple(np.array([f]) for f in feature_tuple)
-    return model.predict(wrapped)[0]
-
-
 ##########################################################################
-# Model (Penalty) Functions & TypingModel Wrapper
+# XGBoost Model Wrapper
 ##########################################################################
-def bg_penalty(features: Tuple[np.ndarray, ...], *p: float) -> np.ndarray:
-    # Note: This simple model only uses frequency.
-    trimmed = features[:27]
-    (
-        bg_freqs,
-        bg_space1,
-        bg_space2,
-        bg_bottom1,
-        bg_bottom2,
-        bg_home1,
-        bg_home2,
-        bg_top1,
-        bg_top2,
-        bg_pinky1,
-        bg_pinky2,
-        bg_ring1,
-        bg_ring2,
-        bg_middle1,
-        bg_middle2,
-        bg_index1,
-        bg_index2,
-        bg_lateral,
-        bg_shb,
-        bg_sfb,
-        bg_adjacent,
-        bg_scissor,
-        bg_lsb,
-        bg_caps1,
-        bg_caps2,
-        bg_dy,
-        bg_dx,
-    ) = trimmed
-    freq_pen = p[0] * np.log(np.clip(bg_freqs + p[1], 1e-8, None)) + p[2]
-    return freq_pen
-
-
-def tg_penalty(tg_features: Tuple[np.ndarray, ...], *p: float) -> np.ndarray:
-    # A simple linear model on a couple of placeholder features.
-    trimmed = tg_features[:7]
-    return p[0] * trimmed[1] + p[1] * trimmed[2] + p[2]
-
-
 class TypingModel:
     """
-    A wrapper for a regression model using either a custom penalty function (via curve_fit)
-    or an XGBoost regressor.
+    A wrapper for an XGBoost regressor.
     """
 
-    def __init__(
-        self,
-        model_type: str = "curve_fit",
-        penalty_function: Any = None,
-        fit_kwargs: dict = None,
-        **kwargs,
-    ) -> None:
-        self.model_type = model_type
-        self.penalty_function = penalty_function
-        self.fit_kwargs = fit_kwargs if fit_kwargs else {}
-        self.params = None
-        if model_type == "xgboost":
-            if xgb is None:
-                raise ImportError("xgboost is not installed.")
-            self.model = xgb.XGBRegressor(**kwargs)
-
-    def _convert_features(self, features: Tuple[Any, ...]) -> Tuple[np.ndarray, ...]:
-        return tuple(np.asarray(f) for f in features)
+    def __init__(self, **kwargs) -> None:
+        if xgb is None:
+            raise ImportError("xgboost is not installed.")
+        self.model = xgb.XGBRegressor(**kwargs)
 
     def fit(self, features: Tuple[Any, ...], y: np.ndarray) -> None:
-        if self.model_type == "curve_fit":
-            features = self._convert_features(features)
-            self.params, self.pcov = curve_fit(
-                self.penalty_function, features, y, **self.fit_kwargs
-            )
-        elif self.model_type == "xgboost":
-            X = np.column_stack(features)
-            self.model.fit(X, y)
-        else:
-            raise ValueError(f"Unsupported model type: {self.model_type}")
+        X = np.column_stack([np.asarray(f) for f in features])
+        self.model.fit(X, y)
 
     def predict(self, features: Tuple[Any, ...]) -> np.ndarray:
-        if self.model_type == "curve_fit":
-            features = self._convert_features(features)
-            return self.penalty_function(features, *self.params)
-        elif self.model_type == "xgboost":
-            X = np.column_stack(features)
-            return self.model.predict(X)
-        else:
-            raise ValueError(f"Unsupported model type: {self.model_type}")
+        X = np.column_stack([np.asarray(f) for f in features])
+        return self.model.predict(X)
 
     def evaluate(
         self, features: Tuple[np.ndarray, ...], y: np.ndarray
@@ -663,20 +561,8 @@ def plot_results(
 # Main
 ##########################################################################
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Typing Model Training")
-    parser.add_argument(
-        "--model",
-        type=str,
-        default="curve_fit",
-        choices=["curve_fit", "xgboost"],
-        help="Choose model type",
-    )
-    parser.add_argument(
-        "--predict_mode",
-        type=str,
-        default="full",
-        choices=["full", "last"],
-        help="Predict the full trigram time ('full') or only the last bigram time ('last').",
+    parser = argparse.ArgumentParser(
+        description="Typing Model Training with XGBoost (full mode only)"
     )
     parser.add_argument(
         "--trigrams_file",
@@ -711,8 +597,8 @@ def main() -> None:
     args = parser.parse_args()
 
     # Load frequency data.
-    trigram_to_freq, bigram_to_freq, skipgram_to_freq, trigrams = (
-        load_ngram_frequencies(args.trigrams_file, args.bigrams_file, args.skip_file)
+    trigram_to_freq, bigram_to_freq, skipgram_to_freq, trigrams = load_ngram_frequencies(
+        args.trigrams_file, args.bigrams_file, args.skip_file
     )
     bg_classifier.bigram_freq = bigram_to_freq
 
@@ -720,33 +606,22 @@ def main() -> None:
     bistroke_data = load_bistroke_data(args.bistrokes_file, WPM_THRESHOLD)
 
     # Bigram Model
-    bg_features, bg_times, bg_labels, layout_col = extract_bigram_features(
-        bistroke_data, predict_mode=args.predict_mode
-    )
-    if args.model == "curve_fit":
-        bg_model_args = {
-            "model_type": "curve_fit",
-            "penalty_function": bg_penalty,
-            "fit_kwargs": {"method": "lm", "maxfev": 750000, "p0": np.ones(3)},
-        }
-    else:
-        xgb_params = {
-            "max_depth": 3,
-            "min_child_weight": 1,
-            "gamma": 0.1,
-            "subsample": 0.8,
-            "colsample_bytree": 0.8,
-            "reg_alpha": 0.1,
-            "reg_lambda": 1,
-            "n_estimators": 100,
-            "learning_rate": 0.1,
-            "objective": "reg:squarederror",
-            "verbosity": 0,
-        }
-        bg_model_args = {"model_type": "xgboost", **xgb_params}
-    bg_cv_r2, bg_cv_mae = cross_validate_model(
-        bg_model_args, bg_features, bg_times, n_splits=5
-    )
+    bg_features, bg_times, bg_labels, layout_col = extract_bigram_features(bistroke_data)
+    xgb_params = {
+        "max_depth": 4,
+        "min_child_weight": 1,
+        "gamma": 0.1,
+        "subsample": 0.5,
+        "colsample_bytree": 0.5,
+        "reg_alpha": 0.1,
+        "reg_lambda": 1,
+        "n_estimators": 500,
+        "learning_rate": 0.02,
+        "objective": "reg:squarederror",
+        "verbosity": 0,
+    }
+    bg_model_args = xgb_params
+    bg_cv_r2, bg_cv_mae = cross_validate_model(bg_model_args, bg_features, bg_times, n_splits=5)
     print(f"Bigram Model CV - R^2: {bg_cv_r2:.4f}, MAE: {bg_cv_mae:.3f}")
     bg_model = TypingModel(**bg_model_args)
     bg_model.fit(bg_features, bg_times)
@@ -773,23 +648,10 @@ def main() -> None:
 
     # Trigram Model
     tg_features, tg_times, tg_labels, tg_colors = extract_trigram_features(
-        tristroke_data,
-        bg_model,
-        trigram_to_freq,
-        skipgram_to_freq,
-        predict_mode=args.predict_mode,
+        tristroke_data, bg_model, trigram_to_freq, skipgram_to_freq
     )
-    if args.model == "curve_fit":
-        tg_model_args = {
-            "model_type": "curve_fit",
-            "penalty_function": tg_penalty,
-            "fit_kwargs": {"method": "trf", "maxfev": 750000, "p0": np.ones(3)},
-        }
-    else:
-        tg_model_args = {"model_type": "xgboost", **xgb_params}
-    tg_cv_r2, tg_cv_mae = cross_validate_model(
-        tg_model_args, tg_features, tg_times, n_splits=5
-    )
+    tg_model_args = xgb_params
+    tg_cv_r2, tg_cv_mae = cross_validate_model(tg_model_args, tg_features, tg_times, n_splits=5)
     print(f"Trigram Model CV - R^2: {tg_cv_r2:.4f}, MAE: {tg_cv_mae:.3f}")
     tg_model = TypingModel(**tg_model_args)
     tg_model.fit(tg_features, tg_times)
