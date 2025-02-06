@@ -2,11 +2,10 @@
 classifier.py – Keyboard layout and classifier utilities.
 
 This module defines:
-  - Keyboard: A class that represents a keyboard layout, supports key swaps,
-    and computes key positions with row offsets.
+  - Keyboard: A class representing a keyboard layout.
   - Classifier: A helper class that loads trigram frequency data and provides
-    various keyboard-related predicates.
-  - A test() function to quickly inspect the keyboards.
+    keyboard-related predicates.
+  - A test() function to inspect the keyboards.
 """
 
 from math import atan2, degrees
@@ -20,9 +19,7 @@ class Keyboard:
     """
     Represents a keyboard layout.
     """
-
     def __init__(self, data_size: int, layout: str) -> None:
-        # Check that the layout string is the expected length (60 characters)
         if len(layout) != 60:
             raise ValueError("Layout string must be exactly 60 characters long.")
         self.data_size = data_size
@@ -30,17 +27,14 @@ class Keyboard:
         self.chars: str = layout
         self.swap_pair: Tuple[str, str] = ("", "")
         self.key_count: int = 30
-
         self.lowercase: str = layout[:30]
         self.uppercase: str = layout[30:]
         self.lower_to_upper: Dict[str, str] = dict(zip(self.lowercase, self.uppercase))
         self.upper_to_lower: Dict[str, str] = dict(zip(self.uppercase, self.lowercase))
-
         self.x_to_finger: Dict[int, str] = {
             5: "lp", 4: "lr", 3: "lm", 2: "li", 1: "li",
             -1: "ri", -2: "ri", -3: "rm", -4: "rr", -5: "rp",
         }
-
         self.key_to_pos: Dict[str, Tuple[int, int]] = {}
         rows: List[str] = [self.lowercase[i * 10: (i + 1) * 10] for i in range(3)]
         for y_index, row in enumerate(rows):
@@ -92,10 +86,7 @@ class Keyboard:
     def get_pos(self, k: str) -> Tuple[int, int]:
         if k in self.uppercase:
             k = self.upper_to_lower.get(k, k)
-        pos = self.key_to_pos.get(k)
-        if pos is None:
-            raise ValueError(f"Key '{k}' not found in layout.")
-        return pos
+        return self.key_to_pos.get(k, (0, 0))
 
     def get_col(self, k: str) -> int:
         return self.get_pos(k)[0]
@@ -116,27 +107,28 @@ class Keyboard:
             return 0
         return int(x / abs(x))
 
-
 class Classifier:
     """
     Provides helper methods for keyboard-based feature analysis.
     """
-
     def __init__(self, kb: str = "qwerty") -> None:
-        valid_chars = set("qwertyuiopasdfghjkl'zxcvbnm,.-")
+        # Allowed characters now include both lower and upper case.
+        valid_chars = set("qwertyuiopasdfghjkl;zxcvbnm,./QWERTYUIOPASDFGHJKL:ZXCVBNM<>? ")
         trigrams = []
         tg_freqs = []
         tg_percentages = {}
         trigram_path = "trigrams.txt"
         if not os.path.exists(trigram_path):
             raise FileNotFoundError(f"Cannot find file: {trigram_path}")
-
         with open(trigram_path, "r", encoding="utf-8") as f:
             for line in f:
                 parts = line.strip().split("\t")
                 if len(parts) < 2:
                     continue
                 trigram, freq_str = parts[:2]
+                trigram = trigram.strip()  # do NOT convert to lowercase
+                if len(trigram) != 3:
+                    continue
                 if all(c in valid_chars for c in trigram):
                     trigrams.append(trigram)
                     try:
@@ -149,13 +141,11 @@ class Classifier:
             percentage = int(100 * (elapsed / total_count)) if total_count else 0
             tg_percentages[percentage + 1] = i
             elapsed += freq
-
         tg_coverage = 100
         cutoff = tg_percentages.get(tg_coverage, len(tg_freqs))
         tg_freqs = np.array(tg_freqs[:cutoff])
         trigrams = trigrams[:cutoff]
         print("Processed trigram data: using", len(trigrams), "trigrams.")
-
         data_size = len(trigrams)
         self.keyboards: Dict[str, Keyboard] = {
             "qwerty": Keyboard(data_size=data_size,
@@ -168,8 +158,7 @@ class Classifier:
                                layout="qwertzuiopasdfghjklöyxcvbnm,.-QWERTZUIOPASDFGHJKLÖYXCVBNM;:_"),
         }
         if kb not in self.keyboards:
-            raise ValueError(f"Keyboard layout '{kb}' is not available. "
-                             f"Choose from: {list(self.keyboards.keys())}.")
+            raise ValueError(f"Keyboard layout '{kb}' is not available. Choose from: {list(self.keyboards.keys())}.")
         self.kb: Keyboard = self.keyboards[kb]
 
     def is_pinky(self, k: str) -> bool:
@@ -193,12 +182,12 @@ class Classifier:
     def is_index(self, k: str) -> bool:
         return abs(self.kb.get_pos(k)[0]) in (1, 2)
 
-    def same_col(self, bg: Tuple[str, str]) -> bool:
-        return self.kb.get_col(bg[0]) == self.kb.get_col(bg[1])
-
     def same_hand(self, bg: Tuple[str, str]) -> bool:
         return self.kb.get_hand(bg[0]) == self.kb.get_hand(bg[1])
-
+    
+    def different_hand(self, bg: Tuple[str, str]) -> bool:
+        return self.kb.get_hand(bg[0]) != self.kb.get_hand(bg[1])
+    
     def inwards_rotation(self, bg: Tuple[str, str]) -> bool:
         if self.same_hand(bg):
             if abs(self.kb.get_col(bg[0])) < abs(self.kb.get_col(bg[1])):
@@ -207,29 +196,9 @@ class Classifier:
                 outer, inner = bg[0], bg[1]
             else:
                 return False
-
             if self.kb.get_row(outer) > self.kb.get_row(inner):
                 return True
         return False
-
-    def get_rotation(self, bg: Tuple[str, str]) -> Optional[float]:
-        if not self.same_hand(bg):
-            return None
-
-        if abs(self.kb.get_col(bg[0])) < abs(self.kb.get_col(bg[1])):
-            outer, inner = bg[1], bg[0]
-        elif abs(self.kb.get_col(bg[0])) > abs(self.kb.get_col(bg[1])):
-            outer, inner = bg[0], bg[1]
-        else:
-            return None
-
-        x1, y1 = self.kb.get_pos(outer)
-        x2, y2 = self.kb.get_pos(inner)
-        offset1 = self.kb.row_offsets.get(y1, 0)
-        offset2 = self.kb.row_offsets.get(y2, 0)
-        hand_factor = self.kb.get_hand(bg[0]) or 1
-        angle = degrees(atan2((y1 - y2), ((x1 + offset1) - (x2 + offset2)) * hand_factor))
-        return round(angle, 2)
 
     def outwards_rotation(self, bg: Tuple[str, str]) -> bool:
         if self.same_hand(bg):
@@ -243,31 +212,27 @@ class Classifier:
                 return True
         return False
 
-    def is_adjacent(self, bg: Tuple[str, str]) -> bool:
-        return abs(self.kb.get_col(bg[0]) - self.kb.get_col(bg[1])) == 1
-
-    def get_dx(self, bg: Tuple[str, str]) -> float:
-        x1, y1 = self.kb.get_pos(bg[0])
-        x2, y2 = self.kb.get_pos(bg[1])
+    def get_rotation(self, bg: Tuple[str, str]) -> Optional[float]:
+        if not self.same_hand(bg):
+            return None
+        if abs(self.kb.get_col(bg[0])) < abs(self.kb.get_col(bg[1])):
+            outer, inner = bg[1], bg[0]
+        elif abs(self.kb.get_col(bg[0])) > abs(self.kb.get_col(bg[1])):
+            outer, inner = bg[0], bg[1]
+        else:
+            return None
+        x1, y1 = self.kb.get_pos(outer)
+        x2, y2 = self.kb.get_pos(inner)
         offset1 = self.kb.row_offsets.get(y1, 0)
         offset2 = self.kb.row_offsets.get(y2, 0)
-        return abs((x1 + offset1) - (x2 + offset2))
-
-    def get_dy(self, bg: Tuple[str, str]) -> int:
-        return abs(self.kb.get_row(bg[0]) - self.kb.get_row(bg[1]))
+        hand_factor = self.kb.get_hand(bg[0]) or 1
+        angle = atan2((y1 - y2), ((x1 + offset1) - (x2 + offset2)) * hand_factor)
+        return round(degrees(angle), 2)
 
     def get_distance(self, bg: Tuple[str, str], ex: float = 2) -> float:
-        dx = self.get_dx(bg)
-        dy = self.get_dy(bg)
-        return (dx**ex + dy**ex) ** (1 / ex)
-
-    def is_scissor(self, bg: Tuple[str, str]) -> bool:
-        return (self.get_dy(bg) == 2 and (not self.same_finger(bg)) and self.same_hand(bg))
-
-    def same_finger(self, bg: Tuple[str, str]) -> bool:
-        if bg[0] != bg[1]:
-            return self.kb.get_finger(bg[0]) == self.kb.get_finger(bg[1])
-        return False
+        dx = abs(self.kb.get_col(bg[0]) - self.kb.get_col(bg[1]))
+        dy = abs(self.kb.get_row(bg[0]) - self.kb.get_row(bg[1]))
+        return (dx**ex + dy**ex) ** (1/ex)
 
 def test() -> None:
     c = Classifier()
