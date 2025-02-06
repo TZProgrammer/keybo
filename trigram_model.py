@@ -1,5 +1,5 @@
 """
-typing_model.py – An improved typing analysis script with extra features, 
+typing_model.py – An improved typing analysis script with extra features,
 regularized XGBoost hyperparameters, and an option to predict the last‐letter time vs. the full sequence.
 
 Usage:
@@ -38,11 +38,13 @@ ALL_KEYS = list("qwertyuiopasdfghjkl;zxcvbnm,./ QWERTYUIOPASDFGHJKL:ZXCVBNM<>?")
 # (The space key is included in our data.)
 char_to_id = {c: i for i, c in enumerate(ALL_KEYS)}
 
+
 ##########################################################################
 # Data Loading and Utility Functions
 ##########################################################################
-def load_ngram_frequencies(trigrams_file: str, bigrams_file: str, skip_file: str
-                            ) -> Tuple[dict, dict, dict, List[str]]:
+def load_ngram_frequencies(
+    trigrams_file: str, bigrams_file: str, skip_file: str
+) -> Tuple[dict, dict, dict, List[str]]:
     trigram_to_freq = defaultdict(int)
     trigrams = []
     # Allow both lower and upper case letters (plus punctuation and space)
@@ -102,8 +104,10 @@ def load_ngram_frequencies(trigrams_file: str, bigrams_file: str, skip_file: str
 
     return trigram_to_freq, bigram_to_freq, skipgram_to_freq, trigrams
 
+
 def str_to_tuple(s: str) -> Tuple[int, ...]:
     return tuple(map(int, s.strip("()").split(", ")))
+
 
 def get_iqr_avg(data: List[float]) -> float:
     if not data:
@@ -116,8 +120,10 @@ def get_iqr_avg(data: List[float]) -> float:
     filtered = [x for x in data if lower_bound <= x <= upper_bound]
     return np.mean(filtered) if filtered else np.mean(data)
 
-def load_tristroke_data(filepath: str, wpm_threshold: int, tg_min_samples: int = 35
-                        ) -> List[Any]:
+
+def load_tristroke_data(
+    filepath: str, wpm_threshold: int, tg_min_samples: int = 35
+) -> List[Any]:
     data = []
     allowed_chars = "qwertyuiopasdfghjkl;zxcvbnm,./QWERTYUIOPASDFGHJKL:ZXCVBNM<>? "
     if not os.path.exists(filepath):
@@ -148,8 +154,10 @@ def load_tristroke_data(filepath: str, wpm_threshold: int, tg_min_samples: int =
             data.append((positions, trigram, *strokes))
     return data
 
-def load_bistroke_data(filepath: str, wpm_threshold: int, bg_min_samples: int = 50
-                       ) -> List[Any]:
+
+def load_bistroke_data(
+    filepath: str, wpm_threshold: int, bg_min_samples: int = 50
+) -> List[Any]:
     data = []
     allowed_chars = "qwertyuiopasdfghjkl;zxcvbnm,./QWERTYUIOPASDFGHJKL:ZXCVBNM<>? "
     if not os.path.exists(filepath):
@@ -180,6 +188,7 @@ def load_bistroke_data(filepath: str, wpm_threshold: int, bg_min_samples: int = 
             data.append((positions, bigram, *strokes))
     return data
 
+
 ##########################################################################
 # Feature Extraction (with predict_mode option)
 ##########################################################################
@@ -187,43 +196,44 @@ def load_bistroke_data(filepath: str, wpm_threshold: int, bg_min_samples: int = 
 # Instantiate the classifier once.
 bg_classifier = Classifier()
 
+
 def get_bistroke_features(pos: Tuple[Any, Any], bigram: str) -> Tuple[Any, ...]:
     """
     Extended bigram feature extraction.
-    
+
     Returns a tuple containing:
       - 27 original features (frequency, row/column booleans, dx, dy, etc.)
       - 4 derived features (rotation angle, inwards/outwards flags, Euclidean distance)
       - 6 raw key features (key IDs and raw coordinates)
       - 1 different-hand flag (1.0 if the two keys are typed with different hands, 0.0 otherwise)
       - Followed by the label (the bigram) and a color.
-      
+
     Total length = 27 + 4 + 6 + 1 + 2 = 40.
     """
     ((ax, ay), (bx, by)) = pos
     k1, k2 = bigram[0], bigram[1]
-    
+
     expected = tuple(bg_classifier.kb.get_pos(c) for c in bigram)
     col = "green" if ((ax, ay), (bx, by)) == expected else "red"
     freq = bg_classifier.bigram_freq.get(bigram, 1)
     cap1 = k1.isupper()
     cap2 = k2.isupper()
-    space1 = (ay == 0)
-    space2 = (by == 0)
-    bottom1 = (ay == 1)
-    bottom2 = (by == 1)
-    home1 = (ay == 2)
-    home2 = (by == 2)
-    top1 = (ay == 3)
-    top2 = (by == 3)
-    pinky1 = (abs(ax) == 5)
-    pinky2 = (abs(bx) == 5)
-    ring1 = (abs(ax) == 4)
-    ring2 = (abs(bx) == 4)
-    middle1 = (abs(ax) == 3)
-    middle2 = (abs(bx) == 3)
-    index1 = (abs(ax) in (1, 2))
-    index2 = (abs(bx) in (1, 2))
+    space1 = ay == 0
+    space2 = by == 0
+    bottom1 = ay == 1
+    bottom2 = by == 1
+    home1 = ay == 2
+    home2 = by == 2
+    top1 = ay == 3
+    top2 = by == 3
+    pinky1 = abs(ax) == 5
+    pinky2 = abs(bx) == 5
+    ring1 = abs(ax) == 4
+    ring2 = abs(bx) == 4
+    middle1 = abs(ax) == 3
+    middle2 = abs(bx) == 3
+    index1 = abs(ax) in (1, 2)
+    index2 = abs(bx) in (1, 2)
     row_offsets = {1: 0.5, 2: 0.0, 3: -0.25}
     offset_ax = row_offsets.get(ay, 0.0)
     offset_bx = row_offsets.get(by, 0.0)
@@ -232,16 +242,27 @@ def get_bistroke_features(pos: Tuple[Any, Any], bigram: str) -> Tuple[Any, ...]:
     shb = False
     if not (space1 or space2) and ax != 0 and bx != 0:
         shb = (ax // abs(ax)) == (bx // abs(bx))
-    scb = (ax == bx)
+    scb = ax == bx
     sfb = scb or (shb and ((index1 and middle2) or (index2 and middle1)))
-    lateral = (abs(bx) == 1)
-    adjacent = (shb and ((abs(ax - bx) == 1) or (index1 and middle2) or (index2 and middle1)))
-    lsb = (shb and (((index1 and middle2) or (index2 and middle1)) and dx > 1.5))
+    lateral = abs(bx) == 1
+    adjacent = shb and (
+        (abs(ax - bx) == 1) or (index1 and middle2) or (index2 and middle1)
+    )
+    lsb = shb and (((index1 and middle2) or (index2 and middle1)) and dx > 1.5)
     bg_scissor = (
         (dy == 2 and dx <= 1)
-        or ((pinky1 and top1 and ring2 and bottom2) or (ring1 and bottom1 and pinky2 and top2))
-        or ((ring1 and top1 and middle2 and bottom2) or (middle1 and bottom1 and ring2 and top2))
-        or ((index1 and top1 and middle2 and bottom2) or (middle1 and bottom1 and index1 and top1))
+        or (
+            (pinky1 and top1 and ring2 and bottom2)
+            or (ring1 and bottom1 and pinky2 and top2)
+        )
+        or (
+            (ring1 and top1 and middle2 and bottom2)
+            or (middle1 and bottom1 and ring2 and top2)
+        )
+        or (
+            (index1 and top1 and middle2 and bottom2)
+            or (middle1 and bottom1 and index1 and top1)
+        )
     )
     bg_scissor = bg_scissor and adjacent
 
@@ -251,31 +272,62 @@ def get_bistroke_features(pos: Tuple[Any, Any], bigram: str) -> Tuple[Any, ...]:
     inwards = bg_classifier.inwards_rotation((k1, k2))
     outwards = bg_classifier.outwards_rotation((k1, k2))
     distance = bg_classifier.get_distance((k1, k2))
-    
+
     k1_id = char_to_id.get(k1, -1)
     k2_id = char_to_id.get(k2, -1)
     diff_hand = 1.0 if bg_classifier.different_hand((k1, k2)) else 0.0
 
-    orig_features = (freq, float(space1), float(space2), float(bottom1), float(bottom2),
-                     float(home1), float(home2), float(top1), float(top2),
-                     float(pinky1), float(pinky2), float(ring1), float(ring2),
-                     float(middle1), float(middle2), float(index1), float(index2),
-                     float(lateral), float(shb), float(sfb), float(adjacent),
-                     float(bg_scissor), float(lsb), float(cap1), float(cap2),
-                     float(dy), float(dx))
+    orig_features = (
+        freq,
+        float(space1),
+        float(space2),
+        float(bottom1),
+        float(bottom2),
+        float(home1),
+        float(home2),
+        float(top1),
+        float(top2),
+        float(pinky1),
+        float(pinky2),
+        float(ring1),
+        float(ring2),
+        float(middle1),
+        float(middle2),
+        float(index1),
+        float(index2),
+        float(lateral),
+        float(shb),
+        float(sfb),
+        float(adjacent),
+        float(bg_scissor),
+        float(lsb),
+        float(cap1),
+        float(cap2),
+        float(dy),
+        float(dx),
+    )
     derived_features = (float(angle), float(inwards), float(outwards), float(distance))
-    raw_key_info = (float(k1_id), float(k2_id), float(ax), float(ay), float(bx), float(by))
+    raw_key_info = (
+        float(k1_id),
+        float(k2_id),
+        float(ax),
+        float(ay),
+        float(bx),
+        float(by),
+    )
     new_feature = (float(diff_hand),)
-    
+
     return orig_features + derived_features + raw_key_info + new_feature + (bigram, col)
 
-def extract_bigram_features(bistroke_data: List[Any], predict_mode: str = "full"
-    ) -> Tuple[Tuple[np.ndarray, ...], np.ndarray, List[str], List[str]]:
+
+def extract_bigram_features(
+    bistroke_data: List[Any], predict_mode: str = "full"
+) -> Tuple[Tuple[np.ndarray, ...], np.ndarray, List[str], List[str]]:
     """
     Loops over all bistroke data and extracts extended bigram features.
-    The target value is computed based on predict_mode:
-      - "full": use the IQR average of all stroke times.
-      - "last": use only the time for that bistroke (since for a bigram both modes are identical).
+    For bigrams the target is computed as the IQR average of the last bigram
+    measurement for each trial—thus, regardless of the predict_mode, the result
+    is the same.
     """
     orig_list = [[] for _ in range(27)]
     derived_list = [[] for _ in range(4)]
@@ -304,19 +356,25 @@ def extract_bigram_features(bistroke_data: List[Any], predict_mode: str = "full"
         labels.append(feats[38])
         colors.append(feats[39])
 
-        stroke_times = [t[1] for t in stroke_info if len(t) > 1]
-        if predict_mode == "last":
-            times_list_final.append(stroke_times[-1] if stroke_times else 0)
-        else:
-            times_list_final.append(get_iqr_avg(stroke_times))
+        # For each trial, take the last bigram measurement (whether there's one or more).
+        stroke_times = [t[-1] for t in stroke_info if len(t) > 0]
+        # Then average across all trials using the IQR average.
+        times_list_final.append(get_iqr_avg(stroke_times))
 
-    bg_features = tuple(np.array(lst) for lst in (orig_list + derived_list + raw_key_list + [diff_hand_list]))
+    bg_features = tuple(
+        np.array(lst)
+        for lst in (orig_list + derived_list + raw_key_list + [diff_hand_list])
+    )
     return bg_features, np.array(times_list_final), labels, colors
 
-def extract_trigram_features(tristroke_data: List[Any], bg_model: Any,
-                             trigram_to_freq: dict, skipgram_to_freq: dict,
-                             predict_mode: str = "full"
-                            ) -> Tuple[Tuple[np.ndarray, ...], np.ndarray, List[str], List[str]]:
+
+def extract_trigram_features(
+    tristroke_data: List[Any],
+    bg_model: Any,
+    trigram_to_freq: dict,
+    skipgram_to_freq: dict,
+    predict_mode: str = "full",
+) -> Tuple[Tuple[np.ndarray, ...], np.ndarray, List[str], List[str]]:
     """
     For each tristroke, extract features.
     In "full" mode, the target is defined as the IQR average of the full trigram times.
@@ -366,14 +424,16 @@ def extract_trigram_features(tristroke_data: List[Any], bg_model: Any,
                 side1 = ax // abs(ax)
                 side2 = bx // abs(bx)
                 side3 = cx // abs(cx)
-                sht = (side1 == side2 == side3)
+                sht = side1 == side2 == side3
             except ZeroDivisionError:
                 sht = False
         else:
             sht = False
         tg_sht.append(float(sht))
         if sht:
-            redir = (abs(ax) < abs(bx) and abs(cx) < abs(bx)) or (abs(ax) > abs(bx) and abs(cx) > abs(bx))
+            redir = (abs(ax) < abs(bx) and abs(cx) < abs(bx)) or (
+                abs(ax) > abs(bx) and abs(cx) > abs(bx)
+            )
             tg_redirect.append(float(redir))
             bad = redir and (not any(abs(x) in (1, 2) for x in (ax, bx, cx)))
             tg_bad.append(float(bad))
@@ -431,9 +491,11 @@ def extract_trigram_features(tristroke_data: List[Any], bg_model: Any,
     features_tuple = tg_level + skip_features
     return features_tuple, np.array(tg_times), tg_labels, tg_colors
 
+
 def model_predict_single(model: Any, feature_tuple: Tuple[Any, ...]) -> float:
     wrapped = tuple(np.array([f]) for f in feature_tuple)
     return model.predict(wrapped)[0]
+
 
 ##########################################################################
 # Model (Penalty) Functions & TypingModel Wrapper
@@ -441,25 +503,58 @@ def model_predict_single(model: Any, feature_tuple: Tuple[Any, ...]) -> float:
 def bg_penalty(features: Tuple[np.ndarray, ...], *p: float) -> np.ndarray:
     # Note: This simple model only uses frequency.
     trimmed = features[:27]
-    (bg_freqs, bg_space1, bg_space2, bg_bottom1, bg_bottom2, bg_home1, bg_home2,
-     bg_top1, bg_top2, bg_pinky1, bg_pinky2, bg_ring1, bg_ring2, bg_middle1,
-     bg_middle2, bg_index1, bg_index2, bg_lateral, bg_shb, bg_sfb, bg_adjacent,
-     bg_scissor, bg_lsb, bg_caps1, bg_caps2, bg_dy, bg_dx) = trimmed
+    (
+        bg_freqs,
+        bg_space1,
+        bg_space2,
+        bg_bottom1,
+        bg_bottom2,
+        bg_home1,
+        bg_home2,
+        bg_top1,
+        bg_top2,
+        bg_pinky1,
+        bg_pinky2,
+        bg_ring1,
+        bg_ring2,
+        bg_middle1,
+        bg_middle2,
+        bg_index1,
+        bg_index2,
+        bg_lateral,
+        bg_shb,
+        bg_sfb,
+        bg_adjacent,
+        bg_scissor,
+        bg_lsb,
+        bg_caps1,
+        bg_caps2,
+        bg_dy,
+        bg_dx,
+    ) = trimmed
     freq_pen = p[0] * np.log(np.clip(bg_freqs + p[1], 1e-8, None)) + p[2]
     return freq_pen
+
 
 def tg_penalty(tg_features: Tuple[np.ndarray, ...], *p: float) -> np.ndarray:
     # A simple linear model on a couple of placeholder features.
     trimmed = tg_features[:7]
     return p[0] * trimmed[1] + p[1] * trimmed[2] + p[2]
 
+
 class TypingModel:
     """
     A wrapper for a regression model using either a custom penalty function (via curve_fit)
     or an XGBoost regressor.
     """
-    def __init__(self, model_type: str = "curve_fit", penalty_function: Any = None,
-                 fit_kwargs: dict = None, **kwargs) -> None:
+
+    def __init__(
+        self,
+        model_type: str = "curve_fit",
+        penalty_function: Any = None,
+        fit_kwargs: dict = None,
+        **kwargs,
+    ) -> None:
         self.model_type = model_type
         self.penalty_function = penalty_function
         self.fit_kwargs = fit_kwargs if fit_kwargs else {}
@@ -468,8 +563,10 @@ class TypingModel:
             if xgb is None:
                 raise ImportError("xgboost is not installed.")
             self.model = xgb.XGBRegressor(**kwargs)
+
     def _convert_features(self, features: Tuple[Any, ...]) -> Tuple[np.ndarray, ...]:
         return tuple(np.asarray(f) for f in features)
+
     def fit(self, features: Tuple[Any, ...], y: np.ndarray) -> None:
         if self.model_type == "curve_fit":
             features = self._convert_features(features)
@@ -481,6 +578,7 @@ class TypingModel:
             self.model.fit(X, y)
         else:
             raise ValueError(f"Unsupported model type: {self.model_type}")
+
     def predict(self, features: Tuple[Any, ...]) -> np.ndarray:
         if self.model_type == "curve_fit":
             features = self._convert_features(features)
@@ -490,7 +588,10 @@ class TypingModel:
             return self.model.predict(X)
         else:
             raise ValueError(f"Unsupported model type: {self.model_type}")
-    def evaluate(self, features: Tuple[np.ndarray, ...], y: np.ndarray) -> Tuple[float, float]:
+
+    def evaluate(
+        self, features: Tuple[np.ndarray, ...], y: np.ndarray
+    ) -> Tuple[float, float]:
         y_pred = self.predict(features)
         residuals = y - y_pred
         ss_res = np.sum(residuals**2)
@@ -499,11 +600,13 @@ class TypingModel:
         mae = np.mean(np.abs(residuals))
         return r2, mae
 
+
 ##########################################################################
 # Cross-Validation Function
 ##########################################################################
-def cross_validate_model(model_args: dict, features: Tuple[np.ndarray, ...],
-                         y: np.ndarray, n_splits: int = 5) -> Tuple[float, float]:
+def cross_validate_model(
+    model_args: dict, features: Tuple[np.ndarray, ...], y: np.ndarray, n_splits: int = 5
+) -> Tuple[float, float]:
     kf = KFold(n_splits=n_splits, shuffle=True, random_state=42)
     r2_scores = []
     mae_scores = []
@@ -520,20 +623,33 @@ def cross_validate_model(model_args: dict, features: Tuple[np.ndarray, ...],
         mae_scores.append(mae)
     return np.mean(r2_scores), np.mean(mae_scores)
 
+
 ##########################################################################
 # Plotting
 ##########################################################################
-def plot_results(x: np.ndarray, y: np.ndarray, y_pred: np.ndarray,
-                 labels: List[str], colors: List[str],
-                 xlabel: str, ylabel: str, title: str,
-                 annotate_threshold: int = 25) -> None:
+def plot_results(
+    x: np.ndarray,
+    y: np.ndarray,
+    y_pred: np.ndarray,
+    labels: List[str],
+    colors: List[str],
+    xlabel: str,
+    ylabel: str,
+    title: str,
+    annotate_threshold: int = 25,
+) -> None:
     plt.figure(figsize=(9, 6))
     plt.scatter(x, y, s=40, c=colors, alpha=0.8, label="Data")
     plt.plot(x, y_pred, color="black", linewidth=2, label="Fit")
     if len(x) <= annotate_threshold:
         for xi, yi, lab in zip(x, y, labels):
-            plt.annotate(f"'{lab}'", (xi, yi), xytext=(0, 5),
-                         textcoords="offset points", ha="center")
+            plt.annotate(
+                f"'{lab}'",
+                (xi, yi),
+                xytext=(0, 5),
+                textcoords="offset points",
+                ha="center",
+            )
     plt.xlabel(xlabel)
     plt.ylabel(ylabel)
     plt.title(title)
@@ -542,43 +658,76 @@ def plot_results(x: np.ndarray, y: np.ndarray, y_pred: np.ndarray,
     plt.tight_layout()
     plt.show()
 
+
 ##########################################################################
 # Main
 ##########################################################################
 def main() -> None:
     parser = argparse.ArgumentParser(description="Typing Model Training")
-    parser.add_argument("--model", type=str, default="curve_fit",
-                        choices=["curve_fit", "xgboost"], help="Choose model type")
-    parser.add_argument("--predict_mode", type=str, default="full",
-                        choices=["full", "last"],
-                        help="Predict the full trigram time ('full') or only the last bigram time ('last').")
-    parser.add_argument("--trigrams_file", type=str, default="trigrams.txt",
-                        help="Path to trigram frequencies file")
-    parser.add_argument("--bigrams_file", type=str, default="bigrams.txt",
-                        help="Path to bigram frequencies file")
-    parser.add_argument("--skip_file", type=str, default="1-skip.txt",
-                        help="Path to skipgram frequencies file")
-    parser.add_argument("--tristrokes_file", type=str, default="tristrokes.tsv",
-                        help="Path to tristroke data file")
-    parser.add_argument("--bistrokes_file", type=str, default="bistrokes.tsv",
-                        help="Path to bistroke data file")
+    parser.add_argument(
+        "--model",
+        type=str,
+        default="curve_fit",
+        choices=["curve_fit", "xgboost"],
+        help="Choose model type",
+    )
+    parser.add_argument(
+        "--predict_mode",
+        type=str,
+        default="full",
+        choices=["full", "last"],
+        help="Predict the full trigram time ('full') or only the last bigram time ('last').",
+    )
+    parser.add_argument(
+        "--trigrams_file",
+        type=str,
+        default="trigrams.txt",
+        help="Path to trigram frequencies file",
+    )
+    parser.add_argument(
+        "--bigrams_file",
+        type=str,
+        default="bigrams.txt",
+        help="Path to bigram frequencies file",
+    )
+    parser.add_argument(
+        "--skip_file",
+        type=str,
+        default="1-skip.txt",
+        help="Path to skipgram frequencies file",
+    )
+    parser.add_argument(
+        "--tristrokes_file",
+        type=str,
+        default="tristrokes.tsv",
+        help="Path to tristroke data file",
+    )
+    parser.add_argument(
+        "--bistrokes_file",
+        type=str,
+        default="bistrokes.tsv",
+        help="Path to bistroke data file",
+    )
     args = parser.parse_args()
 
     # Load frequency data.
-    trigram_to_freq, bigram_to_freq, skipgram_to_freq, trigrams = load_ngram_frequencies(
-        args.trigrams_file, args.bigrams_file, args.skip_file)
+    trigram_to_freq, bigram_to_freq, skipgram_to_freq, trigrams = (
+        load_ngram_frequencies(args.trigrams_file, args.bigrams_file, args.skip_file)
+    )
     bg_classifier.bigram_freq = bigram_to_freq
 
     tristroke_data = load_tristroke_data(args.tristrokes_file, WPM_THRESHOLD)
     bistroke_data = load_bistroke_data(args.bistrokes_file, WPM_THRESHOLD)
 
     # Bigram Model
-    bg_features, bg_times, bg_labels, layout_col = extract_bigram_features(bistroke_data, predict_mode=args.predict_mode)
+    bg_features, bg_times, bg_labels, layout_col = extract_bigram_features(
+        bistroke_data, predict_mode=args.predict_mode
+    )
     if args.model == "curve_fit":
         bg_model_args = {
             "model_type": "curve_fit",
             "penalty_function": bg_penalty,
-            "fit_kwargs": {"method": "lm", "maxfev": 750000, "p0": np.ones(3)}
+            "fit_kwargs": {"method": "lm", "maxfev": 750000, "p0": np.ones(3)},
         }
     else:
         xgb_params = {
@@ -595,7 +744,9 @@ def main() -> None:
             "verbosity": 0,
         }
         bg_model_args = {"model_type": "xgboost", **xgb_params}
-    bg_cv_r2, bg_cv_mae = cross_validate_model(bg_model_args, bg_features, bg_times, n_splits=5)
+    bg_cv_r2, bg_cv_mae = cross_validate_model(
+        bg_model_args, bg_features, bg_times, n_splits=5
+    )
     print(f"Bigram Model CV - R^2: {bg_cv_r2:.4f}, MAE: {bg_cv_mae:.3f}")
     bg_model = TypingModel(**bg_model_args)
     bg_model.fit(bg_features, bg_times)
@@ -609,22 +760,36 @@ def main() -> None:
     pred_sorted = bg_pred[sorted_idx]
     labels_sorted = [bg_labels[i] for i in sorted_idx]
     colors_sorted = [layout_col[i] for i in sorted_idx]
-    plot_results(x_sorted, y_sorted, pred_sorted, labels_sorted, colors_sorted,
-                 "Bigram Frequency", "Avg Typing Time (ms)", "Bigram Model Fit")
+    plot_results(
+        x_sorted,
+        y_sorted,
+        pred_sorted,
+        labels_sorted,
+        colors_sorted,
+        "Bigram Frequency",
+        "Avg Typing Time (ms)",
+        "Bigram Model Fit",
+    )
 
     # Trigram Model
     tg_features, tg_times, tg_labels, tg_colors = extract_trigram_features(
-        tristroke_data, bg_model, trigram_to_freq, skipgram_to_freq,
-        predict_mode=args.predict_mode)
+        tristroke_data,
+        bg_model,
+        trigram_to_freq,
+        skipgram_to_freq,
+        predict_mode=args.predict_mode,
+    )
     if args.model == "curve_fit":
         tg_model_args = {
             "model_type": "curve_fit",
             "penalty_function": tg_penalty,
-            "fit_kwargs": {"method": "trf", "maxfev": 750000, "p0": np.ones(3)}
+            "fit_kwargs": {"method": "trf", "maxfev": 750000, "p0": np.ones(3)},
         }
     else:
         tg_model_args = {"model_type": "xgboost", **xgb_params}
-    tg_cv_r2, tg_cv_mae = cross_validate_model(tg_model_args, tg_features, tg_times, n_splits=5)
+    tg_cv_r2, tg_cv_mae = cross_validate_model(
+        tg_model_args, tg_features, tg_times, n_splits=5
+    )
     print(f"Trigram Model CV - R^2: {tg_cv_r2:.4f}, MAE: {tg_cv_mae:.3f}")
     tg_model = TypingModel(**tg_model_args)
     tg_model.fit(tg_features, tg_times)
@@ -638,8 +803,17 @@ def main() -> None:
     pred_sorted_tg = tg_pred[sorted_idx_tg]
     labels_sorted_tg = [tg_labels[i] for i in sorted_idx_tg]
     colors_sorted_tg = [tg_colors[i] for i in sorted_idx_tg]
-    plot_results(x_sorted_tg, y_sorted_tg, pred_sorted_tg, labels_sorted_tg,
-                 colors_sorted_tg, "Trigram Frequency", "Avg Typing Time (ms)", "Trigram Model Fit")
+    plot_results(
+        x_sorted_tg,
+        y_sorted_tg,
+        pred_sorted_tg,
+        labels_sorted_tg,
+        colors_sorted_tg,
+        "Trigram Frequency",
+        "Avg Typing Time (ms)",
+        "Trigram Model Fit",
+    )
+
 
 if __name__ == "__main__":
     main()
