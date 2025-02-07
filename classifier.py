@@ -22,9 +22,8 @@ class Keyboard:
     """
 
     def __init__(self, data_size: int, layout: str) -> None:
-        if len(layout) != 60:
-            raise ValueError("Layout string must be exactly 60 characters long.")
         self.data_size = data_size
+        self.affected_indices = range(data_size)
         self.row_offsets: Dict[int, float] = {1: 0.5, 2: 0.0, 3: -0.25}
         self.chars: str = layout
         self.swap_pair: Tuple[str, str] = ("", "")
