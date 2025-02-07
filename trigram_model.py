@@ -199,11 +199,11 @@ def get_bistroke_features(pos: Tuple[Any, Any], bigram: str) -> Tuple[Any, ...]:
     Extended bigram feature extraction.
 
     Returns a tuple containing:
-      - 27 original features (frequency, row/column booleans, dx, dy, etc.)
-      - 4 derived features (rotation angle, inwards/outwards flags, Euclidean distance)
-      - 6 raw key features (key IDs and raw coordinates)
-      - 1 different-hand flag (1.0 if the two keys are typed with different hands, 0.0 otherwise)
-      - Followed by the label (the bigram) and a color.
+        - 27 original features (frequency, row/column booleans, dx, dy, etc.)
+        - 4 derived features (rotation angle, inwards/outwards flags, Euclidean distance)
+        - 6 raw key features (key IDs and raw coordinates)
+        - 1 different-hand flag (1.0 if the two keys are typed with different hands, 0.0 otherwise)
+        - Followed by the label (the bigram) and a color.
 
     Total length = 27 + 4 + 6 + 1 + 2 = 40.
     """
@@ -318,7 +318,7 @@ def get_bistroke_features(pos: Tuple[Any, Any], bigram: str) -> Tuple[Any, ...]:
 
 
 def extract_bigram_features(
-    bistroke_data: List[Any]
+    bistroke_data: List[Any],
 ) -> Tuple[Tuple[np.ndarray, ...], np.ndarray, List[str], List[str]]:
     """
     Loops over all bistroke data and extracts extended bigram features.
@@ -374,8 +374,6 @@ def extract_trigram_features(
     The target is defined as the IQR average of the full trigram times.
     """
     tg_freqs = []
-    tg_bg1_prediction = []
-    tg_bg2_prediction = []
     tg_sht = []
     tg_redirect = []
     tg_bad = []
@@ -384,6 +382,17 @@ def extract_trigram_features(
     tg_times = []
     tg_labels = []
     tg_colors = []
+
+    # Lists to store bigram features for bg1 and bg2
+    bg1_orig_list = [[] for _ in range(27)]
+    bg1_derived_list = [[] for _ in range(4)]
+    bg1_raw_key_list = [[] for _ in range(6)]
+    bg1_diff_hand_list = []
+
+    bg2_orig_list = [[] for _ in range(27)]
+    bg2_derived_list = [[] for _ in range(4)]
+    bg2_raw_key_list = [[] for _ in range(6)]
+    bg2_diff_hand_list = []
 
     for row in tristroke_data:
         try:
@@ -394,14 +403,31 @@ def extract_trigram_features(
 
         bg1 = trigram[:2]
         bg2 = trigram[1:]
-        # Placeholders for bigram predictions.
-        _ = get_bistroke_features((pos1, pos2), bg1)[:-2]
-        _ = get_bistroke_features((pos2, pos3), bg2)[:-2]
-        tg_bg1_prediction.append(0)
-        tg_bg2_prediction.append(0)
+
+        # Extract features for the first bigram (bg1)
+        bg1_feats = get_bistroke_features((pos1, pos2), bg1)
+        for i in range(27):
+            bg1_orig_list[i].append(bg1_feats[i])
+        for i in range(4):
+            bg1_derived_list[i].append(bg1_feats[27 + i])
+        for i in range(6):
+            bg1_raw_key_list[i].append(bg1_feats[31 + i])
+        bg1_diff_hand_list.append(bg1_feats[37])
+
+        # Extract features for the second bigram (bg2)
+        bg2_feats = get_bistroke_features((pos2, pos3), bg2)
+        for i in range(27):
+            bg2_orig_list[i].append(bg2_feats[i])
+        for i in range(4):
+            bg2_derived_list[i].append(bg2_feats[27 + i])
+        for i in range(6):
+            bg2_raw_key_list[i].append(bg2_feats[31 + i])
+        bg2_diff_hand_list.append(bg2_feats[37])
 
         sg = trigram[::2]
-        sg_feats = get_bistroke_features((pos1, pos3), sg)[:-2]
+        sg_feats = get_bistroke_features((pos1, pos3), sg)[
+            :-2
+        ]  # Removed label and color
         skip_features_list.append(sg_feats)
         sg_freqs.append(skipgram_to_freq.get(sg, 1))
 
@@ -451,16 +477,30 @@ def extract_trigram_features(
     num_skip_features = skip_features_array.shape[1]
     skip_features = tuple(skip_features_array[:, j] for j in range(num_skip_features))
 
+    # Convert bigram feature lists to numpy arrays and create tuples
+    bg1_features = tuple(
+        np.array(lst)
+        for lst in (
+            bg1_orig_list + bg1_derived_list + bg1_raw_key_list + [bg1_diff_hand_list]
+        )
+    )
+    bg2_features = tuple(
+        np.array(lst)
+        for lst in (
+            bg2_orig_list + bg2_derived_list + bg2_raw_key_list + [bg2_diff_hand_list]
+        )
+    )
+
     tg_level = (
         np.array(tg_freqs),
-        np.array(tg_bg1_prediction),
-        np.array(tg_bg2_prediction),
         np.array(tg_sht),
         np.array(tg_redirect),
         np.array(tg_bad),
         np.array(sg_freqs),
     )
-    features_tuple = tg_level + skip_features
+    features_tuple = (
+        tg_level + skip_features + bg1_features + bg2_features
+    )  # Concatenate all feature tuples
     return features_tuple, np.array(tg_times), tg_labels, tg_colors
 
 
@@ -595,8 +635,8 @@ def main() -> None:
     args = parser.parse_args()
 
     # Load frequency data.
-    trigram_to_freq, bigram_to_freq, skipgram_to_freq, trigrams = load_ngram_frequencies(
-        args.trigrams_file, args.bigrams_file, args.skip_file
+    trigram_to_freq, bigram_to_freq, skipgram_to_freq, trigrams = (
+        load_ngram_frequencies(args.trigrams_file, args.bigrams_file, args.skip_file)
     )
     bg_classifier.bigram_freq = bigram_to_freq
 
@@ -604,7 +644,9 @@ def main() -> None:
     bistroke_data = load_bistroke_data(args.bistrokes_file, WPM_THRESHOLD)
 
     # Bigram Model
-    bg_features, bg_times, bg_labels, layout_col = extract_bigram_features(bistroke_data)
+    bg_features, bg_times, bg_labels, layout_col = extract_bigram_features(
+        bistroke_data
+    )
     xgb_params = {
         "max_depth": 4,
         "min_child_weight": 1,
@@ -619,7 +661,9 @@ def main() -> None:
         "verbosity": 0,
     }
     bg_model_args = xgb_params
-    bg_cv_r2, bg_cv_mae = cross_validate_model(bg_model_args, bg_features, bg_times, n_splits=5)
+    bg_cv_r2, bg_cv_mae = cross_validate_model(
+        bg_model_args, bg_features, bg_times, n_splits=5
+    )
     print(f"Bigram Model CV - R^2: {bg_cv_r2:.4f}, MAE: {bg_cv_mae:.3f}")
     bg_model = TypingModel(**bg_model_args)
     bg_model.fit(bg_features, bg_times)
@@ -649,7 +693,9 @@ def main() -> None:
         tristroke_data, bg_model, trigram_to_freq, skipgram_to_freq
     )
     tg_model_args = xgb_params
-    tg_cv_r2, tg_cv_mae = cross_validate_model(tg_model_args, tg_features, tg_times, n_splits=5)
+    tg_cv_r2, tg_cv_mae = cross_validate_model(
+        tg_model_args, tg_features, tg_times, n_splits=5
+    )
     print(f"Trigram Model CV - R^2: {tg_cv_r2:.4f}, MAE: {tg_cv_mae:.3f}")
     tg_model = TypingModel(**tg_model_args)
     tg_model.fit(tg_features, tg_times)
