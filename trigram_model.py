@@ -130,27 +130,26 @@ def load_tristroke_data(
     with open(filepath, "r", encoding="utf-8") as f:
         for line in f:
             parts = line.strip().split("\t")
-            if len(parts) < tg_min_samples:
+            if len(parts) < 4:
                 continue
-            a, trigram, *rest = parts
-            trigram = trigram.strip()  # preserve case
+            pos, trigram, num_occurances, *occurances = parts
             if len(trigram) != 3 or not all(ch in allowed_chars for ch in trigram):
                 continue
-            strokes = []
-            for x in rest:
+            wpm_type_time_list = []
+            for x in occurances:
                 try:
                     parsed = str_to_tuple(x)
                 except Exception:
                     continue
                 if parsed[0] >= wpm_threshold:
-                    strokes.append(parsed)
-            if len(strokes) < tg_min_samples:
+                    wpm_type_time_list.append(parsed)
+            if len(wpm_type_time_list) < tg_min_samples:
                 continue
             try:
-                positions = ast.literal_eval(a)
+                positions = ast.literal_eval(pos)
             except (SyntaxError, ValueError):
                 continue
-            data.append((positions, trigram, *strokes))
+            data.append((positions, trigram, *wpm_type_time_list))
     return data
 
 
@@ -164,27 +163,27 @@ def load_bistroke_data(
     with open(filepath, "r", encoding="utf-8") as f:
         for line in f:
             parts = line.strip().split("\t")
-            if len(parts) < 2:
+            if len(parts) < 4:
                 continue
-            a, bigram, *rest = parts
+            pos, bigram, num_occurances, *occurances = parts
             bigram = bigram.strip()  # preserve case
             if len(bigram) != 2 or not all(c in allowed_chars for c in bigram):
                 continue
-            strokes = []
-            for x in rest:
+            wps_type_time_list = []
+            for x in occurances:
                 try:
                     parsed = str_to_tuple(x)
                 except Exception:
                     continue
                 if parsed[0] >= wpm_threshold:
-                    strokes.append(parsed)
-            if len(strokes) < bg_min_samples:
+                    wps_type_time_list.append(parsed)
+            if len(wps_type_time_list) < bg_min_samples:
                 continue
             try:
-                positions = ast.literal_eval(a)
+                positions = ast.literal_eval(pos)
             except (SyntaxError, ValueError):
                 continue
-            data.append((positions, bigram, *strokes))
+            data.append((positions, bigram, *wps_type_time_list))
     return data
 
 
