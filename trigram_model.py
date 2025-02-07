@@ -351,9 +351,8 @@ def extract_bigram_features(
         labels.append(feats[38])
         colors.append(feats[39])
 
-        # For each trial, take the last bigram measurement (whether there's one or more).
-        stroke_times = [t[-1] for t in stroke_info if len(t) > 0]
-        # Then average across all trials using the IQR average.
+        stroke_times = [t[1] for t in stroke_info if len(t) > 0]
+        # Average across all trials using the IQR average.
         times_list_final.append(get_iqr_avg(stroke_times))
 
     bg_features = tuple(
@@ -462,16 +461,8 @@ def extract_trigram_features(
         tg_labels.append(trigram)
 
         # Full mode: use the full trigram times.
-        full_times = []
-        for t in time_info:
-            try:
-                if len(t) >= 2:
-                    full_times.append(t[1])
-                elif len(t) == 1:
-                    full_times.append(t[0])
-            except Exception:
-                continue
-        tg_times.append(get_iqr_avg(full_times))
+        stroke_times = [t[1] for t in time_info if len(t) > 0]
+        tg_times.append(get_iqr_avg(stroke_times))
 
     skip_features_array = np.array(skip_features_list)
     num_skip_features = skip_features_array.shape[1]
