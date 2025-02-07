@@ -1,17 +1,18 @@
 """
-averaged_model.py – An improved typing analysis script with extra features,
+wpm_conditioned_model.py – An improved typing analysis script with extra features,
 using XGBoost and predicting full trigram times.
 
 Usage:
     python typing_model.py [--trigrams_file TRIGRAMS] [--bigrams_file BIGRAMS]
          [--skip_file SKIP] [--tristrokes_file TRISTROKES]
-         [--bistrokes_file BISTROKES]
+         [--bistrokes_file BISTROKES] [--hyperparams_file HYPERPARAMS]
 """
 
 import argparse
 import ast
 import os
 import pickle
+import json
 from collections import defaultdict
 from typing import Any, List, Tuple
 
@@ -36,7 +37,6 @@ ALL_KEYS = list("qwertyuiopasdfghjkl;zxcvbnm,./ QWERTYUIOPASDFGHJKL:ZXCVBNM<>?")
 # (The space key is included in our data.)
 char_to_id = {c: i for i, c in enumerate(ALL_KEYS)}
 
-
 ##########################################################################
 # Data Loading and Utility Functions
 ##########################################################################
@@ -45,7 +45,6 @@ def load_ngram_frequencies(
 ) -> Tuple[dict, dict, dict, List[str]]:
     trigram_to_freq = defaultdict(int)
     trigrams = []
-    # Allow both lower and upper case letters (plus punctuation and space)
     allowed_chars = "qwertyuiopasdfghjkl;zxcvbnm,./QWERTYUIOPASDFGHJKL:ZXCVBNM<>? "
     if not os.path.exists(trigrams_file):
         raise FileNotFoundError(f"Cannot find file: {trigrams_file}")
@@ -56,7 +55,6 @@ def load_ngram_frequencies(
                 continue
             k, v = parts[:2]
             k = k.strip()  # do NOT convert to lowercase
-            # Only accept keys that are exactly three characters long and valid.
             if len(k) != 3 or not all(c in allowed_chars for c in k):
                 continue
             trigram_to_freq[k] = int(v)
@@ -195,18 +193,6 @@ bg_classifier = Classifier()
 
 
 def get_bistroke_features(pos: Tuple[Any, Any], bigram: str) -> Tuple[Any, ...]:
-    """
-    Extended bigram feature extraction.
-
-    Returns a tuple containing:
-        - 27 original features (frequency, row/column booleans, dx, dy, etc.)
-        - 4 derived features (rotation angle, inwards/outwards flags, Euclidean distance)
-        - 6 raw key features (key IDs and raw coordinates)
-        - 1 different-hand flag (1.0 if the two keys are typed with different hands, 0.0 otherwise)
-        - Followed by the label (the bigram) and a color.
-
-    Total length = 27 + 4 + 6 + 1 + 2 = 40.
-    """
     ((ax, ay), (bx, by)) = pos
     k1, k2 = bigram[0], bigram[1]
 
@@ -318,10 +304,6 @@ def get_bistroke_features(pos: Tuple[Any, Any], bigram: str) -> Tuple[Any, ...]:
 
 
 def extract_bigram_features(bistroke_data: List[Any]) -> Tuple[Tuple[np.ndarray, ...], np.ndarray, List[str], List[str]]:
-    """
-    For each bistroke (bigram) row, group the occurrence tuples by WPM.
-    For each unique WPM value, compute the IQR average of the times and add the WPM as a new feature.
-    """
     all_features = []  # List of feature vectors (each a list of floats)
     all_times = []     # List of target average times
     all_labels = []    # Bigram labels (for plotting, etc.)
@@ -335,36 +317,28 @@ def extract_bigram_features(bistroke_data: List[Any]) -> Tuple[Tuple[np.ndarray,
         if not occurrences:
             continue
 
-        # Compute the base features for this bigram.
-        # get_bistroke_features returns a tuple of 38 numeric features, then label and color.
         feats = get_bistroke_features(pos, bigram)
-        base_features = list(feats[:38])  # the original 38 numeric features
+        base_features = list(feats[:38])  # The first feature is the bigram frequency.
 
-        # Group the occurrence times by WPM.
-        # Each occurrence is assumed to be a tuple (wpm, time)
         wpm_groups = defaultdict(list)
         for occ in occurrences:
             try:
-                # occ should already be a tuple; if not, you may need to parse it.
                 if len(occ) > 1:
                     wpm_groups[occ[0]].append(occ[1])
             except Exception:
                 continue
 
-        # For each distinct WPM value, create a separate sample.
         for wpm, time_list in wpm_groups.items():
             avg_time = get_iqr_avg(time_list)
-            # Append the WPM as an extra feature
             sample_features = base_features + [float(wpm)]
             all_features.append(sample_features)
             all_times.append(avg_time)
-            all_labels.append(feats[38])  # label is unchanged
-            all_colors.append(feats[39])  # color is unchanged
+            all_labels.append(feats[38])  # label from get_bistroke_features
+            all_colors.append(feats[39])  # color from get_bistroke_features
 
     if all_features:
-        # Convert the list-of-lists to a NumPy array then to a tuple of arrays (one per feature)
-        all_features_array = np.array(all_features)  # shape: (n_samples, 39)
-        features_tuple = tuple(all_features_array[:, i] for i in range(all_features_array.shape[1]))
+        features_array = np.array(all_features)
+        features_tuple = tuple(features_array[:, i] for i in range(features_array.shape[1]))
     else:
         features_tuple = tuple()
 
@@ -373,18 +347,13 @@ def extract_bigram_features(bistroke_data: List[Any]) -> Tuple[Tuple[np.ndarray,
 
 def extract_trigram_features(
     tristroke_data: List[Any],
-    bg_model: Any,
     trigram_to_freq: dict,
     skipgram_to_freq: dict,
 ) -> Tuple[Tuple[np.ndarray, ...], np.ndarray, List[str], List[str]]:
-    """
-    For each tristroke (trigram) row, group the occurrences by WPM.
-    For each unique WPM group, compute the IQR average of the trigram times and add the WPM as an extra feature.
-    """
-    all_features = []  # Each element will be the feature vector (list of floats) for one sample.
-    all_times = []     # Targets (average trigram times)
-    all_labels = []    # Trigram labels
-    all_colors = []    # Colors for plotting
+    all_features = []  # List to hold the full feature vector for each sample.
+    all_times = []     # List of target average times.
+    all_labels = []    # Trigram labels.
+    all_colors = []    # Colors for plotting.
 
     for row in tristroke_data:
         try:
@@ -392,10 +361,10 @@ def extract_trigram_features(
         except ValueError:
             continue
 
-        # ----- Compute trigram-level features (base features) -----
-        # tg_level features (5 features)
         tg_freq = float(trigram_to_freq.get(trigram, 1))
-        ax, _ = pos1; bx, _ = pos2; cx, _ = pos3
+        ax, _ = pos1
+        bx, _ = pos2
+        cx, _ = pos3
         if 0 not in (ax, bx, cx):
             try:
                 side1 = ax // abs(ax)
@@ -413,31 +382,20 @@ def extract_trigram_features(
         else:
             redirect_val, bad_val = 0.0, 0.0
 
-        # For skipgram (sg) features
         sg = trigram[::2]
-        sg_feats = get_bistroke_features((pos1, pos3), sg)[:-2]  # remove label and color
+        sg_feats = get_bistroke_features((pos1, pos3), sg)[:-2]  # drop label and color
         sg_freq = float(skipgram_to_freq.get(sg, 1))
 
-        # For bigram features
         bg1 = trigram[:2]
         bg2 = trigram[1:]
         bg1_feats = get_bistroke_features((pos1, pos2), bg1)
         bg2_feats = get_bistroke_features((pos2, pos3), bg2)
+        bg1_numeric = list(bg1_feats[:38])
+        bg2_numeric = list(bg2_feats[:38])
 
-        # Compose the base feature vector:
-        # – tg_level: 5 features: tg_freq, sht_val, redirect_val, bad_val, sg_freq
-        # – skip features: use the numeric part (first 38 elements) of sg_feats
-        # – bg1 features: first 38 numeric features from bg1_feats
-        # – bg2 features: first 38 numeric features from bg2_feats
-        base_features = []
-        base_features.extend([tg_freq, sht_val, redirect_val, bad_val, sg_freq])
-        base_features.extend(list(sg_feats[:38]))
-        base_features.extend(list(bg1_feats[:38]))
-        base_features.extend(list(bg2_feats[:38]))
-        # At this point, base_features is a list of 5 + 38 + 38 + 38 = 119 features.
+        base_features = [tg_freq, sht_val, redirect_val, bad_val, sg_freq] \
+                        + list(sg_feats[:38]) + bg1_numeric + bg2_numeric
 
-        # ----- Group the trigram occurrences by WPM -----
-        # Each occurrence is assumed to be a tuple (wpm, time)
         wpm_groups = defaultdict(list)
         for occ in occurrences:
             try:
@@ -446,21 +404,18 @@ def extract_trigram_features(
             except Exception:
                 continue
 
-        # For each unique WPM, create one sample.
         for wpm, time_list in wpm_groups.items():
             avg_time = get_iqr_avg(time_list)
-            # Append the WPM as an extra feature (making the full vector length 120)
             sample_features = base_features + [float(wpm)]
             all_features.append(sample_features)
             all_times.append(avg_time)
-            # Use the trigram as the label and compute a color based on whether positions match expectation.
             expected = tuple(bg_classifier.kb.get_pos(c) for c in trigram)
             col = "green" if ((pos1, pos2, pos3) == expected) else "red"
             all_labels.append(trigram)
             all_colors.append(col)
 
     if all_features:
-        features_array = np.array(all_features)  # shape: (n_samples, 120)
+        features_array = np.array(all_features)
         features_tuple = tuple(features_array[:, i] for i in range(features_array.shape[1]))
     else:
         features_tuple = tuple()
@@ -596,7 +551,35 @@ def main() -> None:
         default="bistrokes.tsv",
         help="Path to bistroke data file",
     )
+    # New argument to load hyperparameters from a file.
+    parser.add_argument(
+        "--hyperparams_file",
+        type=str,
+        default=None,
+        help="Path to JSON file with hyperparameters",
+    )
     args = parser.parse_args()
+
+    # Load hyperparameters from file if provided; otherwise, use defaults.
+    if args.hyperparams_file is not None and os.path.exists(args.hyperparams_file):
+        with open(args.hyperparams_file, "r") as f:
+            xgb_params = json.load(f)
+        print(f"Loaded hyperparameters from {args.hyperparams_file}: {xgb_params}")
+    else:
+        xgb_params = {
+            "max_depth": 5,
+            "min_child_weight": 1,
+            "gamma": 0.1,
+            "subsample": 0.7,
+            "colsample_bytree": 0.7,
+            "reg_alpha": 0.1,
+            "reg_lambda": 1,
+            "n_estimators": 2000,
+            "learning_rate": 0.02,
+            "objective": "reg:squarederror",
+            "verbosity": 0,
+        }
+        print("Using default hyperparameters.")
 
     # Load frequency data.
     trigram_to_freq, bigram_to_freq, skipgram_to_freq, trigrams = (
@@ -611,26 +594,16 @@ def main() -> None:
     bg_features, bg_times, bg_labels, layout_col = extract_bigram_features(
         bistroke_data
     )
-    xgb_params = {
-        "max_depth": 4,
-        "min_child_weight": 1,
-        "gamma": 0.1,
-        "subsample": 0.5,
-        "colsample_bytree": 0.5,
-        "reg_alpha": 0.1,
-        "reg_lambda": 0,
-        "n_estimators": 500,
-        "learning_rate": 0.05,
-        "objective": "reg:squarederror",
-        "verbosity": 0,
-    }
-    bg_model_args = xgb_params
     bg_cv_r2, bg_cv_mae = cross_validate_model(
-        bg_model_args, bg_features, bg_times, n_splits=5
+        xgb_params, bg_features, bg_times, n_splits=5
     )
     print(f"Bigram Model CV - R^2: {bg_cv_r2:.4f}, MAE: {bg_cv_mae:.3f}")
-    bg_model = TypingModel(**bg_model_args)
+    bg_model = TypingModel(**xgb_params)
     bg_model.fit(bg_features, bg_times)
+
+    train_r2, train_mae = bg_model.evaluate(bg_features, bg_times)
+    print(f"Final Training Metrics for Bigram Model - R^2: {train_r2:.4f}, MAE: {train_mae:.3f}")
+
     with open("bigram_model.pkl", "wb") as f:
         pickle.dump(bg_model, f)
     print("Final bigram model saved to 'bigram_model.pkl'.")
@@ -654,15 +627,18 @@ def main() -> None:
 
     # Trigram Model
     tg_features, tg_times, tg_labels, tg_colors = extract_trigram_features(
-        tristroke_data, bg_model, trigram_to_freq, skipgram_to_freq
+        tristroke_data, trigram_to_freq, skipgram_to_freq
     )
-    tg_model_args = xgb_params
     tg_cv_r2, tg_cv_mae = cross_validate_model(
-        tg_model_args, tg_features, tg_times, n_splits=5
+        xgb_params, tg_features, tg_times, n_splits=5
     )
     print(f"Trigram Model CV - R^2: {tg_cv_r2:.4f}, MAE: {tg_cv_mae:.3f}")
-    tg_model = TypingModel(**tg_model_args)
+    tg_model = TypingModel(**xgb_params)
     tg_model.fit(tg_features, tg_times)
+
+    train_r2_tg, train_mae_tg = tg_model.evaluate(tg_features, tg_times)
+    print(f"Final Training Metrics for Trigram Model - R^2: {train_r2_tg:.4f}, MAE: {train_mae_tg:.3f}")
+
     with open("trigram_model.pkl", "wb") as f:
         pickle.dump(tg_model, f)
     print("Final trigram model saved to 'trigram_model.pkl'.")
