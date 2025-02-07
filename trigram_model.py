@@ -1,5 +1,5 @@
 """
-typing_model.py – An improved typing analysis script with extra features,
+averaged_model.py – An improved typing analysis script with extra features,
 using XGBoost and predicting full trigram times.
 
 Usage:
@@ -130,7 +130,7 @@ def load_tristroke_data(
     with open(filepath, "r", encoding="utf-8") as f:
         for line in f:
             parts = line.strip().split("\t")
-            if len(parts) < 3:
+            if len(parts) < tg_min_samples:
                 continue
             a, trigram, *rest = parts
             trigram = trigram.strip()  # preserve case
