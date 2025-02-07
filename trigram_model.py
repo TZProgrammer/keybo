@@ -17,7 +17,6 @@ from typing import Any, List, Tuple
 
 import numpy as np
 import matplotlib.pyplot as plt
-from scipy.optimize import curve_fit  # (no longer used, but kept if needed for debugging)
 from sklearn.model_selection import KFold
 
 try:
