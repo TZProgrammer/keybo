@@ -15,15 +15,15 @@ from typing import Dict, List, Set, Tuple, Optional
 import numpy as np
 import os
 
+from utils import load_ngram_frequencies
+
 
 class Keyboard:
     """
     Represents a keyboard layout.
     """
 
-    def __init__(self, data_size: int, layout: str) -> None:
-        self.data_size = data_size
-        self.affected_indices = range(data_size)
+    def __init__(self, layout: str) -> None:
         self.row_offsets: Dict[int, float] = {1: 0.5, 2: 0.0, 3: -0.25}
         self.chars: str = layout
         self.swap_pair: Tuple[str, str] = ("", "")
@@ -131,54 +131,18 @@ class Classifier:
         valid_chars = set(
             "qwertyuiopasdfghjkl;zxcvbnm,./QWERTYUIOPASDFGHJKL:ZXCVBNM<>? "
         )
-        trigrams = []
-        tg_freqs = []
-        tg_percentages = {}
-        trigram_path = "trigrams.txt"
-        if not os.path.exists(trigram_path):
-            raise FileNotFoundError(f"Cannot find file: {trigram_path}")
-        with open(trigram_path, "r", encoding="utf-8") as f:
-            for line in f:
-                parts = line.strip().split("\t")
-                if len(parts) < 2:
-                    continue
-                trigram, freq_str = parts[:2]
-                trigram = trigram.strip()  # do NOT convert to lowercase
-                if len(trigram) != 3:
-                    continue
-                if all(c in valid_chars for c in trigram):
-                    trigrams.append(trigram)
-                    try:
-                        tg_freqs.append(int(freq_str))
-                    except ValueError:
-                        tg_freqs.append(0)
-        total_count = sum(tg_freqs)
-        elapsed = 0
-        for i, freq in enumerate(tg_freqs):
-            percentage = int(100 * (elapsed / total_count)) if total_count else 0
-            tg_percentages[percentage + 1] = i
-            elapsed += freq
-        tg_coverage = 100
-        cutoff = tg_percentages.get(tg_coverage, len(tg_freqs))
-        tg_freqs = np.array(tg_freqs[:cutoff])
-        trigrams = trigrams[:cutoff]
-        print("Processed trigram data: using", len(trigrams), "trigrams.")
-        data_size = len(trigrams)
+
         self.keyboards: Dict[str, Keyboard] = {
             "qwerty": Keyboard(
-                data_size=data_size,
                 layout="qwertyuiopasdfghjkl;zxcvbnm,./QWERTYUIOPASDFGHJKL:ZXCVBNM<>?",
             ),
             "azerty": Keyboard(
-                data_size=data_size,
                 layout="azertyuiopqsdfghjkl;wxcvbnm,./AZERTYUIOPQSDFGHJKL:WXCVBNM<>?",
             ),
             "dvorak": Keyboard(
-                data_size=data_size,
                 layout="',.pyfgcrlaoeuidhtns;qjkxbmwvzPYFGCRL?+|AOEUIDHTNS:QJKXBMWVZ",
             ),
             "qwertz": Keyboard(
-                data_size=data_size,
                 layout="qwertzuiopasdfghjklöyxcvbnm,.-QWERTZUIOPASDFGHJKLÖYXCVBNM;:_",
             ),
         }
@@ -187,6 +151,10 @@ class Classifier:
                 f"Keyboard layout '{kb}' is not available. Choose from: {list(self.keyboards.keys())}."
             )
         self.kb: Keyboard = self.keyboards[kb]
+
+    # TODO: Add space functionality
+    def is_space(self, k: str) -> bool:
+        return False
 
     def is_pinky(self, k: str) -> bool:
         return abs(self.kb.get_pos(k)[0]) == 5
@@ -213,7 +181,7 @@ class Classifier:
         return self.kb.get_hand(bg[0]) == self.kb.get_hand(bg[1])
 
     def different_hand(self, bg: Tuple[str, str]) -> bool:
-        return self.kb.get_hand(bg[0]) != self.kb.get_hand(bg[1])
+        return not self.same_hand(bg)
 
     def inwards_rotation(self, bg: Tuple[str, str]) -> bool:
         if self.same_hand(bg):

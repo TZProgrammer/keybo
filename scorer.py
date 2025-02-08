@@ -1,54 +1,114 @@
 from abc import ABC
-
+import pickle
 import numpy as np
 from collections import defaultdict
 
+from utils import load_ngram_frequencies
 
-# getting trigrams and their frequencies
+# Import shared functions and classes from the training module.
+from wpm_conditioned_model import (
+    create_bigram_feature_vector,
+    create_trigram_feature_vector,
+)
+from classifier import Classifier
+
+# === Process Trigram and Bigram Frequency Data ===
 trigrams, tg_freqs = [], []
-row_offsets = [0.5, 0, -0.25]
 tg_percentages = {}
 
 keyboard_chars = "qwertyuiopasdfghjkl'zxcvbnm,.-"
 with open("trigrams.txt") as f:
-    valid_c = keyboard_chars
-
     for trigram, freq in (l.split("\t") for l in f):
-        if all([c in valid_c for c in trigram]):
+        if all(c in keyboard_chars for c in trigram):
             trigrams.append(trigram)
             tg_freqs.append(int(freq))
-
-    percentages = [0] * 100
     total_count = sum(tg_freqs)
     elapsed = 0
-
     for i in range(len(tg_freqs)):
         percentage = int(100 * (elapsed / total_count))
         tg_percentages[percentage + 1] = i
         elapsed += tg_freqs[i]
 
-# trimming our tg data to the amount of data we'll actually be processing
-tg_coverage = 100  # the percentage of tg's to use
+# Trim to a chosen coverage percentage.
+tg_coverage = 100  
 tg_freqs = np.array(tg_freqs[: tg_percentages[tg_coverage]])
+#print(tg_freqs)
 trigrams = trigrams[: tg_percentages[tg_coverage]]
-print("Processed trigram data")
+#print("Processed trigram data")
 
-# trigram penalties
+# (Global variable used by FreyaScorer.)
 data_size = len(trigrams)
 
-# getting bigrams and their frequencies and storing it as a dict
+# Load bigram frequencies.
 bigram_to_freq = defaultdict(int)
-
 with open("bigrams.txt") as f:
     for k, v in (l.split("\t") for l in f):
         bigram_to_freq[k] = int(v)
+#print("Processed bigram data")
 
-print("Processed bigram data")
+
+# --- Define the scorer interface and classes ---
 
 class IScorer(ABC):
     def get_fitness(self, keyboard) -> int:
         ...
 
+
+class BigramXGBoostScorer(IScorer):
+    def __init__(self, bigram_model_path="bigram_model.pkl", bigrams_file="bigrams.txt", target_wpm=100):
+        self.target_wpm = target_wpm
+
+        self.bg_classifier = Classifier()
+
+        with open(bigram_model_path, 'rb') as f:
+            self.bg_model = pickle.load(f)
+        #print("Bigram XGBoost model loaded.")
+        # Load frequency data (using our shared loader)
+        _, self.bigram_to_freq, _, _ = load_ngram_frequencies("dummy_bigrams.txt", bigrams_file, "dummy_skips.txt")
+
+    def get_fitness(self, keyboard):
+        total_score = 0
+        keyboard_chars = "qwertyuiopasdfghjkl'zxcvbnm,.- "
+        bigrams_to_score = [c1 + c2 for c1 in keyboard_chars for c2 in keyboard_chars]
+        for bigram in bigrams_to_score:
+            if len(bigram) != 2:
+                continue
+            try:
+                # Build the feature vector using the shared function.
+                self.bg_classifier.kb = keyboard
+                feature_vector = create_bigram_feature_vector(self.bg_classifier, bigram, self.target_wpm, bigram_to_freq)
+                predicted_time = self.bg_model.predict(feature_vector)[0]
+                total_score += predicted_time * self.bigram_to_freq.get(bigram, 1)
+            except KeyError:
+                total_score += 10000  # Penalize if a key is missing.
+        return int(total_score)
+
+
+class TrigramXGBoostScorer(IScorer):
+    def __init__(self, trigram_model_path="trigram_model.pkl", trigram_freq_file="trigrams.txt", target_wpm=100):
+        self.target_wpm = target_wpm
+
+        self.bg_classifier = Classifier()
+
+        #print("Loading Trigram XGBoost model...")
+        with open(trigram_model_path, 'rb') as f:
+            self.tg_model = pickle.load(f)
+        self.trigram_to_freq, self.bigram_to_freq, self.skipgram_to_freq, self.trigrams = load_ngram_frequencies(trigram_freq_file, "bigrams_file", "1-skip.txt")
+
+    def get_fitness(self, keyboard):
+        total_score = 0
+        for trigram in self.trigrams:
+            try:
+                # Build the trigram feature vector using the shared function.
+                self.bg_classifier.kb = keyboard
+                feature_vector = create_trigram_feature_vector(
+                    self.bg_classifier, trigram, self.target_wpm, self.trigram_to_freq, self.skipgram_to_freq, self.bigram_to_freq 
+                )
+                predicted_time = self.tg_model.predict(feature_vector)[0]
+                total_score += predicted_time * float(self.trigram_to_freq.get(trigram, 1))
+            except KeyError:
+                total_score += 100000 * float(self.trigram_to_freq.get(trigram, 1))
+        return int(total_score)
 
 class FreyaScorer(IScorer):
     def __init__(self) -> None:

@@ -1,6 +1,7 @@
 from optimizer import Optimizer
 from classifier import Keyboard
-from scorer import FreyaScorer, data_size
+from scorer import BigramXGBoostScorer
+from wpm_conditioned_model import TypingModel
 
 keyboard_chars = "qwertyuiopasdfghjkl'zxcvbnm,.-"
 
@@ -10,8 +11,9 @@ def generate(num_attempts):
     best_score = float("inf")
 
     for _ in range(num_attempts):
-        keyboard = Keyboard(data_size, keyboard_chars)
-        scorer = FreyaScorer()
+        keyboard = Keyboard(keyboard_chars)
+        #scorer = FreyaScorer()
+        scorer = BigramXGBoostScorer()
         optimizer = Optimizer(keyboard, scorer)
         optimizer.optimize(keyboard, scorer)
 
@@ -31,6 +33,7 @@ def generate(num_attempts):
 
     print("best score")
     print(best_kb)
+
 
 def main():
     num_attempts = 10

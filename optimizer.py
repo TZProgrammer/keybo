@@ -95,11 +95,6 @@ class Optimizer(IOptimizer):
         else:
             keyboard.random_swap()
 
-        keyboard.affected_indices = [
-            i
-            for i, tg in enumerate(trigrams)
-            if any([c in keyboard.swap_pair for c in tg])
-        ]
 
     def accept(self):
         self.bg_scores.update(self.new_bg_scores)
@@ -128,6 +123,7 @@ class Optimizer(IOptimizer):
                 for k2 in keyboard.lowercase[i + 1 :]:
                     self.swap(keyboard, k1, k2)
                     self.get_fitness(keyboard, scorer)
+                    print(self.fitness)
 
                     delta = self.fitness - self.prev_fitness
 

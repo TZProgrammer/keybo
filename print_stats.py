@@ -1,12 +1,12 @@
 from classifier import Keyboard
-from scorer import BigramXGBoostScorer, data_size
+from scorer import BigramXGBoostScorer
 from wpm_conditioned_model import TypingModel
 
 
 def get_qwerty_score(wpm_base):
     qwerty_chars = "qwertyuiopasdfghjkl'zxcvbnm,.-"
 
-    keyboard = Keyboard(data_size, qwerty_chars)
+    keyboard = Keyboard(qwerty_chars)
     scorer = BigramXGBoostScorer(target_wpm=wpm_base)
 
     return scorer.get_fitness(keyboard)
@@ -14,7 +14,7 @@ def get_qwerty_score(wpm_base):
 def get_dvorak_score(wpm_base):
     dvorak_chars = "',.pyfgcrlaoeuidhtns;qjkxbmwvz"
 
-    keyboard = Keyboard(data_size, dvorak_chars)
+    keyboard = Keyboard(dvorak_chars)
     scorer = BigramXGBoostScorer(target_wpm=wpm_base)
 
     return scorer.get_fitness(keyboard)
@@ -22,7 +22,7 @@ def get_dvorak_score(wpm_base):
 def get_graphite_score(wpm_base):
     graphite_chars = "bldwz-foujnrtsgyhaei,qxmcvkp.'"
 
-    keyboard = Keyboard(data_size, graphite_chars)
+    keyboard = Keyboard(graphite_chars)
     scorer = BigramXGBoostScorer(target_wpm=wpm_base)
 
     return scorer.get_fitness(keyboard)
@@ -30,7 +30,7 @@ def get_graphite_score(wpm_base):
 def get_pinev4_score(wpm_base):
     pinev4_chars = "qlcmk'fuoynrstwpheaijxzgvbd,.-"
 
-    keyboard = Keyboard(data_size, pinev4_chars)
+    keyboard = Keyboard(pinev4_chars)
     scorer = BigramXGBoostScorer(target_wpm=wpm_base)
 
     return scorer.get_fitness(keyboard)
@@ -38,7 +38,7 @@ def get_pinev4_score(wpm_base):
 def get_semimak_score(wpm_base):
     semimak_chars = "flhvzqwuoysrntkcdeaix'bmjpg,.-"
 
-    keyboard = Keyboard(data_size, semimak_chars)
+    keyboard = Keyboard(semimak_chars)
     scorer = BigramXGBoostScorer(target_wpm=wpm_base)
 
     return scorer.get_fitness(keyboard)
@@ -46,7 +46,7 @@ def get_semimak_score(wpm_base):
 def get_semimakJQ_score(wpm_base):
     semimak_chars = "flhvz'wuoysrntkcdeaixjbmqpg,.-"
 
-    keyboard = Keyboard(data_size, semimak_chars)
+    keyboard = Keyboard(semimak_chars)
     scorer = BigramXGBoostScorer(target_wpm=wpm_base)
 
     return scorer.get_fitness(keyboard)

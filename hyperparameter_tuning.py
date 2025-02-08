@@ -27,13 +27,14 @@ except ImportError:
 
 # Import your existing data/feature extraction from your main module.
 # Adjust this import if your main code is in a different file or structure.
+from classifier import Classifier
+from utils import load_ngram_frequencies
+
 from wpm_conditioned_model import (
-    load_ngram_frequencies,
     load_tristroke_data,
     load_bistroke_data,
     extract_bigram_features,
     extract_trigram_features,
-    bg_classifier,
     WPM_THRESHOLD,
 )
 
@@ -64,14 +65,15 @@ def main():
         args.trigrams_file, args.bigrams_file, args.skip_file
     )
 
+    bg_classifier = Classifier()
+
     # Load data and features depending on model_type.
     if args.model_type == "bigram":
-        bg_classifier.bigram_freq = bigram_to_freq
         bistroke_data = load_bistroke_data(args.bistrokes_file, WPM_THRESHOLD)
-        features, times, _, _ = extract_bigram_features(bistroke_data)
+        features, times, _, _ = extract_bigram_features(bistroke_data, bigram_to_freq, bg_classifier)
     else:  # "trigram"
         tristroke_data = load_tristroke_data(args.tristrokes_file, WPM_THRESHOLD)
-        features, times, _, _ = extract_trigram_features(tristroke_data, trigram_to_freq, skipgram_to_freq)
+        features, times, _, _ = extract_trigram_features(tristroke_data, bg_classifier, trigram_to_freq, skipgram_to_freq, bigram_to_freq)
 
     # Convert features from tuple-of-arrays to a single 2D array for scikit-learn
     # Each element of 'features' is an array for one feature dimension: shape (#samples,)

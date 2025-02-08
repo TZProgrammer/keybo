@@ -19,6 +19,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.model_selection import KFold
 
+from utils import load_ngram_frequencies
+
 try:
     import xgboost as xgb
 except ImportError:
@@ -40,69 +42,6 @@ char_to_id = {c: i for i, c in enumerate(ALL_KEYS)}
 ##########################################################################
 # Data Loading and Utility Functions
 ##########################################################################
-def load_ngram_frequencies(
-    trigrams_file: str, bigrams_file: str, skip_file: str
-) -> Tuple[dict, dict, dict, List[str]]:
-    trigram_to_freq = defaultdict(int)
-    trigrams = []
-    # Allow both lower and upper case letters (plus punctuation and space)
-    allowed_chars = "qwertyuiopasdfghjkl;zxcvbnm,./QWERTYUIOPASDFGHJKL:ZXCVBNM<>? "
-    if not os.path.exists(trigrams_file):
-        raise FileNotFoundError(f"Cannot find file: {trigrams_file}")
-    with open(trigrams_file, "r", encoding="utf-8") as f:
-        for line in f:
-            parts = line.strip().split("\t")
-            if len(parts) < 2:
-                continue
-            k, v = parts[:2]
-            k = k.strip()  # do NOT convert to lowercase
-            # Only accept keys that are exactly three characters long and valid.
-            if len(k) != 3 or not all(c in allowed_chars for c in k):
-                continue
-            trigram_to_freq[k] = int(v)
-            trigrams.append(k)
-    total_count = sum(trigram_to_freq.values())
-    percentages = [0] * 100
-    elapsed = 0
-    for i, tg in enumerate(trigrams):
-        pct = int(100 * (elapsed / total_count)) if total_count else 0
-        if pct < 100:
-            percentages[pct] = i
-        elapsed += trigram_to_freq[tg]
-    print("Trigram percentages:", percentages)
-    print("Trigrams loaded:", trigrams[:10], "..." if len(trigrams) > 10 else "")
-
-    bigram_to_freq = defaultdict(int)
-    if not os.path.exists(bigrams_file):
-        raise FileNotFoundError(f"Cannot find file: {bigrams_file}")
-    with open(bigrams_file, "r", encoding="utf-8") as f:
-        for line in f:
-            parts = line.strip().split("\t")
-            if len(parts) < 2:
-                continue
-            k, v = parts[:2]
-            k = k.strip()  # keep case
-            if len(k) != 2 or not all(c in allowed_chars for c in k):
-                continue
-            bigram_to_freq[k] = int(v)
-
-    skipgram_to_freq = defaultdict(int)
-    if not os.path.exists(skip_file):
-        raise FileNotFoundError(f"Cannot find file: {skip_file}")
-    with open(skip_file, "r", encoding="utf-8") as f:
-        for line in f:
-            parts = line.strip().split("\t")
-            if len(parts) < 2:
-                continue
-            k, v = parts[:2]
-            k = k.strip()  # keep case
-            if not all(c in allowed_chars for c in k):
-                continue
-            skipgram_to_freq[k] = int(v)
-
-    return trigram_to_freq, bigram_to_freq, skipgram_to_freq, trigrams
-
-
 def str_to_tuple(s: str) -> Tuple[int, ...]:
     return tuple(map(int, s.strip("()").split(", ")))
 
@@ -123,7 +62,7 @@ def load_tristroke_data(
     filepath: str, wpm_threshold: int, tg_min_samples: int = 35
 ) -> List[Any]:
     data = []
-    allowed_chars = "qwertyuiopasdfghjkl;zxcvbnm,./QWERTYUIOPASDFGHJKL:ZXCVBNM<>? "
+    allowed_chars = "qwertyuiopasdfghjkl';zxcvbnm,./QWERTYUIOPASDFGHJKL:ZXCVBNM<>? "
     if not os.path.exists(filepath):
         raise FileNotFoundError(f"Cannot find file: {filepath}")
     with open(filepath, "r", encoding="utf-8") as f:
@@ -156,7 +95,7 @@ def load_bistroke_data(
     filepath: str, wpm_threshold: int, bg_min_samples: int = 50
 ) -> List[Any]:
     data = []
-    allowed_chars = "qwertyuiopasdfghjkl;zxcvbnm,./QWERTYUIOPASDFGHJKL:ZXCVBNM<>? "
+    allowed_chars = "qwertyuiopasdfghjkl';zxcvbnm,./QWERTYUIOPASDFGHJKL:ZXCVBNM<>? "
     if not os.path.exists(filepath):
         raise FileNotFoundError(f"Cannot find file: {filepath}")
     with open(filepath, "r", encoding="utf-8") as f:
@@ -189,10 +128,6 @@ def load_bistroke_data(
 ##########################################################################
 # Feature Extraction (full mode only)
 ##########################################################################
-
-# Instantiate the classifier once.
-bg_classifier = Classifier()
-
 
 def get_bistroke_features(pos: Tuple[Any, Any], bigram: str) -> Tuple[Any, ...]:
     """
@@ -629,6 +564,8 @@ def main() -> None:
     trigram_to_freq, bigram_to_freq, skipgram_to_freq, trigrams = (
         load_ngram_frequencies(args.trigrams_file, args.bigrams_file, args.skip_file)
     )
+    global bg_classifier
+    bg_classifier = Classifier()
     bg_classifier.bigram_freq = bigram_to_freq
 
     tristroke_data = load_tristroke_data(args.tristrokes_file, WPM_THRESHOLD)
