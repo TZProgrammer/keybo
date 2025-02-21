@@ -67,21 +67,33 @@ class BigramXGBoostScorer(IScorer):
         _, self.bigram_to_freq, _, _ = load_ngram_frequencies("dummy_bigrams.txt", bigrams_file, "dummy_skips.txt")
 
     def get_fitness(self, keyboard):
-        total_score = 0
-        keyboard_chars = "qwertyuiopasdfghjkl'zxcvbnm,.- "
+        keyboard_chars = "qwertyuiopasdfghjklzxcvbnm,."
         bigrams_to_score = [c1 + c2 for c1 in keyboard_chars for c2 in keyboard_chars]
+
+        self.bg_classifier.kb = keyboard  # Set once outside loop.
+
+        feature_vectors = []
+        freq_multipliers = []
+        penalty = 0
         for bigram in bigrams_to_score:
-            if len(bigram) != 2:
-                continue
             try:
-                # Build the feature vector using the shared function.
-                self.bg_classifier.kb = keyboard
-                feature_vector = create_bigram_feature_vector(self.bg_classifier, bigram, self.target_wpm, bigram_to_freq)
-                predicted_time = self.bg_model.predict(feature_vector)[0]
-                total_score += predicted_time * self.bigram_to_freq.get(bigram, 1)
+                fv = create_bigram_feature_vector(self.bg_classifier, bigram, self.target_wpm, bigram_to_freq)
+                feature_vectors.append(fv)
+                freq_multipliers.append(self.bigram_to_freq.get(bigram, 1))
             except KeyError:
-                total_score += 10000  # Penalize if a key is missing.
-        return int(total_score)
+                penalty += 10000  # Add penalty immediately for missing keys.
+
+        # Convert list of feature vectors into a batch (if possible).
+        # This assumes each 'fv' is a numpy array or list-like structure.
+        if feature_vectors:
+            # Assuming your feature vectors are 1D arrays, stack them into a 2D array.
+            batch_features = np.vstack(feature_vectors)
+            predicted_times = self.bg_model.predict(batch_features)
+            total_score = np.sum(predicted_times * np.array(freq_multipliers))
+        else:
+            total_score = 0
+
+        return int(total_score + penalty)
 
 
 class TrigramXGBoostScorer(IScorer):
