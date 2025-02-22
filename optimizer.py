@@ -51,21 +51,21 @@ class Optimizer(IOptimizer):
         self.prev_fitness = 0
         self.tg_coverage = tg_coverage  # the percentage of trigrams to use
         self.keyboard = keyboard  # will hold the best keyboard at end
-        
+
         # Initialize best configuration with a deep copy.
         self.best_fitness = None
         self.best_keyboard = copy.deepcopy(keyboard)
-        
+
         # Get initial fitness and set as best.
         self.get_fitness(keyboard, scorer)
         self.accept()
         self.best_fitness = self.fitness
         self.best_keyboard = copy.deepcopy(keyboard)
-        
+
         # Estimate the initial temperature using a standard approach.
         self.temp = self.get_initial_temperature(keyboard, scorer, x0=0.8)
 
-    def optimize(self, keyboard, scorer):
+    def simulated_annealing(self, keyboard, scorer):
         stopping_point = self.get_stopping_point(keyboard)
         stays = 0
         outer_iter = 0  # Counter for outer iterations
@@ -102,6 +102,11 @@ class Optimizer(IOptimizer):
         # Store the best configuration found.
         self.keyboard = self.best_keyboard
         return self.best_keyboard
+
+    def optimize(self, keyboard, scorer):
+        self.simulated_annealing(keyboard, scorer)
+
+        self.local_improvement_2opt(keyboard, scorer)
 
     def swap(self, keyboard, k1=None, k2=None):
         if (k1 is not None) and (k2 is not None):
@@ -162,3 +167,38 @@ class Optimizer(IOptimizer):
     def get_fitness(self, keyboard, scorer):
         self.prev_fitness = self.fitness
         self.fitness = scorer.get_fitness(keyboard)
+
+    def local_improvement_2opt(self, keyboard, scorer):
+        """
+        Perform a 2-opt local improvement pass. Iterate over all pairs of keys and accept a swap
+        if it improves the fitness. Continue until no improvement is possible.
+        """
+        improvement = True
+        iteration = 0
+        while improvement:
+            improvement = False
+            iteration += 1
+            # Iterate over all unique pairs.
+            for i in range(keyboard.key_count):
+                for j in range(i+1, keyboard.key_count):
+                    current_fitness = scorer.get_fitness(keyboard)
+                    key1 = keyboard.lowercase[i]
+                    key2 = keyboard.lowercase[j]
+                    keyboard.swap(key1, key2)
+                    new_fitness = scorer.get_fitness(keyboard)
+                    if new_fitness < current_fitness:
+                        improvement = True
+                        print(f"2-opt improvement iteration {iteration}: Fitness improved from {current_fitness} to {new_fitness}")
+                        if new_fitness < self.best_fitness:
+                            self.best_fitness = new_fitness
+                            self.best_keyboard = copy.deepcopy(keyboard)
+                            print("2-opt: New best keyboard found:")
+                            print(keyboard)
+                            print(f"Score: {new_fitness}")
+                        break  # Exit inner loop to restart scan.
+                    else:
+                        keyboard.undo_swap()
+                if improvement:
+                    break
+        self.keyboard = self.best_keyboard
+        return self.keyboard
