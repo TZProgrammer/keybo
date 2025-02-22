@@ -3,6 +3,8 @@ import copy
 import numpy as np
 from math import ceil, exp, log
 from random import random, sample
+from itertools import permutations, combinations
+from tqdm import tqdm
 
 ### INIT ###
 initial_temp = None
@@ -200,5 +202,85 @@ class Optimizer(IOptimizer):
                         keyboard.undo_swap()
                 if improvement:
                     break
+        self.keyboard = self.best_keyboard
+        return self.keyboard
+
+    def local_improvement_3opt(self, keyboard, scorer):
+        """
+        Perform a 3-opt local improvement pass. Iterate over all unique triples of keys and try reordering
+        them (using a sequence of swap() calls) if it improves the fitness. A tqdm progress bar is used
+        to indicate progress for each 3-opt iteration.
+        """
+
+        improvement = True
+        iteration = 0
+        n = keyboard.key_count
+        total_triples = (n * (n - 1) * (n - 2)) // 6  # total number of unique triples
+
+        while improvement:
+            improvement = False
+            iteration += 1
+            print(f"\nStarting 3-opt iteration {iteration}")
+
+            # Use tqdm to wrap the combinations iterator.
+            for i, j, k in tqdm(combinations(range(n), 3), total=total_triples, desc=f"3-opt iteration {iteration}"):
+                current_fitness = scorer.get_fitness(keyboard)
+                # Get the current letters at these positions.
+                orig = [keyboard.lowercase[i], keyboard.lowercase[j], keyboard.lowercase[k]]
+                
+                found_improvement = False
+                # Try each permutation (skip the identity permutation).
+                for new_order in permutations(orig):
+                    if list(new_order) == orig:
+                        continue
+
+                    # Determine the minimal swap sequence to achieve the new order.
+                    a, b, c = orig
+                    swap_sequence = None
+                    if new_order == (b, a, c):
+                        swap_sequence = [(i, j)]
+                    elif new_order == (a, c, b):
+                        swap_sequence = [(j, k)]
+                    elif new_order == (c, b, a):
+                        swap_sequence = [(i, k)]
+                    elif new_order == (b, c, a):
+                        swap_sequence = [(i, j), (j, k)]
+                    elif new_order == (c, a, b):
+                        swap_sequence = [(i, k), (j, k)]
+                    else:
+                        continue  # Should not occur
+
+                    performed_swaps = 0
+                    # Apply the swaps in the sequence.
+                    for pos1, pos2 in swap_sequence:
+                        key1 = keyboard.lowercase[pos1]
+                        key2 = keyboard.lowercase[pos2]
+                        keyboard.swap(key1, key2)
+                        performed_swaps += 1
+
+                    new_fitness = scorer.get_fitness(keyboard)
+                    if new_fitness < current_fitness:
+                        improvement = True
+                        found_improvement = True
+                        print(f"3-opt improvement iteration {iteration}: Fitness improved from {current_fitness} to {new_fitness}")
+                        if new_fitness < self.best_fitness:
+                            self.best_fitness = new_fitness
+                            self.best_keyboard = copy.deepcopy(keyboard)
+                            print("3-opt: New best keyboard found:")
+                            print(keyboard)
+                            print(f"Score: {new_fitness}")
+                        break  # Break out of the permutation loop.
+                    else:
+                        # Undo the swaps if no improvement.
+                        for _ in range(performed_swaps):
+                            keyboard.undo_swap()
+
+                if found_improvement:
+                    # Restart scanning from the beginning if an improvement was found.
+                    break
+
+            if not improvement:
+                print(f"3-opt iteration {iteration}: No improvement found, local optimum reached.")
+
         self.keyboard = self.best_keyboard
         return self.keyboard
