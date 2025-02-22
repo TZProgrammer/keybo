@@ -4,7 +4,7 @@ from wpm_conditioned_model import TypingModel
 
 
 def get_qwerty_score(wpm_base):
-    qwerty_chars = "qwertyuiopasdfghjkl'zxcvbnm,.-"
+    qwerty_chars = "qwertyuiopasdfghjkl;zxcvbnm,./"
 
     keyboard = Keyboard(qwerty_chars)
     scorer = BigramXGBoostScorer(target_wpm=wpm_base)

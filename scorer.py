@@ -4,48 +4,11 @@ import numpy as np
 from collections import defaultdict
 
 from utils import load_ngram_frequencies
-
-# Import shared functions and classes from the training module.
 from wpm_conditioned_model import (
     create_bigram_feature_vector,
     create_trigram_feature_vector,
 )
 from classifier import Classifier
-
-# === Process Trigram and Bigram Frequency Data ===
-trigrams, tg_freqs = [], []
-tg_percentages = {}
-
-keyboard_chars = "qwertyuiopasdfghjkl'zxcvbnm,.-"
-with open("trigrams.txt") as f:
-    for trigram, freq in (l.split("\t") for l in f):
-        if all(c in keyboard_chars for c in trigram):
-            trigrams.append(trigram)
-            tg_freqs.append(int(freq))
-    total_count = sum(tg_freqs)
-    elapsed = 0
-    for i in range(len(tg_freqs)):
-        percentage = int(100 * (elapsed / total_count))
-        tg_percentages[percentage + 1] = i
-        elapsed += tg_freqs[i]
-
-# Trim to a chosen coverage percentage.
-tg_coverage = 100  
-tg_freqs = np.array(tg_freqs[: tg_percentages[tg_coverage]])
-#print(tg_freqs)
-trigrams = trigrams[: tg_percentages[tg_coverage]]
-#print("Processed trigram data")
-
-# (Global variable used by FreyaScorer.)
-data_size = len(trigrams)
-
-# Load bigram frequencies.
-bigram_to_freq = defaultdict(int)
-with open("bigrams.txt") as f:
-    for k, v in (l.split("\t") for l in f):
-        bigram_to_freq[k] = int(v)
-#print("Processed bigram data")
-
 
 # --- Define the scorer interface and classes ---
 
@@ -57,36 +20,69 @@ class IScorer(ABC):
 class BigramXGBoostScorer(IScorer):
     def __init__(self, bigram_model_path="bigram_model.pkl", bigrams_file="bigrams.txt", target_wpm=100):
         self.target_wpm = target_wpm
-
         self.bg_classifier = Classifier()
 
         with open(bigram_model_path, 'rb') as f:
             self.bg_model = pickle.load(f)
-        #print("Bigram XGBoost model loaded.")
         # Load frequency data (using our shared loader)
         _, self.bigram_to_freq, _, _ = load_ngram_frequencies("dummy_bigrams.txt", bigrams_file, "dummy_skips.txt")
 
+        # Initialize cache for feature vectors and store the last keyboard signature.
+        # The cache is keyed by bigram strings.
+        self._cache = {}  
+        self._last_keyboard_sig = None
+
     def get_fitness(self, keyboard):
+        # Define the set of characters used for forming bigrams
         keyboard_chars = "qwertyuiopasdfghjklzxcvbnm,."
         bigrams_to_score = [c1 + c2 for c1 in keyboard_chars for c2 in keyboard_chars]
 
-        self.bg_classifier.kb = keyboard  # Set once outside loop.
+        # Set the current keyboard in the classifier.
+        self.bg_classifier.kb = keyboard
+
+        # Compute a signature for the keyboard: a dict mapping each character to its position.
+        new_sig = {c: keyboard.get_pos(c) for c in keyboard_chars}
+
+        # If no previous signature exists, initialize it.
+        if self._last_keyboard_sig is None:
+            self._last_keyboard_sig = new_sig
 
         feature_vectors = []
         freq_multipliers = []
         penalty = 0
-        for bigram in bigrams_to_score:
-            try:
-                fv = create_bigram_feature_vector(self.bg_classifier, bigram, self.target_wpm, bigram_to_freq)
-                feature_vectors.append(fv)
-                freq_multipliers.append(self.bigram_to_freq.get(bigram, 1))
-            except KeyError:
-                penalty += 10000  # Add penalty immediately for missing keys.
 
-        # Convert list of feature vectors into a batch (if possible).
-        # This assumes each 'fv' is a numpy array or list-like structure.
+        # For each bigram, check if the positions for its constituent keys have changed.
+        for bigram in bigrams_to_score:
+            a, b = bigram[0], bigram[1]
+            # If both keys are unchanged compared to the last signature…
+            if (self._last_keyboard_sig.get(a) == new_sig.get(a) and 
+                self._last_keyboard_sig.get(b) == new_sig.get(b)):
+                # …reuse the cached feature vector if available.
+                if bigram in self._cache:
+                    fv = self._cache[bigram]
+                else:
+                    try:
+                        fv = create_bigram_feature_vector(self.bg_classifier, bigram, self.target_wpm, self.bigram_to_freq)
+                        self._cache[bigram] = fv
+                    except KeyError:
+                        penalty += 10000
+                        continue
+            else:
+                # One or both keys changed; recompute and update the cache.
+                try:
+                    fv = create_bigram_feature_vector(self.bg_classifier, bigram, self.target_wpm, self.bigram_to_freq)
+                    self._cache[bigram] = fv
+                except KeyError:
+                    penalty += 10000
+                    continue
+
+            feature_vectors.append(fv)
+            freq_multipliers.append(self.bigram_to_freq.get(bigram, 1))
+
+        # Update the last keyboard signature.
+        self._last_keyboard_sig = new_sig
+
         if feature_vectors:
-            # Assuming your feature vectors are 1D arrays, stack them into a 2D array.
             batch_features = np.vstack(feature_vectors)
             predicted_times = self.bg_model.predict(batch_features)
             total_score = np.sum(predicted_times * np.array(freq_multipliers))

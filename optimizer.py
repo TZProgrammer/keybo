@@ -1,42 +1,38 @@
 from abc import ABC
-
+import copy
 import numpy as np
 from math import ceil, exp, log
-from random import random
+from random import random, sample
 
 ### INIT ###
 initial_temp = None
-tg_coverage = 100  # the percentage of tg's to use
-keyboard_chars = "qwertyuiopasdfghjkl'zxcvbnm,.-"
+tg_coverage = 100  # the percentage of trigrams to use
+keyboard_chars = "qwertyuiopasdfghjkl';zxcvbnm,./ "
 
-# getting trigrams and their frequencies
+# Process trigrams and frequencies
 trigrams, tg_freqs = [], []
 row_offsets = [0.5, 0, -0.25]
 tg_percentages = {}
 
 with open("trigrams.txt") as f:
     valid_c = keyboard_chars
-
-    for trigram, freq in (l.split("\t") for l in f):
-        if all([c in valid_c for c in trigram]):
+    for trigram, freq in (line.split("\t") for line in f):
+        if all(c in valid_c for c in trigram):
             trigrams.append(trigram)
             tg_freqs.append(int(freq))
-
-    percentages = [0] * 100
     total_count = sum(tg_freqs)
     elapsed = 0
-
-    for i in range(len(tg_freqs)):
+    for i, freq in enumerate(tg_freqs):
         percentage = int(100 * (elapsed / total_count))
         tg_percentages[percentage + 1] = i
-        elapsed += tg_freqs[i]
+        elapsed += freq
 
-# trimming our tg data to the amount of data we'll actually be processing
+# Trim trigram data to the chosen coverage percentage.
 tg_freqs = np.array(tg_freqs[: tg_percentages[tg_coverage]])
 trigrams = trigrams[: tg_percentages[tg_coverage]]
 print("Processed trigram data")
 
-# trigram penalties
+# Global variable used for trigram penalties.
 data_size = len(trigrams)
 
 class IOptimizer(ABC):
@@ -44,50 +40,68 @@ class IOptimizer(ABC):
         ...
 
 class Optimizer(IOptimizer):
-    def __init__(self, keyboard, scorer, a=0.995):
+    def __init__(self, keyboard, scorer, a=0.999):
         self.a = a
         self.t0 = 0
         self.cooling_schedule = "default"
-        self.bg_scores = {bg : 0 for bg in keyboard.get_ngrams(2)}
+        # Initialize background scores for bigrams.
+        self.bg_scores = {bg: 0 for bg in keyboard.get_ngrams(2)}
         self.new_bg_scores = {}
         self.fitness = 0
         self.prev_fitness = 0
-        self.tg_coverage = tg_coverage  # the percentage of tg's to use
-
+        self.tg_coverage = tg_coverage  # the percentage of trigrams to use
+        self.keyboard = keyboard  # will hold the best keyboard at end
+        
+        # Initialize best configuration with a deep copy.
+        self.best_fitness = None
+        self.best_keyboard = copy.deepcopy(keyboard)
+        
+        # Get initial fitness and set as best.
         self.get_fitness(keyboard, scorer)
         self.accept()
-
-        self.temp = self.get_initial_temperature(keyboard, scorer, 0.8, 0.01)
+        self.best_fitness = self.fitness
+        self.best_keyboard = copy.deepcopy(keyboard)
+        
+        # Estimate the initial temperature using a standard approach.
+        self.temp = self.get_initial_temperature(keyboard, scorer, x0=0.8)
 
     def optimize(self, keyboard, scorer):
-        stopping_point = self.get_stopping_point(keyboard=keyboard)
-
+        stopping_point = self.get_stopping_point(keyboard)
         stays = 0
-        while stays < stopping_point:
-            # markov chain
-            for _ in range(keyboard.key_count):
-                self.swap(keyboard=keyboard)
-                self.get_fitness(keyboard, scorer)
+        outer_iter = 0  # Counter for outer iterations
 
+        while stays < stopping_point:
+            outer_iter += 1
+            # Perform a series of swaps equal to the number of keys.
+            for _ in range(keyboard.key_count):
+                self.swap(keyboard)
+                self.get_fitness(keyboard, scorer)
                 delta = self.fitness - self.prev_fitness
 
                 if delta < 0:
                     self.accept()
                     stays = 0
-                # Metropolis criterion
-                elif random() < exp(-delta / self.temp):
+                elif random() < exp(-delta / self.temp):  # Metropolis criterion.
                     self.accept()
-                    stays -= 1
+                    stays = max(0, stays - 1)
                 else:
-                    self.reject(keyboard=keyboard, scorer=scorer)
+                    self.reject(keyboard, scorer)
                     stays += 1
 
+                # Update best keyboard if an improvement is found.
+                if self.best_fitness is None or self.fitness < self.best_fitness:
+                    self.best_fitness = self.fitness
+                    self.best_keyboard = copy.deepcopy(keyboard)
+
             self.cool()
-            print(self.fitness, f"@{self.tg_coverage}% a={self.a}")
+            progress_pct = (stays / stopping_point) * 100
+            print(f"Outer Iteration {outer_iter}: Fitness = {self.fitness}, Temp = {self.temp:.2f}, "
+                  f"Rejection streak = {stays}/{stopping_point} ({progress_pct:.1f}% complete)")
             print(keyboard)
 
-        return keyboard
-
+        # Store the best configuration found.
+        self.keyboard = self.best_keyboard
+        return self.best_keyboard
 
     def swap(self, keyboard, k1=None, k2=None):
         if (k1 is not None) and (k2 is not None):
@@ -95,64 +109,54 @@ class Optimizer(IOptimizer):
         else:
             keyboard.random_swap()
 
-
     def accept(self):
         self.bg_scores.update(self.new_bg_scores)
 
     def reject(self, keyboard, scorer):
         keyboard.undo_swap()
         scorer.get_fitness(keyboard)
-
         self.fitness = self.prev_fitness
         self.new_bg_scores = {}
 
-    def get_initial_temperature(self, keyboard, scorer, x0, epsilon=0.01):
-        global initial_temp
-        print("getting initial temperature")
+    def get_initial_temperature(self, keyboard, scorer, x0):
+        """
+        Estimate the initial temperature T0 such that the average uphill move Δ has acceptance probability x0,
+        i.e. T0 = -avg(Δ) / log(x0).
+        """
+        print("Estimating initial temperature...")
 
-        # An initial guess for t1
-        tn = self.fitness
-        acceptance_probability = 0
+        current_fitness = scorer.get_fitness(keyboard)
+        lowercase = keyboard.lowercase
+        n = len(lowercase)
+        total_pairs = n * (n - 1) // 2
+        sample_size = min(1000, total_pairs)
+        all_pairs = [(lowercase[i], lowercase[j]) for i in range(n) for j in range(i+1, n)]
+        swap_samples = sample(all_pairs, sample_size)
 
-        # Repeat guess
-        while abs(acceptance_probability - x0) > epsilon:
-            energies = []
+        uphill_deltas = []
+        for k1, k2 in swap_samples:
+            keyboard.swap(k1, k2)
+            new_fitness = scorer.get_fitness(keyboard)
+            delta = new_fitness - current_fitness
+            if delta > 0:
+                uphill_deltas.append(delta)
+            keyboard.undo_swap()
 
-            # test all possible swaps
-            for i, k1 in enumerate(keyboard.lowercase[:-1]):
-                for k2 in keyboard.lowercase[i + 1 :]:
-                    self.swap(keyboard, k1, k2)
-                    self.get_fitness(keyboard, scorer)
-                    print(self.fitness)
+        if uphill_deltas:
+            avg_delta = sum(uphill_deltas) / len(uphill_deltas)
+            T0 = -avg_delta / log(x0)
+        else:
+            T0 = 1.0
 
-                    delta = self.fitness - self.prev_fitness
-
-                    # Keep track of transition energies for each positive transition
-                    if delta > 0:
-                        energies.append(self.fitness)
-
-                    self.reject(keyboard=keyboard, scorer=scorer)
-
-            # Calculate acceptance probability
-            acceptance_probability = sum(
-                [exp(-(e_after / tn)) for e_after in energies]
-            ) / (len(energies) * exp(-(self.prev_fitness / tn)))
-
-            tn = tn * (log(acceptance_probability) / log(x0))
-
-        print(f"initial temperature found, t0 = {tn}")
-        initial_temp = tn
-
-        return tn
+        print(f"Initial temperature determined: t0 = {T0}")
+        return T0
 
     def cool(self):
         self.temp *= self.a
 
-    # Calculate a stopping time for the annealing process based on the number of swaps (coupon collector's problem).
     def get_stopping_point(self, keyboard):
         swaps = keyboard.key_count * (keyboard.key_count - 1) / 2
         euler_mascheroni = 0.5772156649
-
         return ceil(swaps * (log(swaps) + euler_mascheroni) + 0.5)
 
     def get_fitness(self, keyboard, scorer):

@@ -11,6 +11,8 @@ import matplotlib.pyplot as plt
 from sklearn.model_selection import KFold
 from utils import load_ngram_frequencies
 
+from tqdm import tqdm
+
 try:
     import xgboost as xgb
 except ImportError:
@@ -19,7 +21,7 @@ except ImportError:
 from classifier import Classifier
 
 # Global constant for WPM threshold.
-WPM_THRESHOLD = 80
+WPM_THRESHOLD = 60
 
 # For key features, map key characters to numeric IDs.
 ALL_KEYS = list("qwertyuiopasdfghjkl;zxcvbnm,./ QWERTYUIOPASDFGHJKL:ZXCVBNM<>?")
@@ -105,12 +107,12 @@ def load_bistroke_data(filepath: str, wpm_threshold: int, bg_min_samples: int = 
     return data
 
 
-def get_bistroke_features(bg_classifier: Classifier, bigram: str, freq: int) -> Tuple[Any, ...]:
+def get_bistroke_features(real_pos, bg_classifier: Classifier, bigram: str, freq: int) -> Tuple[Any, ...]:
     k1, k2 = bigram[0], bigram[1]
-
+    (ax, ay) = real_pos[0]
+    (bx, by) = real_pos[1]
     expected = tuple(bg_classifier.kb.get_pos(c) for c in bigram)
     col = "green" if ((ax, ay), (bx, by)) == expected else "red"
-    freq = bg_classifier.bigram_freq.get(bigram, 1)
     cap1 = k1.isupper()
     cap2 = k2.isupper()
     space1 = ay == 0
@@ -129,11 +131,7 @@ def get_bistroke_features(bg_classifier: Classifier, bigram: str, freq: int) -> 
     middle2 = abs(bx) == 3
     index1 = abs(ax) in (1, 2)
     index2 = abs(bx) in (1, 2)
-
     row_offsets = {1: 0.5, 2: 0.0, 3: -0.25}
-    (ax, ay) = bg_classifier.kb.get_pos(k1)
-    (bx, by) = bg_classifier.kb.get_pos(k2)
-
     offset_ax = row_offsets.get(ay, 0.0)
     offset_bx = row_offsets.get(by, 0.0)
     dy = abs(ay - by)
@@ -200,15 +198,15 @@ def extract_bigram_features(bistroke_data: List[Any], bigram_to_freq: dict, bg_c
     all_times = []
     all_labels = []
     all_colors = []
-    for row in bistroke_data:
+    for row in tqdm(bistroke_data, desc="Extracting bigram features", leave=False):
         try:
             pos, bigram, *occurrences = row
         except ValueError:
             continue
         if not occurrences:
             continue
-        feats = get_bistroke_features(bg_classifier, bigram, bigram_to_freq.get(bigram, 1))
-        base_features = list(feats[:38])
+        feats = get_bistroke_features(pos, bg_classifier, bigram, bigram_to_freq.get(bigram, 1))
+        base_features = list(feats[:-2])
         wpm_groups = defaultdict(list)
         for occ in occurrences:
             try:
@@ -221,8 +219,8 @@ def extract_bigram_features(bistroke_data: List[Any], bigram_to_freq: dict, bg_c
             sample_features = base_features + [float(wpm)]
             all_features.append(sample_features)
             all_times.append(avg_time)
-            all_labels.append(feats[38])
-            all_colors.append(feats[39])
+            all_labels.append(feats[-2])
+            all_colors.append(feats[-1])
     if all_features:
         features_array = np.array(all_features)
         features_tuple = tuple(features_array[:, i] for i in range(features_array.shape[1]))
@@ -236,7 +234,7 @@ def extract_trigram_features(tristroke_data: List[Any], bg_classifier: Classifie
     all_times = []
     all_labels = []
     all_colors = []
-    for row in tristroke_data:
+    for row in tqdm(tristroke_data, desc="Extracting trigram features", leave=False):
         try:
             (pos1, pos2, pos3), trigram, *occurrences = row
         except ValueError:
@@ -256,15 +254,31 @@ def extract_trigram_features(tristroke_data: List[Any], bg_classifier: Classifie
         else:
             redirect_val, bad_val = 0.0, 0.0
         sg = trigram[::2]
-        sg_feats = get_bistroke_features(bg_classifier, sg, bigram_to_freq.get(sg, 1))
-        sg_freq = float(skipgram_to_freq.get(sg, 1))
+        sg_feats = get_bistroke_features(
+            tuple(bg_classifier.kb.get_pos(c) for c in sg),
+            bg_classifier,
+            sg,
+            bigram_to_freq.get(sg, 1)
+        )
+        sg_numeric = list(sg_feats[:38])
         bg1 = trigram[:2]
         bg2 = trigram[1:]
-        bg1_feats = get_bistroke_features(bg_classifier, bg1, bigram_to_freq.get(bg1, 1))
-        bg2_feats = get_bistroke_features(bg_classifier, bg2, bigram_to_freq.get(bg2, 1))
+        bg1_feats = get_bistroke_features(
+            tuple(bg_classifier.kb.get_pos(c) for c in bg1),
+            bg_classifier,
+            bg1,
+            bigram_to_freq.get(bg1, 1)
+        )
+        bg2_feats = get_bistroke_features(
+            tuple(bg_classifier.kb.get_pos(c) for c in bg2),
+            bg_classifier,
+            bg2,
+            bigram_to_freq.get(bg2, 1)
+        )
         bg1_numeric = list(bg1_feats[:38])
         bg2_numeric = list(bg2_feats[:38])
-        base_features = [tg_freq, sht_val, redirect_val, bad_val, sg_freq] + list(sg_feats[:38]) + bg1_numeric + bg2_numeric
+        base_features = [tg_freq, sht_val, redirect_val, bad_val, float(skipgram_to_freq.get(sg, 1))] + \
+                        list(sg_numeric) + bg1_numeric + bg2_numeric
         wpm_groups = defaultdict(list)
         for occ in occurrences:
             try:
@@ -293,22 +307,19 @@ def extract_trigram_features(tristroke_data: List[Any], bg_classifier: Classifie
 
 ROW_OFFSETS = {1: 0.5, 2: 0.0, 3: -0.25}
 
+
 def create_bigram_feature_vector(bg_classifier, bigram, target_wpm, bigram_to_freq):
-    """
-    Given a keyboard object and a bigram, returns a feature vector (as a NumPy array)
-    that consists of the numeric features (the first 38 entries from get_bistroke_features)
-    plus the target WPM. This same function is used in training and during inference.
-    """
-    feats = get_bistroke_features(bg_classifier, bigram, bigram_to_freq.get(bigram, 1))
-    numeric_features = list(feats[:38])
+    feats = get_bistroke_features(
+        tuple(bg_classifier.kb.get_pos(c) for c in bigram),
+        bg_classifier,
+        bigram,
+        bigram_to_freq.get(bigram, 1)
+    )
+    numeric_features = list(feats[:-2])
     return np.array(numeric_features + [float(target_wpm)]).reshape(1, -1)
 
 
 def create_trigram_feature_vector(bg_classifier, trigram, target_wpm, trigram_to_freq, skipgram_to_freq, bigram_to_freq):
-    """
-    Given a keyboard, trigram, and target WPM (plus frequency data), build the trigram feature vector.
-    This function encapsulates the (duplicated) logic from both training and inference.
-    """
     pos_list = [bg_classifier.kb.get_pos(c) for c in trigram]
     tg_freq = float(trigram_to_freq.get(trigram, 1))
     ax, ay = pos_list[0]
@@ -325,20 +336,36 @@ def create_trigram_feature_vector(bg_classifier, trigram, target_wpm, trigram_to
     else:
         redirect_val, bad_val = 0.0, 0.0
     sg = trigram[::2]
-    sg_feats = get_bistroke_features(bg_classifier, sg, bigram_to_freq.get(sg, 1))
+    sg_feats = get_bistroke_features(
+        tuple(bg_classifier.kb.get_pos(c) for c in sg),
+        bg_classifier,
+        sg,
+        bigram_to_freq.get(sg, 1)
+    )
     sg_numeric = list(sg_feats[:38])
     bg1 = trigram[:2]
     bg2 = trigram[1:]
-    bg1_feats = get_bistroke_features(bg_classifier, bg1, bigram_to_freq.get(bg1, 1))
-    bg2_feats = get_bistroke_features(bg_classifier, bg2, bigram_to_freq.get(bg2, 1))
+    bg1_feats = get_bistroke_features(
+        tuple(bg_classifier.kb.get_pos(c) for c in bg1),
+        bg_classifier,
+        bg1,
+        bigram_to_freq.get(bg1, 1)
+    )
+    bg2_feats = get_bistroke_features(
+        tuple(bg_classifier.kb.get_pos(c) for c in bg2),
+        bg_classifier,
+        bg2,
+        bigram_to_freq.get(bg2, 1)
+    )
     bg1_numeric = list(bg1_feats[:38])
     bg2_numeric = list(bg2_feats[:38])
-    sg_freq = float(skipgram_to_freq.get(sg, 1))
-    base_features = [tg_freq, sht_val, redirect_val, bad_val, sg_freq] + sg_numeric + bg1_numeric + bg2_numeric
+    base_features = [tg_freq, sht_val, redirect_val, bad_val, float(skipgram_to_freq.get(sg, 1))] + \
+                    sg_numeric + bg1_numeric + bg2_numeric
     return np.array(base_features + [float(target_wpm)]).reshape(1, -1)
 
 
 # --- XGBoost Model Wrapper and Training Utilities ---
+
 
 class TypingModel:
     """
@@ -354,11 +381,9 @@ class TypingModel:
         self.model.fit(X, y)
 
     def predict(self, features) -> np.ndarray:
-        # If features is already a 2D numpy array, use it directly.
         if isinstance(features, np.ndarray) and features.ndim == 2:
             X = features
         else:
-            # Otherwise assume it's a tuple (or list) of arrays.
             X = np.column_stack([np.asarray(f) for f in features])
         return self.model.predict(X)
 
@@ -377,8 +402,7 @@ def cross_validate_model(model_args: dict, features: Tuple[np.ndarray, ...], y: 
     r2_scores = []
     mae_scores = []
     n = len(y)
-    for train_index, test_index in kf.split(np.arange(n)):
-        print("Begin CV Split")
+    for train_index, test_index in tqdm(kf.split(np.arange(n)), total=n_splits, desc="Cross-Validation Splits"):
         train_features = tuple(f[train_index] for f in features)
         test_features = tuple(f[test_index] for f in features)
         y_train = y[train_index]
@@ -431,12 +455,15 @@ def main() -> None:
             "colsample_bytree": 0.6,
             "reg_alpha": 0.1,
             "reg_lambda": 1,
-            "n_estimators": 20,
-            "learning_rate": 0.9,
+            "n_estimators": 200,
+            "learning_rate": 0.1,
             "objective": "reg:squarederror",
             "verbosity": 0,
+            "tree_method": "gpu_hist",
+            "predictor": "gpu_predictor",
+            "gpu_id": 0,
         }
-        print("Using default hyperparameters.")
+        print("Using default hyperparameters with GPU acceleration enabled.")
 
     # Load frequency data.
     trigram_to_freq, bigram_to_freq, skipgram_to_freq, trigrams = load_ngram_frequencies(
@@ -444,13 +471,15 @@ def main() -> None:
     )
     bg_classifier = Classifier()
 
-    tristroke_data = load_tristroke_data(args.tristrokes_file, WPM_THRESHOLD)
+    # ------------------ Bigram Model ------------------
+    print("Loading bistroke data for the bigram model...")
     bistroke_data = load_bistroke_data(args.bistrokes_file, WPM_THRESHOLD)
-
-    # Bigram Model Training.
+    print("Extracting bigram features...")
     bg_features, bg_times, bg_labels, layout_col = extract_bigram_features(bistroke_data, bigram_to_freq, bg_classifier)
+    print("Starting cross-validation for the bigram model...")
     bg_cv_r2, bg_cv_mae = cross_validate_model(xgb_params, bg_features, bg_times, n_splits=5)
     print(f"Bigram Model CV - R^2: {bg_cv_r2:.4f}, MAE: {bg_cv_mae:.3f}")
+    print("Training the final bigram model...")
     bg_model = TypingModel(**xgb_params)
     bg_model.fit(bg_features, bg_times)
     train_r2, train_mae = bg_model.evaluate(bg_features, bg_times)
@@ -468,10 +497,15 @@ def main() -> None:
     plot_results(x_sorted, y_sorted, pred_sorted, labels_sorted, colors_sorted,
                  "Bigram Frequency", "Avg Typing Time (ms)", "Bigram Model Fit")
 
-    # Trigram Model Training.
+    # ------------------ Trigram Model ------------------
+    print("Loading tristroke data for the trigram model...")
+    tristroke_data = load_tristroke_data(args.tristrokes_file, WPM_THRESHOLD)
+    print("Extracting trigram features...")
     tg_features, tg_times, tg_labels, tg_colors = extract_trigram_features(tristroke_data, bg_classifier, trigram_to_freq, skipgram_to_freq, bigram_to_freq)
+    print("Starting cross-validation for the trigram model...")
     tg_cv_r2, tg_cv_mae = cross_validate_model(xgb_params, tg_features, tg_times, n_splits=5)
     print(f"Trigram Model CV - R^2: {tg_cv_r2:.4f}, MAE: {tg_cv_mae:.3f}")
+    print("Training the final trigram model...")
     tg_model = TypingModel(**xgb_params)
     tg_model.fit(tg_features, tg_times)
     train_r2_tg, train_mae_tg = tg_model.evaluate(tg_features, tg_times)
