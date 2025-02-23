@@ -44,6 +44,12 @@ def get_tusk_score(wpm_base):
     scorer = BigramXGBoostScorer(target_wpm=wpm_base)
     return scorer.get_fitness(keyboard)
 
+def get_threa_score(wpm_base):
+    tusk_chars = "cywbjlquo.fspkthrea,vgdmxnzi'-"
+    keyboard = Keyboard(tusk_chars)
+    scorer = BigramXGBoostScorer(target_wpm=wpm_base)
+    return scorer.get_fitness(keyboard)
+
 def print_layout_scores(wpm_base):
     # Compute qwerty score as baseline.
     qwerty_score = get_qwerty_score(wpm_base)
@@ -56,7 +62,8 @@ def print_layout_scores(wpm_base):
         ("pinev4", get_pinev4_score),
         ("semimak", get_semimak_score),
         ("semimak-JQ", get_semimakJQ_score),
-        ("tusk", get_tusk_score)
+        ("tusk", get_tusk_score),
+        ("threa", get_threa_score)
     ]
 
     # Print each layout's score and the improvement over qwerty.
