@@ -6,9 +6,10 @@ from wpm_conditioned_model import TypingModel
 qwerty = "qwertyuiopasdfghjkl'zxcvbnm,.-"
 tusk_1 = "tskcwjqioumvypznreaxlfgdbh-'.,"
 tusk_2 = "tskcwzqioumvypjnreaxlfgdbh-'.,"
+threa  = "cywbjlquo.fspkthrea,vgdmxnzi'-"
 
 def generate():
-    layout = qwerty
+    layout = threa
     keyboard = Keyboard(layout)
     scorer = BigramXGBoostScorer()
     optimizer = Optimizer(keyboard, scorer)
