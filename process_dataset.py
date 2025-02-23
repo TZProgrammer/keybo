@@ -13,9 +13,13 @@ For each keystroke log file, the script:
   - Computes session WPM (using only correct keystrokes), where session duration is measured
     from the PRESS_TIME of the first key to the RELEASE_TIME of the last key.
   - Slides a window (with optional skip) over correct keystrokes to extract n-grams.
-  - Filters out any n-gram occurrence that includes "SHIFT" or "BKSP"/"BACKSPACE",
-    or that is typed within 2 keypresses of a backspace.
-  - Maps each n-gram to physical key positions using the Keyboard class from classifier.py.
+  - Filters out any n-gram occurrence that:
+      * Contains any banned keys (e.g. "SHIFT", "BKSP", "BACKSPACE"),
+      * Contains any key not present in the participant’s keyboard layout,
+      * Or is typed within 2 keypresses after a backspace.
+  - **Crucially, only rows where the LETTER field is exactly one character are considered, 
+    so that whole sentences (or multi-character strings) are ignored.**
+  - Maps each n-gram to physical key positions using the Keyboard class.
   - Aggregates occurrences and writes a TSV output sorted by frequency (highest first).
 
 For each n-gram, the duration is computed as follows:
@@ -41,7 +45,7 @@ csv.field_size_limit(sys.maxsize)
 
 from classifier import Keyboard
 
-# Define a set of banned keys.
+# Define a set of banned keys (in uppercase).
 BANNED_KEYS = {"SHIFT", "BKSP", "BACKSPACE"}
 
 def load_metadata(metadata_path: str) -> dict:
@@ -52,6 +56,8 @@ def load_metadata(metadata_path: str) -> dict:
         reader = csv.DictReader(f, delimiter="\t")
         for row in reader:
             if row["FINGERS"].strip() != "9-10":
+                continue
+            if float(row["AVG_WPM_15"].strip()) < 40:
                 continue
             kt = row["KEYBOARD_TYPE"].strip().lower()
             if kt not in {"full", "laptop"}:
@@ -85,7 +91,10 @@ def process_test_session(session_records: list, kb: Keyboard, n: int, skip: int,
       - Aligns keystrokes with the expected sentence.
       - Computes session WPM using correct keystrokes, where session duration is from the PRESS_TIME of the first key to the RELEASE_TIME of the last key.
       - Slides a window (with optional skip) over correct keystrokes to extract n-grams.
-      - Filters out any n-gram occurrence that contains a banned key or that is typed within 2 keypresses after a backspace.
+      - Filters out any n-gram occurrence that contains:
+            * Any banned key (e.g. "SHIFT", "BKSP", "BACKSPACE"),
+            * Any key not in the allowed set (i.e. not present in the keyboard layout),
+            * Or is typed within 2 keypresses after a backspace.
     
     Returns a list of occurrences: (positions, ngram_string, session_wpm, ngram_duration)
     """
@@ -103,40 +112,49 @@ def process_test_session(session_records: list, kb: Keyboard, n: int, skip: int,
 
     try:
         first_press = float(correct_records[0]["PRESS_TIME"])
-        last_release = float(correct_records[-1]["RELEASE_TIME"])
+        last_press = float(correct_records[-1]["PRESS_TIME"])
     except ValueError:
         return occurrences
-    duration_min = max((last_release - first_press) / 60000, 0.001)
+    duration_min = max((last_press - first_press) / 60000, 0.001)
     session_wpm = round((len(correct_records) / 5) / duration_min)
 
     window_length = n + skip * (n - 1)
     if len(correct_records) < window_length:
         return occurrences
 
+    # Allowed keys: those in the keyboard's layout (converted to lowercase).
+    allowed = set(key.lower() for key in kb.key_to_pos.keys())
+
     for i in range(len(correct_records) - window_length + 1):
         indices = [i + j * (skip + 1) for j in range(n)]
-        # Skip this n-gram if any key in the window is banned.
+        # Filter out windows containing banned keys.
         if any(correct_records[idx]["LETTER"].upper() in BANNED_KEYS for idx in indices):
             continue
-        # Also, ensure the n-gram is typed at least 2 keypresses after a backspace.
+        # Ensure the window is at least 2 keystrokes after a backspace.
         if i >= 2:
             prev1 = correct_records[i-1]["LETTER"].upper()
             prev2 = correct_records[i-2]["LETTER"].upper()
             if prev1 in {"BKSP", "BACKSPACE"} or prev2 in {"BKSP", "BACKSPACE"}:
                 continue
+        # Skip if any key in the window is not a single character (thus filtering out whole sentences).
+        if any(len(correct_records[idx]["LETTER"]) != 1 for idx in indices):
+            continue
+        # Also skip if any key (in lowercase) is not in the allowed set.
+        if any(correct_records[idx]["LETTER"].lower() not in allowed for idx in indices):
+            continue
 
         ngram_letters = [correct_records[idx]["LETTER"] for idx in indices]
         try:
             first_press_ng = float(correct_records[indices[0]]["PRESS_TIME"])
-            last_release_ng = float(correct_records[indices[-1]]["RELEASE_TIME"])
             last_press_ng = float(correct_records[indices[-1]]["PRESS_TIME"])
+            second_last_press_ng = float(correct_records[indices[-2]]["PRESS_TIME"])
         except ValueError:
             continue
 
         if time_mode == "full":
-            ngram_duration = last_release_ng - first_press_ng
+            ngram_duration = last_press_ng - first_press_ng
         elif time_mode == "last":
-            ngram_duration = last_release_ng - last_press_ng
+            ngram_duration = last_press_ng - second_last_press_ng
         else:
             ngram_duration = 0
 
@@ -159,7 +177,9 @@ def process_keystroke_file(file_path: str, kb: Keyboard, n: int, skip: int, time
         reader = csv.DictReader(f, delimiter="\t")
         sessions = defaultdict(list)
         for row in reader:
-            if not row.get("TEST_SECTION_ID") or not row.get("LETTER"):
+            # Filter out rows that do not have a valid test section or LETTER.
+            # Also, if LETTER is not exactly one character (e.g. whole sentences), skip it.
+            if not row.get("TEST_SECTION_ID") or not row.get("LETTER") or len(row["LETTER"]) != 1:
                 continue
             sessions[row["TEST_SECTION_ID"]].append(row)
         for sess_id, recs in sessions.items():
@@ -205,13 +225,19 @@ def main() -> None:
                         help="Directory containing keystroke log files.")
     parser.add_argument("--metadata_file", default="dataset/Keystrokes/files/metadata_participants.txt",
                         help="Path to metadata_participants.txt")
-    parser.add_argument("--output_file", default="bistrokes.tsv",
-                        help="Name of the output TSV file.")
     parser.add_argument("--ngram", choices=["bigram", "trigram", "skipgram"], default="bigram",
                         help="Type of n-gram to extract.")
     parser.add_argument("--time_mode", choices=["full", "last"], default="full",
                         help="Duration mode: 'full' (from first key PRESS_TIME to last key RELEASE_TIME) or 'last' (last key's press-release duration).")
     args = parser.parse_args()
+
+    if args.ngram == "bigram":
+        output_file = "bistrokes.tsv"
+    elif args.ngram == "trigram":
+        output_file = "tristrokes.tsv"
+    else:
+        print("not supported")
+        exit(0)
 
     if not os.path.exists(args.metadata_file):
         print(f"Metadata file not found: {args.metadata_file}")
@@ -239,6 +265,7 @@ def main() -> None:
         file_path = os.path.join(args.files_dir, fname)
         pid = fname.split("_")[0]
         if pid not in metadata:
+            processed_files += 1
             continue
         layout_key = metadata[pid].get("LAYOUT", "qwerty")
         if layout_key not in {"qwerty", "azerty", "dvorak", "qwertz"}:
@@ -252,14 +279,15 @@ def main() -> None:
         elif layout_key == "qwertz":
             rows = ["qwertzuiop", "asdfghjklö", "yxcvbnm,.-"]
         else:
-            rows = ["qwertyuiop", "asdfghjkl;", "zxcvbnm,./"]
+            print(f"layout {layout_key} not accepted, skipping")
+            continue
         kb = Keyboard(rows, spacebar_pos=(0, -1))
-        processed_files += 1
-        percentage = (processed_files / total_files) * 100
-        print(f"{percentage:.2f}% Processing participant {pid} with layout {layout_key} from file {fname} ...")
+        if i % 100 == 0:
+            percentage = (processed_files / total_files) * 100
+            print(f"{percentage:.2f}% Processing participant {pid} with layout {layout_key} from file {fname} ...")
         occ = process_keystroke_file(file_path, kb, n, skip, args.time_mode)
         all_occurrences.extend(occ)
-        print(f"Progress: {percentage:.2f}% complete", end="\r", flush=True)
+        processed_files += 1
 
     print()  # Newline after progress.
     if not all_occurrences:
@@ -267,7 +295,7 @@ def main() -> None:
         return
 
     aggregated = aggregate_occurrences(all_occurrences)
-    write_ngram_output(aggregated, args.output_file)
+    write_ngram_output(aggregated, output_file)
 
 if __name__ == "__main__":
     main()
