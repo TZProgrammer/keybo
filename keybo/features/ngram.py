@@ -13,17 +13,21 @@ import numpy as np
 
 from keybo.features import classify as C
 from keybo.features.schema import BIGRAM_FEATURE_NAMES, TRIGRAM_FEATURE_NAMES
+from keybo.geometry import Geometry, Position
 from keybo.layout import Layout
 
 
-def _placement_row(layout: Layout, bigram: str, freq: float) -> dict[str, float]:
-    """The 20 placement/relational/geometry features for one bigram (no wpm)."""
-    g = layout.geometry
-    a = layout.pos(bigram[0])
-    b = layout.pos(bigram[1])
-    bx, by = b
+def _placement_row_from_positions(
+    geometry: Geometry, a: Position, b: Position, freq: float
+) -> dict[str, float]:
+    """The 20 placement/relational/geometry features for one bigram, from key positions.
 
-    cls = C.classify_bigram(layout, bigram)
+    Positions are the fundamental input: both scoring (positions from a layout) and training
+    (positions recorded in the data) route through here, so the two can never diverge.
+    """
+    g = geometry
+    bx, by = b
+    cls = C.classify_positions(g, a, b)
     abs_bx = abs(bx)
 
     return {
@@ -54,6 +58,13 @@ def _placement_row(layout: Layout, bigram: str, freq: float) -> dict[str, float]
     }
 
 
+def _placement_row(layout: Layout, bigram: str, freq: float) -> dict[str, float]:
+    """Placement features for a bigram on a layout (looks up positions, then delegates)."""
+    return _placement_row_from_positions(
+        layout.geometry, layout.pos(bigram[0]), layout.pos(bigram[1]), freq
+    )
+
+
 def bigram_model_row(layout: Layout, bigram: str, freq: float, wpm: float) -> dict[str, float]:
     """Full ordered bigram feature row (placement features + wpm)."""
     row = _placement_row(layout, bigram, freq)
@@ -67,13 +78,23 @@ def bigram_features(layout: Layout, bigram: str, freq: float = 1.0, wpm: float =
     return np.array([row[name] for name in BIGRAM_FEATURE_NAMES], dtype=np.float64)
 
 
-def _trigram_level(layout: Layout, trigram: str, tg_freq: float, sg_freq: float) -> dict[str, float]:
-    """Trigram-level and skipgram features."""
-    g = layout.geometry
-    a = layout.pos(trigram[0])
-    b = layout.pos(trigram[1])
-    c = layout.pos(trigram[2])
+def bigram_features_from_positions(
+    geometry: Geometry,
+    positions: tuple[Position, Position],
+    freq: float = 1.0,
+    wpm: float = 0.0,
+) -> np.ndarray:
+    """Bigram feature vector from recorded key positions (training path)."""
+    row = _placement_row_from_positions(geometry, positions[0], positions[1], freq)
+    row["wpm"] = float(wpm)
+    return np.array([row[name] for name in BIGRAM_FEATURE_NAMES], dtype=np.float64)
 
+
+def _trigram_level_from_positions(
+    geometry: Geometry, a: Position, b: Position, c: Position, tg_freq: float, sg_freq: float
+) -> dict[str, float]:
+    """Trigram-level and skipgram features, from the three key positions."""
+    g = geometry
     ha, hb, hc = g.hand(a[0]), g.hand(b[0]), g.hand(c[0])
     same_hand_tri = ha != 0 and ha == hb == hc
 
@@ -100,6 +121,27 @@ def _trigram_level(layout: Layout, trigram: str, tg_freq: float, sg_freq: float)
     }
 
 
+def _trigram_row_from_positions(
+    geometry: Geometry,
+    a: Position,
+    b: Position,
+    c: Position,
+    tg_freq: float,
+    bg1_freq: float,
+    bg2_freq: float,
+    sg_freq: float,
+    wpm: float,
+) -> dict[str, float]:
+    """Assemble the full trigram row from the three positions (the shared core)."""
+    row = _trigram_level_from_positions(geometry, a, b, c, tg_freq, sg_freq)
+    for name, value in _placement_row_from_positions(geometry, a, b, bg1_freq).items():
+        row[f"bg1_{name}"] = value
+    for name, value in _placement_row_from_positions(geometry, b, c, bg2_freq).items():
+        row[f"bg2_{name}"] = value
+    row["wpm"] = float(wpm)
+    return row
+
+
 def trigram_model_row(
     layout: Layout,
     trigram: str,
@@ -110,13 +152,17 @@ def trigram_model_row(
     wpm: float,
 ) -> dict[str, float]:
     """Full ordered trigram feature row: trigram-level + both bigrams + wpm."""
-    row = _trigram_level(layout, trigram, tg_freq, sg_freq)
-    for name, value in _placement_row(layout, trigram[:2], bg1_freq).items():
-        row[f"bg1_{name}"] = value
-    for name, value in _placement_row(layout, trigram[1:], bg2_freq).items():
-        row[f"bg2_{name}"] = value
-    row["wpm"] = float(wpm)
-    return row
+    return _trigram_row_from_positions(
+        layout.geometry,
+        layout.pos(trigram[0]),
+        layout.pos(trigram[1]),
+        layout.pos(trigram[2]),
+        tg_freq,
+        bg1_freq,
+        bg2_freq,
+        sg_freq,
+        wpm,
+    )
 
 
 def trigram_features(
@@ -130,4 +176,21 @@ def trigram_features(
 ) -> np.ndarray:
     """Trigram feature vector in canonical column order."""
     row = trigram_model_row(layout, trigram, tg_freq, bg1_freq, bg2_freq, sg_freq, wpm)
+    return np.array([row[name] for name in TRIGRAM_FEATURE_NAMES], dtype=np.float64)
+
+
+def trigram_features_from_positions(
+    geometry: Geometry,
+    positions: tuple[Position, Position, Position],
+    tg_freq: float = 1.0,
+    bg1_freq: float = 1.0,
+    bg2_freq: float = 1.0,
+    sg_freq: float = 1.0,
+    wpm: float = 0.0,
+) -> np.ndarray:
+    """Trigram feature vector from recorded key positions (training path)."""
+    a, b, c = positions
+    row = _trigram_row_from_positions(
+        geometry, a, b, c, tg_freq, bg1_freq, bg2_freq, sg_freq, wpm
+    )
     return np.array([row[name] for name in TRIGRAM_FEATURE_NAMES], dtype=np.float64)

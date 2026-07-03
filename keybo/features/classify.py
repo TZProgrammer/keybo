@@ -43,14 +43,18 @@ def same_finger(geometry: Geometry, a: Position, b: Position) -> bool:
     return geometry.same_finger(a[0], b[0])
 
 
-def classify_bigram(layout: Layout, bigram: str) -> BigramClass:
-    a, b = _positions(layout, bigram)
-    g = layout.geometry
-    if same_finger(g, a, b):
+def classify_positions(geometry: Geometry, a: Position, b: Position) -> BigramClass:
+    """Classify a bigram from its two key positions."""
+    if same_finger(geometry, a, b):
         return BigramClass.SAME_FINGER
-    if same_hand(g, a, b):
+    if same_hand(geometry, a, b):
         return BigramClass.SAME_HAND
     return BigramClass.ALTERNATE
+
+
+def classify_bigram(layout: Layout, bigram: str) -> BigramClass:
+    a, b = _positions(layout, bigram)
+    return classify_positions(layout.geometry, a, b)
 
 
 def is_adjacent(geometry: Geometry, a: Position, b: Position) -> bool:

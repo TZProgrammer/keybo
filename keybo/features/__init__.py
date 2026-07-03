@@ -6,8 +6,10 @@ version, and :mod:`keybo.features.classify` owns the geometric predicates.
 
 from keybo.features.ngram import (
     bigram_features,
+    bigram_features_from_positions,
     bigram_model_row,
     trigram_features,
+    trigram_features_from_positions,
     trigram_model_row,
 )
 from keybo.features.schema import (
@@ -21,7 +23,9 @@ __all__ = [
     "FEATURE_VERSION",
     "TRIGRAM_FEATURE_NAMES",
     "bigram_features",
+    "bigram_features_from_positions",
     "bigram_model_row",
     "trigram_features",
+    "trigram_features_from_positions",
     "trigram_model_row",
 ]
