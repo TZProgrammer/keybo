@@ -94,7 +94,63 @@ so a model can fit them well and still misrank a novel layout. Proposed method:
 **leave-one-layout-out** — train on 3 layouts, predict the 4th, check whether predicted ranking/
 times match the held-out layout's observed times. This is the harness that actually answers
 OQ-1 and grounds every "layout X is N% faster" claim. Until it exists, treat cross-layout
-speed numbers as unvalidated. (Build item in TODO.)
+speed numbers as unvalidated.
+
+**Prerequisite (see OQ-8):** the processed data currently **discards the layout label** —
+`Occurrence`/`StrokeRow` keep only `(positions, ngram, wpm, duration)` and occurrences are
+pooled across all participants keyed on physical position. Leave-one-layout-out is impossible
+until we retain the source layout per stroke row. (TODO P1.)
+
+---
+
+## OQ-7 🔴 How do we leverage the non-QWERTY data given the heavy class imbalance?
+
+The dataset is *mostly* QWERTY, with a minority of AZERTY / Dvorak / QWERTZ. (Exact split:
+**measure it** via `load_participant_metadata` once the dump is fetched — don't guess.) The
+non-QWERTY rows are the most valuable data we have for OQ-1/OQ-5 (they're the only evidence of
+how typing time behaves *off* QWERTY), so we must not let them be drowned out.
+
+**Options (not mutually exclusive):**
+- **Resampling with replacement (oversample minority layouts).** Simple, but adds no
+  information — it just reweights, and it *inflates apparent confidence* on the minority
+  layouts (a handful of Dvorak typists' idiosyncrasies get counted many times), risking
+  overfitting to those specific people. Prefer for quick experiments, distrust for final numbers.
+- **Class/sample weighting (inverse layout frequency in the loss).** Same balancing intent
+  without duplicating rows; XGBoost supports per-sample weights. Usually preferable to
+  resampling.
+- **Stratified splits.** Ensure each layout appears in both train and test, so metrics are
+  reportable per layout regardless of balance (feeds OQ-8).
+- **Reframe: treat non-QWERTY purely as a held-out generalization signal (OQ-5)** rather than
+  as training mass to balance. If the goal is "does it generalize," the minority layouts may be
+  worth *more* as test than as (upsampled) train.
+
+**Caution:** balancing interacts with OQ-1. If frequency is a feature, upsampling changes the
+effective frequency distribution the model sees — another reason the frequency-as-feature
+decision comes first. **How to resolve:** try weighting vs. resampling vs. none, and read the
+*per-layout* held-out metrics (OQ-8) — the winner is whatever most improves minority-layout
+generalization without wrecking QWERTY.
+
+---
+
+## OQ-8 🔴 What should the evaluation be sliced by — layout, and proficiency bucket?
+
+A single aggregate R²/MAE **hides the exact failure modes we care about.** Two slicings, both
+strongly worth having:
+
+- **By layout (one score per layout).** Detects the central risk: a model that predicts QWERTY
+  validation data beautifully but fails on Dvorak/AZERTY/QWERTZ has learned *QWERTY geometry*,
+  not *typing* — and would produce confident, wrong layout rankings. This is the single most
+  diagnostic slice. **Blocked on the schema change** (retain layout label; see OQ-5/OQ-8 in
+  TODO).
+- **By proficiency bucket (WPM bands).** Detects the other failure axis: maybe the model
+  predicts slow typists well but fast typists poorly (or vice versa). This matters because the
+  project deliberately targets an *above-average* WPM (the paper used ≥80 as a proficiency
+  litmus), so accuracy *in the fast band* is what actually matters for the final layout. WPM is
+  already retained per stroke sample, so this slice is **feasible today** — no schema change.
+
+**Design implications:** the eval harness should report a matrix of {layout × wpm-bucket} →
+{R², MAE, ranking error}, not one number. Report the *worst* cell prominently, not just the
+mean — a great average with one terrible cell is a trap. This subsumes OQ-5's ranking check.
 
 ---
 

@@ -43,14 +43,31 @@ number until the generalization harness (P1, OQ-5) exists.**
     time), and fix the distribution mismatch (OQ-3).
   Acceptance: a train/serve parity test still passes, AND the chosen direction is justified by
   the OQ-5 experiment, not by intuition.
-- [ ] **Generalization harness: leave-one-layout-out validation (OQ-5).** Train on 3 of the 4
-  layouts, predict the 4th, report ranking/time error on the held-out layout. This is the tool
-  that answers OQ-1 and grounds every "X% faster" claim. **Highest-leverage item after the P0
-  bugs.** Acceptance: `keybo` can report held-out R²/ranking for each layout; wire into `just`.
+- [ ] **Retain the source layout label through processing (schema change).** PREREQUISITE for
+  per-layout eval and leave-one-layout-out. Today `Occurrence`/`StrokeRow` keep only
+  `(positions, ngram, wpm, duration)` and occurrences are pooled across all participants keyed
+  on physical position, so the layout a stroke came from is **discarded**. Add the layout tag
+  through `extract_occurrences` → aggregation → the TSV → `StrokeRow`. (OQ-5, OQ-8)
+- [ ] **Measure the layout + proficiency distribution of qualifying participants.** One-shot:
+  `load_participant_metadata` → Counter by LAYOUT, and a WPM histogram. Grounds OQ-7 (how
+  imbalanced?) and OQ-8 (bucket boundaries) with real numbers instead of guesses. Cheap; do
+  early. (OQ-7, OQ-8)
+- [ ] **Generalization + sliced-eval harness (OQ-5, OQ-8).** Two capabilities:
+  (a) **leave-one-layout-out**: train on 3 layouts, predict the 4th, report ranking/time error
+  on the held-out one; (b) **sliced metrics**: a {layout × WPM-bucket} → {R², MAE, ranking-err}
+  matrix, surfacing the *worst* cell, not just the mean. This is the tool that answers OQ-1 and
+  grounds every "X% faster" claim. **Highest-leverage item after the P0 bugs** (needs the schema
+  change above for the layout axis; the WPM axis works today). Acceptance: `keybo` reports the
+  matrix + held-out ranking; wired into `just`.
+- [ ] **Decide how to leverage imbalanced non-QWERTY data (OQ-7).** Compare inverse-frequency
+  sample weighting vs. resample-with-replacement vs. none vs. non-QWERTY-as-holdout, judged by
+  the *per-layout* held-out metrics from the harness above. Prefer weighting over resampling
+  (resampling inflates minority-layout confidence). Interacts with OQ-1 (do it after).
 - [ ] **Decide `freq`-as-feature (OQ-1) using the harness above.** Then execute the P1 #5 fork.
 - [ ] **Verify the full real-data pipeline end to end.** Run `fetch-data → process-data →
   train → score` on the actual 136M dump (not synthetic fixtures) and sanity-check the trained
-  model's held-out metrics + the layout ranking. Nothing has been run on real data yet.
+  model's per-layout / per-bucket held-out metrics + the layout ranking. Nothing has been run
+  on real data yet.
 
 ## P2 — Important, not urgent
 
