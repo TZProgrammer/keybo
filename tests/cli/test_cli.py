@@ -31,6 +31,37 @@ def test_no_command_prints_help_and_exits_nonzero(capsys):
     assert rc != 0
 
 
+def test_fetch_data_downloads_and_extracts(tmp_path, capsys):
+    # Reuse the download test's local fixture server so this never hits the network.
+    import socketserver
+    import threading
+
+    from tests.data.test_download import _make_keystrokes_zip, _RangeHandler
+
+    handler = type("H", (_RangeHandler,), {"payload": _make_keystrokes_zip()})
+    server = socketserver.TCPServer(("127.0.0.1", 0), handler)
+    threading.Thread(target=server.serve_forever, daemon=True).start()
+    host, port = server.server_address
+    try:
+        rc = main(
+            [
+                "fetch-data",
+                "--out-dir",
+                str(tmp_path / "dataset"),
+                "--url",
+                f"http://{host}:{port}/Keystrokes.zip",
+                "--no-progress",
+            ]
+        )
+    finally:
+        server.shutdown()
+        server.server_close()
+    assert rc == 0
+    out = capsys.readouterr().out
+    assert "dataset ready" in out
+    assert (tmp_path / "dataset").exists()
+
+
 def test_unknown_command_errors():
     with pytest.raises(SystemExit):
         main(["frobnicate"])

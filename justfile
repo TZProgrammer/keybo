@@ -38,12 +38,21 @@ fmt:
 lock:
     uv lock
 
-# --- workflows (process-data → train → score / optimize) --------------------------
+# --- workflows (fetch-data → process-data → train → score / optimize) -------------
+
+# Download + extract the public 136M Keystrokes dataset (~1.5 GB, resumable) into dataset/.
+fetch-data out="dataset":
+    keybo fetch-data --out-dir {{out}}
 
 # Turn a raw keystroke dump into a bistroke/tristroke table.
 # e.g. `just process-data dataset/Keystrokes/files dataset/Keystrokes/files/metadata_participants.txt bigram bistrokes.tsv`
 process-data files_dir metadata ngram="bigram" out="bistrokes.tsv":
     keybo process-data --files-dir {{files_dir}} --metadata {{metadata}} --ngram {{ngram}} --output {{out}}
+
+# Convenience: fetch the dataset then process it to bistrokes.tsv in one go.
+data ngram="bigram" out="bistrokes.tsv":
+    keybo fetch-data --out-dir dataset
+    keybo process-data --files-dir dataset/Keystrokes/files --metadata dataset/Keystrokes/files/metadata_participants.txt --ngram {{ngram}} --output {{out}}
 
 # Fit a typing-time model from a stroke table.
 # e.g. `just train bistrokes.tsv bigram models/bigram.json`

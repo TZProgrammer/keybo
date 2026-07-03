@@ -6,10 +6,12 @@ import argparse
 import sys
 from collections.abc import Sequence
 
-from keybo.cli import optimize, process_data, score, train, tune
+from keybo.cli import fetch_data, optimize, process_data, score, train, tune
 
 # subcommand name -> module exposing add_arguments(parser) and run(args).
+# Ordered along the pipeline: fetch-data -> process-data -> train -> (tune) -> optimize / score.
 _COMMANDS = {
+    "fetch-data": fetch_data,
     "process-data": process_data,
     "train": train,
     "tune": tune,

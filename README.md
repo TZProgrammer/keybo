@@ -31,7 +31,8 @@ the `keybo` console script). The usual pipeline is **process-data → train → 
 
 | Command | What it does |
 |---------|--------------|
-| `process-data` | Turn a raw keystroke dump into a bistroke/tristroke training table (TSV). |
+| `fetch-data`   | Download + extract the public 136M Keystrokes dataset (~1.5 GB, resumable). |
+| `process-data` | Turn that keystroke dump into a bistroke/tristroke training table (TSV). |
 | `train`        | Fit a typing-time model from that table; writes `model.json` + `model.meta.json`. |
 | `optimize`     | Search for a layout that minimizes predicted typing time (simulated annealing + 2-opt). |
 | `score`        | Compare named layouts on the learned objective. |
@@ -40,7 +41,10 @@ the `keybo` console script). The usual pipeline is **process-data → train → 
 Example end-to-end run (via `just`):
 
 ```bash
-# 1. Build training tables from the raw keystroke dump (you supply the dump).
+# 0. Fetch the raw keystroke dataset (~1.5 GB) into dataset/.
+just fetch-data
+
+# 1. Build training tables from the dump.  (`just data` chains steps 0+1.)
 just process-data dataset/Keystrokes/files dataset/Keystrokes/files/metadata_participants.txt bigram bistrokes.tsv
 
 # 2. Train a bigram typing-time model.
@@ -54,6 +58,7 @@ just optimize models/bigram.json data/corpus/bigrams.txt 0
 The same commands directly (equivalent to the recipes above):
 
 ```bash
+keybo fetch-data --out-dir dataset
 keybo process-data --files-dir dataset/Keystrokes/files \
     --metadata dataset/Keystrokes/files/metadata_participants.txt \
     --ngram bigram --output bistrokes.tsv
@@ -62,9 +67,11 @@ keybo score    --model models/bigram.json --bigram-freqs data/corpus/bigrams.txt
 keybo optimize --model models/bigram.json --bigram-freqs data/corpus/bigrams.txt --seed 0
 ```
 
-The raw 136M-keystroke dump is **not** included in the repo (it is large and external); you
-point `process-data` at your own copy. The English corpus frequency files it needs for
-scoring (`data/corpus/{trigrams,bigrams,1-skip}.txt`) **are** included.
+`fetch-data` pulls the **136M Keystrokes dataset** (Aalto University, Dhakal et al. 2018) —
+the public keystroke dump `process-data` consumes. The download resumes if interrupted and
+skips work that's already done. The English corpus frequency files under
+`data/corpus/{trigrams,bigrams,1-skip}.txt` (derived from the licensed iWeb corpus, not
+freely downloadable) **are already committed** in the repo, so there's nothing to fetch there.
 
 ## Architecture
 
