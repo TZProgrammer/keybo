@@ -144,6 +144,7 @@ class TypingModel(ABC):
 | 11 | No RNG seeding | seed plumbed through optimizer CLI |
 | 12 | `gpu_hist`/`gpu_id` XGBoost params break on modern ver | `device` param in model |
 | 13 | `__main__` pickle fragility | JSON + sidecar in model |
+| 14 | SA never converges on a plateau/tie landscape: `delta==0` moves were "accepted" via Metropolis and decremented the convergence counter forever (found in Phase 6) | `optimize/annealing.py`: convergence counter tracks improvements to the global *best* (monotonic, bounded) + a `max_outer` cap |
 | — | Duplicated/drifted feature code across 2 files | single `NgramFeatures` |
 | — | Dead code (bg_scores, unreachable penalties) | dropped |
 
