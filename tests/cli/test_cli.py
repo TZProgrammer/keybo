@@ -41,11 +41,37 @@ def test_optimize_runs_and_is_reproducible(tmp_path, capsys):
     corpus = tmp_path / "bg.txt"
     corpus.write_text("th\t100\nhe\t90\nan\t80\n'a\t20\n-e\t10\n")
 
-    rc1 = main(["optimize", "--model", model_path, "--bigram-freqs", str(corpus),
-                "--seed", "7", "--alpha", "0.9", "--max-outer", "20"])
+    rc1 = main(
+        [
+            "optimize",
+            "--model",
+            model_path,
+            "--bigram-freqs",
+            str(corpus),
+            "--seed",
+            "7",
+            "--alpha",
+            "0.9",
+            "--max-outer",
+            "20",
+        ]
+    )
     out1 = capsys.readouterr().out
-    rc2 = main(["optimize", "--model", model_path, "--bigram-freqs", str(corpus),
-                "--seed", "7", "--alpha", "0.9", "--max-outer", "20"])
+    rc2 = main(
+        [
+            "optimize",
+            "--model",
+            model_path,
+            "--bigram-freqs",
+            str(corpus),
+            "--seed",
+            "7",
+            "--alpha",
+            "0.9",
+            "--max-outer",
+            "20",
+        ]
+    )
     out2 = capsys.readouterr().out
 
     assert rc1 == 0 and rc2 == 0
@@ -71,8 +97,7 @@ def test_process_data_writes_tsv(tmp_path):
     files.mkdir()
     meta = files / "metadata_participants.txt"
     meta.write_text(
-        "PARTICIPANT_ID\tFINGERS\tAVG_WPM_15\tKEYBOARD_TYPE\tLAYOUT\n"
-        "111\t9-10\t90\tfull\tqwerty\n"
+        "PARTICIPANT_ID\tFINGERS\tAVG_WPM_15\tKEYBOARD_TYPE\tLAYOUT\n111\t9-10\t90\tfull\tqwerty\n"
     )
     lines = ["PARTICIPANT_ID\tTEST_SECTION_ID\tSENTENCE\tPRESS_TIME\tRELEASE_TIME\tLETTER"]
     t = 1000
@@ -82,8 +107,19 @@ def test_process_data_writes_tsv(tmp_path):
     (files / "111_keystrokes.txt").write_text("\n".join(lines) + "\n")
 
     out_tsv = tmp_path / "bistrokes.tsv"
-    rc = main(["process-data", "--files-dir", str(files), "--metadata", str(meta),
-               "--ngram", "bigram", "--output", str(out_tsv)])
+    rc = main(
+        [
+            "process-data",
+            "--files-dir",
+            str(files),
+            "--metadata",
+            str(meta),
+            "--ngram",
+            "bigram",
+            "--output",
+            str(out_tsv),
+        ]
+    )
     assert rc == 0
     assert out_tsv.exists()
     assert "th" in out_tsv.read_text()
@@ -98,9 +134,23 @@ def test_train_writes_model_and_sidecar(tmp_path):
     tsv.write_text("\n".join(lines) + "\n")
 
     out_model = tmp_path / "bg.json"
-    rc = main(["train", "--strokes", str(tsv), "--ngram", "bigram",
-               "--output", str(out_model), "--target-wpm", "90",
-               "--n-estimators", "10", "--min-samples", "1"])
+    rc = main(
+        [
+            "train",
+            "--strokes",
+            str(tsv),
+            "--ngram",
+            "bigram",
+            "--output",
+            str(out_model),
+            "--target-wpm",
+            "90",
+            "--n-estimators",
+            "10",
+            "--min-samples",
+            "1",
+        ]
+    )
     assert rc == 0
     assert out_model.exists()
     assert out_model.with_suffix(".meta.json").exists()

@@ -16,7 +16,9 @@ from keybo.scoring.model_scorer import BigramModelScorer
 def add_arguments(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--model", required=True, help="Path to a saved bigram model (.json)")
     parser.add_argument("--bigram-freqs", required=True, help="Path to the bigram frequency file")
-    parser.add_argument("--start", default=NAMED_LAYOUTS["qwerty"], help="Starting layout (30 chars)")
+    parser.add_argument(
+        "--start", default=NAMED_LAYOUTS["qwerty"], help="Starting layout (30 chars)"
+    )
     parser.add_argument("--seed", type=int, default=0, help="RNG seed (reproducibility)")
     parser.add_argument("--alpha", type=float, default=0.999, help="Geometric cooling rate")
     parser.add_argument("--target-wpm", type=float, default=90.0)

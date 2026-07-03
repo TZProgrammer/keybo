@@ -20,8 +20,7 @@ class Layout:
     def __init__(self, chars: str, geometry: Geometry) -> None:
         if len(chars) != len(geometry.slots):
             raise ValueError(
-                f"layout has {len(chars)} characters but geometry has "
-                f"{len(geometry.slots)} slots"
+                f"layout has {len(chars)} characters but geometry has {len(geometry.slots)} slots"
             )
         if len(set(chars)) != len(chars):
             raise ValueError("layout characters must be unique")

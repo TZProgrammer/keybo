@@ -190,7 +190,5 @@ def trigram_features_from_positions(
 ) -> np.ndarray:
     """Trigram feature vector from recorded key positions (training path)."""
     a, b, c = positions
-    row = _trigram_row_from_positions(
-        geometry, a, b, c, tg_freq, bg1_freq, bg2_freq, sg_freq, wpm
-    )
+    row = _trigram_row_from_positions(geometry, a, b, c, tg_freq, bg1_freq, bg2_freq, sg_freq, wpm)
     return np.array([row[name] for name in TRIGRAM_FEATURE_NAMES], dtype=np.float64)

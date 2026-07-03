@@ -64,9 +64,7 @@ def build_char_map(layout: str) -> dict[str, tuple[int, int]]:
     The space key maps to ``(0, 0)``.
     """
     if layout not in _LAYOUT_ROWS:
-        raise ValueError(
-            f"unknown layout {layout!r}; choose from {sorted(_LAYOUT_ROWS)}"
-        )
+        raise ValueError(f"unknown layout {layout!r}; choose from {sorted(_LAYOUT_ROWS)}")
     chars = "".join(_LAYOUT_ROWS[layout])
     char_map = dict(zip(chars, ROW_STAGGERED_30.slots, strict=True))
     char_map[" "] = (0, 0)

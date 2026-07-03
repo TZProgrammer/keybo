@@ -76,5 +76,7 @@ def load_strokes(
                 frequency = int(freq_str)
             except ValueError:
                 frequency = len(samples)
-            rows.append(StrokeRow(positions=positions, ngram=ngram, frequency=frequency, samples=samples))
+            rows.append(
+                StrokeRow(positions=positions, ngram=ngram, frequency=frequency, samples=samples)
+            )
     return rows

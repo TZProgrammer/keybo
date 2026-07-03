@@ -59,9 +59,7 @@ class Geometry:
     """
 
     slots: tuple[Position, ...]
-    row_offsets: dict[int, float] = field(
-        default_factory=lambda: {1: 0.5, 2: 0.0, 3: -0.25}
-    )
+    row_offsets: dict[int, float] = field(default_factory=lambda: {1: 0.5, 2: 0.0, 3: -0.25})
 
     def finger(self, x: int) -> Finger:
         """Return the finger that presses column ``x`` (sign = hand, 0 = thumb)."""

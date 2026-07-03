@@ -19,7 +19,9 @@ _COMMANDS = {
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(prog="keybo", description="Data-driven keyboard layout optimizer")
+    parser = argparse.ArgumentParser(
+        prog="keybo", description="Data-driven keyboard layout optimizer"
+    )
     subparsers = parser.add_subparsers(dest="command")
     for name, module in _COMMANDS.items():
         sub = subparsers.add_parser(name, help=module.__doc__)

@@ -35,7 +35,9 @@ def test_bigram_row_keys_match_schema_in_order():
 
 
 def test_trigram_row_keys_match_schema_in_order():
-    row = trigram_model_row(LAYOUT, "the", tg_freq=100, bg1_freq=50, bg2_freq=40, sg_freq=30, wpm=90)
+    row = trigram_model_row(
+        LAYOUT, "the", tg_freq=100, bg1_freq=50, bg2_freq=40, sg_freq=30, wpm=90
+    )
     assert list(row.keys()) == TRIGRAM_FEATURE_NAMES
 
 
