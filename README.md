@@ -4,19 +4,30 @@ A data-driven keyboard layout optimizer. `keybo` learns how long bigrams and tri
 to type from a large corpus of real keystroke data, then searches for a 30-key layout that
 minimizes predicted typing time over an English corpus.
 
-## Install
+## Quick start
+
+Requires [Nix](https://nixos.org) (flakes enabled) on a Linux host.
 
 ```bash
-pip install -e ".[dev]"
+nix develop        # enter the dev shell (creates .venv via uv)
+just install       # editable install of the keybo package + dev deps
+just doctor        # verify python, the data stack, and the CLI
 ```
 
-Requires Python ≥ 3.10. Dependencies (numpy, scikit-learn, xgboost, tqdm) are pinned in
-`pyproject.toml`.
+Then see `just --list` for the task recipes (process-data, train, optimize, score, tune,
+test, lint, fmt, lock).
+
+Without Nix, any Python ≥ 3.11 environment works too:
+
+```bash
+uv venv && source .venv/bin/activate   # or: python -m venv .venv && source .venv/bin/activate
+uv pip install -e ".[dev]"             # or: pip install -e ".[dev]"
+```
 
 ## Workflows
 
-All four are exposed behind `python -m keybo <command>` (or the `keybo` console script). The
-usual pipeline is **process-data → train → score / optimize**.
+All four are exposed as `just` recipes, and directly behind `python -m keybo <command>` (or
+the `keybo` console script). The usual pipeline is **process-data → train → score / optimize**.
 
 | Command | What it does |
 |---------|--------------|
@@ -26,18 +37,27 @@ usual pipeline is **process-data → train → score / optimize**.
 | `score`        | Compare named layouts on the learned objective. |
 | `tune`         | Randomized hyperparameter search for the model. |
 
-Example end-to-end run:
+Example end-to-end run (via `just`):
 
 ```bash
 # 1. Build training tables from the raw keystroke dump (you supply the dump).
+just process-data dataset/Keystrokes/files dataset/Keystrokes/files/metadata_participants.txt bigram bistrokes.tsv
+
+# 2. Train a bigram typing-time model.
+just train bistrokes.tsv bigram models/bigram.json
+
+# 3. Compare known layouts, or search for a new one.
+just score models/bigram.json data/corpus/bigrams.txt
+just optimize models/bigram.json data/corpus/bigrams.txt 0
+```
+
+The same commands directly (equivalent to the recipes above):
+
+```bash
 keybo process-data --files-dir dataset/Keystrokes/files \
     --metadata dataset/Keystrokes/files/metadata_participants.txt \
     --ngram bigram --output bistrokes.tsv
-
-# 2. Train a bigram typing-time model.
 keybo train --strokes bistrokes.tsv --ngram bigram --output models/bigram.json --target-wpm 90
-
-# 3. Compare known layouts, or search for a new one.
 keybo score    --model models/bigram.json --bigram-freqs data/corpus/bigrams.txt
 keybo optimize --model models/bigram.json --bigram-freqs data/corpus/bigrams.txt --seed 0
 ```
@@ -76,13 +96,15 @@ IOptimizer   (simulated annealing, 2-opt / 3-opt)   [keybo.optimize]
 - **scoring / optimize / data / training** — the objective, the search, dataset processing,
   and model fitting.
 
-Legacy pre-rewrite code is archived under `legacy/` and is not imported by the package.
+The package lives under `src/keybo/`. Legacy pre-rewrite code is archived under `legacy/`
+and is not imported by the package.
 
 ## Testing
 
 ```bash
-pytest -q          # unit tests (fast)
-ruff check .       # lint
+just test          # unit tests (fast)          — or: pytest -q
+just lint          # ruff check + format --check
+just fmt           # auto-format + fix
 ```
 
 ## Known follow-up: optimize performance
