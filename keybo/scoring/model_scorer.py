@@ -39,16 +39,21 @@ class BigramModelScorer(_ModelScorerBase):
         self._freqs = np.array([bigram_freqs[b] for b in self._bigrams], dtype=np.float64)
 
     def fitness(self, layout: Layout) -> float:
-        if not self._bigrams:
+        # Only score bigrams whose characters are all on this layout. A corpus n-gram using
+        # a character the layout doesn't contain (e.g. ';' when the layout has '-') is simply
+        # not typable here and is skipped -- rather than silently mapping it to a phantom
+        # position, as the original code did.
+        chars = set(layout.chars)
+        vectors = []
+        freqs = []
+        for bg, freq in zip(self._bigrams, self._freqs, strict=True):
+            if all(c in chars for c in bg):
+                vectors.append(bigram_features(layout, bg, freq=freq, wpm=self.target_wpm))
+                freqs.append(freq)
+        if not vectors:
             return 0.0
-        X = np.vstack(
-            [
-                bigram_features(layout, bg, freq=self._freqs[i], wpm=self.target_wpm)
-                for i, bg in enumerate(self._bigrams)
-            ]
-        )
-        predicted = self.model.predict(X)
-        return float(np.sum(predicted * self._freqs))
+        predicted = self.model.predict(np.vstack(vectors))
+        return float(np.sum(predicted * np.array(freqs)))
 
 
 class TrigramModelScorer(_ModelScorerBase):
@@ -69,21 +74,26 @@ class TrigramModelScorer(_ModelScorerBase):
         self._sg = dict(skipgram_freqs or {})
 
     def fitness(self, layout: Layout) -> float:
-        if not self._trigrams:
-            return 0.0
+        # As with bigrams, skip any trigram using a character not on this layout.
+        chars = set(layout.chars)
         rows = []
-        for i, tg in enumerate(self._trigrams):
+        freqs = []
+        for tg, freq in zip(self._trigrams, self._freqs, strict=True):
+            if not all(c in chars for c in tg):
+                continue
             rows.append(
                 trigram_features(
                     layout,
                     tg,
-                    tg_freq=self._freqs[i],
+                    tg_freq=freq,
                     bg1_freq=self._bg.get(tg[:2], 1),
                     bg2_freq=self._bg.get(tg[1:], 1),
                     sg_freq=self._sg.get(tg[0] + tg[2], 1),
                     wpm=self.target_wpm,
                 )
             )
-        X = np.vstack(rows)
-        predicted = self.model.predict(X)
-        return float(np.sum(predicted * self._freqs))
+            freqs.append(freq)
+        if not rows:
+            return 0.0
+        predicted = self.model.predict(np.vstack(rows))
+        return float(np.sum(predicted * np.array(freqs)))

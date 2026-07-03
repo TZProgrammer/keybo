@@ -98,3 +98,12 @@ def test_scorer_covers_all_provided_corpus_bigrams():
     scorer = BigramModelScorer(StubModel(1.0), bigram_freqs={"th": 1, "'-": 1, ",.": 1})
     # 3 bigrams * value 1.0 * freq 1 = 3.0 -> proves none were dropped.
     assert scorer.fitness(lay) == 3.0
+
+
+def test_scorer_skips_bigrams_with_characters_not_on_the_layout():
+    # This layout has ' and - but NOT ; or /. A corpus bigram using ';' is not typable here
+    # and must be skipped, not mapped to a phantom position.
+    lay = Layout(LAYOUT, ROW_STAGGERED_30)
+    scorer = BigramModelScorer(StubModel(1.0), bigram_freqs={"th": 1, "a;": 1, "e/": 1})
+    # Only 'th' is fully on the layout -> fitness = 1 * 1.0.
+    assert scorer.fitness(lay) == 1.0
