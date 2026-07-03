@@ -15,7 +15,6 @@ from keybo.scoring.model_scorer import BigramModelScorer, TrigramModelScorer
 
 _DEFAULT_BIGRAMS = "data/corpus/bigrams.txt"
 _DEFAULT_TRIGRAMS = "data/corpus/trigrams.txt"
-_DEFAULT_SKIPGRAMS = "data/corpus/1-skip.txt"
 
 
 def add_scorer_arguments(parser: argparse.ArgumentParser) -> None:
@@ -30,18 +29,12 @@ def add_scorer_arguments(parser: argparse.ArgumentParser) -> None:
     parser.add_argument(
         "--bigram-freqs",
         default=_DEFAULT_BIGRAMS,
-        help="Bigram frequency file (used directly for bigram scoring, and as constituent "
-        "frequencies for trigram scoring)",
+        help="Bigram frequency file (bigram objective only)",
     )
     parser.add_argument(
         "--trigram-freqs",
         default=_DEFAULT_TRIGRAMS,
-        help="Trigram frequency file (trigram scoring only)",
-    )
-    parser.add_argument(
-        "--skipgram-freqs",
-        default=_DEFAULT_SKIPGRAMS,
-        help="Skipgram frequency file (trigram scoring only)",
+        help="Trigram frequency file (trigram objective only)",
     )
     parser.add_argument("--target-wpm", type=float, default=90.0)
 
@@ -50,7 +43,11 @@ def build_scorer(args: argparse.Namespace) -> IScorer:
     """Load the model and construct the scorer the CLI args ask for.
 
     Validates that the loaded model was trained for the requested n-gram order, so a bigram
-    model can't silently be used as a trigram objective (or vice versa).
+    model can't silently be used as a trigram objective (or vice versa). Loads ONLY the
+    frequency file the chosen objective consumes: the trigram scorer intentionally ignores
+    constituent bigram/skipgram frequencies (train/serve parity), so requiring — or even
+    reading — those files here would fail on a discarded input (e.g. running from a cwd
+    without the repo's data/corpus/).
     """
     model = XGBoostTypingModel.load(args.model)
     if model.metadata.ngram != args.ngram:
@@ -66,7 +63,5 @@ def build_scorer(args: argparse.Namespace) -> IScorer:
     return TrigramModelScorer(
         model,
         trigram_freqs=load_frequencies(args.trigram_freqs),
-        bigram_freqs=load_frequencies(args.bigram_freqs),
-        skipgram_freqs=load_frequencies(args.skipgram_freqs),
         target_wpm=args.target_wpm,
     )

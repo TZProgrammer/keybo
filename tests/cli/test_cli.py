@@ -178,6 +178,23 @@ def test_optimize_with_trigram_model_runs(tmp_path, capsys):
     assert "Best fitness" in out
 
 
+def test_regression_trigram_cli_works_from_any_cwd(tmp_path, monkeypatch, capsys):
+    """Delta-audit finding A: the trigram objective must not require (or even touch) the
+    bigram/skipgram frequency files -- TrigramModelScorer discards them for train/serve
+    parity. The old build_scorer eagerly loaded their repo-relative defaults, so any trigram
+    run from a cwd without data/corpus/ crashed on a file it was about to throw away."""
+    model_path = _train_tiny_trigram_model(tmp_path / "tg.json")
+    tg = tmp_path / "tg.txt"
+    tg.write_text("the\t100\nand\t90\n")
+    monkeypatch.chdir(tmp_path)  # a cwd with no data/corpus/
+    rc = main(
+        ["score", "--ngram", "trigram", "--model", str(model_path), "--trigram-freqs", str(tg)]
+    )
+    out = capsys.readouterr().out
+    assert rc == 0
+    assert "qwerty" in out
+
+
 def test_ngram_mismatch_is_rejected(tmp_path):
     # A bigram model requested as a trigram objective must fail loudly, not silently mis-score.
     bg_model = _train_tiny_model(tmp_path / "bg.json")

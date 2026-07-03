@@ -95,8 +95,13 @@ def is_scissor(geometry: Geometry, a: Position, b: Position) -> bool:
 
 
 def rotation_angle(geometry: Geometry, a: Position, b: Position) -> float:
-    """Signed angle (degrees) from the outer to the inner key, or 0 for cross-hand."""
-    if not same_hand(geometry, a, b):
+    """Signed roll angle (degrees) from the outer to the inner key.
+
+    Rolls are TWO-finger motions: a single finger travelling between its own columns is a
+    same-finger reach, not a roll, so same-finger pairs (like cross-hand pairs) have no roll
+    angle. Their geometry is already captured by dx/dy/distance.
+    """
+    if not same_hand(geometry, a, b) or same_finger(geometry, a, b):
         return 0.0
     if abs(a[0]) == abs(b[0]):
         return 0.0
@@ -111,16 +116,20 @@ def rotation_angle(geometry: Geometry, a: Position, b: Position) -> float:
 
 
 def is_inwards(geometry: Geometry, a: Position, b: Position) -> bool:
-    """Rolling toward the index finger (outer key on the higher row)."""
-    if not same_hand(geometry, a, b) or abs(a[0]) == abs(b[0]):
+    """Rolling toward the index finger (outer key on the higher row). Two fingers only."""
+    if not same_hand(geometry, a, b) or same_finger(geometry, a, b):
+        return False
+    if abs(a[0]) == abs(b[0]):
         return False
     outer, inner = (a, b) if abs(a[0]) > abs(b[0]) else (b, a)
     return outer[1] > inner[1]
 
 
 def is_outwards(geometry: Geometry, a: Position, b: Position) -> bool:
-    """Rolling toward the pinky (outer key on the lower row)."""
-    if not same_hand(geometry, a, b) or abs(a[0]) == abs(b[0]):
+    """Rolling toward the pinky (outer key on the lower row). Two fingers only."""
+    if not same_hand(geometry, a, b) or same_finger(geometry, a, b):
+        return False
+    if abs(a[0]) == abs(b[0]):
         return False
     outer, inner = (a, b) if abs(a[0]) > abs(b[0]) else (b, a)
     return outer[1] < inner[1]
