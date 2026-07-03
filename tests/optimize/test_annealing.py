@@ -5,6 +5,8 @@ criterion) is preserved from the original and pinned with golden values. Reprodu
 under a fixed seed is the regression guard for bug #11 (the old code never seeded its RNG).
 """
 
+import contextlib
+import threading
 from math import ceil, log
 
 import pytest
@@ -96,16 +98,40 @@ class ConstantScorer(IScorer):
 
 
 def test_regression_terminates_on_a_plateau():
-    """A landscape of all-equal fitness must still terminate.
+    """A landscape of all-equal fitness must converge via the counter logic ALONE.
 
-    Bug: delta == 0 was accepted via the Metropolis branch, which decremented the
-    convergence counter, so it could never reach the stopping point. A max_outer cap plus
-    treating delta == 0 as non-improving guarantees termination.
+    Bug #14: delta == 0 was accepted via the Metropolis branch, which decremented the
+    convergence counter, so `stays` could never reach the stopping point. The fix bases the
+    counter on improvements to the global best (monotonic, bounded).
+
+    This test deliberately runs WITHOUT max_outer, so ONLY the convergence-counter fix can
+    stop it. (An earlier version passed max_outer=500, which capped the run regardless and
+    made the test vacuous -- it stayed green even with the bug reintroduced.) It runs in a
+    worker thread with a timeout so a regression fails as a clean assertion, not a CI hang.
     """
-    lay = Layout(LAYOUT, ROW_STAGGERED_30)
-    sa = SimulatedAnnealing(seed=0, alpha=0.9, max_outer=500)
-    best = sa.optimize(lay, ConstantScorer())  # must return, not hang
-    assert sorted(best.chars) == sorted(LAYOUT)
+    result: list[Layout] = []
+
+    def run() -> None:
+        # A regression manifests either as non-termination (thread stays alive -> timeout)
+        # or, on a pure plateau, as the temperature collapsing to a divide-by-zero. Suppress
+        # the latter so it surfaces as a missing result, not a noisy thread exception.
+        with contextlib.suppress(Exception):
+            result.append(
+                SimulatedAnnealing(seed=0, alpha=0.5).optimize(
+                    Layout(LAYOUT, ROW_STAGGERED_30), ConstantScorer()
+                )
+            )
+
+    worker = threading.Thread(target=run, daemon=True)
+    worker.start()
+    worker.join(timeout=20)
+    assert not worker.is_alive(), (
+        "SA did not converge on a plateau within 20s without max_outer -- the "
+        "convergence-counter fix (bug #14) is not working"
+    )
+    # A completed-but-crashed run leaves no result; a healthy run returns a valid layout.
+    assert result, "SA crashed on a plateau instead of converging (bug #14 regressed)"
+    assert sorted(result[0].chars) == sorted(LAYOUT)
 
 
 def test_max_outer_bounds_the_run():
