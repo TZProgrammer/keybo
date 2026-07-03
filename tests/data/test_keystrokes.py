@@ -207,6 +207,42 @@ def test_regression_no_splice_across_arrow_keys_on_the_cli_path():
     assert [o.ngram for o in all_occ] == []
 
 
+def test_regression_no_splice_across_empty_letter_rows_on_the_cli_path():
+    """Delta-audit SUSPECTED: a row with an empty LETTER field must still occupy a stream
+    index (creating a contiguity gap), not vanish in group_sessions and let its neighbours
+    splice. Same class as the control-key bypass."""
+    from keybo.data.keystrokes import group_sessions
+
+    cmap = build_char_map("qwerty")
+    rows = [
+        {
+            "TEST_SECTION_ID": "s1",
+            "LETTER": "a",
+            "PRESS_TIME": "1000",
+            "RELEASE_TIME": "1050",
+            "SENTENCE": "ab",
+        },
+        {
+            "TEST_SECTION_ID": "s1",
+            "LETTER": "",
+            "PRESS_TIME": "1200",
+            "RELEASE_TIME": "1250",
+            "SENTENCE": "ab",
+        },
+        {
+            "TEST_SECTION_ID": "s1",
+            "LETTER": "b",
+            "PRESS_TIME": "5000",
+            "RELEASE_TIME": "5050",
+            "SENTENCE": "ab",
+        },
+    ]
+    all_occ = []
+    for recs in group_sessions(rows).values():
+        all_occ += extract_occurrences(recs, cmap, n=2, skip=0, time_mode="full")
+    assert [o.ngram for o in all_occ] == []
+
+
 def test_extract_bigrams_from_clean_session():
     cmap = build_char_map("qwerty")
     records = make_session("the")

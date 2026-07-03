@@ -178,13 +178,14 @@ def extract_occurrences(
 def group_sessions(records: list[dict]) -> dict[str, list[dict]]:
     """Group raw rows into sessions by TEST_SECTION_ID.
 
-    Control keys (BKSP, SHIFT, arrows -- multi-char LETTER fields) are KEPT: extraction
-    needs them in the stream so its contiguity check sees the gap they create between the
-    character keys around them. Only rows with no session id or no LETTER at all are dropped.
+    Non-character rows are KEPT -- control keys (BKSP, SHIFT, arrows: multi-char LETTER
+    fields) and even empty-LETTER rows. Extraction needs them in the stream so its
+    contiguity check sees the gap they create between the character keys around them.
+    Only rows with no session id are dropped (they can't be attributed to a session).
     """
     sessions: dict[str, list[dict]] = defaultdict(list)
     for row in records:
-        if not row.get("TEST_SECTION_ID") or not row.get("LETTER"):
+        if not row.get("TEST_SECTION_ID"):
             continue
         sessions[row["TEST_SECTION_ID"]].append(row)
     return sessions
