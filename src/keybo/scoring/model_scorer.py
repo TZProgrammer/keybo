@@ -70,28 +70,23 @@ class TrigramModelScorer(_ModelScorerBase):
         super().__init__(model, target_wpm)
         self._trigrams = list(trigram_freqs.keys())
         self._freqs = np.array([trigram_freqs[t] for t in self._trigrams], dtype=np.float64)
-        self._bg = dict(bigram_freqs or {})
-        self._sg = dict(skipgram_freqs or {})
+        # bigram_freqs / skipgram_freqs are accepted for API symmetry but intentionally
+        # UNUSED: the training pipeline has no per-row corpus counts, so it builds trigram
+        # features with bg1/bg2/sg_freq = 1.0. Passing real corpus values here would make
+        # those columns differ train-vs-serve (audit finding #5). Threading real constituent
+        # frequencies would require a corpus join at TRAINING time so both sides match.
+        del bigram_freqs, skipgram_freqs
 
     def fitness(self, layout: Layout) -> float:
         # As with bigrams: score trigrams typable on this board (space included), skip those
-        # using a character the board genuinely lacks.
+        # using a character the board genuinely lacks. Constituent bg/sg freqs are left at
+        # their training-time defaults (see __init__) for train/serve feature parity.
         rows = []
         freqs = []
         for tg, freq in zip(self._trigrams, self._freqs, strict=True):
             if not all(layout.has_key(c) for c in tg):
                 continue
-            rows.append(
-                trigram_features(
-                    layout,
-                    tg,
-                    tg_freq=freq,
-                    bg1_freq=self._bg.get(tg[:2], 1),
-                    bg2_freq=self._bg.get(tg[1:], 1),
-                    sg_freq=self._sg.get(tg[0] + tg[2], 1),
-                    wpm=self.target_wpm,
-                )
-            )
+            rows.append(trigram_features(layout, tg, tg_freq=freq, wpm=self.target_wpm))
             freqs.append(freq)
         if not rows:
             return 0.0

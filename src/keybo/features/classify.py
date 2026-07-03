@@ -103,8 +103,8 @@ def rotation_angle(geometry: Geometry, a: Position, b: Position) -> float:
     outer, inner = (a, b) if abs(a[0]) > abs(b[0]) else (b, a)
     ox, oy = outer
     ix, iy = inner
-    off_o = geometry.row_offsets[oy]
-    off_i = geometry.row_offsets[iy]
+    off_o = geometry.row_offsets.get(oy, 0.0)
+    off_i = geometry.row_offsets.get(iy, 0.0)
     hand = geometry.hand(a[0]) or 1
     angle = atan2((oy - iy), ((ox + off_o) - (ix + off_i)) * hand)
     return round(degrees(angle), 2)

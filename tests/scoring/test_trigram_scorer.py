@@ -67,21 +67,41 @@ def test_tg_freq_feature_is_passed_through():
     assert scorer.fitness(lay) == 4 * 4 + 3 * 3
 
 
-def test_constituent_bigram_and_skipgram_freqs_are_used():
-    # With explicit bg/sg freqs, the feature vector's bg1_freq/bg2_freq/sg_freq differ from
-    # the default of 1, so a model reading those columns produces a different score.
+def test_regression_trigram_scorer_train_serve_freq_parity():
+    """The constituent bigram/skipgram frequency feature columns must match between the
+    scorer and the training path.
+
+    Training has no per-row corpus bigram/skipgram counts, so it builds trigram features with
+    bg1_freq=bg2_freq=sg_freq defaulting to 1.0. The scorer must feed the SAME values, or
+    those three columns differ train-vs-serve -- a train/serve inconsistency (inert with
+    tree models today, but a landmine for any model that responds to feature magnitude).
+    """
+    import numpy as np
+
+    from keybo.features import trigram_features_from_positions
+
     lay = Layout(LAYOUT, ROW_STAGGERED_30)
 
-    class SkipFreqModel:
+    class CaptureModel:
+        def __init__(self):
+            self.seen = None
+
         def predict(self, X):
-            from keybo.features.schema import TRIGRAM_FEATURE_NAMES
+            self.seen = X
+            return np.zeros(len(X))
 
-            return X[:, TRIGRAM_FEATURE_NAMES.index("sg_freq")]
+    m = CaptureModel()
+    # Even when the scorer is given real corpus bigram/skipgram frequencies, they must NOT
+    # leak into the constituent feature columns (which training pins to 1.0).
+    TrigramModelScorer(
+        m,
+        trigram_freqs={"the": 1},
+        bigram_freqs={"th": 999, "he": 888},
+        skipgram_freqs={"te": 777},
+        target_wpm=90,
+    ).fitness(lay)
+    scorer_vec = m.seen[0]
 
-    with_sg = TrigramModelScorer(
-        SkipFreqModel(), trigram_freqs={"the": 1}, skipgram_freqs={"te": 50}
-    )
-    without_sg = TrigramModelScorer(SkipFreqModel(), trigram_freqs={"the": 1})
-    # 'the' skipgram is 't'+'e' = 'te'; with sg_freq=50 the score reflects it, default is 1.
-    assert with_sg.fitness(lay) == 50.0
-    assert without_sg.fitness(lay) == 1.0
+    ps = tuple(lay.pos(c) for c in "the")
+    train_vec = trigram_features_from_positions(ROW_STAGGERED_30, ps, tg_freq=1, wpm=90)
+    np.testing.assert_array_equal(scorer_vec, train_vec)
