@@ -122,6 +122,30 @@ def test_scissor_flagged_for_adjacent_two_row_reach():
     assert row["adjacent"] == 1.0
 
 
+def test_regression_same_finger_bigram_is_not_a_scissor_or_adjacent():
+    """A single-finger bigram cannot also be a two-finger scissor/adjacent-roll.
+
+    'un' is u(2,3) and n(1,1): both the (same) index finger, two rows apart. `same_finger`
+    correctly says True; `is_adjacent`/`is_scissor` previously ALSO fired (they compared
+    |x| = |2-1| = 1), handing the model a contradictory feature row. A same-finger bigram
+    must be neither adjacent nor a scissor.
+    """
+    row = bigram_model_row(LAYOUT, "un", freq=1, wpm=90)
+    assert row["same_finger"] == 1.0
+    assert row["adjacent"] == 0.0
+    assert row["scissor"] == 0.0
+
+
+def test_no_corpus_bigram_is_both_same_finger_and_scissor():
+    # Property check across the whole layout: the two flags are mutually exclusive.
+    from itertools import permutations
+
+    for c1, c2 in permutations(LAYOUT.chars, 2):
+        row = bigram_model_row(LAYOUT, c1 + c2, freq=1, wpm=90)
+        assert not (row["same_finger"] == 1.0 and row["scissor"] == 1.0), f"{c1}{c2}"
+        assert not (row["same_finger"] == 1.0 and row["adjacent"] == 1.0), f"{c1}{c2}"
+
+
 def test_lsb_flagged_for_index_middle_wide_stretch():
     # 'et': e(-3,3) middle, t(-1,3) index, stagger dx = 2.0 (> 1.5) -> lateral stretch.
     row = bigram_model_row(LAYOUT, "et", freq=1, wpm=90)

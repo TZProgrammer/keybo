@@ -58,8 +58,16 @@ def classify_bigram(layout: Layout, bigram: str) -> BigramClass:
 
 
 def is_adjacent(geometry: Geometry, a: Position, b: Position) -> bool:
-    """Same-hand keys on neighbouring fingers (adjacent columns)."""
+    """Same-hand keys on neighbouring but *distinct* fingers.
+
+    Columns 1 and 2 are both the index finger (see ``Geometry.same_finger``), so although
+    they differ by one in |x| they are NOT adjacent fingers -- a bigram on them is a
+    single-finger reach, not a two-finger roll/scissor. Excluding the same-finger case keeps
+    ``is_adjacent``/``is_scissor`` from contradicting ``same_finger``.
+    """
     if not same_hand(geometry, a, b):
+        return False
+    if same_finger(geometry, a, b):
         return False
     return abs(abs(a[0]) - abs(b[0])) == 1
 
