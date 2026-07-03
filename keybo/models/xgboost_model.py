@@ -1,0 +1,59 @@
+"""XGBoost implementation of :class:`~keybo.models.base.TypingModel`.
+
+Two things the original code got wrong are fixed here:
+
+- Persistence uses XGBoost's native ``Booster`` JSON format, not Python ``pickle``. The old
+  pickles only loaded because the unpickling namespace happened to contain the wrapper
+  class, and they break across XGBoost versions.
+- The regressor is configured with the modern ``device`` parameter. The old
+  ``tree_method="gpu_hist"`` / ``gpu_id=...`` params were removed in XGBoost 2.x/3.x and now
+  raise on construction.
+"""
+
+from __future__ import annotations
+
+import numpy as np
+import xgboost as xgb
+
+from keybo.models.base import ModelMetadata, TypingModel
+
+# Sensible defaults; callers (training) can override via kwargs.
+_DEFAULT_PARAMS = {
+    "objective": "reg:squarederror",
+    "n_estimators": 300,
+    "max_depth": 5,
+    "learning_rate": 0.05,
+    "subsample": 0.7,
+    "colsample_bytree": 0.7,
+    "verbosity": 0,
+}
+
+
+class XGBoostTypingModel(TypingModel):
+    def __init__(self, metadata: ModelMetadata, device: str = "cpu", **params) -> None:
+        super().__init__(metadata)
+        self.params = {**_DEFAULT_PARAMS, **params, "device": device}
+        self._regressor = xgb.XGBRegressor(**self.params)
+        self._fitted = False
+
+    def fit(self, X: np.ndarray, y: np.ndarray) -> XGBoostTypingModel:
+        self._regressor.fit(X, y)
+        self._fitted = True
+        return self
+
+    def predict(self, X: np.ndarray) -> np.ndarray:
+        if not self._fitted:
+            raise RuntimeError("model is not fitted; call fit() or load() first")
+        return np.asarray(self._regressor.predict(X), dtype=np.float64)
+
+    def _save_artifact(self, artifact_path: str) -> None:
+        # Native, version-portable JSON serialization of the booster.
+        self._regressor.get_booster().save_model(artifact_path)
+
+    @classmethod
+    def _load_artifact(cls, artifact_path: str, metadata: ModelMetadata) -> XGBoostTypingModel:
+        model = cls(metadata)
+        # Public, version-stable API: load the booster JSON straight into the regressor.
+        model._regressor.load_model(artifact_path)
+        model._fitted = True
+        return model
