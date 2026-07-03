@@ -1,0 +1,47 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "keybo"
+version = "0.1.0"
+description = "Data-driven keyboard layout optimizer"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "numpy>=1.24",
+    "scikit-learn>=1.3",
+    "xgboost>=2.0",
+    "tqdm>=4.65",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4",
+    "ruff>=0.4",
+]
+
+[project.scripts]
+keybo = "keybo.cli.__main__:main"
+
+[tool.setuptools.packages.find]
+include = ["keybo*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+markers = [
+    "slow: end-to-end tests that run a real (tiny) optimization or training loop",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+# Only lint the new package and its tests. Pre-rewrite scripts (still at the repo root
+# until Phase 10 moves them) and the archived `legacy/` tree are exempt.
+include = ["keybo/**/*.py", "tests/**/*.py"]
+extend-exclude = ["legacy", "Graph_Utils"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+ignore = ["E501"]  # line length handled by formatter, not enforced hard
