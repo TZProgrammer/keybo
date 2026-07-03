@@ -63,11 +63,12 @@ train strokes ngram="bigram" out="models/bigram.json" target_wpm="90":
 tune strokes ngram="bigram" out="best_hyperparams.json":
     keybo tune --strokes {{strokes}} --ngram {{ngram}} --output {{out}}
 
-# Compare named layouts on the learned objective.
-score model="models/bigram.json" bigram_freqs="data/corpus/bigrams.txt":
-    keybo score --model {{model}} --bigram-freqs {{bigram_freqs}}
+# Compare named layouts on the learned objective (bigram or trigram model).
+# e.g. `just score models/bigram.json bigram`  ·  `just score models/trigram.json trigram`
+score model="models/bigram.json" ngram="bigram":
+    keybo score --model {{model}} --ngram {{ngram}}
 
-# Search for a layout that minimizes predicted typing time.
-# e.g. `just optimize models/bigram.json data/corpus/bigrams.txt 0`
-optimize model="models/bigram.json" bigram_freqs="data/corpus/bigrams.txt" seed="0":
-    keybo optimize --model {{model}} --bigram-freqs {{bigram_freqs}} --seed {{seed}}
+# Search for a layout that minimizes predicted typing time (bigram or trigram model).
+# e.g. `just optimize models/bigram.json bigram 0`  ·  `just optimize models/trigram.json trigram 0`
+optimize model="models/bigram.json" ngram="bigram" seed="0":
+    keybo optimize --model {{model}} --ngram {{ngram}} --seed {{seed}}

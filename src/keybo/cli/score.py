@@ -4,18 +4,14 @@ from __future__ import annotations
 
 import argparse
 
-from keybo.data.corpus import load_frequencies
+from keybo.cli._scorer import add_scorer_arguments, build_scorer
 from keybo.geometry import ROW_STAGGERED_30
 from keybo.layout import Layout
 from keybo.layouts import BASELINE, NAMED_LAYOUTS
-from keybo.models.xgboost_model import XGBoostTypingModel
-from keybo.scoring.model_scorer import BigramModelScorer
 
 
 def add_arguments(parser: argparse.ArgumentParser) -> None:
-    parser.add_argument("--model", required=True, help="Path to a saved bigram model (.json)")
-    parser.add_argument("--bigram-freqs", required=True, help="Path to the bigram frequency file")
-    parser.add_argument("--target-wpm", type=float, default=90.0)
+    add_scorer_arguments(parser)
     parser.add_argument(
         "--layouts",
         nargs="*",
@@ -25,9 +21,7 @@ def add_arguments(parser: argparse.ArgumentParser) -> None:
 
 
 def run(args: argparse.Namespace) -> int:
-    model = XGBoostTypingModel.load(args.model)
-    freqs = load_frequencies(args.bigram_freqs)
-    scorer = BigramModelScorer(model, bigram_freqs=freqs, target_wpm=args.target_wpm)
+    scorer = build_scorer(args)
 
     baseline_score = scorer.fitness(Layout(NAMED_LAYOUTS[BASELINE], ROW_STAGGERED_30))
     print(f"{BASELINE} score: {baseline_score:.0f} (baseline)")

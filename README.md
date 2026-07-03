@@ -51,8 +51,18 @@ just process-data dataset/Keystrokes/files dataset/Keystrokes/files/metadata_par
 just train bistrokes.tsv bigram models/bigram.json
 
 # 3. Compare known layouts, or search for a new one.
-just score models/bigram.json data/corpus/bigrams.txt
-just optimize models/bigram.json data/corpus/bigrams.txt 0
+just score models/bigram.json bigram
+just optimize models/bigram.json bigram 0
+```
+
+For a **trigram** model instead, process/train with `trigram` and score/optimize with the
+`trigram` objective (uses `data/corpus/trigrams.txt` by default):
+
+```bash
+just process-data dataset/Keystrokes/files dataset/Keystrokes/files/metadata_participants.txt trigram tristrokes.tsv
+just train tristrokes.tsv trigram models/trigram.json
+just score models/trigram.json trigram
+just optimize models/trigram.json trigram 0
 ```
 
 The same commands directly (equivalent to the recipes above):
@@ -63,8 +73,9 @@ keybo process-data --files-dir dataset/Keystrokes/files \
     --metadata dataset/Keystrokes/files/metadata_participants.txt \
     --ngram bigram --output bistrokes.tsv
 keybo train --strokes bistrokes.tsv --ngram bigram --output models/bigram.json --target-wpm 90
-keybo score    --model models/bigram.json --bigram-freqs data/corpus/bigrams.txt
-keybo optimize --model models/bigram.json --bigram-freqs data/corpus/bigrams.txt --seed 0
+keybo score    --model models/bigram.json --ngram bigram
+keybo optimize --model models/bigram.json --ngram bigram --seed 0
+```
 ```
 
 `fetch-data` pulls the **136M Keystrokes dataset** (Aalto University, Dhakal et al. 2018) —

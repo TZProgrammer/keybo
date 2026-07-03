@@ -9,7 +9,7 @@ import pytest
 
 from keybo.cli.__main__ import main
 from keybo.data.strokes import StrokeRow
-from keybo.training.train import train_bigram_model
+from keybo.training.train import train_bigram_model, train_trigram_model
 
 
 def _train_tiny_model(path):
@@ -22,6 +22,22 @@ def _train_tiny_model(path):
         samples = [(90, 100 + int(rng.integers(0, 40))), (85, 110 + int(rng.integers(0, 40)))]
         rows.append(StrokeRow(positions=((-1, 3), (1, 2)), ngram=bg, frequency=5, samples=samples))
     model = train_bigram_model(rows, target_wpm=90, n_estimators=10, max_depth=3)
+    model.save(str(path))
+    return str(path)
+
+
+def _train_tiny_trigram_model(path):
+    """Train and save a tiny trigram model for the score/optimize commands to load."""
+    rng = np.random.default_rng(0)
+    trigrams = ["the", "and", "ing", "her", "ere", "ent", "tha", "nth", "was", "eth"]
+    rows = []
+    for i in range(120):
+        tg = trigrams[i % len(trigrams)]
+        samples = [(90, 200 + int(rng.integers(0, 60))), (85, 210 + int(rng.integers(0, 60)))]
+        rows.append(
+            StrokeRow(positions=((-1, 3), (1, 2), (-3, 3)), ngram=tg, frequency=5, samples=samples)
+        )
+    model = train_trigram_model(rows, target_wpm=90, n_estimators=10, max_depth=3)
     model.save(str(path))
     return str(path)
 
@@ -120,6 +136,55 @@ def test_score_prints_a_table_with_baseline(tmp_path, capsys):
     assert rc == 0
     assert "qwerty" in out  # the baseline layout is listed
     assert "dvorak" in out
+
+
+def test_score_with_trigram_model(tmp_path, capsys):
+    model_path = _train_tiny_trigram_model(tmp_path / "tg.json")
+    tg = tmp_path / "tg.txt"
+    tg.write_text("the\t100\nand\t90\ning\t80\n")
+
+    rc = main(["score", "--ngram", "trigram", "--model", model_path, "--trigram-freqs", str(tg)])
+    out = capsys.readouterr().out
+    assert rc == 0
+    assert "qwerty" in out
+    assert "dvorak" in out
+
+
+def test_optimize_with_trigram_model_runs(tmp_path, capsys):
+    model_path = _train_tiny_trigram_model(tmp_path / "tg.json")
+    tg = tmp_path / "tg.txt"
+    tg.write_text("the\t100\nand\t90\ning\t80\nher\t70\n")
+
+    rc = main(
+        [
+            "optimize",
+            "--ngram",
+            "trigram",
+            "--model",
+            model_path,
+            "--trigram-freqs",
+            str(tg),
+            "--seed",
+            "3",
+            "--alpha",
+            "0.9",
+            "--max-outer",
+            "15",
+            "--no-local-search",
+        ]
+    )
+    out = capsys.readouterr().out
+    assert rc == 0
+    assert "Best fitness" in out
+
+
+def test_ngram_mismatch_is_rejected(tmp_path):
+    # A bigram model requested as a trigram objective must fail loudly, not silently mis-score.
+    bg_model = _train_tiny_model(tmp_path / "bg.json")
+    tg = tmp_path / "tg.txt"
+    tg.write_text("the\t100\n")
+    with pytest.raises(SystemExit):
+        main(["score", "--ngram", "trigram", "--model", bg_model, "--trigram-freqs", str(tg)])
 
 
 def test_process_data_writes_tsv(tmp_path):
