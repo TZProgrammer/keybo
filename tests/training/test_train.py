@@ -26,6 +26,20 @@ def _synthetic_bigram_rows(n=80):
     return rows
 
 
+def test_regression_training_handles_space_bigrams():
+    """Real bistroke tables are dominated by space bigrams (positions include (0,0)).
+    build_training_matrix must not crash on them."""
+    space = (0, 0)
+    rows = [
+        StrokeRow(positions=((-3, 3), space), ngram="e ", frequency=100, samples=[(90, 120)]),
+        StrokeRow(positions=(space, (-1, 3)), ngram=" t", frequency=90, samples=[(90, 130)]),
+        StrokeRow(positions=((-1, 3), (1, 2)), ngram="th", frequency=80, samples=[(90, 110)]),
+    ]
+    X, y = build_training_matrix(rows, ngram="bigram", target_wpm=90)
+    assert X.shape[0] == 3
+    assert np.all(np.isfinite(X))
+
+
 def test_build_training_matrix_uses_shared_feature_width():
     rows = _synthetic_bigram_rows()
     X, y = build_training_matrix(rows, ngram="bigram", target_wpm=90)

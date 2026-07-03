@@ -10,7 +10,13 @@ here is a train/serve-skew bug. Includes regression guards (with negative contro
 import numpy as np
 import pytest
 
-from keybo.features import bigram_features, bigram_model_row, trigram_features
+from keybo.features import (
+    bigram_features,
+    bigram_features_from_positions,
+    bigram_model_row,
+    trigram_features,
+    trigram_features_from_positions,
+)
 from keybo.features.classify import BigramClass, classify_bigram
 from keybo.geometry import ROW_STAGGERED_30
 from keybo.layout import Layout
@@ -187,6 +193,29 @@ def test_regression_bug2_punctuation_keys_are_not_invisible():
     v_base = bigram_features(base, "'a")
     v_swapped = bigram_features(swapped, "'a")
     assert not np.array_equal(v_base, v_swapped)
+
+
+def test_regression_space_bigrams_do_not_crash():
+    """Space is (0,0) with no row stagger; it is the most frequent character, so bigrams
+    involving it dominate real data. Building features for them must not raise."""
+    space = (0, 0)
+    e_pos = LAYOUT.pos("e")  # (-3, 3)
+    # "e " and " e" -- both must produce finite feature vectors.
+    v1 = bigram_features_from_positions(ROW_STAGGERED_30, (e_pos, space), freq=100, wpm=90)
+    v2 = bigram_features_from_positions(ROW_STAGGERED_30, (space, e_pos), freq=100, wpm=90)
+    assert np.all(np.isfinite(v1))
+    assert np.all(np.isfinite(v2))
+
+
+def test_regression_space_trigrams_do_not_crash():
+    """Trigrams with space (e.g. 'e t' -> ' ' in the middle, or leading/trailing space)."""
+    space = (0, 0)
+    t_pos = LAYOUT.pos("t")
+    h_pos = LAYOUT.pos("h")
+    # " th" (leading space) and "th " (trailing space) and "t h" (middle space).
+    for positions in [(space, t_pos, h_pos), (t_pos, h_pos, space), (t_pos, space, h_pos)]:
+        vec = trigram_features_from_positions(ROW_STAGGERED_30, positions, wpm=90)
+        assert np.all(np.isfinite(vec))
 
 
 def test_no_character_identity_features():

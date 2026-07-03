@@ -84,10 +84,14 @@ class Geometry:
         return self.finger(x1) == self.finger(x2)
 
     def stagger_adjusted_dx(self, a: Position, b: Position) -> float:
-        """Absolute horizontal distance between two keys, accounting for row stagger."""
+        """Absolute horizontal distance between two keys, accounting for row stagger.
+
+        Rows without a stagger entry (notably the space/thumb row, y=0) contribute no
+        offset.
+        """
         ax, ay = a
         bx, by = b
-        return abs((ax + self.row_offsets[ay]) - (bx + self.row_offsets[by]))
+        return abs((ax + self.row_offsets.get(ay, 0.0)) - (bx + self.row_offsets.get(by, 0.0)))
 
     def distance(self, a: Position, b: Position, ex: float = 2.0) -> float:
         """Euclidean (``ex=2``) distance between two key positions, ignoring stagger."""

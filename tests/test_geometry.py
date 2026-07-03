@@ -90,6 +90,14 @@ def test_stagger_adjusted_dx_applies_row_offsets():
     assert ROW_STAGGERED_30.stagger_adjusted_dx((-5, 3), (-5, 1)) == pytest.approx(0.75)
 
 
+def test_stagger_adjusted_dx_handles_the_space_key():
+    # Space is at (0, 0); its row has no stagger (offset 0). A bigram involving space must
+    # not raise (space is the most frequent character in real data).
+    # home index (-2,2) to space (0,0): (-2 + 0.0) - (0 + 0.0) = -2 -> 2.0
+    assert ROW_STAGGERED_30.stagger_adjusted_dx((-2, 2), (0, 0)) == pytest.approx(2.0)
+    assert ROW_STAGGERED_30.stagger_adjusted_dx((0, 0), (-1, 3)) == pytest.approx(1.25)
+
+
 def test_distance_is_raw_euclidean_without_stagger():
     # Same column, two rows apart: dx=0, dy=2 -> 2.0
     assert ROW_STAGGERED_30.distance((-5, 3), (-5, 1)) == pytest.approx(2.0)
