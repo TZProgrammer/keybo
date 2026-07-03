@@ -110,13 +110,17 @@ def extract_occurrences(
     expected = records[0].get("SENTENCE", "")
     typed = "".join(_letter(r) for r in records)
     flags = mark_correct_flags(typed, expected)
-    correct = [r for r, ok in zip(records, flags, strict=False) if ok]
+    # Keep each correct key's ORIGINAL stream index. This is what lets us reject a window
+    # whose keys were not actually typed consecutively -- if an incorrect key sat between
+    # two correct ones, their original indices are non-contiguous, so they must not be
+    # spliced into an "adjacent" n-gram (which would carry a duration spanning the mistake).
+    correct = [(idx, r) for idx, (r, ok) in enumerate(zip(records, flags, strict=False)) if ok]
     if not correct:
         return []
 
     try:
-        first_press = float(correct[0]["PRESS_TIME"])
-        last_press = float(correct[-1]["PRESS_TIME"])
+        first_press = float(correct[0][1]["PRESS_TIME"])
+        last_press = float(correct[-1][1]["PRESS_TIME"])
     except (ValueError, KeyError):
         return []
     session_wpm = compute_session_wpm(first_press, last_press, len(correct))
@@ -127,7 +131,13 @@ def extract_occurrences(
 
     for i in range(len(correct) - span + 1):
         indices = [i + j * (skip + 1) for j in range(n)]
-        window = [correct[idx] for idx in indices]
+        orig_indices = [correct[idx][0] for idx in indices]
+        # Reject the window unless its keys were originally consecutive in the raw stream
+        # (span keys covering exactly `span` original positions). A gap means a mistyped or
+        # navigation key was removed from between them.
+        if orig_indices[-1] - orig_indices[0] != span - 1:
+            continue
+        window = [correct[idx][1] for idx in indices]
         letters = [_letter(r) for r in window]
 
         if any(ltr.upper() in BANNED_KEYS for ltr in letters):

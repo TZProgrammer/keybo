@@ -93,6 +93,46 @@ def make_session(word, start=1000, step=100):
     return records
 
 
+def test_regression_mistype_in_middle_does_not_splice_a_bigram():
+    """A mistyped key must break the n-gram window, not be collapsed out so the surrounding
+    correct keys splice into a bogus 'adjacent' bigram with an inflated duration.
+
+    Expected 'ab', typed 'a z b' where z is wrong and there is a long pause before the
+    correction. The old code emitted 'ab' with a duration spanning the deleted z.
+    """
+    cmap = build_char_map("qwerty")
+    records = [
+        {**rec("a", 1000, 1050), "SENTENCE": "ab"},
+        {**rec("z", 1100, 1150), "SENTENCE": "ab"},  # wrong key
+        {**rec("b", 5100, 5150), "SENTENCE": "ab"},  # 4s later, after correcting
+    ]
+    occ = extract_occurrences(records, cmap, n=2, skip=0, time_mode="full")
+    # 'a' and 'b' were NOT typed consecutively (z between them) -> no 'ab' bigram.
+    assert [o.ngram for o in occ] == []
+
+
+def test_extract_keeps_bigrams_within_clean_runs_around_a_mistype():
+    """A mistype breaks the window at that point, but clean runs on either side still
+    yield their bigrams (with genuine adjacent durations)."""
+    cmap = build_char_map("qwerty")
+    # expected 'that', typed 't h x a t' -> x wrong. Clean runs: 'th' (before x), 'at' (after).
+    records = [
+        {**rec("t", 1000, 1050), "SENTENCE": "that"},
+        {**rec("h", 1100, 1150), "SENTENCE": "that"},
+        {**rec("x", 1200, 1250), "SENTENCE": "that"},  # wrong
+        {**rec("a", 3000, 3050), "SENTENCE": "that"},
+        {**rec("t", 3100, 3150), "SENTENCE": "that"},
+    ]
+    occ = extract_occurrences(records, cmap, n=2, skip=0, time_mode="full")
+    ngrams = [o.ngram for o in occ]
+    assert "th" in ngrams  # clean run before the error
+    assert "at" in ngrams  # clean run after the error
+    assert "ha" not in ngrams  # would splice across the deleted x
+    # And the surviving bigrams have honest, short durations (not the 1900ms cross-gap).
+    for o in occ:
+        assert o.duration < 500
+
+
 def test_extract_bigrams_from_clean_session():
     cmap = build_char_map("qwerty")
     records = make_session("the")
