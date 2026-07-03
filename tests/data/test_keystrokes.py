@@ -145,9 +145,27 @@ def test_regression_no_splice_across_backspace_on_the_cli_path():
 
     cmap = build_char_map("qwerty")
     rows = [
-        {"TEST_SECTION_ID": "s1", "LETTER": "a", "PRESS_TIME": "1000", "RELEASE_TIME": "1050", "SENTENCE": "ab"},
-        {"TEST_SECTION_ID": "s1", "LETTER": "BKSP", "PRESS_TIME": "1200", "RELEASE_TIME": "1250", "SENTENCE": "ab"},
-        {"TEST_SECTION_ID": "s1", "LETTER": "b", "PRESS_TIME": "5000", "RELEASE_TIME": "5050", "SENTENCE": "ab"},
+        {
+            "TEST_SECTION_ID": "s1",
+            "LETTER": "a",
+            "PRESS_TIME": "1000",
+            "RELEASE_TIME": "1050",
+            "SENTENCE": "ab",
+        },
+        {
+            "TEST_SECTION_ID": "s1",
+            "LETTER": "BKSP",
+            "PRESS_TIME": "1200",
+            "RELEASE_TIME": "1250",
+            "SENTENCE": "ab",
+        },
+        {
+            "TEST_SECTION_ID": "s1",
+            "LETTER": "b",
+            "PRESS_TIME": "5000",
+            "RELEASE_TIME": "5050",
+            "SENTENCE": "ab",
+        },
     ]
     all_occ = []
     for recs in group_sessions(rows).values():
@@ -161,9 +179,27 @@ def test_regression_no_splice_across_arrow_keys_on_the_cli_path():
 
     cmap = build_char_map("qwerty")
     rows = [
-        {"TEST_SECTION_ID": "s1", "LETTER": "t", "PRESS_TIME": "1000", "RELEASE_TIME": "1050", "SENTENCE": "th"},
-        {"TEST_SECTION_ID": "s1", "LETTER": "LEFT", "PRESS_TIME": "1100", "RELEASE_TIME": "1150", "SENTENCE": "th"},
-        {"TEST_SECTION_ID": "s1", "LETTER": "h", "PRESS_TIME": "2000", "RELEASE_TIME": "2050", "SENTENCE": "th"},
+        {
+            "TEST_SECTION_ID": "s1",
+            "LETTER": "t",
+            "PRESS_TIME": "1000",
+            "RELEASE_TIME": "1050",
+            "SENTENCE": "th",
+        },
+        {
+            "TEST_SECTION_ID": "s1",
+            "LETTER": "LEFT",
+            "PRESS_TIME": "1100",
+            "RELEASE_TIME": "1150",
+            "SENTENCE": "th",
+        },
+        {
+            "TEST_SECTION_ID": "s1",
+            "LETTER": "h",
+            "PRESS_TIME": "2000",
+            "RELEASE_TIME": "2050",
+            "SENTENCE": "th",
+        },
     ]
     all_occ = []
     for recs in group_sessions(rows).values():
