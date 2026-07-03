@@ -33,8 +33,18 @@ class Layout:
     # --- lookup ---------------------------------------------------------------------
 
     def pos(self, char: str) -> Position:
-        """The physical position of ``char``."""
+        """The physical position of ``char``.
+
+        Space resolves to the geometry's fixed space position — it is a real board key
+        (typed by the thumb), not one of the assignable letter slots.
+        """
+        if char == " ":
+            return self.geometry.space_position
         return self._char_to_pos[char]
+
+    def has_key(self, char: str) -> bool:
+        """Whether ``char`` is typable on this board (an assigned letter slot, or space)."""
+        return char == " " or char in self._char_to_pos
 
     def key_at(self, x: int, y: int) -> str | None:
         """The character at position ``(x, y)``, or ``None`` if nothing is there."""

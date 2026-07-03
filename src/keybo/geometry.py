@@ -56,10 +56,13 @@ class Geometry:
             then bottom). ``Layout`` assigns characters to these slots by index.
         row_offsets: horizontal stagger applied to a key's column when measuring
             stagger-adjusted horizontal distance, keyed by row (y).
+        space_position: where the space bar sits. Space is a fixed key present on every
+            layout (typed by the thumb), so it is not one of the assignable ``slots``.
     """
 
     slots: tuple[Position, ...]
     row_offsets: dict[int, float] = field(default_factory=lambda: {1: 0.5, 2: 0.0, 3: -0.25})
+    space_position: Position = (0, 0)
 
     def finger(self, x: int) -> Finger:
         """Return the finger that presses column ``x`` (sign = hand, 0 = thumb)."""

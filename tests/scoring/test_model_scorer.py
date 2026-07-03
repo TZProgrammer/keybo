@@ -107,3 +107,50 @@ def test_scorer_skips_bigrams_with_characters_not_on_the_layout():
     scorer = BigramModelScorer(StubModel(1.0), bigram_freqs={"th": 1, "a;": 1, "e/": 1})
     # Only 'th' is fully on the layout -> fitness = 1 * 1.0.
     assert scorer.fitness(lay) == 1.0
+
+
+def test_regression_bug_scorer_includes_space_bigrams():
+    """Space is a fixed board key at (0,0); the training pipeline emits space bigrams, so
+    the scorer MUST score them too (train/serve parity). Dropping them silently discarded
+    ~37% of the real corpus weight, including the single most common bigram 'e '.
+    """
+    lay = Layout(LAYOUT, ROW_STAGGERED_30)
+    # A corpus of space bigrams only. If space were dropped, fitness would be 0.
+    scorer = BigramModelScorer(StubModel(1.0), bigram_freqs={"e ": 5, " t": 3, "s ": 2})
+    assert scorer.fitness(lay) == 10.0  # (5 + 3 + 2) * 1.0 — none dropped
+
+
+def test_regression_space_bigram_train_serve_parity():
+    """The feature vector the SCORER builds for a space bigram must equal the vector the
+    TRAINING path builds for the same bigram+positions. (This is the identical-features
+    guarantee that space previously violated.)"""
+    import numpy as np
+
+    from keybo.features import bigram_features_from_positions
+
+    lay = Layout(LAYOUT, ROW_STAGGERED_30)
+
+    # Capture what the scorer feeds the model for "e " by using a model that echoes its input.
+    class CaptureModel:
+        def __init__(self):
+            self.seen = None
+
+        def predict(self, X):
+            self.seen = X
+            return np.zeros(len(X))
+
+    m = CaptureModel()
+    BigramModelScorer(m, bigram_freqs={"e ": 1}, target_wpm=90).fitness(lay)
+    scorer_vec = m.seen[0]
+
+    # The training path builds features from positions; space is (0,0).
+    e_pos = lay.pos("e")
+    train_vec = bigram_features_from_positions(ROW_STAGGERED_30, (e_pos, (0, 0)), freq=1, wpm=90)
+    np.testing.assert_array_equal(scorer_vec, train_vec)
+
+
+def test_scorer_still_skips_genuinely_off_layout_chars_but_keeps_space():
+    # ';' is not on this layout (has ' and -), so 'a;' is skipped; but 'e ' (space) is kept.
+    lay = Layout(LAYOUT, ROW_STAGGERED_30)
+    scorer = BigramModelScorer(StubModel(1.0), bigram_freqs={"th": 1, "a;": 1, "e ": 1})
+    assert scorer.fitness(lay) == 2.0  # 'th' and 'e ' kept; 'a;' dropped
