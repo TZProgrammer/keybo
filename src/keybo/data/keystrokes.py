@@ -108,13 +108,21 @@ def extract_occurrences(
         return []
 
     expected = records[0].get("SENTENCE", "")
-    typed = "".join(_letter(r) for r in records)
+    # Assign each record its ORIGINAL stream index BEFORE any filtering. The contiguity
+    # check below runs on these indices, so anything that sits between two character keys --
+    # a mistyped char, a backspace, SHIFT, an arrow key (control keys arrive as multi-char
+    # LETTER fields) -- creates a gap and prevents its neighbours from being spliced into an
+    # "adjacent" n-gram whose duration would span the interruption.
+    #
+    # Only single-character rows participate in the typed-vs-expected alignment (a
+    # multi-char LETTER like "BKSP" would desync difflib's per-character flags), but every
+    # row occupies an index, which is what makes control keys break windows.
+    single = [(idx, r) for idx, r in enumerate(records) if len(_letter(r)) == 1]
+    if not single:
+        return []
+    typed = "".join(_letter(r) for _, r in single)
     flags = mark_correct_flags(typed, expected)
-    # Keep each correct key's ORIGINAL stream index. This is what lets us reject a window
-    # whose keys were not actually typed consecutively -- if an incorrect key sat between
-    # two correct ones, their original indices are non-contiguous, so they must not be
-    # spliced into an "adjacent" n-gram (which would carry a duration spanning the mistake).
-    correct = [(idx, r) for idx, (r, ok) in enumerate(zip(records, flags, strict=False)) if ok]
+    correct = [(idx, r) for (idx, r), ok in zip(single, flags, strict=False) if ok]
     if not correct:
         return []
 
@@ -168,10 +176,15 @@ def extract_occurrences(
 
 
 def group_sessions(records: list[dict]) -> dict[str, list[dict]]:
-    """Group raw rows into sessions by TEST_SECTION_ID, keeping single-character letters."""
+    """Group raw rows into sessions by TEST_SECTION_ID.
+
+    Control keys (BKSP, SHIFT, arrows -- multi-char LETTER fields) are KEPT: extraction
+    needs them in the stream so its contiguity check sees the gap they create between the
+    character keys around them. Only rows with no session id or no LETTER at all are dropped.
+    """
     sessions: dict[str, list[dict]] = defaultdict(list)
     for row in records:
-        if not row.get("TEST_SECTION_ID") or len(row.get("LETTER", "")) != 1:
+        if not row.get("TEST_SECTION_ID") or not row.get("LETTER"):
             continue
         sessions[row["TEST_SECTION_ID"]].append(row)
     return sessions

@@ -133,6 +133,44 @@ def test_extract_keeps_bigrams_within_clean_runs_around_a_mistype():
         assert o.duration < 500
 
 
+def test_regression_no_splice_across_backspace_on_the_cli_path():
+    """A control key (BKSP/SHIFT — multi-char LETTER) between two correct chars must break
+    the window even though group_sessions pre-drops such rows.
+
+    The first contiguity fix only caught gaps created by flagged-incorrect single chars; a
+    control key was dropped BEFORE extraction, so 'a <BKSP> b' still spliced into
+    ('ab', ~4000ms) on the CLI path. Original indices must be assigned before any filtering.
+    """
+    from keybo.data.keystrokes import group_sessions
+
+    cmap = build_char_map("qwerty")
+    rows = [
+        {"TEST_SECTION_ID": "s1", "LETTER": "a", "PRESS_TIME": "1000", "RELEASE_TIME": "1050", "SENTENCE": "ab"},
+        {"TEST_SECTION_ID": "s1", "LETTER": "BKSP", "PRESS_TIME": "1200", "RELEASE_TIME": "1250", "SENTENCE": "ab"},
+        {"TEST_SECTION_ID": "s1", "LETTER": "b", "PRESS_TIME": "5000", "RELEASE_TIME": "5050", "SENTENCE": "ab"},
+    ]
+    all_occ = []
+    for recs in group_sessions(rows).values():
+        all_occ += extract_occurrences(recs, cmap, n=2, skip=0, time_mode="full")
+    assert [o.ngram for o in all_occ] == []  # 'a' and 'b' were separated by a backspace
+
+
+def test_regression_no_splice_across_arrow_keys_on_the_cli_path():
+    """Same as above for navigation keys (e.g. LEFT), which are also multi-char rows."""
+    from keybo.data.keystrokes import group_sessions
+
+    cmap = build_char_map("qwerty")
+    rows = [
+        {"TEST_SECTION_ID": "s1", "LETTER": "t", "PRESS_TIME": "1000", "RELEASE_TIME": "1050", "SENTENCE": "th"},
+        {"TEST_SECTION_ID": "s1", "LETTER": "LEFT", "PRESS_TIME": "1100", "RELEASE_TIME": "1150", "SENTENCE": "th"},
+        {"TEST_SECTION_ID": "s1", "LETTER": "h", "PRESS_TIME": "2000", "RELEASE_TIME": "2050", "SENTENCE": "th"},
+    ]
+    all_occ = []
+    for recs in group_sessions(rows).values():
+        all_occ += extract_occurrences(recs, cmap, n=2, skip=0, time_mode="full")
+    assert [o.ngram for o in all_occ] == []
+
+
 def test_extract_bigrams_from_clean_session():
     cmap = build_char_map("qwerty")
     records = make_session("the")
