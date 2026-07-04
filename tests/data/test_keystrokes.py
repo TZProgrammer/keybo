@@ -325,27 +325,60 @@ def test_key_not_in_layout_is_dropped():
 
 def test_aggregate_counts_frequency_and_collects_samples():
     cmap = build_char_map("qwerty")
-    occ = extract_occurrences(make_session("the"), cmap, n=2, skip=0, time_mode="full")
-    occ += extract_occurrences(make_session("the"), cmap, n=2, skip=0, time_mode="full")
+    occ = extract_occurrences(
+        make_session("the"), cmap, n=2, skip=0, time_mode="full", layout="qwerty", pid=7
+    )
+    occ += extract_occurrences(
+        make_session("the"), cmap, n=2, skip=0, time_mode="full", layout="qwerty", pid=7
+    )
     agg = aggregate_occurrences(occ)
-    # 'th' seen twice.
-    key = next(k for k in agg if k[1] == "th")
+    # 'th' seen twice — key is now (layout, positions, ngram).
+    key = next(k for k in agg if k[2] == "th")
+    assert key[0] == "qwerty"
     assert agg[key]["frequency"] == 2
     assert len(agg[key]["occurrences"]) == 2
+    # Each sample is a 4-tuple (wpm, duration, pid, hold).
+    sample = agg[key]["occurrences"][0]
+    assert len(sample) == 4
+    assert sample[2] == 7  # pid
 
 
-def test_write_ngram_tsv_roundtrips(tmp_path):
+def test_write_ngram_tsv_layout_first_column(tmp_path):
+    """The TSV's first field must be the layout name (new schema)."""
     cmap = build_char_map("qwerty")
-    occ = extract_occurrences(make_session("the"), cmap, n=2, skip=0, time_mode="full")
+    occ = extract_occurrences(
+        make_session("the"), cmap, n=2, skip=0, time_mode="full", layout="qwerty", pid=1
+    )
     agg = aggregate_occurrences(occ)
     out = tmp_path / "bistrokes.tsv"
     write_ngram_tsv(agg, str(out))
     text = out.read_text()
-    assert "th" in text
-    # Format: positions<tab>ngram<tab>freq<tab>(wpm, dur)...
-    first = text.splitlines()[0].split("\t")
-    assert first[1] in ("th", "he")
-    assert int(first[2]) >= 1
+    first_line = text.splitlines()[0].split("\t")
+    # layout<TAB>(positions)<TAB>ngram<TAB>freq<TAB>samples...
+    assert first_line[0] == "qwerty"
+    assert first_line[1].startswith("(")  # positions
+    assert first_line[2] in ("th", "he")  # ngram
+    assert int(first_line[3]) >= 1  # frequency
+
+
+def test_write_ngram_tsv_samples_are_4_tuples(tmp_path):
+    """Each sample in the TSV must be a (wpm, duration, pid, hold) 4-tuple."""
+    cmap = build_char_map("qwerty")
+    records = [
+        {**rec("t", 1000, 1060), "SENTENCE": "th"},
+        {**rec("h", 1100, 1160), "SENTENCE": "th"},
+    ]
+    occ = extract_occurrences(records, cmap, n=2, skip=0, time_mode="full", layout="dvorak", pid=99)
+    agg = aggregate_occurrences(occ)
+    out = tmp_path / "test.tsv"
+    write_ngram_tsv(agg, str(out))
+    line = out.read_text().splitlines()[0].split("\t")
+    # field[4] onward are samples
+    sample_str = line[4]
+    sample = eval(sample_str)  # noqa: S307
+    assert len(sample) == 4
+    assert sample[2] == 99  # pid
+    assert sample[3] == 60  # hold = 1060 - 1000
 
 
 # --- file-level orchestration (the CLI-facing path) -----------------------------------
@@ -385,7 +418,7 @@ def test_load_participant_metadata_filters(tmp_path):
 def test_process_dataset_end_to_end(tmp_path):
     files_dir, meta = _make_dataset(tmp_path)
     agg = process_dataset(files_dir, meta, ngram="bigram", time_mode="full")
-    ngrams = {ngram for _, ngram in agg}
+    ngrams = {ngram for _, _, ngram in agg}
     assert ngrams == {"th", "he"}
 
 

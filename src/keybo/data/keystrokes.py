@@ -209,12 +209,12 @@ def group_sessions(records: list[dict]) -> dict[str, list[dict]]:
 
 
 def aggregate_occurrences(occurrences: list[Occurrence]) -> dict:
-    """Aggregate occurrences by (positions, ngram) into frequency + sample list."""
+    """Aggregate occurrences by (layout, positions, ngram) into frequency + sample list."""
     data: dict = defaultdict(lambda: {"frequency": 0, "occurrences": []})
     for occ in occurrences:
-        key = (occ.positions, occ.ngram)
+        key = (occ.layout, occ.positions, occ.ngram)
         data[key]["frequency"] += 1
-        data[key]["occurrences"].append((occ.wpm, occ.duration))
+        data[key]["occurrences"].append((occ.wpm, occ.duration, occ.pid, occ.hold))
     return data
 
 
@@ -229,10 +229,10 @@ def write_ngram_tsv(aggregated: dict, output_path: str) -> None:
         os.makedirs(parent, exist_ok=True)
     ordered = sorted(aggregated.items(), key=lambda kv: kv[1]["frequency"], reverse=True)
     with open(output_path, "w", encoding="utf-8") as f:
-        for (positions, ngram), info in ordered:
+        for (layout, positions, ngram), info in ordered:
             pos_str = "(" + ", ".join(str(p) for p in positions) + ")"
             samples = "\t".join(str(s) for s in info["occurrences"])
-            f.write(f"{pos_str}\t{ngram}\t{info['frequency']}\t{samples}\n")
+            f.write(f"{layout}\t{pos_str}\t{ngram}\t{info['frequency']}\t{samples}\n")
 
 
 # --- file-level orchestration (used by the CLI) ---------------------------------------
