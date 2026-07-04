@@ -26,14 +26,16 @@ uv pip install -e ".[dev]"             # or: pip install -e ".[dev]"
 
 ## Workflows
 
-All four are exposed as `just` recipes, and directly behind `python -m keybo <command>` (or
-the `keybo` console script). The usual pipeline is **process-data → train → score / optimize**.
+All workflows are exposed as `just` recipes, and directly behind `python -m keybo <command>`
+(or the `keybo` console script). The usual pipeline is **process-data → train →
+score / optimize**, with **validate** as the trust check before believing cross-layout claims.
 
 | Command | What it does |
 |---------|--------------|
 | `fetch-data`   | Download + extract the public 136M Keystrokes dataset (~1.5 GB, resumable). |
 | `process-data` | Turn that keystroke dump into a bistroke/tristroke training table (TSV). |
 | `train`        | Fit a typing-time model from that table; writes `model.json` + `model.meta.json`. |
+| `validate`     | Leave-one-layout-out transfer check: can the model rank layouts it never saw? |
 | `optimize`     | Search for a layout that minimizes predicted typing time (simulated annealing + 2-opt). |
 | `score`        | Compare named layouts on the learned objective. |
 | `tune`         | Randomized hyperparameter search for the model. |
@@ -50,7 +52,11 @@ just process-data dataset/Keystrokes/files dataset/Keystrokes/files/metadata_par
 # 2. Train a bigram typing-time model.
 just train bistrokes.tsv bigram models/bigram.json
 
-# 3. Compare known layouts, or search for a new one.
+# 3. Trust check: does the model transfer to layouts it never saw? (Kendall's tau vs a
+#    split-half noise ceiling; see agent-artifacts/OQ5-generalization-validation.md.)
+just validate bistrokes.tsv "--out runs/lolo.json"
+
+# 4. Compare known layouts, or search for a new one.
 just score models/bigram.json bigram
 just optimize models/bigram.json bigram 0
 ```

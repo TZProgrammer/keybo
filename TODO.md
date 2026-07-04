@@ -43,40 +43,38 @@ number until the generalization harness (P1, OQ-5) exists.**
     time), and fix the distribution mismatch (OQ-3).
   Acceptance: a train/serve parity test still passes, AND the chosen direction is justified by
   the OQ-5 experiment, not by intuition.
-- [ ] **Retain the source layout label through processing (schema change).** PREREQUISITE for
-  per-layout eval and leave-one-layout-out. Today `Occurrence`/`StrokeRow` keep only
-  `(positions, ngram, wpm, duration)` and occurrences are pooled across all participants keyed
-  on physical position, so the layout a stroke came from is **discarded**. Add the layout tag
-  through `extract_occurrences` → aggregation → the TSV → `StrokeRow`. (OQ-5, OQ-8)
-- [ ] **Measure the layout + proficiency distribution of qualifying participants.** One-shot:
-  `load_participant_metadata` → Counter by LAYOUT, and a WPM histogram. Grounds OQ-7 (how
-  imbalanced?) and OQ-8 (bucket boundaries) with real numbers instead of guesses. Cheap; do
-  early. (OQ-7, OQ-8)
-- [ ] **Generalization + sliced-eval harness (OQ-5, OQ-8).** Two capabilities:
-  (a) **leave-one-layout-out**: train on 3 layouts, predict the 4th, report ranking/time error
-  on the held-out one; (b) **sliced metrics**: a {layout × WPM-bucket} → {R², MAE, ranking-err}
-  matrix, surfacing the *worst* cell, not just the mean. This is the tool that answers OQ-1 and
-  grounds every "X% faster" claim. **Highest-leverage item after the P0 bugs** (needs the schema
-  change above for the layout axis; the WPM axis works today). Acceptance: `keybo` reports the
-  matrix + held-out ranking; wired into `just`.
-  **Tightened per fable audit (2026-07-04):** harness pre-step computes the split-half noise
-  ceiling (thresholds as a fraction of it, not absolute); the DECISIVE metric is layout-level
-  ranking (Kendall's τ), with per-bigram ρ supplementary (an additive practice effect inflates
-  ρ but is ranking-irrelevant); ≥3 seeds per arm; trainings pinned device=cpu n_jobs=1 for
-  cross-machine reproducibility. Details in agent-artifacts/OQ5-*.md.
-- [ ] **5%-sample smoke test BEFORE the full real-data run.** Run a ~50MB slice of the dump
-  through `process-data` with a row-rejection counter and eyeball the rejection breakdown
-  (encodings, malformed rows — the unknown-unknowns in D.5). Two minutes of insurance against
-  a multi-hour reprocessing cycle. (fable audit, strategic item 3)
+- [x] **Retain the source layout label through processing (schema change).** Done (commits
+  `10c1fa9`/`a4e6f7a`/`5e8b618` produce side, `4a936e7` consume side): `Occurrence` and
+  `StrokeRow` carry `layout`; samples are `(wpm, duration, pid, hold)` 4-tuples; the TSV is
+  layout-first (old-format files are detected by first byte and rejected with the fix named);
+  rejection counters print from `process-data`. `hold` carries OQ-11's feature candidate
+  forward. (OQ-5, OQ-8, OQ-11)
+- [x] **Measure the layout + proficiency distribution of qualifying participants.** Done
+  twice over: metadata counter (commit `c5ea7a5`: 98.68% qwerty, dvorak n=77) and the v3
+  stroke table's per-layout volumes (qwerty 31.2M samples / 54,690 participants; qwertz 277k /
+  485; azerty 92k / 166; dvorak 37k / 64). (OQ-7, OQ-8)
+- [~] **Generalization + sliced-eval harness (OQ-5, OQ-8).** LOLO harness DONE (commit
+  `3eb7d0f`): `keybo validate` / `just validate` — split-half noise ceiling first
+  (participant-level bisection), decisive layout-level Kendall's τ incl. a pooled
+  fully-out-of-sample τ, bucket-centered per-cell ρ supplementary, distance+wpm linear
+  baseline floor, ≥3 seeds, discrimination-tested against synthetic lawful/lawless worlds.
+  Remaining for OQ-8: the full {layout × WPM-bucket} → {R², MAE} worst-cell matrix as a
+  first-class report (cells exist; the slicing report doesn't yet).
+- [x] **Rejection-counter breakdown in process-data.** Done (commit `5e8b618`); first real
+  readout: kept 31.6M | non-contiguous 1.43M | off-layout 439k | banned/multi-char/bad-time 0.
+  (Supersedes the 5%-smoke-test item: the counters now make every full run self-auditing, and
+  three full-dump passes have completed without incident.)
 - [ ] **Decide how to leverage imbalanced non-QWERTY data (OQ-7).** Compare inverse-frequency
   sample weighting vs. resample-with-replacement vs. none vs. non-QWERTY-as-holdout, judged by
   the *per-layout* held-out metrics from the harness above. Prefer weighting over resampling
   (resampling inflates minority-layout confidence). Interacts with OQ-1 (do it after).
 - [ ] **Decide `freq`-as-feature (OQ-1) using the harness above.** Then execute the P1 #5 fork.
-- [ ] **Verify the full real-data pipeline end to end.** Run `fetch-data → process-data →
-  train → score` on the actual 136M dump (not synthetic fixtures) and sanity-check the trained
-  model's per-layout / per-bucket held-out metrics + the layout ranking. Nothing has been run
-  on real data yet.
+- [x] **Verify the full real-data pipeline end to end.** Done three times on the dev box
+  (2026-07-04): v1 (pre-quote-fix), v2 (quote-clean; optimized layout +5.18% vs qwerty,
+  +0.93% vs semimak), v3 (new schema + LOLO validate). Named-layout ordering sane and stable
+  across runs: semimak > graphite > dvorak > colemak > qwerty. Notable: v1/v2 optimized
+  layouts share only 6/30 positions yet cross-score within ~0.5% under both models — the SA
+  optimum is a wide plateau; search + validation beat more restarts.
 
 ## P2 — Important, not urgent
 
@@ -89,8 +87,10 @@ number until the generalization harness (P1, OQ-5) exists.**
 - [ ] **User-configurable objective corpus (OQ-3).** Let a user weight the objective by their
   own text (prose/code/other language) instead of only iWeb. Plausibly the highest-value
   "best layout for ME" capability. Needs a documented way to generate frequency files.
-- [ ] **Push the current work + get it on the laptop.** ~20 unpushed commits on `main`.
-  `git push origin main`, then `git pull` on the laptop.
+- [ ] **Get the current work on the laptop.** `git pull` on the laptop (main is pushed
+  regularly from the dev box). Note the schema change: any laptop-local `bistrokes.tsv` from
+  before 2026-07-04 must be regenerated (`just process-data ...`) — train/validate will
+  refuse the old format by design.
 - [ ] **Validate `nix develop` on the laptop.** `flake.nix` was authored by mirroring gen-ai but
   never run (no nix on the dev box). First `nix develop` → `just doctor` is the real test; if a
   wheel can't find a `.so`, add it to `runtimeLibs` in `flake.nix`.
