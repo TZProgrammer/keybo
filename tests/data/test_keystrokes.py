@@ -549,6 +549,137 @@ def test_schema_hold_minus1_when_release_less_than_press():
     assert occ[0].hold == -1
 
 
+# --- rejection counters -----------------------------------------------------------------
+
+
+def test_counters_session_total_incremented():
+    """Each call to extract_occurrences increments session_total once."""
+    cmap = build_char_map("qwerty")
+    counters: dict = {}
+    extract_occurrences(make_session("the"), cmap, n=2, skip=0, time_mode="full", counters=counters)
+    assert counters["session_total"] == 1
+    extract_occurrences(make_session("the"), cmap, n=2, skip=0, time_mode="full", counters=counters)
+    assert counters["session_total"] == 2
+
+
+def test_counters_session_no_single_char_rows():
+    """A session with no single-char rows increments session_no_single_char_rows."""
+    cmap = build_char_map("qwerty")
+    counters: dict = {}
+    records = [
+        {"LETTER": "BKSP", "PRESS_TIME": "1000", "RELEASE_TIME": "1050", "SENTENCE": "a"},
+        {"LETTER": "SHIFT", "PRESS_TIME": "1100", "RELEASE_TIME": "1150", "SENTENCE": "a"},
+    ]
+    extract_occurrences(records, cmap, n=2, skip=0, time_mode="full", counters=counters)
+    assert counters.get("session_no_single_char_rows") == 1
+    assert counters.get("session_total") == 1
+
+
+def test_counters_session_no_correct_chars():
+    """A session where all typed chars are wrong increments session_no_correct_chars."""
+    cmap = build_char_map("qwerty")
+    counters: dict = {}
+    records = [
+        {"LETTER": "x", "PRESS_TIME": "1000", "RELEASE_TIME": "1050", "SENTENCE": "ab"},
+        {"LETTER": "y", "PRESS_TIME": "1100", "RELEASE_TIME": "1150", "SENTENCE": "ab"},
+    ]
+    extract_occurrences(records, cmap, n=2, skip=0, time_mode="full", counters=counters)
+    assert counters.get("session_no_correct_chars") == 1
+
+
+def test_counters_session_bad_time():
+    """A session with unparseable PRESS_TIME on the first correct key."""
+    cmap = build_char_map("qwerty")
+    counters: dict = {}
+    records = [
+        {"LETTER": "a", "PRESS_TIME": None, "RELEASE_TIME": "1050", "SENTENCE": "ab"},
+        {"LETTER": "b", "PRESS_TIME": "1100", "RELEASE_TIME": "1150", "SENTENCE": "ab"},
+    ]
+    extract_occurrences(records, cmap, n=2, skip=0, time_mode="full", counters=counters)
+    assert counters.get("session_bad_time") == 1
+
+
+def test_counters_window_non_contiguous():
+    """A window rejected for non-contiguity."""
+    cmap = build_char_map("qwerty")
+    counters: dict = {}
+    # 'a' then mistype 'z' then 'b' — 'a' and 'b' are not contiguous.
+    records = [
+        {**rec("a", 1000, 1050), "SENTENCE": "ab"},
+        {**rec("z", 1100, 1150), "SENTENCE": "ab"},
+        {**rec("b", 1200, 1250), "SENTENCE": "ab"},
+    ]
+    extract_occurrences(records, cmap, n=2, skip=0, time_mode="full", counters=counters)
+    assert counters.get("window_non_contiguous") == 1
+    assert counters.get("window_kept", 0) == 0
+
+
+def test_counters_window_banned_key():
+    """window_banned_key counter is wired but unreachable with current BANNED_KEYS (all
+    multi-char) since windows are built from single-char correct[] entries. Verify the
+    counter doesn't appear in a normal session."""
+    cmap = build_char_map("qwerty")
+    counters: dict = {}
+    extract_occurrences(make_session("the"), cmap, n=2, skip=0, time_mode="full", counters=counters)
+    assert counters.get("window_banned_key", 0) == 0
+
+
+def test_counters_window_multi_char():
+    """window_multi_char counter is wired but unreachable since windows are built from
+    single-char correct[] entries. Verify the counter doesn't appear in a normal session."""
+    cmap = build_char_map("qwerty")
+    counters: dict = {}
+    extract_occurrences(make_session("the"), cmap, n=2, skip=0, time_mode="full", counters=counters)
+    assert counters.get("window_multi_char", 0) == 0
+
+
+def test_counters_window_off_layout():
+    """A window where a letter is not in the char map."""
+    cmap = {"a": (0, 0), "b": (1, 0), " ": (0, 0)}  # minimal map, no 'c'
+    counters: dict = {}
+    # 'a' and 'c' are both correct (match expected), contiguous, single-char, not banned
+    # but 'c' is not in cmap -> off_layout
+    records = [
+        {**rec("a", 1000, 1050), "SENTENCE": "ac"},
+        {**rec("c", 1100, 1150), "SENTENCE": "ac"},
+    ]
+    extract_occurrences(records, cmap, n=2, skip=0, time_mode="full", counters=counters)
+    assert counters.get("window_off_layout") == 1
+    assert counters.get("window_kept", 0) == 0
+
+
+def test_counters_window_bad_time():
+    """A window where PRESS_TIME is unparseable for the timing computation."""
+    cmap = build_char_map("qwerty")
+    counters: dict = {}
+    # 3 chars: first and last have valid times (so session WPM succeeds),
+    # but the middle one has bad PRESS_TIME -> window timing fails.
+    records = [
+        {"LETTER": "t", "PRESS_TIME": "1000", "RELEASE_TIME": "1050", "SENTENCE": "the"},
+        {"LETTER": "h", "PRESS_TIME": "bad", "RELEASE_TIME": "1150", "SENTENCE": "the"},
+        {"LETTER": "e", "PRESS_TIME": "1200", "RELEASE_TIME": "1250", "SENTENCE": "the"},
+    ]
+    extract_occurrences(records, cmap, n=2, skip=0, time_mode="full", counters=counters)
+    assert counters.get("window_bad_time", 0) >= 1
+
+
+def test_counters_window_kept_matches_occurrences():
+    """window_kept count matches the number of emitted occurrences."""
+    cmap = build_char_map("qwerty")
+    counters: dict = {}
+    records = make_session("the")
+    occ = extract_occurrences(records, cmap, n=2, skip=0, time_mode="full", counters=counters)
+    assert counters["window_kept"] == len(occ)
+    assert counters["window_kept"] == 2  # "th" and "he"
+
+
+def test_counters_none_when_not_passed():
+    """When counters=None (default), no cost — function works as before."""
+    cmap = build_char_map("qwerty")
+    occ = extract_occurrences(make_session("the"), cmap, n=2, skip=0, time_mode="full")
+    assert len(occ) == 2  # still works
+
+
 def test_regression_double_quote_letter_does_not_corrupt_parsing(tmp_path):
     """A participant typing a double-quote character produces LETTER='\"'. csv's DEFAULT
     dialect treats that as an opening quote and swallows the rest of the line AND the next

@@ -20,16 +20,41 @@ def add_arguments(parser: argparse.ArgumentParser) -> None:
 def run(args: argparse.Namespace) -> int:
     # Validate before the multi-hour processing pass, not at the final write.
     ensure_writable_output(args.output, "--output")
+    counters: dict = {}
     aggregated = process_dataset(
         args.files_dir,
         args.metadata,
         ngram=args.ngram,
         time_mode=args.time_mode,
         progress=not args.no_progress,
+        counters=counters,
     )
     if not aggregated:
         print("No n-gram occurrences extracted; check the dataset and filters.")
         return 1
     write_ngram_tsv(aggregated, args.output)
     print(f"Wrote {len(aggregated)} {args.ngram}s -> {args.output}")
+    _print_counters(counters)
     return 0
+
+
+def _print_counters(c: dict) -> None:
+    files = c.get("files_processed", 0)
+    sessions = c.get("session_total", 0)
+    no_single = c.get("session_no_single_char_rows", 0)
+    no_correct = c.get("session_no_correct_chars", 0)
+    bad_time = c.get("session_bad_time", 0)
+    kept = c.get("window_kept", 0)
+    non_contig = c.get("window_non_contiguous", 0)
+    banned = c.get("window_banned_key", 0)
+    multi = c.get("window_multi_char", 0)
+    off_layout = c.get("window_off_layout", 0)
+    w_bad_time = c.get("window_bad_time", 0)
+    print(
+        f"files: {files}  sessions: {sessions}"
+        f" (no-single: {no_single}, no-correct: {no_correct}, bad-time: {bad_time})"
+    )
+    print(
+        f"windows: kept {kept} | non-contiguous {non_contig} | banned-key {banned}"
+        f" | multi-char {multi} | off-layout {off_layout} | bad-time {w_bad_time}"
+    )

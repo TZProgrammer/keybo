@@ -115,6 +115,9 @@ def extract_occurrences(
     if not records:
         return []
 
+    if counters is not None:
+        counters["session_total"] = counters.get("session_total", 0) + 1
+
     # `or ""` (not a .get default): a short csv row yields SENTENCE=None, not a missing key.
     expected = records[0].get("SENTENCE") or ""
     # Assign each record its ORIGINAL stream index BEFORE any filtering. The contiguity
@@ -128,17 +131,25 @@ def extract_occurrences(
     # row occupies an index, which is what makes control keys break windows.
     single = [(idx, r) for idx, r in enumerate(records) if len(_letter(r)) == 1]
     if not single:
+        if counters is not None:
+            counters["session_no_single_char_rows"] = (
+                counters.get("session_no_single_char_rows", 0) + 1
+            )
         return []
     typed = "".join(_letter(r) for _, r in single)
     flags = mark_correct_flags(typed, expected)
     correct = [(idx, r) for (idx, r), ok in zip(single, flags, strict=False) if ok]
     if not correct:
+        if counters is not None:
+            counters["session_no_correct_chars"] = counters.get("session_no_correct_chars", 0) + 1
         return []
 
     try:
         first_press = float(correct[0][1]["PRESS_TIME"])
         last_press = float(correct[-1][1]["PRESS_TIME"])
     except (TypeError, ValueError, KeyError):  # TypeError: None from a short csv row
+        if counters is not None:
+            counters["session_bad_time"] = counters.get("session_bad_time", 0) + 1
         return []
     session_wpm = compute_session_wpm(first_press, last_press, len(correct))
 
@@ -153,15 +164,23 @@ def extract_occurrences(
         # (span keys covering exactly `span` original positions). A gap means a mistyped or
         # navigation key was removed from between them.
         if orig_indices[-1] - orig_indices[0] != span - 1:
+            if counters is not None:
+                counters["window_non_contiguous"] = counters.get("window_non_contiguous", 0) + 1
             continue
         window = [correct[idx][1] for idx in indices]
         letters = [_letter(r) for r in window]
 
         if any(ltr.upper() in BANNED_KEYS for ltr in letters):
+            if counters is not None:
+                counters["window_banned_key"] = counters.get("window_banned_key", 0) + 1
             continue
         if any(len(ltr) != 1 for ltr in letters):
+            if counters is not None:
+                counters["window_multi_char"] = counters.get("window_multi_char", 0) + 1
             continue
         if any(ltr.lower() not in allowed for ltr in letters):
+            if counters is not None:
+                counters["window_off_layout"] = counters.get("window_off_layout", 0) + 1
             continue
 
         try:
@@ -169,6 +188,8 @@ def extract_occurrences(
             last = float(window[-1]["PRESS_TIME"])
             prev = float(window[-2]["PRESS_TIME"])
         except (TypeError, ValueError, KeyError):  # TypeError: None from a short csv row
+            if counters is not None:
+                counters["window_bad_time"] = counters.get("window_bad_time", 0) + 1
             continue
 
         if time_mode == "full":
@@ -188,6 +209,8 @@ def extract_occurrences(
         except (TypeError, ValueError, KeyError):
             hold = -1
 
+        if counters is not None:
+            counters["window_kept"] = counters.get("window_kept", 0) + 1
         occurrences.append(Occurrence(positions, ngram, session_wpm, duration, layout, pid, hold))
     return occurrences
 
