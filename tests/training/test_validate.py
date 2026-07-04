@@ -1,0 +1,227 @@
+"""Tests for the leave-one-layout-out validation harness (OQ-5).
+
+The harness is the thing that licenses (or revokes) every cross-layout claim, so its own
+correctness is tested against synthetic worlds where the right answer is known:
+
+- a LAWFUL world where duration is a clean function of geometry (distance) — the harness
+  must report high transfer (rho near the noise ceiling, positive tau, model beats the
+  distance baseline or at least matches it);
+- a LAWLESS world where the held-out layout's times are random — the harness must NOT
+  report transfer (rho near zero).
+
+A harness that can't tell those apart would pass any model, which is worse than no harness.
+"""
+
+import numpy as np
+import pytest
+
+from keybo.data.strokes import StrokeRow
+from keybo.training.validate import (
+    aggregate_layout_table,
+    build_cells,
+    leave_one_layout_out,
+    split_half_ceiling,
+    validate,
+)
+
+# Four fake "layouts": the same six ngrams live at different positions, so a
+# geometry-lawful duration transfers across them while a memorized lookup cannot. Each
+# layout's distance multiset shifts up by one (means 4.5 / 5.5 / 6.5 / 7.5), so the TRUE
+# layout ranking is layA < layB < layC < layD — what the tau assertions check against.
+_D = {  # cross-hand home-row position pair for each integer distance
+    2: ((-1, 2), (1, 2)),
+    3: ((-1, 2), (2, 2)),
+    4: ((-2, 2), (2, 2)),
+    5: ((-2, 2), (3, 2)),
+    6: ((-3, 2), (3, 2)),
+    7: ((-3, 2), (4, 2)),
+    8: ((-4, 2), (4, 2)),
+    9: ((-4, 2), (5, 2)),
+    10: ((-5, 2), (5, 2)),
+}
+_NGRAMS = ["ab", "cd", "ef", "gh", "ij", "kl"]
+_POSITIONS = {
+    layout: {ng: _D[base + i] for i, ng in enumerate(_NGRAMS)}
+    for base, layout in [(2, "layA"), (3, "layB"), (4, "layC"), (5, "layD")]
+}
+
+
+def _distance(positions):
+    (x1, y1), (x2, y2) = positions
+    return ((x1 - x2) ** 2 + (y1 - y2) ** 2) ** 0.5
+
+
+def _lawful_rows(seed=0, n_pids=8, samples_per_pid=6, lawless_layout=None):
+    """duration = 60 + 25*distance + noise; optionally one layout is pure noise."""
+    rng = np.random.default_rng(seed)
+    rows = []
+    for layout, ngrams in _POSITIONS.items():
+        for ngram, positions in ngrams.items():
+            samples = []
+            for pid in range(1, n_pids + 1):
+                for _ in range(samples_per_pid):
+                    wpm = int(rng.integers(65, 95))
+                    if layout == lawless_layout:
+                        dur = int(rng.integers(60, 260))
+                    else:
+                        dur = int(60 + 25 * _distance(positions) + rng.normal(0, 4))
+                    samples.append((wpm, dur, pid, 50))
+            rows.append(
+                StrokeRow(
+                    layout=layout,
+                    positions=positions,
+                    ngram=ngram,
+                    frequency=100,
+                    samples=samples,
+                )
+            )
+    return rows
+
+
+# --- splits -----------------------------------------------------------------------------
+
+
+def test_leave_one_layout_out_partitions_rows():
+    rows = _lawful_rows()
+    train, test = leave_one_layout_out(rows, "layB")
+    assert {r.layout for r in test} == {"layB"}
+    assert "layB" not in {r.layout for r in train}
+    assert len(train) + len(test) == len(rows)
+
+
+def test_leave_one_layout_out_unknown_layout_raises():
+    rows = _lawful_rows()
+    with pytest.raises(ValueError, match="no rows"):
+        leave_one_layout_out(rows, "colemak")
+
+
+# --- cells ------------------------------------------------------------------------------
+
+
+def test_build_cells_respects_wpm_band_and_floor():
+    rows = _lawful_rows()
+    cells = build_cells(rows, wpm_lo=60, wpm_hi=100, bucket_width=40, min_cell_samples=5)
+    assert cells  # non-empty
+    for c in cells:
+        assert 60 <= c.wpm < 100
+        assert c.n >= 5
+    # A band that excludes everything yields no cells.
+    assert build_cells(rows, wpm_lo=200, wpm_hi=240, bucket_width=40, min_cell_samples=1) == []
+
+
+def test_build_cells_obs_matches_known_mean():
+    # One row, constant duration -> obs must be exactly that duration.
+    rows = [
+        StrokeRow(
+            layout="layA",
+            positions=((-1, 2), (1, 2)),
+            ngram="ab",
+            frequency=10,
+            samples=[(70, 150, pid, 50) for pid in range(1, 7)],
+        )
+    ]
+    cells = build_cells(rows, wpm_lo=60, wpm_hi=100, bucket_width=40, min_cell_samples=5)
+    assert len(cells) == 1
+    assert cells[0].obs == pytest.approx(150.0)
+    assert cells[0].layout == "layA"
+    assert cells[0].ngram == "ab"
+
+
+# --- noise ceiling ----------------------------------------------------------------------
+
+
+def test_split_half_ceiling_high_for_consistent_data():
+    # Times depend strongly on the cell and hardly on the participant -> halves agree.
+    rows = _lawful_rows(n_pids=12, samples_per_pid=8)
+    test = [r for r in rows if r.layout == "layA"]
+    ceiling = split_half_ceiling(
+        test, wpm_lo=60, wpm_hi=100, bucket_width=40, min_cell_samples=4, n_boot=20, seed=0
+    )
+    assert ceiling > 0.8
+
+
+def test_split_half_ceiling_near_zero_for_noise():
+    rows = _lawful_rows(n_pids=12, samples_per_pid=8, lawless_layout="layA")
+    test = [r for r in rows if r.layout == "layA"]
+    ceiling = split_half_ceiling(
+        test, wpm_lo=60, wpm_hi=100, bucket_width=40, min_cell_samples=4, n_boot=20, seed=0
+    )
+    assert abs(ceiling) < 0.6  # pure noise: halves should not agree strongly
+
+
+# --- layout table -----------------------------------------------------------------------
+
+
+def test_aggregate_layout_table_weights_by_ngram():
+    rows = _lawful_rows()
+    cells = build_cells(rows, wpm_lo=60, wpm_hi=100, bucket_width=40, min_cell_samples=5)
+    table = aggregate_layout_table(cells)
+    assert set(table) == set(_POSITIONS)
+    # Every layout aggregates over the same common ngram set here.
+    for stats in table.values():
+        assert set(stats) == set(_NGRAMS)
+
+
+# --- end-to-end validate ----------------------------------------------------------------
+
+
+def _fast_params():
+    return {"n_estimators": 40, "max_depth": 3, "learning_rate": 0.3}
+
+
+def test_validate_reports_transfer_in_a_lawful_world():
+    rows = _lawful_rows(n_pids=10, samples_per_pid=8)
+    report = validate(
+        rows,
+        seeds=[0],
+        wpm_lo=60,
+        wpm_hi=100,
+        bucket_width=40,
+        min_cell_samples=4,
+        n_boot=20,
+        train_params=_fast_params(),
+    )
+    # Every layout is a fold.
+    assert set(report["folds"]) == set(_POSITIONS)
+    for fold in report["folds"].values():
+        m = fold["seeds"][0]
+        # Geometry-lawful world: held-out rho should be strongly positive...
+        assert m["rho"] > 0.6
+        # ...and the fold tau over the 4 layouts must not invert the ranking.
+        assert m["tau_all4"] > 0
+    # Pooled held-out tau (each layout predicted by the fold that held it out).
+    assert report["pooled"][0]["tau_heldout"] > 0
+
+
+def test_validate_reports_no_transfer_for_a_lawless_holdout():
+    rows = _lawful_rows(n_pids=10, samples_per_pid=8, lawless_layout="layD")
+    report = validate(
+        rows,
+        seeds=[0],
+        holdouts=["layD"],
+        wpm_lo=60,
+        wpm_hi=100,
+        bucket_width=40,
+        min_cell_samples=4,
+        n_boot=20,
+        train_params=_fast_params(),
+    )
+    m = report["folds"]["layD"]["seeds"][0]
+    # The held-out layout's times are random: no model can predict them.
+    assert m["rho"] < 0.5
+    # And the harness must say so via the ceiling too (unpredictable data, low ceiling).
+    assert report["ceilings"]["layD"] < 0.6
+
+
+def test_validate_rejects_trigram_rows():
+    rows = [
+        StrokeRow(
+            layout="layA",
+            positions=((-1, 2), (1, 2), (2, 2)),
+            ngram="abc",
+            frequency=5,
+            samples=[(70, 150, 1, 50)] * 6,
+        )
+    ]
+    with pytest.raises(NotImplementedError):
+        validate(rows, seeds=[0], train_params=_fast_params())

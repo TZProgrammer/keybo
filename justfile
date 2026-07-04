@@ -64,6 +64,11 @@ train strokes ngram="bigram" out="models/bigram.json" target_wpm="90" extra="":
 tune strokes ngram="bigram" out="best_hyperparams.json":
     keybo tune --strokes {{strokes}} --ngram {{ngram}} --output {{out}}
 
+# Cross-layout trust check: leave-one-layout-out transfer (OQ-5). Run before believing
+# any "X% faster than qwerty" claim. e.g. `just validate bistrokes.tsv "--out runs/lolo.json"`
+validate strokes extra="":
+    keybo validate --strokes {{strokes}} {{extra}}
+
 # Compare named layouts on the learned objective (bigram or trigram model).
 # e.g. `just score models/bigram.json bigram`  ·  `just score models/trigram.json trigram`
 score model="models/bigram.json" ngram="bigram":
