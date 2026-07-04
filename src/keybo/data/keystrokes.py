@@ -205,7 +205,14 @@ def aggregate_occurrences(occurrences: list[Occurrence]) -> dict:
 
 
 def write_ngram_tsv(aggregated: dict, output_path: str) -> None:
-    """Write aggregated n-gram data to a TSV sorted by frequency (highest first)."""
+    """Write aggregated n-gram data to a TSV sorted by frequency (highest first).
+
+    Creates missing parent directories: this runs AFTER the (long) processing pass, so
+    failing here over a typo'd output dir would throw away all of that work.
+    """
+    parent = os.path.dirname(output_path)
+    if parent:
+        os.makedirs(parent, exist_ok=True)
     ordered = sorted(aggregated.items(), key=lambda kv: kv[1]["frequency"], reverse=True)
     with open(output_path, "w", encoding="utf-8") as f:
         for (positions, ngram), info in ordered:
@@ -255,7 +262,11 @@ def process_keystroke_file(
 
 
 def process_dataset(
-    files_dir: str, metadata_path: str, ngram: str, time_mode: str = "full"
+    files_dir: str,
+    metadata_path: str,
+    ngram: str,
+    time_mode: str = "full",
+    progress: bool = False,
 ) -> dict:
     """Process an entire keystroke dump directory into an aggregated n-gram table."""
     if ngram not in NGRAM_SPECS:
@@ -265,14 +276,22 @@ def process_dataset(
     metadata = load_participant_metadata(metadata_path)
     char_maps = {name: build_char_map(name) for name in _LAYOUT_ROWS}
 
+    # Build the list of qualifying files first so we know the total for the progress bar.
+    qualifying = [
+        (fname, metadata[fname.split("_")[0]]["LAYOUT"])
+        for fname in os.listdir(files_dir)
+        if _KEYSTROKE_FILE_RE.match(fname) and fname.split("_")[0] in metadata
+    ]
+
+    iterator = qualifying
+    if progress:
+        from tqdm import tqdm
+
+        iterator = tqdm(qualifying, desc="processing participants", unit="file")
+
     all_occurrences: list[Occurrence] = []
-    for fname in os.listdir(files_dir):
-        if not _KEYSTROKE_FILE_RE.match(fname):
-            continue
-        pid = fname.split("_")[0]
-        if pid not in metadata:
-            continue
-        char_map = char_maps[metadata[pid]["LAYOUT"]]
+    for fname, layout in iterator:
+        char_map = char_maps[layout]
         all_occurrences.extend(
             process_keystroke_file(os.path.join(files_dir, fname), char_map, n, skip, time_mode)
         )

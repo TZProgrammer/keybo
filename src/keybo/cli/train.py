@@ -4,7 +4,9 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 
+from keybo.cli._paths import ensure_writable_output
 from keybo.data.strokes import load_strokes
 from keybo.training.train import train_bigram_model, train_trigram_model
 
@@ -30,6 +32,7 @@ def add_arguments(parser: argparse.ArgumentParser) -> None:
     # right precedence (explicit flag > --hyperparams file > built-in default).
     parser.add_argument("--n-estimators", type=int, default=None)
     parser.add_argument("--max-depth", type=int, default=None)
+    parser.add_argument("--no-progress", action="store_true", help="Disable the progress bar")
 
 
 def _resolve_params(args: argparse.Namespace) -> dict:
@@ -58,6 +61,12 @@ def _resolve_params(args: argparse.Namespace) -> dict:
 
 
 def run(args: argparse.Namespace) -> int:
+    # Fail fast on anything that would kill the run AFTER the expensive stages: an
+    # uncreatable output dir (XGBoost's C++ writer error is opaque and arrives hours in)
+    # or a missing --hyperparams file.
+    ensure_writable_output(args.output, "--output")
+    if args.hyperparams and not os.path.exists(args.hyperparams):
+        raise SystemExit(f"--hyperparams file not found: {args.hyperparams}")
     ngram_len = 2 if args.ngram == "bigram" else 3
     rows = load_strokes(
         args.strokes,
@@ -71,7 +80,10 @@ def run(args: argparse.Namespace) -> int:
 
     params = _resolve_params(args)
     trainer = train_bigram_model if args.ngram == "bigram" else train_trigram_model
-    model = trainer(rows, target_wpm=args.target_wpm, **params)
+    # progress is an explicit kwarg, deliberately NOT merged into params: params is recorded
+    # as hyperparameter provenance and forwarded to XGBoost, where a stray key would be
+    # silently ignored.
+    model = trainer(rows, target_wpm=args.target_wpm, progress=not args.no_progress, **params)
 
     # Record the resolved hyperparameters actually used, for provenance. ModelMetadata is a
     # frozen dataclass, but `extra` is a mutable dict field, so mutating it in place is fine

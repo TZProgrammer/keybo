@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import json
 
+from keybo.cli._paths import ensure_writable_output
 from keybo.cli._scorer import add_scorer_arguments, build_scorer
 from keybo.geometry import ROW_STAGGERED_30
 from keybo.layout import Layout
@@ -33,6 +34,7 @@ def add_arguments(parser: argparse.ArgumentParser) -> None:
         "--out",
         help="Write the best result to this path as JSON (layout, fitness, and run config)",
     )
+    parser.add_argument("--no-progress", action="store_true", help="Disable the progress bar")
 
 
 def _one_attempt(args: argparse.Namespace, scorer, seed: int) -> Layout:
@@ -40,7 +42,9 @@ def _one_attempt(args: argparse.Namespace, scorer, seed: int) -> Layout:
     # A fresh Layout per attempt: SA mutates the layout it searches, so reusing one would
     # start later attempts from a different (mutated) board and break seed determinism.
     layout = Layout(args.start, ROW_STAGGERED_30)
-    sa = SimulatedAnnealing(seed=seed, alpha=args.alpha, max_outer=args.max_outer)
+    sa = SimulatedAnnealing(
+        seed=seed, alpha=args.alpha, max_outer=args.max_outer, progress=not args.no_progress
+    )
     best = sa.optimize(layout, scorer)
     if not args.no_local_search:
         best = two_opt(best, scorer)
@@ -50,6 +54,9 @@ def _one_attempt(args: argparse.Namespace, scorer, seed: int) -> Layout:
 def run(args: argparse.Namespace) -> int:
     if args.attempts < 1:
         raise SystemExit(f"--attempts must be >= 1 (got {args.attempts})")
+    if args.out:
+        # Validate before the (long) search, not when writing the result at the end.
+        ensure_writable_output(args.out, "--out")
     scorer = build_scorer(args)
 
     best_layout: Layout | None = None

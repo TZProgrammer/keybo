@@ -38,11 +38,17 @@ class SimulatedAnnealing(IOptimizer):
         alpha: float = 0.999,
         acceptance: float = 0.8,
         max_outer: int | None = None,
+        progress: bool = False,
     ):
         self.alpha = alpha
         self.acceptance = acceptance
         # Hard cap on outer (cooling) iterations, so a plateau landscape can't run forever.
         self.max_outer = max_outer
+        # Show a tqdm convergence bar on stderr (stdout stays clean for parseable output).
+        # Progress is measured by `stays` filling toward the stopping point -- the quantity
+        # that actually terminates the run -- so the bar resets when a new best is found:
+        # honest annealing behavior, not a fake linear ETA.
+        self.progress = progress
         self._rng = random.Random(seed)
 
     def cool(self, temperature: float) -> float:
@@ -88,29 +94,44 @@ class SimulatedAnnealing(IOptimizer):
         # moves and could never converge when equal-fitness swaps kept being "accepted".
         stays = 0
         outer = 0
-        while stays < stop:
-            if self.max_outer is not None and outer >= self.max_outer:
-                break
-            outer += 1
-            for _ in range(key_count):
-                layout.random_swap(self._rng)
-                candidate = scorer.fitness(layout)
-                delta = candidate - current
+        bar = None
+        if self.progress:
+            from tqdm import tqdm
 
-                if delta <= 0 or self._rng.random() < exp(-delta / temperature):
-                    # Accept improvements and equal moves outright; accept worsening moves
-                    # with the Metropolis probability to escape local minima.
-                    current = candidate
-                else:
-                    layout.undo()
+            bar = tqdm(total=stop, desc="annealing (convergence)", unit="stay", leave=False)
+        try:
+            while stays < stop:
+                if self.max_outer is not None and outer >= self.max_outer:
+                    break
+                outer += 1
+                for _ in range(key_count):
+                    layout.random_swap(self._rng)
+                    candidate = scorer.fitness(layout)
+                    delta = candidate - current
 
-                if current < best_fitness:
-                    best_fitness = current
-                    best_chars = "".join(layout.chars)
-                    stays = 0
-                else:
-                    stays += 1
+                    if delta <= 0 or self._rng.random() < exp(-delta / temperature):
+                        # Accept improvements and equal moves outright; accept worsening moves
+                        # with the Metropolis probability to escape local minima.
+                        current = candidate
+                    else:
+                        layout.undo()
 
-            temperature = self.cool(temperature)
+                    if current < best_fitness:
+                        best_fitness = current
+                        best_chars = "".join(layout.chars)
+                        stays = 0
+                    else:
+                        stays += 1
+
+                temperature = self.cool(temperature)
+                if bar is not None:
+                    # One cheap update per outer iteration: sync the bar to the convergence
+                    # counter (it can move backward when a new best resets `stays`).
+                    bar.n = min(stays, stop)
+                    bar.set_postfix_str(f"best={best_fitness:.0f} T={temperature:.3g}")
+                    bar.refresh()
+        finally:
+            if bar is not None:
+                bar.close()
 
         return Layout(best_chars, layout.geometry)

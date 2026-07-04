@@ -97,11 +97,23 @@ def _find_files_dir(root: str) -> str | None:
     return None
 
 
-def extract_keystrokes(zip_path: str, out_dir: str) -> str:
-    """Extract the archive into ``out_dir`` and return the path to its ``files`` directory."""
+def extract_keystrokes(zip_path: str, out_dir: str, progress: bool = False) -> str:
+    """Extract the archive into ``out_dir`` and return the path to its ``files`` directory.
+
+    The real archive holds ~168k member files (minutes of otherwise-silent work), so with
+    ``progress`` a tqdm bar tracks members extracted. Per-member ``ZipFile.extract`` performs
+    the same path sanitization as ``extractall`` (which just loops over it internally).
+    """
     os.makedirs(out_dir, exist_ok=True)
     with zipfile.ZipFile(zip_path) as z:
-        z.extractall(out_dir)
+        members = z.infolist()
+        iterator = members
+        if progress:
+            from tqdm import tqdm
+
+            iterator = tqdm(members, desc="extracting", unit="file", leave=False)
+        for member in iterator:
+            z.extract(member, out_dir)
     files_dir = _find_files_dir(out_dir)
     if files_dir is None:
         raise FileNotFoundError(
@@ -130,4 +142,4 @@ def fetch_keystrokes(
 
     zip_path = os.path.join(out_dir, "Keystrokes.zip")
     download_file(url, zip_path, show_progress=show_progress)
-    return extract_keystrokes(zip_path, out_dir)
+    return extract_keystrokes(zip_path, out_dir, progress=show_progress)
