@@ -55,6 +55,9 @@ class Occurrence:
     ngram: str
     wpm: int
     duration: int
+    layout: str
+    pid: int
+    hold: int
 
 
 def build_char_map(layout: str) -> dict[str, tuple[int, int]]:
@@ -104,6 +107,9 @@ def extract_occurrences(
     n: int,
     skip: int,
     time_mode: str,
+    layout: str = "",
+    pid: int = 0,
+    counters: dict | None = None,
 ) -> list[Occurrence]:
     """Slide an n-gram window over one session's records, applying all filters."""
     if not records:
@@ -174,7 +180,15 @@ def extract_occurrences(
 
         ngram = "".join(letters)
         positions = tuple(char_map[ltr.lower()] for ltr in letters)
-        occurrences.append(Occurrence(positions, ngram, session_wpm, duration))
+
+        try:
+            rel = float(window[0]["RELEASE_TIME"])
+            hold_ms = int(rel - first)
+            hold = hold_ms if hold_ms >= 0 else -1
+        except (TypeError, ValueError, KeyError):
+            hold = -1
+
+        occurrences.append(Occurrence(positions, ngram, session_wpm, duration, layout, pid, hold))
     return occurrences
 
 
@@ -253,16 +267,28 @@ def load_participant_metadata(path: str, min_wpm: float = 40.0) -> dict[str, dic
 
 
 def process_keystroke_file(
-    path: str, char_map: dict[str, tuple[int, int]], n: int, skip: int, time_mode: str
+    path: str,
+    char_map: dict[str, tuple[int, int]],
+    n: int,
+    skip: int,
+    time_mode: str,
+    layout: str = "",
+    counters: dict | None = None,
 ) -> list[Occurrence]:
     """Process one participant's keystroke log into occurrences."""
+    basename = os.path.basename(path)
+    pid = int(basename.split("_")[0])
     with open(path, newline="", encoding="utf-8", errors="replace") as f:
         # QUOTE_NONE: see load_participant_metadata — a '"' keystroke corrupts the
         # default dialect's parse (opening-quote swallowing).
         rows = list(csv.DictReader(f, delimiter="\t", quoting=csv.QUOTE_NONE))
     occurrences: list[Occurrence] = []
     for session_records in group_sessions(rows).values():
-        occurrences.extend(extract_occurrences(session_records, char_map, n, skip, time_mode))
+        occurrences.extend(
+            extract_occurrences(
+                session_records, char_map, n, skip, time_mode, layout, pid, counters
+            )
+        )
     return occurrences
 
 
@@ -272,6 +298,7 @@ def process_dataset(
     ngram: str,
     time_mode: str = "full",
     progress: bool = False,
+    counters: dict | None = None,
 ) -> dict:
     """Process an entire keystroke dump directory into an aggregated n-gram table."""
     if ngram not in NGRAM_SPECS:
@@ -296,8 +323,12 @@ def process_dataset(
 
     all_occurrences: list[Occurrence] = []
     for fname, layout in iterator:
+        if counters is not None:
+            counters["files_processed"] = counters.get("files_processed", 0) + 1
         char_map = char_maps[layout]
         all_occurrences.extend(
-            process_keystroke_file(os.path.join(files_dir, fname), char_map, n, skip, time_mode)
+            process_keystroke_file(
+                os.path.join(files_dir, fname), char_map, n, skip, time_mode, layout, counters
+            )
         )
     return aggregate_occurrences(all_occurrences)

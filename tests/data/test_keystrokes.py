@@ -22,7 +22,12 @@ from keybo.data.keystrokes import (
 
 
 def rec(letter, press, release=None):
-    return {"LETTER": letter, "PRESS_TIME": str(press), "RELEASE_TIME": str(release or press)}
+    r = {"LETTER": letter, "PRESS_TIME": str(press)}
+    if release is not None:
+        r["RELEASE_TIME"] = str(release)
+    else:
+        r["RELEASE_TIME"] = str(press)
+    return r
 
 
 # --- char map (regression #6) ---------------------------------------------------------
@@ -451,6 +456,64 @@ def test_regression_short_metadata_rows_do_not_crash(tmp_path):
     )
     md = load_participant_metadata(str(p))
     assert set(md) == {"111", "333"}  # short row skipped, not fatal
+
+
+# --- schema: layout, pid, hold fields -------------------------------------------------
+
+
+def test_schema_layout_and_pid_stamped_on_occurrence():
+    """extract_occurrences stamps layout and pid on each Occurrence."""
+    cmap = build_char_map("qwerty")
+    records = make_session("th", start=1000, step=100)
+    occ = extract_occurrences(records, cmap, n=2, skip=0, time_mode="full", layout="qwerty", pid=42)
+    assert len(occ) == 1
+    assert occ[0].layout == "qwerty"
+    assert occ[0].pid == 42
+
+
+def test_schema_hold_computed_from_first_key_release_minus_press():
+    """hold = RELEASE_TIME - PRESS_TIME of the first key in the window, int ms."""
+    cmap = build_char_map("qwerty")
+    # first key: press=1000, release=1080 -> hold=80
+    records = [
+        {**rec("t", 1000, 1080), "SENTENCE": "th"},
+        {**rec("h", 1100, 1180), "SENTENCE": "th"},
+    ]
+    occ = extract_occurrences(records, cmap, n=2, skip=0, time_mode="full", layout="qwerty", pid=1)
+    assert occ[0].hold == 80
+
+
+def test_schema_hold_minus1_when_release_missing():
+    """hold = -1 when the first key has no RELEASE_TIME."""
+    cmap = build_char_map("qwerty")
+    records = [
+        {"LETTER": "t", "PRESS_TIME": "1000", "SENTENCE": "th"},  # no RELEASE_TIME key
+        {**rec("h", 1100, 1180), "SENTENCE": "th"},
+    ]
+    occ = extract_occurrences(records, cmap, n=2, skip=0, time_mode="full", layout="qwerty", pid=1)
+    assert occ[0].hold == -1
+
+
+def test_schema_hold_minus1_when_release_unparseable():
+    """hold = -1 when RELEASE_TIME is not a valid number."""
+    cmap = build_char_map("qwerty")
+    records = [
+        {"LETTER": "t", "PRESS_TIME": "1000", "RELEASE_TIME": "bad", "SENTENCE": "th"},
+        {**rec("h", 1100, 1180), "SENTENCE": "th"},
+    ]
+    occ = extract_occurrences(records, cmap, n=2, skip=0, time_mode="full", layout="qwerty", pid=1)
+    assert occ[0].hold == -1
+
+
+def test_schema_hold_minus1_when_release_less_than_press():
+    """hold = -1 when release < press (data error)."""
+    cmap = build_char_map("qwerty")
+    records = [
+        {**rec("t", 1000, 900), "SENTENCE": "th"},  # release 900 < press 1000
+        {**rec("h", 1100, 1180), "SENTENCE": "th"},
+    ]
+    occ = extract_occurrences(records, cmap, n=2, skip=0, time_mode="full", layout="qwerty", pid=1)
+    assert occ[0].hold == -1
 
 
 def test_regression_double_quote_letter_does_not_corrupt_parsing(tmp_path):
