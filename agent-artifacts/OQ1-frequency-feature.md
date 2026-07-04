@@ -1,10 +1,38 @@
 # OQ-1 — Should n-gram frequency be a model FEATURE, or only an objective WEIGHT?
 
-**Status: 🟡 leaning weight-only.** The lean rests on the **saturation evidence**, not on the
-synthetic probe: a fable-tier audit (2026-07-04) correctly showed the probe's original
-framing was near-tautological and seed-fragile. This artifact was rewritten to reflect that
-honestly. Definitive closure needs the real-data LOLO harness (OQ-5) with the **tightened
-decision rule below**.
+**Status: 🟢 CLOSED (2026-07-04): weight-only. The real-data LOLO A/B (the pre-registered
+decisive experiment, run through the OQ-5 harness) came back unambiguous — B (freq pinned)
+beats A (freq live) on the DECISIVE layout-level metric in every fold and every seed.**
+
+## The closing measurement (full 136M dump, bistrokes_v3.tsv; 4 folds × 3 seeds/arm)
+
+| metric (decisive first) | A: freq live | B: freq pinned to 1 |
+|---|---|---|
+| pooled fully-out-of-sample layout τ | +0.333 (all seeds) | **+0.667 (all seeds)** |
+| per-fold τ_all | +.667/+.333/+.333/+.333 | **+1.0/+1.0/+1.0/+.667** |
+| beats distance+wpm baseline | ~1/4 folds | **4/4 folds, 3/3 seeds** |
+| per-bigram ρ (supplementary) | higher (.42–.64) | lower (.30–.65) |
+
+Reports: `keybo-e2e/runs/lolo_v3.json` vs `runs/lolo_v3_nofreq.json` (same config, same
+ceilings/baselines by construction). Note the pattern the tightened decision rule
+anticipated: **A wins only on per-bigram ρ — exactly the branch pre-registered as "drop the
+feature"** (the ρ gain is practice-effect fit, which cancels in fitness differences and
+cannot help the optimizer; meanwhile it actively corrupts the layout-level ranking).
+
+**Consequences now due:** delete `freq` from the bigram schema and `bg1_freq`/`bg2_freq`/
+`sg_freq` from the trigram schema (killing the audit-#5 landmine for good), bump
+`FEATURE_VERSION`, retrain. Frequency remains exactly what the objective multiplies by:
+a corpus weight, swappable per user (OQ-3) without retraining.
+
+---
+
+*The analysis below is the pre-closure state of the question, kept for the reasoning
+record. The lean it argued for is what the measurement confirmed.*
+
+**Pre-closure status was: 🟡 leaning weight-only.** The lean rested on the **saturation
+evidence**, not on the synthetic probe: a fable-tier audit (2026-07-04) correctly showed
+the probe's original framing was near-tautological and seed-fragile. This artifact was
+rewritten to reflect that honestly.
 
 ## Best current answer
 

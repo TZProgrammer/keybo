@@ -9,7 +9,15 @@ Status legend: 🔴 open · 🟡 leaning · 🟢 decided (move the decision to a
 
 ---
 
-## OQ-1 🟡 Should n-gram frequency be a model FEATURE, or only an objective WEIGHT?
+## OQ-1 🟢 CLOSED (2026-07-04): frequency is an objective WEIGHT only, not a model feature.
+
+**Closed by the pre-registered decisive experiment** (real-data LOLO A/B through the OQ-5
+harness): pinning freq **doubled** the pooled out-of-sample layout-ranking τ (+0.333 →
++0.667, all seeds), made every fold beat the distance baseline (4/4 vs ~1/4), and won the
+per-fold τ everywhere — while the freq-live arm won only per-bigram ρ, the exact
+"practice-effect fit, ranking-irrelevant" branch pre-registered as *drop the feature*.
+Details + tables: `agent-artifacts/OQ1-frequency-feature.md`. Follow-up due: delete the
+freq features from the schema (incl. trigram constituents), bump FEATURE_VERSION, retrain.
 
 **The distinction.** Frequency plays two roles that are easy to conflate:
 1. **Weight** in the objective: `fitness = Σ time(ngram) × freq(ngram)`. Uncontroversial — we
@@ -87,19 +95,20 @@ features (SFB, scissor, LSB, redirect) are computed but only enter via their lea
 
 ---
 
-## OQ-5 🔴 How do we validate that a model ranks NOVEL layouts well (not just fits data)?
+## OQ-5 🟢 harness built + run (2026-07-04). Verdict: current model FAILS the transfer bar.
 
-There is currently **no generalization test**. The data has only 4 layouts (all QWERTY-family),
-so a model can fit them well and still misrank a novel layout. Proposed method:
-**leave-one-layout-out** — train on 3 layouts, predict the 4th, check whether predicted ranking/
-times match the held-out layout's observed times. This is the harness that actually answers
-OQ-1 and grounds every "layout X is N% faster" claim. Until it exists, treat cross-layout
-speed numbers as unvalidated.
+**`keybo validate` / `just validate`** — leave-one-layout-out with a split-half noise
+ceiling (participant-level), decisive layout-level Kendall's τ (incl. a pooled
+fully-out-of-sample τ), bucket-centered per-cell ρ supplementary, a distance+wpm linear
+baseline floor, ≥3 seeds; discrimination-tested against synthetic lawful/lawless worlds.
 
-**Prerequisite (see OQ-8):** the processed data currently **discards the layout label** —
-`Occurrence`/`StrokeRow` keep only `(positions, ngram, wpm, duration)` and occurrences are
-pooled across all participants keyed on physical position. Leave-one-layout-out is impossible
-until we retain the source layout per stroke row. (TODO P1.)
+**Real-dump verdict:** ρ reaches only .59–.80 of each layout's ceiling (bar: 0.8×
+everywhere; dvorak worst at ~.63/.46), and the freq-live model beat the dumb distance
+baseline on just ~1/4 folds → **the pre-registered "QWERTY-family model" caveat fires:
+treat every cross-layout % as within-model, not validated human time.** The same run
+closed OQ-1 (freq pinned: τ +0.667, beats baseline 4/4). Remediation levers (OQ-7
+weighting, OQ-11 hold/rollover features, OQ-4 comfort terms) are now all judged by this
+harness. Numbers + honest readings: `agent-artifacts/OQ5-generalization-validation.md`.
 
 ---
 
