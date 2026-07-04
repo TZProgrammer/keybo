@@ -15,6 +15,11 @@ test/experiment that would close the question definitively**, with acceptance cr
 | `OQ6-geometry.md` | non-row-stagger geometries | 🟢 decided (no, for now) |
 | `OQ7-nonqwerty-leverage.md` | leveraging imbalanced non-QWERTY data | 🔴 experiment matrix defined |
 | `OQ8-sliced-evaluation.md` | per-layout / per-proficiency evaluation | 🟡 design settled; blocked on schema change |
+| `OQ9-local-speed-conditioning.md` | condition bigram time on local typing pace? | 🔴 analysis done; real-data numbers pending |
+| `OQ10-trigram-target.md` | what should the trigram model predict? | 🔴 lean: conditioned 2nd bigram; A/B via harness |
+| `OQ11-interval-definition.md` | PP vs PR vs RP vs RR intervals | 🟡 lean PP (composability); rollover data pending |
+| `OQ12-typo-dynamics.md` | typo exclusion radius, clustering, hesitation tails | 🔴 structural fix in place; radius pending |
+| `OQ13-modifier-semantics.md` | SHIFT/CAPS chords, capitals in the objective | 🔴 vocabulary measured; mechanics pending |
 | `design-audit-2026-07-03.md` | full design audit: gaps, missing features, risks | report |
 | `experiments/` | runnable probe scripts backing the artifacts | — |
 
