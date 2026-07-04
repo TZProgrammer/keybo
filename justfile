@@ -54,10 +54,11 @@ data ngram="bigram" out="bistrokes.tsv":
     keybo fetch-data --out-dir dataset
     keybo process-data --files-dir dataset/Keystrokes/files --metadata dataset/Keystrokes/files/metadata_participants.txt --ngram {{ngram}} --output {{out}}
 
-# Fit a typing-time model from a stroke table.
+# Fit a typing-time model from a stroke table. Pass extra="--hyperparams best_hyperparams.json"
+# to consume `just tune` output.
 # e.g. `just train bistrokes.tsv bigram models/bigram.json`
-train strokes ngram="bigram" out="models/bigram.json" target_wpm="90":
-    keybo train --strokes {{strokes}} --ngram {{ngram}} --output {{out}} --target-wpm {{target_wpm}}
+train strokes ngram="bigram" out="models/bigram.json" target_wpm="90" extra="":
+    keybo train --strokes {{strokes}} --ngram {{ngram}} --output {{out}} --target-wpm {{target_wpm}} {{extra}}
 
 # Hyperparameter search; writes best params JSON.
 tune strokes ngram="bigram" out="best_hyperparams.json":
@@ -69,6 +70,7 @@ score model="models/bigram.json" ngram="bigram":
     keybo score --model {{model}} --ngram {{ngram}}
 
 # Search for a layout that minimizes predicted typing time (bigram or trigram model).
-# e.g. `just optimize models/bigram.json bigram 0`  ·  `just optimize models/trigram.json trigram 0`
-optimize model="models/bigram.json" ngram="bigram" seed="0":
-    keybo optimize --model {{model}} --ngram {{ngram}} --seed {{seed}}
+# best-of-N with a durable result: pass attempts + an --out path via extra.
+# e.g. `just optimize models/bigram.json bigram 0 10 "--out runs/best.json"`
+optimize model="models/bigram.json" ngram="bigram" seed="0" attempts="1" extra="":
+    keybo optimize --model {{model}} --ngram {{ngram}} --seed {{seed}} --attempts {{attempts}} {{extra}}

@@ -74,3 +74,28 @@ def test_named_layouts_are_all_scored_on_an_identical_bigram_set(corpus_dir):
     assert next(iter(scored_per_layout.values())) == frozenset(common)
     # The bug is real: some corpus bigrams are NOT common to all layouts.
     assert 0 < len(common) < len(freqs)
+
+
+def test_unknown_layout_name_is_rejected(tmp_path):
+    """A typo'd --layouts name must error, not silently vanish from the comparison
+    (found in the final self-audit: 'dvorka' produced baseline-only output, rc 0)."""
+    import pytest
+
+    from keybo.cli.__main__ import main
+    from tests.cli.test_cli import _train_tiny_model
+
+    model_path = _train_tiny_model(tmp_path / "bg.json")
+    corpus = tmp_path / "bg.txt"
+    corpus.write_text("th\t10\n")
+    with pytest.raises(SystemExit):
+        main(
+            [
+                "score",
+                "--model",
+                str(model_path),
+                "--bigram-freqs",
+                str(corpus),
+                "--layouts",
+                "dvorka",
+            ]
+        )

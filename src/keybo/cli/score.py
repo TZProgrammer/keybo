@@ -43,8 +43,13 @@ def common_ngrams(freqs: Mapping[str, int], layouts: Iterable[Layout]) -> dict[s
 
 
 def run(args: argparse.Namespace) -> int:
+    unknown = [n for n in args.layouts if n not in NAMED_LAYOUTS]
+    if unknown:
+        raise SystemExit(
+            f"unknown layout name(s): {', '.join(unknown)}; choose from {sorted(NAMED_LAYOUTS)}"
+        )
     # The layouts actually being compared: the baseline plus every requested named layout.
-    names = [BASELINE] + [n for n in args.layouts if n != BASELINE and n in NAMED_LAYOUTS]
+    names = [BASELINE] + [n for n in args.layouts if n != BASELINE]
     layouts = {name: Layout(NAMED_LAYOUTS[name], ROW_STAGGERED_30) for name in names}
 
     freqs = load_freqs(args)
