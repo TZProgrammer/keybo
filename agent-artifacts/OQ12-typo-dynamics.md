@@ -1,8 +1,36 @@
 # OQ-12 — How should typos shape what we keep, exclude, and model?
 
-**Status: 🔴 open — the pipeline already has a principled *structural* answer (contiguity);
-the open part is the *temporal* one: how long after a correction is timing contaminated?
-Muscle-D is measuring the contamination radius and typo clustering on the real dump.**
+**Status: 🟢 measured (2026-07-04) — decisions resolved below. Headline: speed recovery
+after a correction is IMMEDIATE (radius ~1 key), but ERROR probability stays elevated ~5
+keys; and duration caps would clip substantial legitimate hesitation.**
+
+## Measured (muscle-D: 2000 qualifying files; 29.4k correction events)
+
+- **Contamination radius:** the interval SPANNING the correction gap is 5.4× session median
+  (scales with deletion size: 4.5× for 1-char, 8.6× for 3+), but the median interval is back
+  within 10% of baseline at offset **+1** — and the interval BEFORE the typo is itself
+  elevated ~1.23× (the stumble precedes the error). The legacy's hardcoded "2 keys after"
+  was roughly right by accident; the measured radius is ~1 (the correction-spanning window
+  itself, which the contiguity rule ALREADY drops).
+- **Typo-begets-typo: REAL but about errors, not speed.** Second-correction hazard 1.7× base
+  at k=1, decaying to ~1.25× at k=5–10. Since a second error breaks windows structurally, no
+  timing action needed — but error-adjacent stretches are less trustworthy for ~5 keys.
+- **Hesitation tails (clean stretches):** 2.9% of intervals >3× median, 0.62% >5×, 0.04%
+  >10× — and these hold **11.4% of clean typing TIME above 3×** (3.7% above 5×). A duration
+  cap at 3–5× would clip a large share of legitimate hesitation time.
+
+## Resolved decisions (pre-registered criteria applied)
+
+1. **Exclusion radius: no new exclusion needed.** Measured recovery at +1 means the
+   contiguity rule (which already drops the correction-spanning window) suffices. The
+   legacy-style "N keys after" filter is NOT reinstated.
+2. **Clustering: no radius extension** — hazard 1.7× at k=1 is below the pre-registered 2×
+   threshold, and structure already handles repeat errors.
+3. **No duration caps** — confirmed: gate typo-vs-hesitation by BKSP-proximity (already the
+   mechanism), never by a duration threshold; IQR-mean aggregation keeps handling the tail.
+
+Report: `state/keybo-muscle-d/artifacts/report.md` (probe_2_typo.py). Original analysis kept
+below for the reasoning record.
 
 ## What the pipeline already does (post the splice-fix series)
 

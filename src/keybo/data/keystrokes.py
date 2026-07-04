@@ -229,7 +229,10 @@ def load_participant_metadata(path: str, min_wpm: float = 40.0) -> dict[str, dic
     who use a full/laptop keyboard of a supported layout."""
     metadata: dict[str, dict] = {}
     with open(path, newline="", encoding="utf-8", errors="replace") as f:
-        for row in csv.DictReader(f, delimiter="\t"):
+        # QUOTE_NONE: the dump is plain tab-separated. The default csv dialect treats a
+        # double-quote LETTER (someone typing '"') as an OPENING quote and swallows the
+        # rest of the line plus following rows into one field — silent corruption.
+        for row in csv.DictReader(f, delimiter="\t", quoting=csv.QUOTE_NONE):
             # `or ""` throughout: a short row (fewer columns than the header) gives None
             # for the missing fields, and .strip()/float() on None would crash the run.
             if (row.get("FINGERS") or "").strip() != "9-10":
@@ -254,7 +257,9 @@ def process_keystroke_file(
 ) -> list[Occurrence]:
     """Process one participant's keystroke log into occurrences."""
     with open(path, newline="", encoding="utf-8", errors="replace") as f:
-        rows = list(csv.DictReader(f, delimiter="\t"))
+        # QUOTE_NONE: see load_participant_metadata — a '"' keystroke corrupts the
+        # default dialect's parse (opening-quote swallowing).
+        rows = list(csv.DictReader(f, delimiter="\t", quoting=csv.QUOTE_NONE))
     occurrences: list[Occurrence] = []
     for session_records in group_sessions(rows).values():
         occurrences.extend(extract_occurrences(session_records, char_map, n, skip, time_mode))

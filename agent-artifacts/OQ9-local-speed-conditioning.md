@@ -1,7 +1,31 @@
 # OQ-9 — Should a bigram's predictor condition on LOCAL typing speed (surrounding n keys)?
 
-**Status: 🔴 open — conceptual analysis below; empirical numbers pending (muscle-D measuring
-autocorrelation + window-predictor R² on the real dump; this doc gets them when verified).**
+**Status: 🟢 CLOSED (2026-07-04) — measured on the real dump: NO. Session WPM already
+captures the entire exploitable speed component; local windows add ≤0.011 R² even combined.**
+
+## Measured answer (2000 qualifying files; 26.5k sessions; 1.02M bigram PP intervals)
+
+- **Variance decomposition of log(PP interval):** session identity R²=0.208, bigram identity
+  R²=0.181, additive both=0.382 — leaving 61.8% residual. A local-speed signal could only
+  live in that residual…
+- **…and it doesn't:** within-session autocorrelation of PP intervals is ≈ ZERO once session
+  speed is removed (lag-1 log-centered r=0.004; with BOTH session speed and bigram identity
+  removed, r=−0.043 — no positive momentum at all). The only autocorrelation in the raw
+  series (~0.13, flat across lags) is pure between-session speed — exactly what session WPM
+  already encodes.
+- **Predictor experiment:** trailing / EWMA (halflife 3, 8) / surrounding windows over
+  n∈{2,3,5,8,12,20} add ≤0.011 R² over the session mean (all windows combined, fair common
+  subset), ~0.001–0.003 on the full set. De-biased ≈ biased (the shared-key contamination
+  concern turned out immaterial); the non-causal surrounding window is NOT better than
+  trailing — there is simply no local signal to harvest.
+
+**Decision (per the pre-registered criteria below): keep session WPM; do not add local-pace
+features or normalization.** Criterion 1 required ≥20% relative MAE gain; measured gain is
+~1-3% R² at best. The typing-speed process is (session-level pace) + (bigram identity) +
+(unpredictable noise) — "momentum" between keystrokes is a myth at this data's resolution.
+
+Report: `state/keybo-muscle-d/artifacts/report.md` (probe_1_autocorr.py, probe_3_variance.py).
+Original analysis kept below for the reasoning record.
 
 ## The question
 

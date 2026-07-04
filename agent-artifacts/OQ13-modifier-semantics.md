@@ -1,8 +1,36 @@
 # OQ-13 — Modifier keys: SHIFT, CAPS_LOCK, and friends — what do they do to our data and objective?
 
-**Status: 🔴 open — vocabulary confirmed on the real dump (SHIFT 7.4k, CAPS_LOCK 692,
-ARW_*/CTRL/ALT present in a 300-file sample, plus 299 embedded-header "LETTER" rows);
-mechanics measurements pending (muscle-C).**
+**Status: 🟡 measured (2026-07-04) — mechanics quantified; two decisions resolved, one
+(case-folding) now has its blocking number and needs a final call.**
+
+## Measured (muscle-C: 2000 files / 1.46M rows)
+
+- **SHIFT costs 2.52× the median inter-key interval** (424ms vs 168ms; 1.9–3.1× per key) —
+  capital-adjacent transitions are HEAVILY contaminated, validating the current exclusion.
+- **Chord mechanics:** 88.7% of capitals via SHIFT-hold, 9.8% CAPS_LOCK, 1.5% neither
+  (autocorrect/paste?); in 98.5% of shift-paired capitals SHIFT is DOWN at the letter press
+  (a true chord — parsing capitals from presses alone is impossible, as predicted).
+  CAPS_LOCK appears in 9.3% of sessions.
+- **Data quirk resolved:** ZERO literal-"LETTER" header rows in 2000 files — the parent's
+  earlier 299-row observation was itself an artifact of the csv-quote corruption (below).
+  Under correct parsing only 14/1.46M rows (0.001%) are malformed. The planned header-row
+  ingest filter is therefore unnecessary; the rejection-counter still is.
+- **🔴→🟢 INGEST BUG found by this measurement (fixed, tested):** the dump contains literal
+  double-quote keystrokes (LETTER = `"`, keycode 222). csv's DEFAULT dialect treats that as
+  an opening quote and swallows the rest of the line PLUS following rows into one field —
+  silent corruption of every quote-containing session. Fixed with `quoting=csv.QUOTE_NONE`
+  on both DictReader sites + a regression test reproducing the swallow.
+
+## Resolved / updated decisions
+
+1. Chord modeling stays out of scope (unchanged; data-ceiling logic).
+2. **Case-folding for the objective weight:** the 2.52× slowdown is about the *training*
+   side (we keep excluding capital-adjacent transitions there — now with a measured basis).
+   For the *scoring* weight, folding ' I'→' i' etc. recovers ~6.1% of corpus weight at the
+   cost of ignoring SHIFT-hand asymmetry. Leaning ADOPT for the weight; final call bundled
+   into the OQ-5 harness round (it changes absolute fitness, not obviously ranking).
+3. Header-row filter: dropped (measured nonexistent). Rejection-counter: still recommended.
+4. Capital-adjacent training exclusion: KEEP — now evidence-based (2.52×).
 
 ## The three distinct problems modifiers create
 

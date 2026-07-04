@@ -451,3 +451,34 @@ def test_regression_short_metadata_rows_do_not_crash(tmp_path):
     )
     md = load_participant_metadata(str(p))
     assert set(md) == {"111", "333"}  # short row skipped, not fatal
+
+
+def test_regression_double_quote_letter_does_not_corrupt_parsing(tmp_path):
+    """A participant typing a double-quote character produces LETTER='\"'. csv's DEFAULT
+    dialect treats that as an opening quote and swallows the rest of the line AND the next
+    row into one field (verified: LETTER became '\\t222\\n1\\ts1...'), silently corrupting
+    every session containing a quote character. Ingest must use QUOTE_NONE.
+    (Found by muscle-C measuring the real dump; 14/1.46M rows affected in a 2000-file
+    sample under correct parsing — but arbitrarily many under the default dialect.)"""
+    from keybo.data.keystrokes import process_keystroke_file
+
+    cmap = build_char_map("qwerty")
+    p = tmp_path / "111_keystrokes.txt"
+    p.write_text(
+        "PARTICIPANT_ID\tTEST_SECTION_ID\tSENTENCE\tPRESS_TIME\tRELEASE_TIME\tLETTER\tKEYCODE\n"
+        '111\ts1\tsay "hi" ok\t1000\t1050\ts\t83\n'
+        '111\ts1\tsay "hi" ok\t1100\t1150\ta\t65\n'
+        '111\ts1\tsay "hi" ok\t1200\t1250\ty\t89\n'
+        '111\ts1\tsay "hi" ok\t1300\t1350\t \t32\n'
+        '111\ts1\tsay "hi" ok\t1400\t1450\t"\t222\n'  # the quote char keystroke
+        '111\ts1\tsay "hi" ok\t1500\t1550\th\t72\n'
+        '111\ts1\tsay "hi" ok\t1600\t1650\ti\t73\n'
+    )
+    occ = process_keystroke_file(str(p), cmap, n=2, skip=0, time_mode="full")
+    ngrams = [o.ngram for o in occ]
+    # Under the corrupting default dialect, the '"' row swallowed the 'h' row: 'hi' vanished
+    # and phantom multi-line "letters" appeared. With QUOTE_NONE, 'sa'/'ay' survive and 'hi'
+    # is intact ('"' itself is not on the 30-key map, so windows touching it drop -- fine).
+    assert "sa" in ngrams and "ay" in ngrams
+    assert "hi" in ngrams
+    assert all(len(g) == 2 for g in ngrams)
