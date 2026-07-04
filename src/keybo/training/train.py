@@ -29,7 +29,7 @@ from keybo.models.xgboost_model import XGBoostTypingModel
 def _rows_to_examples(row: StrokeRow, geometry: Geometry, ngram: str):
     """Yield (feature_vector, target_time) per WPM group in a stroke row."""
     by_wpm: dict[int, list[int]] = defaultdict(list)
-    for wpm, duration in row.samples:
+    for wpm, duration, _pid, _hold in row.samples:
         by_wpm[wpm].append(duration)
 
     for wpm, durations in by_wpm.items():

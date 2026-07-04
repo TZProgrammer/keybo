@@ -18,10 +18,11 @@ def _tiny_model(path):
     bigrams = ["th", "he", "an", "in", "er", "re"]
     rows = [
         StrokeRow(
+            layout="qwerty",
             positions=((-1, 3), (1, 2)),
             ngram=bigrams[i % len(bigrams)],
             frequency=5,
-            samples=[(90, 100 + int(rng.integers(0, 40)))],
+            samples=[(90, 100 + int(rng.integers(0, 40)), 1, 50)],
         )
         for i in range(60)
     ]
@@ -89,7 +90,10 @@ def test_optimize_accepts_no_progress(tmp_path):
 
 def test_train_accepts_no_progress(tmp_path):
     tsv = tmp_path / "bi.tsv"
-    lines = [f"((-1, 3), (1, 2))\t{bg}\t5\t(90, 120)\t(85, 130)" for bg in ["th", "he", "an"]]
+    lines = [
+        f"qwerty\t((-1, 3), (1, 2))\t{bg}\t5\t(90, 120, 1, 50)\t(85, 130, 2, 55)"
+        for bg in ["th", "he", "an"]
+    ]
     tsv.write_text("\n".join(lines) + "\n")
     rc = main(
         [

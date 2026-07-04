@@ -17,7 +17,10 @@ def _write_bistrokes(path):
     """A tiny bistrokes TSV the train command consumes (mirrors test_cli's fixture)."""
     lines = []
     for bg in ["th", "he", "an", "in", "er", "re", "on", "at"]:
-        lines.append(f"((-1, 3), (1, 2))\t{bg}\t5\t(90, 120)\t(85, 130)\t(92, 118)")
+        lines.append(
+            f"qwerty\t((-1, 3), (1, 2))\t{bg}\t5"
+            "\t(90, 120, 1, 50)\t(85, 130, 2, 55)\t(92, 118, 3, 52)"
+        )
     path.write_text("\n".join(lines) + "\n")
     return str(path)
 

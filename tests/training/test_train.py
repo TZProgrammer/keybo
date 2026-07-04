@@ -20,9 +20,20 @@ def _synthetic_bigram_rows(n=80):
     rows = []
     for i in range(n):
         bg = bigrams[i % len(bigrams)]
-        # a couple of (wpm, duration) samples per row
-        samples = [(90, 100 + rng.integers(0, 40)), (85, 110 + rng.integers(0, 40))]
-        rows.append(StrokeRow(positions=((-1, 3), (1, 2)), ngram=bg, frequency=5, samples=samples))
+        # a couple of (wpm, duration, pid, hold) samples per row
+        samples = [
+            (90, 100 + rng.integers(0, 40), i, 50),
+            (85, 110 + rng.integers(0, 40), i, 55),
+        ]
+        rows.append(
+            StrokeRow(
+                layout="qwerty",
+                positions=((-1, 3), (1, 2)),
+                ngram=bg,
+                frequency=5,
+                samples=samples,
+            )
+        )
     return rows
 
 
@@ -30,10 +41,20 @@ def test_regression_training_handles_space_bigrams():
     """Real bistroke tables are dominated by space bigrams (positions include (0,0)).
     build_training_matrix must not crash on them."""
     space = (0, 0)
+
+    def row(positions, ngram, freq, dur):
+        return StrokeRow(
+            layout="qwerty",
+            positions=positions,
+            ngram=ngram,
+            frequency=freq,
+            samples=[(90, dur, 1, 50)],
+        )
+
     rows = [
-        StrokeRow(positions=((-3, 3), space), ngram="e ", frequency=100, samples=[(90, 120)]),
-        StrokeRow(positions=(space, (-1, 3)), ngram=" t", frequency=90, samples=[(90, 130)]),
-        StrokeRow(positions=((-1, 3), (1, 2)), ngram="th", frequency=80, samples=[(90, 110)]),
+        row(((-3, 3), space), "e ", 100, 120),
+        row((space, (-1, 3)), " t", 90, 130),
+        row(((-1, 3), (1, 2)), "th", 80, 110),
     ]
     X, y = build_training_matrix(rows, ngram="bigram", target_wpm=90)
     assert X.shape[0] == 3

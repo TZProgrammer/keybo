@@ -24,30 +24,40 @@ def write_tsv(path, lines):
     return str(path)
 
 
-def test_load_strokes_parses_positions_ngram_and_samples(tmp_path):
-    # positions<tab>ngram<tab>freq<tab>(wpm, dur)<tab>(wpm, dur)...
-    line = "((-1, 3), (1, 2))\tth\t3\t(90, 120)\t(85, 130)\t(95, 110)"
+def test_load_strokes_parses_layout_positions_ngram_and_samples(tmp_path):
+    # layout<tab>positions<tab>ngram<tab>freq<tab>(wpm, dur, pid, hold)...
+    line = "qwerty\t((-1, 3), (1, 2))\tth\t3\t(90, 120, 7, 55)\t(85, 130, 8, 60)\t(95, 110, 7, 50)"
     p = write_tsv(tmp_path / "bi.tsv", [line])
     rows = load_strokes(p, ngram_len=2, wpm_threshold=60, min_samples=1)
     assert len(rows) == 1
     r = rows[0]
     assert isinstance(r, StrokeRow)
+    assert r.layout == "qwerty"
     assert r.ngram == "th"
     assert r.positions == ((-1, 3), (1, 2))
-    assert (90, 120) in r.samples
+    assert (90, 120, 7, 55) in r.samples
+
+
+def test_load_strokes_rejects_old_format_with_actionable_error(tmp_path):
+    """Pre-schema files (no layout column) start with '(' — refuse them loudly, naming the
+    fix, instead of silently parsing garbage or returning zero rows."""
+    line = "((-1, 3), (1, 2))\tth\t3\t(90, 120)\t(85, 130)"
+    p = write_tsv(tmp_path / "bi.tsv", [line])
+    with pytest.raises(ValueError, match="process-data"):
+        load_strokes(p, ngram_len=2, wpm_threshold=60, min_samples=1)
 
 
 def test_load_strokes_filters_below_wpm_threshold(tmp_path):
-    line = "((-1, 3), (1, 2))\tth\t3\t(50, 120)\t(90, 130)"
+    line = "qwerty\t((-1, 3), (1, 2))\tth\t3\t(50, 120, 1, 40)\t(90, 130, 2, 45)"
     p = write_tsv(tmp_path / "bi.tsv", [line])
     rows = load_strokes(p, ngram_len=2, wpm_threshold=80, min_samples=1)
     # Only the (90, ...) sample clears wpm>=80.
     assert len(rows) == 1
-    assert rows[0].samples == [(90, 130)]
+    assert rows[0].samples == [(90, 130, 2, 45)]
 
 
 def test_load_strokes_drops_rows_below_min_samples(tmp_path):
-    line = "((-1, 3), (1, 2))\tth\t1\t(90, 120)"
+    line = "qwerty\t((-1, 3), (1, 2))\tth\t1\t(90, 120, 1, 40)"
     p = write_tsv(tmp_path / "bi.tsv", [line])
     rows = load_strokes(p, ngram_len=2, wpm_threshold=60, min_samples=5)
     assert rows == []
@@ -55,12 +65,25 @@ def test_load_strokes_drops_rows_below_min_samples(tmp_path):
 
 def test_load_strokes_skips_wrong_length_ngrams(tmp_path):
     lines = [
-        "((-1, 3), (1, 2))\tth\t3\t(90, 120)",
-        "((-1, 3), (1, 2), (3, 2))\tthe\t3\t(90, 120)",  # trigram in a bigram file
+        "qwerty\t((-1, 3), (1, 2))\tth\t3\t(90, 120, 1, 40)",
+        "qwerty\t((-1, 3), (1, 2), (3, 2))\tthe\t3\t(90, 120, 1, 40)",  # trigram in bigram file
     ]
     p = write_tsv(tmp_path / "bi.tsv", lines)
     rows = load_strokes(p, ngram_len=2, wpm_threshold=60, min_samples=1)
     assert [r.ngram for r in rows] == ["th"]
+
+
+def test_load_strokes_keeps_layouts_separate(tmp_path):
+    """The same ngram on two layouts (different positions) must stay two rows — the
+    leave-one-layout-out harness depends on the layout identity surviving the load."""
+    lines = [
+        "qwerty\t((-1, 3), (1, 2))\tth\t2\t(90, 120, 1, 40)\t(85, 125, 2, 42)",
+        "dvorak\t((2, 2), (-3, 2))\tth\t2\t(88, 140, 3, 50)\t(92, 135, 4, 48)",
+    ]
+    p = write_tsv(tmp_path / "bi.tsv", lines)
+    rows = load_strokes(p, ngram_len=2, wpm_threshold=60, min_samples=1)
+    assert {r.layout for r in rows} == {"qwerty", "dvorak"}
+    assert len(rows) == 2
 
 
 def test_load_strokes_missing_file_raises(tmp_path):

@@ -19,8 +19,19 @@ def _train_tiny_model(path):
     rows = []
     for i in range(120):
         bg = bigrams[i % len(bigrams)]
-        samples = [(90, 100 + int(rng.integers(0, 40))), (85, 110 + int(rng.integers(0, 40)))]
-        rows.append(StrokeRow(positions=((-1, 3), (1, 2)), ngram=bg, frequency=5, samples=samples))
+        samples = [
+            (90, 100 + int(rng.integers(0, 40)), i, 50),
+            (85, 110 + int(rng.integers(0, 40)), i, 55),
+        ]
+        rows.append(
+            StrokeRow(
+                layout="qwerty",
+                positions=((-1, 3), (1, 2)),
+                ngram=bg,
+                frequency=5,
+                samples=samples,
+            )
+        )
     model = train_bigram_model(rows, target_wpm=90, n_estimators=10, max_depth=3)
     model.save(str(path))
     return str(path)
@@ -33,9 +44,18 @@ def _train_tiny_trigram_model(path):
     rows = []
     for i in range(120):
         tg = trigrams[i % len(trigrams)]
-        samples = [(90, 200 + int(rng.integers(0, 60))), (85, 210 + int(rng.integers(0, 60)))]
+        samples = [
+            (90, 200 + int(rng.integers(0, 60)), i, 50),
+            (85, 210 + int(rng.integers(0, 60)), i, 55),
+        ]
         rows.append(
-            StrokeRow(positions=((-1, 3), (1, 2), (-3, 3)), ngram=tg, frequency=5, samples=samples)
+            StrokeRow(
+                layout="qwerty",
+                positions=((-1, 3), (1, 2), (-3, 3)),
+                ngram=tg,
+                frequency=5,
+                samples=samples,
+            )
         )
     model = train_trigram_model(rows, target_wpm=90, n_estimators=10, max_depth=3)
     model.save(str(path))
@@ -243,7 +263,10 @@ def test_train_writes_model_and_sidecar(tmp_path):
     tsv = tmp_path / "bistrokes.tsv"
     lines = []
     for bg in ["th", "he", "an", "in", "er", "re", "on", "at"]:
-        lines.append(f"((-1, 3), (1, 2))\t{bg}\t5\t(90, 120)\t(85, 130)\t(92, 118)")
+        lines.append(
+            f"qwerty\t((-1, 3), (1, 2))\t{bg}\t5"
+            "\t(90, 120, 1, 50)\t(85, 130, 2, 55)\t(92, 118, 3, 52)"
+        )
     tsv.write_text("\n".join(lines) + "\n")
 
     out_model = tmp_path / "bg.json"

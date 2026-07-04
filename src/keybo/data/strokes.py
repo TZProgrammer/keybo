@@ -2,10 +2,17 @@
 
 Each line is::
 
-    positions<TAB>ngram<TAB>frequency<TAB>(wpm, duration)<TAB>(wpm, duration)...
+    layout<TAB>positions<TAB>ngram<TAB>frequency<TAB>(wpm, duration, pid, hold)<TAB>...
 
-where ``positions`` is a Python-literal tuple of ``(x, y)`` positions. Rows are filtered by
-a WPM threshold on individual samples and a minimum surviving-sample count.
+where ``layout`` is the source keyboard layout the participant typed on, ``positions`` is a
+Python-literal tuple of ``(x, y)`` positions, ``pid`` is the participant id, and ``hold`` is
+the first key's press-to-release time in ms (-1 when the release timestamp was unusable).
+Rows are filtered by a WPM threshold on individual samples and a minimum surviving-sample
+count.
+
+Pre-schema files (no layout column; 2-tuple samples) are detected by their first byte —
+they start with ``(`` — and rejected with an error naming the fix, because silently
+loading zero rows after an hours-long processing run is how work gets thrown away.
 """
 
 from __future__ import annotations
@@ -16,13 +23,17 @@ from dataclasses import dataclass
 
 import numpy as np
 
+#: sample tuple layout, for readers of ``StrokeRow.samples``
+SAMPLE_FIELDS = ("wpm", "duration", "pid", "hold")
+
 
 @dataclass
 class StrokeRow:
+    layout: str
     positions: tuple[tuple[int, int], ...]
     ngram: str
     frequency: int
-    samples: list[tuple[int, int]]  # (wpm, duration) pairs clearing the wpm threshold
+    samples: list[tuple[int, int, int, int]]  # (wpm, duration, pid, hold), wpm >= threshold
 
 
 def iqr_average(values: list[float]) -> float:
@@ -36,10 +47,10 @@ def iqr_average(values: list[float]) -> float:
     return float(np.mean(kept)) if kept else float(np.mean(values))
 
 
-def _parse_sample(token: str) -> tuple[int, int] | None:
+def _parse_sample(token: str) -> tuple[int, int, int, int] | None:
     try:
-        wpm, duration = ast.literal_eval(token)
-        return int(wpm), int(duration)
+        wpm, duration, pid, hold = ast.literal_eval(token)
+        return int(wpm), int(duration), int(pid), int(hold)
     except (SyntaxError, ValueError, TypeError):
         return None
 
@@ -55,10 +66,15 @@ def load_strokes(
     rows: list[StrokeRow] = []
     with open(path, encoding="utf-8") as f:
         for line in f:
+            if line.startswith("("):
+                raise ValueError(
+                    f"{path} is in the pre-2026-07 stroke format (no layout column); "
+                    "re-run `keybo process-data` to regenerate it"
+                )
             parts = line.rstrip("\n").split("\t")
-            if len(parts) < 4:
+            if len(parts) < 5:
                 continue
-            pos_str, ngram, freq_str, *sample_tokens = parts
+            layout, pos_str, ngram, freq_str, *sample_tokens = parts
             if len(ngram) != ngram_len:
                 continue
             try:
@@ -77,6 +93,12 @@ def load_strokes(
             except ValueError:
                 frequency = len(samples)
             rows.append(
-                StrokeRow(positions=positions, ngram=ngram, frequency=frequency, samples=samples)
+                StrokeRow(
+                    layout=layout,
+                    positions=positions,
+                    ngram=ngram,
+                    frequency=frequency,
+                    samples=samples,
+                )
             )
     return rows

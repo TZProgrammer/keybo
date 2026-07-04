@@ -22,10 +22,11 @@ def _tiny_model(path):
     rng = np.random.default_rng(0)
     rows = [
         StrokeRow(
+            layout="qwerty",
             positions=((-1, 3), (1, 2)),
             ngram=["th", "he", "an"][i % 3],
             frequency=5,
-            samples=[(90, 100 + int(rng.integers(0, 40)))],
+            samples=[(90, 100 + int(rng.integers(0, 40)), 1, 50)],
         )
         for i in range(30)
     ]
@@ -36,7 +37,10 @@ def _tiny_model(path):
 
 def _tiny_tsv(tmp_path):
     tsv = tmp_path / "bi.tsv"
-    lines = [f"((-1, 3), (1, 2))\t{bg}\t5\t(90, 120)\t(85, 130)" for bg in ["th", "he", "an"]]
+    lines = [
+        f"qwerty\t((-1, 3), (1, 2))\t{bg}\t5\t(90, 120, 1, 50)\t(85, 130, 2, 55)"
+        for bg in ["th", "he", "an"]
+    ]
     tsv.write_text("\n".join(lines) + "\n")
     return str(tsv)
 
@@ -68,7 +72,9 @@ def test_write_ngram_tsv_creates_parent_dirs(tmp_path):
     from keybo.data.keystrokes import write_ngram_tsv
 
     dest = tmp_path / "out" / "nested" / "bi.tsv"
-    aggregated = {(((-1, 3), (1, 2)), "th"): {"frequency": 1, "occurrences": [(90, 100)]}}
+    aggregated = {
+        ("qwerty", ((-1, 3), (1, 2)), "th"): {"frequency": 1, "occurrences": [(90, 100, 1, 50)]}
+    }
     write_ngram_tsv(aggregated, str(dest))
     assert dest.exists()
 
