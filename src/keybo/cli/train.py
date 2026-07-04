@@ -3,9 +3,15 @@
 from __future__ import annotations
 
 import argparse
+import json
 
 from keybo.data.strokes import load_strokes
 from keybo.training.train import train_bigram_model, train_trigram_model
+
+# Fallback estimator params when neither a --hyperparams file nor an explicit flag supplies
+# them. These mirror the historical CLI defaults (and XGBoostTypingModel's own defaults).
+_DEFAULT_N_ESTIMATORS = 300
+_DEFAULT_MAX_DEPTH = 5
 
 
 def add_arguments(parser: argparse.ArgumentParser) -> None:
@@ -15,8 +21,40 @@ def add_arguments(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--target-wpm", type=float, default=90.0)
     parser.add_argument("--wpm-threshold", type=int, default=60, help="Drop samples below this WPM")
     parser.add_argument("--min-samples", type=int, default=25, help="Min samples to keep a row")
-    parser.add_argument("--n-estimators", type=int, default=300)
-    parser.add_argument("--max-depth", type=int, default=5)
+    parser.add_argument(
+        "--hyperparams",
+        help="Path to a JSON dict of XGBoost params (e.g. from `keybo tune`). "
+        "Explicit --n-estimators/--max-depth override the file's values.",
+    )
+    # default=None so we can tell an explicitly-passed flag from an unset one and apply the
+    # right precedence (explicit flag > --hyperparams file > built-in default).
+    parser.add_argument("--n-estimators", type=int, default=None)
+    parser.add_argument("--max-depth", type=int, default=None)
+
+
+def _resolve_params(args: argparse.Namespace) -> dict:
+    """Merge the --hyperparams file with explicit flags per the precedence rule.
+
+    Precedence (highest first): an explicitly-passed --n-estimators/--max-depth flag, then
+    the --hyperparams JSON file, then the built-in defaults. Any *other* params in the JSON
+    (e.g. learning_rate, subsample from `keybo tune`) flow straight through to the trainer.
+    """
+    params: dict = {}
+    if args.hyperparams:
+        with open(args.hyperparams) as f:
+            params.update(json.load(f))
+
+    # Explicit flags win over the file; otherwise keep the file's value, else the default.
+    if args.n_estimators is not None:
+        params["n_estimators"] = args.n_estimators
+    else:
+        params.setdefault("n_estimators", _DEFAULT_N_ESTIMATORS)
+    if args.max_depth is not None:
+        params["max_depth"] = args.max_depth
+    else:
+        params.setdefault("max_depth", _DEFAULT_MAX_DEPTH)
+
+    return params
 
 
 def run(args: argparse.Namespace) -> int:
@@ -31,13 +69,15 @@ def run(args: argparse.Namespace) -> int:
         print("No stroke rows survived filtering; check the input and thresholds.")
         return 1
 
+    params = _resolve_params(args)
     trainer = train_bigram_model if args.ngram == "bigram" else train_trigram_model
-    model = trainer(
-        rows,
-        target_wpm=args.target_wpm,
-        n_estimators=args.n_estimators,
-        max_depth=args.max_depth,
-    )
+    model = trainer(rows, target_wpm=args.target_wpm, **params)
+
+    # Record the resolved hyperparameters actually used, for provenance. ModelMetadata is a
+    # frozen dataclass, but `extra` is a mutable dict field, so mutating it in place is fine
+    # (only attribute *reassignment* is blocked by frozen).
+    model.metadata.extra["hyperparams"] = params
+
     model.save(args.output)
     print(f"Trained {args.ngram} model on {len(rows)} rows -> {args.output}")
     return 0
