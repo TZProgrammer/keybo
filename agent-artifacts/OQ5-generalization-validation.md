@@ -81,6 +81,28 @@ beats-baseline to 4/4). OQ-1 closes accordingly (see OQ-1 artifact).
    — feature work (hold-time, rollover-rate from OQ-11; comfort terms OQ-4) and OQ-7
    weighting are the levers, judged by this same harness.
 
+## Remediation round (same day): the bar is now ~met — arm R1W
+
+The user challenged the OQ-1 interpretation ("practice is real; model it, don't drop it"),
+which led to the pre-registered arm matrix (full tables in the OQ-1 artifact): an explicit
+additive per-bigram practice term, backfit with shrinkage and residualized out of the
+training target, plus inverse-layout-share example weights (**arm R1W**). Result against
+THIS artifact's criteria: pooled fully-out-of-sample τ **+1.0 on all 3 seeds** (was
++0.333), beats the distance baseline **12/12** (was ~1/4), ρ/ceiling ≥ 0.8 on **3/4**
+layouts — azerty 1.00–1.02, dvorak .84–.88, qwertz 1.06 — with qwerty at .796–.799, a
+borderline miss by 0.004. Verdict upgrade: **the R1W model is no longer a QWERTY-family
+memorizer by these criteria**, with the honest reminders that (a) validation still spans
+only the 4-layout QWERTY-adjacent family, so "transfers to a from-scratch alien layout"
+remains extrapolation, and (b) fractions >1.0 mean the pooled model beats one layout's
+internal split-half agreement (legitimate — it borrows strength across layouts — but a
+reminder the ceiling is an estimate, not a hard bound).
+
+Consequence for the north star: the final search (see `runs/final_layout.json`) ran on
+R1W, and the de-confounded model **reorders the named layouts** (dvorak becomes the top
+named layout; colemak drops below qwerty; all gains compress ~4×) — direct evidence the
+freq-live model's rankings were practice-inflated, i.e. this harness caught exactly the
+failure it was built to catch.
+
 ## Why it's THE gate
 
 The model's job during optimization is to judge layouts *no human has ever typed on*. Fitting

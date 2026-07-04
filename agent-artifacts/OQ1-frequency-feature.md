@@ -1,8 +1,40 @@
 # OQ-1 — Should n-gram frequency be a model FEATURE, or only an objective WEIGHT?
 
-**Status: 🟢 CLOSED (2026-07-04): weight-only. The real-data LOLO A/B (the pre-registered
-decisive experiment, run through the OQ-5 harness) came back unambiguous — B (freq pinned)
-beats A (freq live) on the DECISIVE layout-level metric in every fold and every seed.**
+**Status: 🟢 CLOSED, twice-refined (2026-07-04): frequency is (a) an objective WEIGHT and
+(b) the identifier of an EXPLICIT, ADDITIVE practice term that is residualized out of the
+training target — but never a raw model feature.** The first closure (tables below) showed
+freq-as-feature hurts transfer. The user then correctly challenged the *interpretation*:
+"th is fast partly BECAUSE it's practiced — without frequency information the model
+misattributes that speed to th's qwerty geometry." Both are true, and the resolution is the
+instrument, not the mechanism:
+
+- **Why the raw feature fails:** 98.7% of the data is qwerty, where each bigram lives at
+  exactly one position — freq is collinear with geometry (a near-unique position ID), so a
+  tree uses it to memorize per-position speeds, which is anti-transfer.
+- **Why dropping it isn't enough either:** the no-freq model commits omitted-variable bias —
+  geometry absorbs the practice effect (frequent bigrams' positions look "fast").
+- **The correct instrument (arm R1/R1W, harness-validated):** model
+  `time = g(geometry, wpm) + b(bigram)` with `b` a per-bigram additive practice term
+  (backfit with shrinkage, k=100 raw samples, 2 refit iterations), train `g` on `y − b̂`.
+  `b` is layout-independent, so it cancels exactly in layout fitness comparisons — its only
+  job is cleaning `g`'s training target.
+
+**Measured (pre-registered arm matrix, 4 folds × 3 seeds, `keybo-e2e/runs/arms_matrix.json`):**
+
+| arm | pooled out-of-sample τ | mean ρ/ceiling | beats baseline |
+|---|---|---|---|
+| B: freq pinned only | +0.667 (all seeds) | .641 | 12/12 |
+| R1: + practice term | **+1.000 (all seeds)** | .928 | 12/12 |
+| R2: + freq-curve term | +1.000 | .738 | 12/12 |
+| W: + layout reweighting | +0.667/+1.0/+1.0 | .640 | 12/12 |
+| **R1W: practice + reweight** | **+1.000 (all seeds)** | **.931** | **12/12** |
+
+R1W passes the 0.8×-ceiling bar on azerty (1.00–1.02), dvorak (.84–.88), qwertz (1.06);
+qwerty .796–.799 (borderline miss by 0.004). The explicit practice term is the dominant
+lever (+.29 ρ/ceiling over B); reweighting alone does ≈nothing but composes.
+
+*The original closure follows — its decision ("no raw freq feature") stands; its remedy
+("nothing replaces it") was incomplete, exactly as the user suspected.*
 
 ## The closing measurement (full 136M dump, bistrokes_v3.tsv; 4 folds × 3 seeds/arm)
 

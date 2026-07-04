@@ -9,15 +9,22 @@ Status legend: 🔴 open · 🟡 leaning · 🟢 decided (move the decision to a
 
 ---
 
-## OQ-1 🟢 CLOSED (2026-07-04): frequency is an objective WEIGHT only, not a model feature.
+## OQ-1 🟢 CLOSED, twice-refined (2026-07-04): freq = objective weight + explicit additive practice term (never a raw feature).
 
 **Closed by the pre-registered decisive experiment** (real-data LOLO A/B through the OQ-5
 harness): pinning freq **doubled** the pooled out-of-sample layout-ranking τ (+0.333 →
 +0.667, all seeds), made every fold beat the distance baseline (4/4 vs ~1/4), and won the
 per-fold τ everywhere — while the freq-live arm won only per-bigram ρ, the exact
 "practice-effect fit, ranking-irrelevant" branch pre-registered as *drop the feature*.
-Details + tables: `agent-artifacts/OQ1-frequency-feature.md`. Follow-up due: delete the
-freq features from the schema (incl. trigram constituents), bump FEATURE_VERSION, retrain.
+REFINED same day after a correct user challenge (practice is real — model it, don't just
+drop it): the winning arm R1W models `time = g(geometry) + b(bigram)` with b backfit
+(shrinkage k=100) and residualized out of g's target, plus inverse-layout-share weights —
+pooled τ +1.0 all seeds, ρ/ceiling .931, beats-baseline 12/12, passes the 0.8×-ceiling bar
+on 3/4 layouts (qwerty .796 borderline). b is layout-independent so it cancels in ranking;
+its job is cleaning g's training target. Details + tables:
+`agent-artifacts/OQ1-frequency-feature.md`. Follow-up due: productionize R1W training
+(currently in keybo-e2e/final_search.py), delete freq features from the schema (incl.
+trigram constituents), bump FEATURE_VERSION.
 
 **The distinction.** Frequency plays two roles that are easy to conflate:
 1. **Weight** in the objective: `fitness = Σ time(ngram) × freq(ngram)`. Uncontroversial — we
@@ -95,20 +102,25 @@ features (SFB, scissor, LSB, redirect) are computed but only enter via their lea
 
 ---
 
-## OQ-5 🟢 harness built + run (2026-07-04). Verdict: current model FAILS the transfer bar.
+## OQ-5 🟢 harness built + run (2026-07-04); freq-live model FAILED the bar, R1W ~passes.
 
 **`keybo validate` / `just validate`** — leave-one-layout-out with a split-half noise
 ceiling (participant-level), decisive layout-level Kendall's τ (incl. a pooled
 fully-out-of-sample τ), bucket-centered per-cell ρ supplementary, a distance+wpm linear
 baseline floor, ≥3 seeds; discrimination-tested against synthetic lawful/lawless worlds.
 
-**Real-dump verdict:** ρ reaches only .59–.80 of each layout's ceiling (bar: 0.8×
-everywhere; dvorak worst at ~.63/.46), and the freq-live model beat the dumb distance
-baseline on just ~1/4 folds → **the pre-registered "QWERTY-family model" caveat fires:
-treat every cross-layout % as within-model, not validated human time.** The same run
-closed OQ-1 (freq pinned: τ +0.667, beats baseline 4/4). Remediation levers (OQ-7
-weighting, OQ-11 hold/rollover features, OQ-4 comfort terms) are now all judged by this
-harness. Numbers + honest readings: `agent-artifacts/OQ5-generalization-validation.md`.
+**Real-dump verdicts (same day, in order):** (1) the then-current freq-live model reached
+only .59–.80 of each layout's ceiling, beat the dumb distance baseline on ~1/4 folds,
+pooled τ +0.333 → the pre-registered "QWERTY-family model" caveat fired. (2) The
+remediation arm matrix (see OQ-1) produced **R1W** — explicit additive practice term +
+inverse-layout-share weights — which reaches pooled τ **+1.0 on all seeds**, beats the
+baseline **12/12**, and clears the 0.8×-ceiling bar on 3/4 layouts (qwerty .796,
+borderline). The de-confounded model also **reorders the named layouts** (dvorak becomes
+the top named layout; colemak drops below qwerty; gains compress ~4×) — the harness caught
+exactly the practice-inflation failure it was built to catch. Standing caveat: validation
+spans only the 4-layout QWERTY-adjacent family; "transfers to an alien layout" remains
+extrapolation. Numbers + honest readings:
+`agent-artifacts/OQ5-generalization-validation.md`.
 
 ---
 
