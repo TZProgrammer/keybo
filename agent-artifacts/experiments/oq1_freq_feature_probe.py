@@ -1,17 +1,33 @@
-"""OQ-1 probe: does the frequency FEATURE change how a trained model ranks layouts?
+"""OQ-1 probe v2: does the frequency FEATURE change how a trained model ranks layouts?
 
-Method (synthetic, so directional — the definitive version needs real data, see the OQ-1
-artifact): build bistroke training rows whose durations depend ONLY on geometry (distance +
-same-finger penalty), i.e. a world where frequency has no causal effect on time. Train two
-XGBoost models on identical rows — one WITH the freq feature populated from a corpus-like
-distribution, one with freq pinned to a constant — and compare how they rank the named
-layouts. In this frequency-neutral world, any ranking difference is pure freq-feature
-artifact: the "disguised geometry bonus" OQ-1 worries about.
+v1 post-mortem (fable-audit finding 1, 2026-07-04 — kept so nobody repeats it): the original
+probe built ONE synthetic world in which frequency had zero causal effect, ran ONE seed, and
+reported "rankings agree". That was (a) near-tautological — a world with no freq effect has
+no freq-correlated variance for a tree to absorb, so it cannot exhibit the feared
+confound-absorption failure mode; and (b) seed-fragile — across 20 seeds, ~4 produced ranking
+disagreements on the nearly-tied graphite/semimak pair.
+
+v2 therefore runs BOTH worlds across a SEED SWEEP and reports distributions:
+
+  world "neutral"   : time = f(geometry only)             (v1's world, kept for contrast)
+  world "confounded": time = f(geometry) + practice(freq)  (the world OQ-1 actually fears:
+                       a real frequency effect that exists on the trained layout and
+                       transfers additively — the model may entangle it with geometry)
+
+For each world x seed: train WITH-freq and WITHOUT-freq models on qwerty-derived rows,
+then compare (1) layout-ranking agreement between arms, and (2) per-bigram Spearman rho of
+each arm against the WORLD'S GEOMETRY-ONLY component on a novel layout — the ranking-relevant
+signal a layout optimizer needs.
+
+This probe is ILLUSTRATIVE, not decisive: the citable evidence for OQ-1's lean remains the
+serve-scale saturation measurement; the decisive experiment is the real-data LOLO protocol in
+agent-artifacts/OQ1-frequency-feature.md.
 
 Run:  /tmp/keybo_venv/bin/python agent-artifacts/experiments/oq1_freq_feature_probe.py
 """
 
 import numpy as np
+from scipy.stats import spearmanr
 
 from keybo.data.corpus import load_frequencies
 from keybo.features import BIGRAM_FEATURE_NAMES, bigram_features
@@ -20,96 +36,106 @@ from keybo.layout import Layout
 from keybo.layouts import NAMED_LAYOUTS
 from keybo.models.base import ModelMetadata
 from keybo.models.xgboost_model import XGBoostTypingModel
-from keybo.scoring.model_scorer import BigramModelScorer
 
-rng = np.random.default_rng(0)
 QWERTY = Layout(NAMED_LAYOUTS["qwerty"], G)
 FREQS = load_frequencies("data/corpus/bigrams.txt")
+DIST = BIGRAM_FEATURE_NAMES.index("distance")
+SF = BIGRAM_FEATURE_NAMES.index("same_finger")
+SEEDS = range(12)
+NOVEL = "graphite"  # evaluation layout not used for training rows
 
-FREQ_IDX = BIGRAM_FEATURE_NAMES.index("freq")
-DIST_IDX = BIGRAM_FEATURE_NAMES.index("distance")
-SF_IDX = BIGRAM_FEATURE_NAMES.index("same_finger")
+META = ModelMetadata(
+    feature_version="probe",
+    feature_names=BIGRAM_FEATURE_NAMES,
+    wpm_range=(60, 120),
+    ngram="bigram",
+)
 
 
-def geometry_time(vec: np.ndarray) -> float:
-    """Ground-truth typing time in this synthetic world: geometry only, NO freq effect."""
-    return 100.0 + 30.0 * vec[DIST_IDX] + 80.0 * vec[SF_IDX] + rng.normal(0, 5)
+def geometry_component(vec: np.ndarray) -> float:
+    return 100.0 + 30.0 * vec[DIST] + 80.0 * vec[SF]
 
 
-def training_matrix(with_freq: bool):
-    """Rows: every scoreable qwerty bigram, duration from geometry_time."""
+def practice_component(freq: float) -> float:
+    # A real, additive practice effect: frequent patterns are faster everywhere.
+    return -12.0 * np.log1p(freq) / np.log(10)
+
+
+def make_training(world: str, with_freq: bool, rng) -> tuple[np.ndarray, np.ndarray]:
     X, y = [], []
-    for bg, freq in FREQS.items():
+    for bg, f in FREQS.items():
         if not all(QWERTY.has_key(c) for c in bg):
             continue
-        vec = bigram_features(QWERTY, bg, freq=freq if with_freq else 1.0, wpm=90)
+        vec = bigram_features(QWERTY, bg, freq=f if with_freq else 1.0, wpm=90)
+        t = geometry_component(vec)
+        if world == "confounded":
+            t += practice_component(f)
         X.append(vec)
-        y.append(geometry_time(vec))
+        y.append(t + rng.normal(0, 5))
     return np.vstack(X), np.array(y)
 
 
-def train(with_freq: bool) -> XGBoostTypingModel:
-    X, y = training_matrix(with_freq)
-    meta = ModelMetadata(
-        feature_version="probe",
-        feature_names=BIGRAM_FEATURE_NAMES,
-        wpm_range=(60, 120),
-        ngram="bigram",
-    )
-    m = XGBoostTypingModel(meta, n_estimators=150, max_depth=5)
-    m.fit(X, y)
-    return m
-
-
-def rank_layouts(model, with_freq: bool):
-    # The WEIGHT stays the real corpus frequency in both arms -- only the FEATURE differs.
+def layout_ranking(model, with_freq: bool):
     scores = {}
     for name, chars in NAMED_LAYOUTS.items():
         lay = Layout(chars, G)
-        if with_freq:
-            scores[name] = BigramModelScorer(model, bigram_freqs=FREQS, target_wpm=90).fitness(lay)
-        else:
-            # Pin the freq FEATURE to 1.0 while keeping the corpus weight: build vectors manually.
-            keep = [
-                (bigram_features(lay, bg, freq=1.0, wpm=90), f)
-                for bg, f in FREQS.items()
-                if all(lay.has_key(c) for c in bg)
-            ]
-            X = np.vstack([v for v, _ in keep])
-            w = np.array([f for _, f in keep], dtype=np.float64)
-            scores[name] = float(np.sum(model.predict(X) * w))
-    return sorted(scores, key=scores.get), scores
+        keep = [
+            (bigram_features(lay, bg, freq=(f if with_freq else 1.0), wpm=90), f)
+            for bg, f in FREQS.items()
+            if all(lay.has_key(c) for c in bg)
+        ]
+        X = np.vstack([v for v, _ in keep])
+        w = np.array([f for _, f in keep], dtype=np.float64)
+        scores[name] = float(np.sum(model.predict(X) * w))
+    return tuple(sorted(scores, key=scores.get))
+
+
+def novel_geometry_rho(model, with_freq: bool) -> float:
+    """Spearman rho of predictions vs the GEOMETRY-ONLY truth on the novel layout."""
+    lay = Layout(NAMED_LAYOUTS[NOVEL], G)
+    vecs, truths = [], []
+    for bg, f in FREQS.items():
+        if not all(lay.has_key(c) for c in bg):
+            continue
+        v = bigram_features(lay, bg, freq=(f if with_freq else 1.0), wpm=90)
+        vecs.append(v)
+        truths.append(geometry_component(v))
+    preds = model.predict(np.vstack(vecs))
+    return float(spearmanr(preds, truths).statistic)
 
 
 def main():
-    m_with = train(with_freq=True)
-    m_without = train(with_freq=False)
+    for world in ("neutral", "confounded"):
+        agree = 0
+        rho_with, rho_without = [], []
+        for seed in SEEDS:
+            rng = np.random.default_rng(seed)
+            models = {}
+            for wf in (True, False):
+                X, y = make_training(world, wf, rng)
+                m = XGBoostTypingModel(META, n_estimators=150, max_depth=5)
+                m.fit(X, y)
+                models[wf] = m
+            agree += layout_ranking(models[True], True) == layout_ranking(models[False], False)
+            rho_with.append(novel_geometry_rho(models[True], True))
+            rho_without.append(novel_geometry_rho(models[False], False))
 
-    rank_with, s_with = rank_layouts(m_with, with_freq=True)
-    rank_without, s_without = rank_layouts(m_without, with_freq=False)
+        n = len(list(SEEDS))
+        print(f"world={world}:")
+        print(f"  ranking agreement across seeds: {agree}/{n}")
+        print(
+            f"  novel-layout rho vs geometry truth: "
+            f"WITH-freq {np.mean(rho_with):.4f}±{np.std(rho_with):.4f}  "
+            f"WITHOUT-freq {np.mean(rho_without):.4f}±{np.std(rho_without):.4f}"
+        )
+        better = sum(w < wo for w, wo in zip(rho_with, rho_without, strict=True))
+        print(f"  seeds where WITHOUT-freq tracks geometry better: {better}/{n}")
+        print()
 
-    print("Ground truth in this synthetic world: time depends ONLY on geometry.")
-    print("So the two models SHOULD produce the same ranking; any difference is a")
-    print("frequency-feature artifact.\n")
-    print(f"ranking WITH freq feature   : {rank_with}")
-    print(f"ranking WITHOUT freq feature: {rank_without}")
-    agree = rank_with == rank_without
-    print(f"\nrankings agree: {agree}")
-
-    # Also quantify: correlation between each model's per-bigram predictions on a NOVEL layout
-    novel = Layout(NAMED_LAYOUTS["graphite"], G)
-    vec_pairs = []
-    for bg, f in FREQS.items():
-        if all(novel.has_key(c) for c in bg):
-            v_with = bigram_features(novel, bg, freq=f, wpm=90)
-            v_without = bigram_features(novel, bg, freq=1.0, wpm=90)
-            vec_pairs.append((v_with, v_without))
-    Xw = np.vstack([a for a, _ in vec_pairs])
-    Xo = np.vstack([b for _, b in vec_pairs])
-    pw, po = m_with.predict(Xw), m_without.predict(Xo)
-    r = np.corrcoef(pw, po)[0, 1]
-    print(f"per-bigram prediction correlation on a novel layout (graphite): r={r:.4f}")
-    print(f"mean |prediction difference|: {np.mean(np.abs(pw - po)):.2f} ms")
+    print("Interpretation: the 'neutral' world cannot exhibit the feared confound (kept for")
+    print("contrast with v1); the 'confounded' world can. If WITHOUT-freq tracks the")
+    print("geometry-only signal better there, the freq feature is absorbing practice/")
+    print("geometry-entangled variance that does not help ranking novel layouts.")
 
 
 if __name__ == "__main__":

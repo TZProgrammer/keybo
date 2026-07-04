@@ -59,6 +59,15 @@ number until the generalization harness (P1, OQ-5) exists.**
   grounds every "X% faster" claim. **Highest-leverage item after the P0 bugs** (needs the schema
   change above for the layout axis; the WPM axis works today). Acceptance: `keybo` reports the
   matrix + held-out ranking; wired into `just`.
+  **Tightened per fable audit (2026-07-04):** harness pre-step computes the split-half noise
+  ceiling (thresholds as a fraction of it, not absolute); the DECISIVE metric is layout-level
+  ranking (Kendall's τ), with per-bigram ρ supplementary (an additive practice effect inflates
+  ρ but is ranking-irrelevant); ≥3 seeds per arm; trainings pinned device=cpu n_jobs=1 for
+  cross-machine reproducibility. Details in agent-artifacts/OQ5-*.md.
+- [ ] **5%-sample smoke test BEFORE the full real-data run.** Run a ~50MB slice of the dump
+  through `process-data` with a row-rejection counter and eyeball the rejection breakdown
+  (encodings, malformed rows — the unknown-unknowns in D.5). Two minutes of insurance against
+  a multi-hour reprocessing cycle. (fable audit, strategic item 3)
 - [ ] **Decide how to leverage imbalanced non-QWERTY data (OQ-7).** Compare inverse-frequency
   sample weighting vs. resample-with-replacement vs. none vs. non-QWERTY-as-holdout, judged by
   the *per-layout* held-out metrics from the harness above. Prefer weighting over resampling
@@ -80,8 +89,8 @@ number until the generalization harness (P1, OQ-5) exists.**
 - [ ] **User-configurable objective corpus (OQ-3).** Let a user weight the objective by their
   own text (prose/code/other language) instead of only iWeb. Plausibly the highest-value
   "best layout for ME" capability. Needs a documented way to generate frequency files.
-- [ ] **Push the current work + get it on the laptop.** ~7 unpushed commits on `main`
-  (trigram-CLI wiring + 5 audit fixes). `git push origin main`, then `git pull` on the laptop.
+- [ ] **Push the current work + get it on the laptop.** ~20 unpushed commits on `main`.
+  `git push origin main`, then `git pull` on the laptop.
 - [ ] **Validate `nix develop` on the laptop.** `flake.nix` was authored by mirroring gen-ai but
   never run (no nix on the dev box). First `nix develop` → `just doctor` is the real test; if a
   wheel can't find a `.so`, add it to `runtimeLibs` in `flake.nix`.
@@ -91,9 +100,11 @@ number until the generalization harness (P1, OQ-5) exists.**
 - [ ] **Multi-objective / comfort terms (OQ-4).** Consider optimizing effort/comfort (SFBs,
   scissors, redirects as explicit costs) alongside or instead of pure predicted time; possibly
   Pareto rather than single-scalar.
-- [ ] **Remove dead filter branches in keystroke extraction.** `group_sessions` already drops
-  multi-char/`SHIFT` rows, so the re-checks in `extract_occurrences` are dead on the CLI path
-  (live only when called directly, as unit tests do). Minor. (audit #9)
+- [ ] **Remove dead filter branches in keystroke extraction.** Note: after the contiguity
+  fixes, `group_sessions` now KEEPS control-key and empty-LETTER rows, so `extract_occurrences`'
+  single-char and banned-key window filters are genuinely load-bearing on the CLI path — the
+  original "dead branch" observation (audit #9) no longer applies as written. Re-evaluate
+  which (if any) checks are still redundant before removing anything.
 - [ ] **Assert the global optimum, not just a local one, in the 2-opt test.** The test asserts
   "no single swap improves" (local); the plan claims "reaches the known minimum" (global). They
   happen to coincide on the test landscape — assert the global value to lock it. (audit #8)
