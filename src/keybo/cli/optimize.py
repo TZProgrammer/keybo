@@ -48,6 +48,8 @@ def _one_attempt(args: argparse.Namespace, scorer, seed: int) -> Layout:
 
 
 def run(args: argparse.Namespace) -> int:
+    if args.attempts < 1:
+        raise SystemExit(f"--attempts must be >= 1 (got {args.attempts})")
     scorer = build_scorer(args)
 
     best_layout: Layout | None = None

@@ -114,3 +114,29 @@ def test_optimize_out_writes_expected_json(tmp_path, capsys):
     assert result["attempts"] == 2
     assert result["model"] == model_path
     assert isinstance(result["fitness"], float)
+
+
+def test_attempts_must_be_positive(tmp_path):
+    """--attempts 0 (or negative) must be rejected cleanly, not crash on a bare assert
+    (found in brains-verification of the muscle patch)."""
+    import pytest
+
+    from tests.cli.test_cli import _train_tiny_model
+
+    model_path = _train_tiny_model(tmp_path / "bg.json")
+    corpus = tmp_path / "bg.txt"
+    corpus.write_text("th\t10\nhe\t5\n")
+    from keybo.cli.__main__ import main
+
+    with pytest.raises(SystemExit):
+        main(
+            [
+                "optimize",
+                "--model",
+                str(model_path),
+                "--bigram-freqs",
+                str(corpus),
+                "--attempts",
+                "0",
+            ]
+        )
