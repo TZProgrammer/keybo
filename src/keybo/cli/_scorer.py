@@ -7,6 +7,7 @@ here to keep them DRY and consistent.
 from __future__ import annotations
 
 import argparse
+import sys
 from collections.abc import Mapping
 
 from keybo.data.corpus import load_frequencies
@@ -59,12 +60,25 @@ def build_scorer(args: argparse.Namespace, freqs: Mapping[str, int] | None = Non
     model can't silently be used as a trigram objective (or vice versa). ``freqs`` lets a
     caller supply an already-loaded (e.g. coverage-restricted) frequency table; when omitted
     the objective's own file is loaded via :func:`load_freqs`.
+
+    Warns on stderr — without erroring — when ``--target-wpm`` falls outside the model's
+    trained ``wpm_range``: the trees clamp WPM at the boundary, so an out-of-range value is
+    unvalidated extrapolation, but a power user may still want it.
     """
     model = XGBoostTypingModel.load(args.model)
     if model.metadata.ngram != args.ngram:
         raise SystemExit(
             f"model was trained for ngram={model.metadata.ngram!r} but --ngram={args.ngram!r} "
             f"was requested; retrain or pass --ngram {model.metadata.ngram}"
+        )
+
+    lo, hi = model.metadata.wpm_range
+    if not lo <= args.target_wpm <= hi:
+        print(
+            f"WARNING: --target-wpm {args.target_wpm:g} is outside the model's trained WPM "
+            f"range {model.metadata.wpm_range}; predictions are unvalidated extrapolation "
+            f"(trees clamp at the boundary).",
+            file=sys.stderr,
         )
 
     if freqs is None:
