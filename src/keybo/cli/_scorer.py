@@ -7,6 +7,7 @@ here to keep them DRY and consistent.
 from __future__ import annotations
 
 import argparse
+from collections.abc import Mapping
 
 from keybo.data.corpus import load_frequencies
 from keybo.models.xgboost_model import XGBoostTypingModel
@@ -39,15 +40,25 @@ def add_scorer_arguments(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--target-wpm", type=float, default=90.0)
 
 
-def build_scorer(args: argparse.Namespace) -> IScorer:
+def load_freqs(args: argparse.Namespace) -> dict[str, int]:
+    """Load the frequency table the chosen n-gram objective consumes.
+
+    Reads ONLY the file the objective uses (the bigram file for --ngram bigram, the trigram
+    file for trigram): the trigram scorer intentionally ignores constituent bigram/skipgram
+    frequencies (train/serve parity), so touching those files here would fail on a discarded
+    input (e.g. running from a cwd without the repo's data/corpus/).
+    """
+    path = args.bigram_freqs if args.ngram == "bigram" else args.trigram_freqs
+    return load_frequencies(path)
+
+
+def build_scorer(args: argparse.Namespace, freqs: Mapping[str, int] | None = None) -> IScorer:
     """Load the model and construct the scorer the CLI args ask for.
 
     Validates that the loaded model was trained for the requested n-gram order, so a bigram
-    model can't silently be used as a trigram objective (or vice versa). Loads ONLY the
-    frequency file the chosen objective consumes: the trigram scorer intentionally ignores
-    constituent bigram/skipgram frequencies (train/serve parity), so requiring — or even
-    reading — those files here would fail on a discarded input (e.g. running from a cwd
-    without the repo's data/corpus/).
+    model can't silently be used as a trigram objective (or vice versa). ``freqs`` lets a
+    caller supply an already-loaded (e.g. coverage-restricted) frequency table; when omitted
+    the objective's own file is loaded via :func:`load_freqs`.
     """
     model = XGBoostTypingModel.load(args.model)
     if model.metadata.ngram != args.ngram:
@@ -56,12 +67,9 @@ def build_scorer(args: argparse.Namespace) -> IScorer:
             f"was requested; retrain or pass --ngram {model.metadata.ngram}"
         )
 
+    if freqs is None:
+        freqs = load_freqs(args)
+
     if args.ngram == "bigram":
-        return BigramModelScorer(
-            model, bigram_freqs=load_frequencies(args.bigram_freqs), target_wpm=args.target_wpm
-        )
-    return TrigramModelScorer(
-        model,
-        trigram_freqs=load_frequencies(args.trigram_freqs),
-        target_wpm=args.target_wpm,
-    )
+        return BigramModelScorer(model, bigram_freqs=freqs, target_wpm=args.target_wpm)
+    return TrigramModelScorer(model, trigram_freqs=freqs, target_wpm=args.target_wpm)
