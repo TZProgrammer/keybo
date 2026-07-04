@@ -1,7 +1,25 @@
 # OQ-7 — How do we leverage the non-QWERTY data given heavy class imbalance?
 
-**Status: 🔴 open — experiment matrix defined; blocked on the same prerequisites as OQ-5
-(layout labels + harness), plus one cheap unblocked step: measure the actual imbalance.**
+**Status: 🔴 open — experiment matrix defined; blocked on the layout-label schema change +
+harness. The imbalance itself is now MEASURED (below), no longer a guess.**
+
+## Measured distribution (2026-07-04, real dump, qualifying participants)
+
+| layout | participants | share |
+|---|---|---|
+| qwerty | 61,278 | 98.68% |
+| qwertz | 550 | 0.89% |
+| azerty | 190 | 0.31% |
+| dvorak | 77 | **0.12%** |
+
+Total 62,095 qualifying; WPM median 63, p90 88, max 153. Sharper implications than guessed:
+- **Dvorak — the only non-QWERTY-family key arrangement — has just 77 typists.** LOLO on
+  Dvorak is bootstrap-fragile (CIs over 77 people will be wide; the harness must print them
+  honestly rather than a bare point estimate).
+- Upsampling 77 people ~800× to parity is indefensible — sample weighting or holdout-only
+  are the only options that survive contact with these numbers.
+- The ≥80 WPM band (the paper's proficiency litmus) holds only ~10% of participants — the
+  fast-band cells of the OQ-8 matrix will be thin; report n per cell.
 
 ## Best current answer
 
