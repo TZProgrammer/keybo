@@ -77,7 +77,15 @@ class TypingModel(ABC):
         """Reconstruct a model from its artifact and already-loaded metadata."""
 
     def save(self, path: str) -> None:
-        """Save the model artifact to ``path`` and its metadata to ``<path>.meta.json``."""
+        """Save the model artifact to ``path`` and its metadata to ``<path>.meta.json``.
+
+        Parent directories are created if missing: XGBoost's C++ writer otherwise dies with
+        an opaque ``LocalFileSystem::Open ... No such file or directory`` — after the
+        (potentially hours-long) training already ran.
+        """
+        parent = Path(path).parent
+        if str(parent) and not parent.exists():
+            parent.mkdir(parents=True, exist_ok=True)
         self._save_artifact(path)
         _sidecar_path(path).write_text(json.dumps(self.metadata.to_dict(), indent=2))
 

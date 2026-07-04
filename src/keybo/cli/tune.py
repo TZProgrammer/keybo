@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import json
 
+from keybo.cli._paths import ensure_writable_output
 from keybo.data.strokes import load_strokes
 from keybo.training.train import build_training_matrix
 from keybo.training.tune import tune_hyperparameters
@@ -23,6 +24,8 @@ def add_arguments(parser: argparse.ArgumentParser) -> None:
 
 
 def run(args: argparse.Namespace) -> int:
+    # Fail fast: the search below can run for a long time; don't discover a bad output then.
+    ensure_writable_output(args.output, "--output")
     ngram_len = 2 if args.ngram == "bigram" else 3
     rows = load_strokes(
         args.strokes,
