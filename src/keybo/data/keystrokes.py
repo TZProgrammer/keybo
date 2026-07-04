@@ -93,7 +93,9 @@ def mark_correct_flags(typed: str, expected: str) -> list[bool]:
 
 
 def _letter(record: dict) -> str:
-    return record.get("LETTER", "")
+    # csv.DictReader fills fields MISSING from a short row with None (not ""), and the real
+    # 136M dump contains such rows — coerce so length checks and joins never see None.
+    return record.get("LETTER") or ""
 
 
 def extract_occurrences(
@@ -107,7 +109,8 @@ def extract_occurrences(
     if not records:
         return []
 
-    expected = records[0].get("SENTENCE", "")
+    # `or ""` (not a .get default): a short csv row yields SENTENCE=None, not a missing key.
+    expected = records[0].get("SENTENCE") or ""
     # Assign each record its ORIGINAL stream index BEFORE any filtering. The contiguity
     # check below runs on these indices, so anything that sits between two character keys --
     # a mistyped char, a backspace, SHIFT, an arrow key (control keys arrive as multi-char
@@ -129,7 +132,7 @@ def extract_occurrences(
     try:
         first_press = float(correct[0][1]["PRESS_TIME"])
         last_press = float(correct[-1][1]["PRESS_TIME"])
-    except (ValueError, KeyError):
+    except (TypeError, ValueError, KeyError):  # TypeError: None from a short csv row
         return []
     session_wpm = compute_session_wpm(first_press, last_press, len(correct))
 
@@ -159,7 +162,7 @@ def extract_occurrences(
             first = float(window[0]["PRESS_TIME"])
             last = float(window[-1]["PRESS_TIME"])
             prev = float(window[-2]["PRESS_TIME"])
-        except (ValueError, KeyError):
+        except (TypeError, ValueError, KeyError):  # TypeError: None from a short csv row
             continue
 
         if time_mode == "full":
@@ -220,20 +223,22 @@ def load_participant_metadata(path: str, min_wpm: float = 40.0) -> dict[str, dic
     metadata: dict[str, dict] = {}
     with open(path, newline="", encoding="utf-8", errors="replace") as f:
         for row in csv.DictReader(f, delimiter="\t"):
-            if row.get("FINGERS", "").strip() != "9-10":
+            # `or ""` throughout: a short row (fewer columns than the header) gives None
+            # for the missing fields, and .strip()/float() on None would crash the run.
+            if (row.get("FINGERS") or "").strip() != "9-10":
                 continue
             try:
-                if float(row.get("AVG_WPM_15", "0").strip()) < min_wpm:
+                if float((row.get("AVG_WPM_15") or "0").strip()) < min_wpm:
                     continue
             except ValueError:
                 continue
-            if row.get("KEYBOARD_TYPE", "").strip().lower() not in {"full", "laptop"}:
+            if (row.get("KEYBOARD_TYPE") or "").strip().lower() not in {"full", "laptop"}:
                 continue
-            layout = row.get("LAYOUT", "qwerty").strip().lower()
+            layout = (row.get("LAYOUT") or "qwerty").strip().lower()
             if layout not in _LAYOUT_ROWS:
                 continue
             row["LAYOUT"] = layout
-            metadata[row["PARTICIPANT_ID"].strip()] = row
+            metadata[(row.get("PARTICIPANT_ID") or "").strip()] = row
     return metadata
 
 

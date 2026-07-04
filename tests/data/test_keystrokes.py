@@ -388,3 +388,66 @@ def test_process_dataset_rejects_unknown_ngram(tmp_path):
     files_dir, meta = _make_dataset(tmp_path)
     with pytest.raises(ValueError):
         process_dataset(files_dir, meta, ngram="quadgram")
+
+
+# --- real-dump robustness: csv.DictReader None fields (short rows) ---------------------
+
+
+def _short_row_file(tmp_path):
+    """A keystroke file containing a SHORT row (fewer columns than the header).
+
+    csv.DictReader fills the missing fields with None -- not "" -- which is what the real
+    136M dump produced on first contact (laptop run, 2026-07-04): TypeError at len(None).
+    """
+    p = tmp_path / "111_keystrokes.txt"
+    p.write_text(
+        "PARTICIPANT_ID\tTEST_SECTION_ID\tSENTENCE\tPRESS_TIME\tRELEASE_TIME\tLETTER\n"
+        "111\ts1\tab\t1000\t1050\ta\n"
+        "111\ts1\n"  # short row -> SENTENCE/PRESS_TIME/RELEASE_TIME/LETTER all None
+        "111\ts1\tab\t1100\t1150\tb\n"
+    )
+    return str(p)
+
+
+def test_regression_short_rows_do_not_crash_processing(tmp_path):
+    from keybo.data.keystrokes import process_keystroke_file
+
+    cmap = build_char_map("qwerty")
+    occ = process_keystroke_file(_short_row_file(tmp_path), cmap, n=2, skip=0, time_mode="full")
+    # Must not raise; the None row occupies a stream index, so 'a'..'b' must NOT splice
+    # across it either (same contiguity rule as control keys).
+    assert [o.ngram for o in occ] == []
+
+
+def test_regression_none_press_time_on_correct_row_does_not_crash(tmp_path):
+    """float(None) raises TypeError, which the old except (ValueError, KeyError) missed."""
+    cmap = build_char_map("qwerty")
+    records = [
+        {"LETTER": "a", "PRESS_TIME": None, "RELEASE_TIME": None, "SENTENCE": "ab"},
+        {"LETTER": "b", "PRESS_TIME": "1100", "RELEASE_TIME": "1150", "SENTENCE": "ab"},
+    ]
+    occ = extract_occurrences(records, cmap, n=2, skip=0, time_mode="full")
+    assert occ == []  # unusable timing -> no occurrences, but no crash
+
+
+def test_regression_none_sentence_does_not_crash():
+    cmap = build_char_map("qwerty")
+    records = [
+        {"LETTER": "a", "PRESS_TIME": "1000", "RELEASE_TIME": "1050", "SENTENCE": None},
+        {"LETTER": "b", "PRESS_TIME": "1100", "RELEASE_TIME": "1150", "SENTENCE": None},
+    ]
+    occ = extract_occurrences(records, cmap, n=2, skip=0, time_mode="full")
+    assert occ == []  # nothing aligns against an absent sentence, but no crash
+
+
+def test_regression_short_metadata_rows_do_not_crash(tmp_path):
+    """A short metadata row gives FINGERS/AVG_WPM_15/... = None; .strip() crashed."""
+    p = tmp_path / "metadata_participants.txt"
+    p.write_text(
+        "PARTICIPANT_ID\tFINGERS\tAVG_WPM_15\tKEYBOARD_TYPE\tLAYOUT\n"
+        "111\t9-10\t90\tfull\tqwerty\n"
+        "222\n"  # short row -> all fields None
+        "333\t9-10\t85\tlaptop\tqwerty\n"
+    )
+    md = load_participant_metadata(str(p))
+    assert set(md) == {"111", "333"}  # short row skipped, not fatal
