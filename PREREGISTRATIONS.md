@@ -194,3 +194,20 @@ local-as-replacement decisively (0.841 vs 0.918) and the mechanism is interval-l
 (OQ-9: within-session autocorrelation ≈ 0 after session-speed removal) — it applies to
 any interval target, trigram included. A trigram-specific arm would be confirmatory with
 a strong null prior; deprioritized rather than run, noted here for honesty.
+
+## 2026-07-06 — finger-load frontier (the utilization term's E5-style verification)
+
+Experiment: sweep --finger-load-weight-equivalent w over {0, 20, 50, 100, 200}
+(w normalized so w=100 ⇒ the load term ≈1% of qwerty's speed fitness); search each;
+report speed loss vs w=0, load spread, pinky share.
+Rule (sanity, not adoption — the term is a user-owned preference knob): (a) load spread
+must shrink monotonically with w (else the term is mis-wired); (b) record the speed cost
+of balance — if spread halves for <0.2% speed loss, balance is a near-free lunch (plateau
+logic) and a nonzero DEFAULT becomes defensible to propose to the user; if it costs >1%,
+balance genuinely fights speed and the default stays 0.
+**Outcome:** (pending)
+
+Note on the watchdog's LOLO suggestion: LOLO validates predictive MODELS; the finger-load
+term is an OBJECTIVE preference (the lag-2 probe measured that no speed mechanism exists
+to validate it against). Its correct verification is this frontier study. Recorded here
+so the discipline distinction is durable.
