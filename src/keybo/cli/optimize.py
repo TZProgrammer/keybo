@@ -6,12 +6,13 @@ import argparse
 import json
 
 from keybo.cli._paths import ensure_writable_output
-from keybo.cli._scorer import add_scorer_arguments, build_scorer
+from keybo.cli._scorer import add_scorer_arguments, build_scorer, load_freqs
 from keybo.geometry import ROW_STAGGERED_30
 from keybo.layout import Layout
 from keybo.layouts import NAMED_LAYOUTS
 from keybo.optimize.annealing import SimulatedAnnealing
 from keybo.optimize.local_search import two_opt
+from keybo.scoring.inspect import layout_diagnostics
 
 
 def add_arguments(parser: argparse.ArgumentParser) -> None:
@@ -33,6 +34,24 @@ def add_arguments(parser: argparse.ArgumentParser) -> None:
     parser.add_argument(
         "--out",
         help="Write the best result to this path as JSON (layout, fitness, and run config)",
+    )
+    parser.add_argument(
+        "--comfort-weight",
+        type=float,
+        default=0.0,
+        help="Add comfort_weight * comfort-penalty (ms-equivalents; see keybo.scoring."
+        "comfort DEFAULT_COMFORT — documented PREFERENCES, not measurements) to the "
+        "measured speed objective. 0 = pure speed. Bigram objective only.",
+    )
+    parser.add_argument(
+        "--comfort-config",
+        help="JSON file overriding individual comfort weights by name",
+    )
+    parser.add_argument(
+        "--no-table",
+        action="store_true",
+        help="Disable the QAP-table fast path (bigram objective only) and score through "
+        "the model on every evaluation — ~1000x slower, same objective",
     )
     parser.add_argument("--no-progress", action="store_true", help="Disable the progress bar")
 
@@ -58,11 +77,33 @@ def run(args: argparse.Namespace) -> int:
         # Validate before the (long) search, not when writing the result at the end.
         ensure_writable_output(args.out, "--out")
     scorer = build_scorer(args)
+    if args.comfort_weight:
+        if args.ngram != "bigram":
+            raise SystemExit("--comfort-weight currently supports the bigram objective only")
+        from keybo.scoring.comfort import ComfortBigramScorer, CompositeScorer
+
+        overrides = {}
+        if args.comfort_config:
+            with open(args.comfort_config, encoding="utf-8") as f:
+                overrides = json.load(f)
+        comfort = ComfortBigramScorer(load_freqs(args), weights=overrides)
+        scorer = CompositeScorer(scorer, comfort, comfort_weight=args.comfort_weight)
+    search_scorer = scorer
+    if args.ngram == "bigram" and not args.no_table and not args.comfort_weight:
+        # Exact same objective, ~1000x faster per evaluation (parity-tested). The search
+        # explores permutations of --start's charset, which is what the table fixes.
+        from keybo.models.xgboost_model import XGBoostTypingModel
+        from keybo.scoring.table_scorer import TableBigramScorer
+
+        model = XGBoostTypingModel.load(args.model)
+        search_scorer = TableBigramScorer(
+            model, load_freqs(args), target_wpm=args.target_wpm, chars=args.start
+        )
 
     best_layout: Layout | None = None
     best_fitness = float("inf")
     for i in range(args.attempts):
-        candidate = _one_attempt(args, scorer, seed=args.seed + i)
+        candidate = _one_attempt(args, search_scorer, seed=args.seed + i)
         fitness = scorer.fitness(candidate)
         print(f"attempt {i + 1}/{args.attempts}: fitness {fitness:.0f}")
         if fitness < best_fitness:
@@ -72,6 +113,18 @@ def run(args: argparse.Namespace) -> int:
     assert best_layout is not None  # attempts >= 1, so the loop always ran at least once
     print(f"Best fitness: {best_fitness:.0f}")
     print(best_layout.render())
+
+    # Auto-E5 structural postflight (Goodhart gate): every search ends with the numbers
+    # that catch a degenerate optimum — see agent-artifacts/goodhart-row-blindness.md.
+    diag = layout_diagnostics(best_layout, load_freqs(args) if args.ngram == "bigram" else {})
+    if diag["row_share"]["home"] or diag["sfb_share"] or diag["finger_load"]:
+        loads = {k: v for k, v in diag["finger_load"].items() if k != "thumb"}
+        max_f = max(loads, key=loads.get) if loads else "n/a"
+        print(
+            f"structure: home-row share {diag['row_share']['home']:.1%} | "
+            f"sfb share {diag['sfb_share']:.2%} | "
+            f"max finger load {max_f} {loads.get(max_f, 0):.1%}"
+        )
 
     if args.out:
         result = {
