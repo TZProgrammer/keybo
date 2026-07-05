@@ -102,6 +102,15 @@ Consequence for the north star: the final search (see `runs/final_layout.json` a
 **reorders the named layouts** (dvorak becomes the top named layout; colemak drops below
 qwerty; all gains compress ~4×) — direct evidence the freq-live model's rankings were
 practice-inflated, i.e. this harness caught exactly the failure it was built to catch.
+
+**Production-path verification (2026-07-05, `runs/lolo_v4_prod.json`):** after R1W was
+productionized into `keybo train` (freq features deleted from the schema, practice term +
+layout weights default-ON, FEATURE_VERSION 2026-07-05.1), the shipped `keybo validate`
+re-run on the full dump reproduces the arm-matrix numbers through the production code
+path: pooled τ **+1.0 (all seeds)**, beats-baseline **12/12**, ρ/ceiling azerty 1.01–1.02
+· dvorak .85–.89 · qwertz 1.06 · qwerty **.796–.800** (seed 0 exactly at the 0.8 bar).
+What a fresh `just train` + `just validate` produces on a laptop is now the validated
+recipe, not the failed freq-live model.
 (Percentage convention note: the compressed gains quoted around this round — +2.55% for
 the searched layout — used the g-only denominator; against predicted *total* time
 (g + the layout-independent practice sum) the honest figures are ~1.37× larger, e.g.

@@ -33,16 +33,15 @@ number until the generalization harness (P1, OQ-5) exists.**
 
 ## P1 — Correctness / needed soon
 
-- [~] **Properly resolve the trigram constituent-frequency features (audit #5).** Interim fix
-  landed (commit `1dc1ea3`): scorer and training now both use the 1.0 default, so it's
-  *consistent and inert*, not skewed. The **real** fix is **blocked on OQ-1**:
-  - If OQ-1 = "frequency is weight-only" → **delete** `bg1_freq`/`bg2_freq`/`sg_freq` (and
-    reconsider the top-level `freq` feature) from the schema; bump `FEATURE_VERSION`.
-  - If OQ-1 = "keep frequency as a feature" → join real corpus bigram/skipgram frequencies into
-    the **training** matrix so both sides see the same values (needs a corpus lookup at train
-    time), and fix the distribution mismatch (OQ-3).
-  Acceptance: a train/serve parity test still passes, AND the chosen direction is justified by
-  the OQ-5 experiment, not by intuition.
+- [x] **Properly resolve the trigram constituent-frequency features (audit #5).** DONE via
+  the OQ-1 measured closure (commit `61a3d5d`): ALL frequency features deleted from the
+  schema — the bigram `freq` and the trigram `tg_freq`/`bg1_freq`/`bg2_freq`/`sg_freq` —
+  `FEATURE_VERSION` bumped to `2026-07-05.1` (pre-bump models refuse to load). The landmine
+  dies structurally: there is no frequency column left to diverge. In its place, `keybo
+  train` fits the harness-validated R1W recipe by default: an explicit additive per-bigram
+  practice term (shrunk backfit, residualized out of the geometry model's target, stored in
+  the model metadata) + layout-balance example weights. Parity tests updated; direction
+  justified by the OQ-5 experiment as required (τ +0.667→+1.0, beats-baseline 12/12).
 - [x] **Retain the source layout label through processing (schema change).** Done (commits
   `10c1fa9`/`a4e6f7a`/`5e8b618` produce side, `4a936e7` consume side): `Occurrence` and
   `StrokeRow` carry `layout`; samples are `(wpm, duration, pid, hold)` 4-tuples; the TSV is

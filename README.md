@@ -112,13 +112,21 @@ IOptimizer   (simulated annealing, 2-opt / 3-opt)   [keybo.optimize]
   distances. Ships one instance, `ROW_STAGGERED_30` (the geometry the data supports).
 - **layout** — a character→position assignment with swap/undo (stack-based, so multi-swap
   moves undo correctly).
-- **features** — the single n-gram feature pipeline, used identically by data processing,
-  training, and scoring. This is the guard against train/serve skew. A `FEATURE_VERSION`
-  is stamped into each model; loading a model built on a different version is a hard error.
+- **features** — the single n-gram feature pipeline (pure geometry + wpm), used identically
+  by data processing, training, and scoring. This is the guard against train/serve skew. A
+  `FEATURE_VERSION` is stamped into each model; loading a model built on a different version
+  is a hard error. Frequency is deliberately **not** a feature (measured to corrupt
+  cross-layout ranking — see `agent-artifacts/OQ1-frequency-feature.md`).
 - **models** — `TypingModel` interface + XGBoost implementation. Models save as native
   XGBoost JSON plus a metadata sidecar (no pickle).
-- **scoring / optimize / data / training** — the objective, the search, dataset processing,
-  and model fitting.
+- **training** — fits `time = g(geometry, wpm) + b(bigram)`: an explicit, layout-independent
+  per-bigram **practice term** `b` is backfit (shrunk residual means) and residualized out of
+  `g`'s target, with layout-balance example weights. Both default on. `b` cancels exactly in
+  layout comparisons; its job is stopping `g` from absorbing "frequent bigrams are practiced"
+  into geometry.
+- **scoring / optimize / data** — the objective (frequency enters here, as the weight), the
+  search (incl. the QAP position-pair table scorer, ~1000× faster than per-swap model
+  predicts), and dataset processing.
 
 The package lives under `src/keybo/`. Legacy pre-rewrite code is archived under `legacy/`
 and is not imported by the package.
@@ -133,11 +141,11 @@ just fmt           # auto-format + fix
 
 ## Known follow-up: optimize performance
 
-`optimize` is correct but currently rescoring the *entire* corpus on every candidate swap
-(~25 ms/evaluation on the full bigram corpus), so a full annealing run is slow. The intended
-next step is **incremental delta-scoring** — only re-evaluate the n-grams whose keys moved —
-which fits behind the existing `IScorer` interface without an API change. Until then, use
-`--max-outer` to cap a run, or a smaller corpus.
+The `optimize` CLI still rescores the entire corpus per candidate swap (~25 ms/evaluation),
+so cap runs with `--max-outer`. The fast path exists — `keybo.scoring.table_scorer.
+TableBigramScorer` reduces the bigram objective to a 31×31 position-pair table (~8 µs per
+evaluation, exact-parity-tested) — but the CLI doesn't use it yet; wiring it in (and the
+deeper multi-restart search it enables) is the next optimize upgrade.
 
 ## Design docs
 
