@@ -33,6 +33,17 @@ R1W passes the 0.8×-ceiling bar on azerty (1.00–1.02), dvorak (.84–.88), qw
 qwerty .796–.799 (borderline miss by 0.004). The explicit practice term is the dominant
 lever (+.29 ρ/ceiling over B); reweighting alone does ≈nothing but composes.
 
+**Audit addendum (2026-07-05), for honest reading of the ρ column:** the per-cell ρ —
+unlike the decisive τ, which is exactly b-invariant (verified structurally + numerically)
+— credits practice prediction: on the dvorak fold, b *alone* scores ρ ≈ +0.60, comparable
+to the full model. So R1's ρ gain over B is mostly "predicting practice correctly," which
+is legitimate (practice is real, layout-independent, and part of observed time) but is not
+*geometry* transfer; geometry-only transfer is what arm B's ρ measures (.45–.47 of
+ceiling on dvorak). Also verified: k-shrinkage robustness (k ∈ {10,100,1000} all far above
+B; pre-registered k=100 kept), W's weighting is a real 25%-per-layout equalization
+(ESS 62%), and the saved boosters have zero freq-column splits. Full audit in
+`final-layout-2026-07-04.md`.
+
 *The original closure follows — its decision ("no raw freq feature") stands; its remedy
 ("nothing replaces it") was incomplete, exactly as the user suspected.*
 

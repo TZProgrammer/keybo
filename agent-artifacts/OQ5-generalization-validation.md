@@ -97,11 +97,16 @@ remains extrapolation, and (b) fractions >1.0 mean the pooled model beats one la
 internal split-half agreement (legitimate — it borrows strength across layouts — but a
 reminder the ceiling is an estimate, not a hard bound).
 
-Consequence for the north star: the final search (see `runs/final_layout.json`) ran on
-R1W, and the de-confounded model **reorders the named layouts** (dvorak becomes the top
-named layout; colemak drops below qwerty; all gains compress ~4×) — direct evidence the
-freq-live model's rankings were practice-inflated, i.e. this harness caught exactly the
-failure it was built to catch.
+Consequence for the north star: the final search (see `runs/final_layout.json` and
+`agent-artifacts/final-layout-2026-07-04.md`) ran on R1W, and the de-confounded model
+**reorders the named layouts** (dvorak becomes the top named layout; colemak drops below
+qwerty; all gains compress ~4×) — direct evidence the freq-live model's rankings were
+practice-inflated, i.e. this harness caught exactly the failure it was built to catch.
+(Percentage convention note: the compressed gains quoted around this round — +2.55% for
+the searched layout — used the g-only denominator; against predicted *total* time
+(g + the layout-independent practice sum) the honest figures are ~1.37× larger, e.g.
++3.49% for the searched layout. Both conventions and the math are in the final-layout
+artifact.)
 
 ## Why it's THE gate
 
