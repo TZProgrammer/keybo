@@ -106,3 +106,66 @@ class CompositeScorer(IScorer):
         if self.comfort_weight:
             value += self.comfort_weight * self.comfort.fitness(layout)
         return value
+
+
+#: Per-finger capacity multipliers for the load penalty — PREFERENCES informed by
+#: community consensus (pinkies weakest, index strongest) and directionally consistent
+#: with our (too-thin) per-finger service-rate probe. NOT calibrated measurements: the
+#: lag-2 probe showed utilization has no speed mechanism to calibrate against, and
+#: fatigue is unmeasurable in 15-minute sessions — which is exactly why this term lives
+#: in the comfort axis with user-owned weights.
+DEFAULT_FINGER_CAPACITY: dict[str, float] = {
+    "L-pinky": 0.6,
+    "L-ring": 0.85,
+    "L-middle": 1.0,
+    "L-index": 1.0,
+    "R-index": 1.0,
+    "R-middle": 1.0,
+    "R-ring": 0.85,
+    "R-pinky": 0.6,
+    "thumb": 1.5,  # space; effectively unconstrained
+}
+
+
+class FingerLoadScorer(IScorer):
+    """Utilization-balancing penalty: Σ_f load_f² / capacity_f (ms-equivalents scale).
+
+    The semimak principle ("use fingers proportionally to their strength") as an explicit
+    convex objective term. h(load) = load² makes concentration on one finger cost more
+    than the same weight spread out (Jensen), and dividing by capacity makes pinky
+    concentration cost more than index concentration. Linear-in-assignment structure:
+    load_f is a sum over keys of per-key corpus weight, so swap deltas are O(1).
+
+    Measured context (lag-2 probe, PREREGISTRATIONS 2026-07-05): finger reuse has NO
+    speed penalty beyond lag 1, so this term is fatigue/comfort doctrine, deliberately
+    NOT part of the measured speed model. Scale: penalty is normalized so a perfectly
+    qwerty-like imbalance contributes O(10 ms-equivalents) per keystroke at weight 1.
+    """
+
+    _SCALE = 1000.0  # maps squared load shares into the ms-equivalent regime
+
+    def __init__(
+        self,
+        bigram_freqs: Mapping[str, int] | None = None,
+        multipliers: Mapping[str, float] | None = None,
+    ) -> None:
+        self._freqs = dict(bigram_freqs) if bigram_freqs else None
+        self._capacity = dict(DEFAULT_FINGER_CAPACITY)
+        if multipliers:
+            unknown = set(multipliers) - set(self._capacity)
+            if unknown:
+                raise ValueError(f"unknown finger name(s): {sorted(unknown)}")
+            self._capacity.update(multipliers)
+
+    def penalty(self, layout: Layout, bigram_freqs: Mapping[str, int]) -> float:
+        from keybo.scoring.inspect import layout_diagnostics
+
+        loads = layout_diagnostics(layout, bigram_freqs)["finger_load"]
+        return self._SCALE * sum(
+            (share * share) / self._capacity[finger] for finger, share in loads.items()
+        )
+
+    def fitness(self, layout: Layout) -> float:
+        if self._freqs is None:
+            raise ValueError("FingerLoadScorer needs bigram_freqs (at init or via penalty())")
+        return self.penalty(layout, self._freqs)

@@ -63,3 +63,48 @@ def test_default_weights_are_documented_preferences():
     for name, (weight, why) in DEFAULT_COMFORT.items():
         assert isinstance(weight, float) and weight >= 0
         assert isinstance(why, str) and len(why) > 10, name
+
+
+# --- finger-load term (utilization balancing — comfort axis per the lag-2 measurement) --
+
+
+def test_finger_load_scorer_penalizes_concentration():
+    """Two corpora with identical total weight: one loads a single finger, one spreads
+    across four fingers. The concentrated one must score strictly worse (h convex)."""
+    from keybo.scoring.comfort import FingerLoadScorer
+
+    lay = Layout(QWERTY, ROW_STAGGERED_30)
+    # qwerty: j/u/m are all right-index; a=L-pinky, s=L-ring, d=L-middle, k=R-middle.
+    concentrated = {"ju": 50, "um": 50}  # all weight on right index
+    spread = {"as": 50, "dk": 50}  # pinky+ring / middle+middle
+    scorer = FingerLoadScorer()
+    assert scorer.penalty(lay, concentrated) > scorer.penalty(lay, spread)
+
+
+def test_finger_load_pinky_costs_more_than_index():
+    from keybo.scoring.comfort import FingerLoadScorer
+
+    lay = Layout(QWERTY, ROW_STAGGERED_30)
+    on_pinky = {"aq": 100}  # both L-pinky keys
+    on_index = {"ju": 100}  # both R-index keys
+    scorer = FingerLoadScorer()
+    assert scorer.penalty(lay, on_pinky) > scorer.penalty(lay, on_index)
+
+
+def test_finger_load_composes_via_composite():
+    from keybo.scoring.comfort import FingerLoadScorer
+
+    lay = Layout(QWERTY, ROW_STAGGERED_30)
+    speed = ConstScorer(1000.0)
+    fl = FingerLoadScorer(bigram_freqs={"ju": 100})
+    combo0 = CompositeScorer(speed, fl, comfort_weight=0.0)
+    combo1 = CompositeScorer(speed, fl, comfort_weight=10.0)
+    assert combo0.fitness(lay) == 1000.0
+    assert combo1.fitness(lay) > 1000.0
+
+
+def test_finger_load_multiplier_overrides_validated():
+    from keybo.scoring.comfort import FingerLoadScorer
+
+    with pytest.raises(ValueError, match="unknown finger"):
+        FingerLoadScorer(multipliers={"L-thumb2": 1.0})

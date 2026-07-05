@@ -119,3 +119,24 @@ def test_comfort_weight_changes_the_objective(model_path, corpus_path, capsys):
     _, fit_comfort = _run([*common, "--comfort-weight", "5.0"], capsys)
     # A nonzero comfort weight adds penalty mass -> reported fitness must differ.
     assert fit_speed != fit_comfort
+
+
+def test_finger_load_weight_changes_the_objective(model_path, corpus_path, capsys):
+    common = [
+        "optimize",
+        "--model",
+        model_path,
+        "--bigram-freqs",
+        corpus_path,
+        "--seed",
+        "4",
+        "--alpha",
+        "0.9",
+        "--max-outer",
+        "10",
+        "--no-local-search",
+        "--no-progress",
+    ]
+    _, fit_speed = _run(common, capsys)
+    _, fit_load = _run([*common, "--finger-load-weight", "50.0"], capsys)
+    assert fit_speed != fit_load

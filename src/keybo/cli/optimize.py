@@ -48,6 +48,15 @@ def add_arguments(parser: argparse.ArgumentParser) -> None:
         help="JSON file overriding individual comfort weights by name",
     )
     parser.add_argument(
+        "--finger-load-weight",
+        type=float,
+        default=0.0,
+        help="Add finger-utilization balancing (sum of load^2/capacity; the semimak "
+        "principle as an explicit comfort term — see keybo.scoring.comfort."
+        "FingerLoadScorer; PREFERENCE weights, measured to have no speed mechanism). "
+        "0 = off. Bigram objective only.",
+    )
+    parser.add_argument(
         "--no-table",
         action="store_true",
         help="Disable the QAP-table fast path (bigram objective only) and score through "
@@ -77,19 +86,35 @@ def run(args: argparse.Namespace) -> int:
         # Validate before the (long) search, not when writing the result at the end.
         ensure_writable_output(args.out, "--out")
     scorer = build_scorer(args)
-    if args.comfort_weight:
+    if args.comfort_weight or args.finger_load_weight:
         if args.ngram != "bigram":
-            raise SystemExit("--comfort-weight currently supports the bigram objective only")
-        from keybo.scoring.comfort import ComfortBigramScorer, CompositeScorer
+            raise SystemExit(
+                "--comfort-weight/--finger-load-weight currently support the bigram objective only"
+            )
+        from keybo.scoring.comfort import (
+            ComfortBigramScorer,
+            CompositeScorer,
+            FingerLoadScorer,
+        )
 
         overrides = {}
         if args.comfort_config:
             with open(args.comfort_config, encoding="utf-8") as f:
                 overrides = json.load(f)
-        comfort = ComfortBigramScorer(load_freqs(args), weights=overrides)
-        scorer = CompositeScorer(scorer, comfort, comfort_weight=args.comfort_weight)
+        freqs = load_freqs(args)
+        if args.comfort_weight:
+            comfort = ComfortBigramScorer(freqs, weights=overrides)
+            scorer = CompositeScorer(scorer, comfort, comfort_weight=args.comfort_weight)
+        if args.finger_load_weight:
+            fl = FingerLoadScorer(bigram_freqs=freqs)
+            scorer = CompositeScorer(scorer, fl, comfort_weight=args.finger_load_weight)
     search_scorer = scorer
-    if args.ngram == "bigram" and not args.no_table and not args.comfort_weight:
+    if (
+        args.ngram == "bigram"
+        and not args.no_table
+        and not args.comfort_weight
+        and not args.finger_load_weight
+    ):
         # Exact same objective, ~1000x faster per evaluation (parity-tested). The search
         # explores permutations of --start's charset, which is what the table fixes.
         from keybo.models.xgboost_model import XGBoostTypingModel
