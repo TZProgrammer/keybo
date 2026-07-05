@@ -116,3 +116,29 @@ bigram+trigram scalarization will mostly re-rank within the shared plateau; the 
 gains now live in (a) skill-stratified physics (in flight), (b) comfort constraints
 narrowing the set, (c) the Phase D data. The layout SET, with consensus statistics and
 certificates, is the product.
+
+## Per-WPM combined search + closing objective rounds (2026-07-06)
+
+The combined bigram+trigram objective (both models LOLO-validated; natural ms units so
+trigram context carries its physical ~2:1 weight) searched at target-wpm 60/90/120
+(`runs/perwpm_combined.json`):
+
+- **The layout is skill-INVARIANT even though the physics isn't.** Winners cross-score
+  within 0.08% of each other; every winner sits at alternation share 79.6%. The
+  skill-strata result (roll bonus −8/−22/−28 ms by band) changes the *size* of a layout's
+  advantage — combined gain grows +1.81% → +1.93% → +2.20% vs qwerty with skill — but not
+  the argmax: the skill-invariant alternation gap (+32 ms at every band) dominates
+  placement. "Optimize at your WPM" matters for honest per-user percent claims, not for
+  which layout to choose.
+- Trigram target A/B: full-span (press1→press3) beat the conditioned target
+  (press2→press3) 1.157 vs 1.043 ρ/own-ceiling — noise-averaging over two intervals wins
+  over telescoping purity (PREREGISTRATIONS 2026-07-06). Full-span stays.
+- Finger-load frontier: balance costs +0.27% at the w=20 elbow (spread 17.5%→7.7%);
+  default 0, knob shipped; balancing RAISES pinky load — capacity multipliers, not the
+  global weight, are the pinky lever.
+
+**Current recommended layout family** (combined objective, 90 wpm, all caveats standing):
+`gwea,mntscpyoiubrlfdj;/.xhkvqz` and its near-optima set — but per the stability reports
+(0/30 consensus slots), any presentation of "the" layout should ship the top-K set +
+consensus statistics + the GL certificate (bigram component: within 2.26% of optimal),
+not a single string.
