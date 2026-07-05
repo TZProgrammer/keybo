@@ -177,7 +177,17 @@ they are target-definition-dependent — so the comparison is frac-of-own-ceilin
 the corrected objective (fitness then = corpus time exactly, no 2x note), update docs.
 If it loses or ties: keep full-span, document that the double-count is empirically
 harmless.
-**Outcome:** (pending)
+**Outcome: `last` REJECTED by the rule — full-span keeps.** τ +1.0 all seeds in BOTH
+runs, but mean ρ/own-ceiling: full 1.157 vs last 1.043 (full wins 3/4 folds — azerty
+1.32 vs 1.19, dvorak 1.28 vs 1.04, qwertz 1.30 vs 1.17; last wins only qwerty 0.78 vs
+0.72). Reading: the conditioned target's THEORETICAL telescoping cleanliness loses to a
+practical effect — the full span averages over two intervals, roughly halving target
+noise, and on the thin folds noise dominates. The theory-vs-measurement scoreboard grows
+again (cf. redirects). Full-span stays the trigram target; its ~2× double-count remains a
+documented ranking-safe convention. The conditioned run remains valuable as evidence the
+context effect is learnable either way (qwerty fold actually improved — worth revisiting
+if qwerty-fold remediation ever becomes the binding constraint).
+
 
 Local-WPM note (user asked): not re-run for trigrams. The bigram end-to-end arms rejected
 local-as-replacement decisively (0.841 vs 0.918) and the mechanism is interval-level
