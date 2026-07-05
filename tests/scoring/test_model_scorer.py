@@ -145,7 +145,7 @@ def test_regression_space_bigram_train_serve_parity():
 
     # The training path builds features from positions; space is (0,0).
     e_pos = lay.pos("e")
-    train_vec = bigram_features_from_positions(ROW_STAGGERED_30, (e_pos, (0, 0)), freq=1, wpm=90)
+    train_vec = bigram_features_from_positions(ROW_STAGGERED_30, (e_pos, (0, 0)), wpm=90)
     np.testing.assert_array_equal(scorer_vec, train_vec)
 
 

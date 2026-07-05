@@ -6,6 +6,7 @@ The trained model's metadata records the current FEATURE_VERSION.
 """
 
 import numpy as np
+import pytest
 
 from keybo.data.strokes import StrokeRow
 from keybo.features.schema import BIGRAM_FEATURE_NAMES, FEATURE_VERSION
@@ -97,3 +98,74 @@ def test_trained_model_saves_and_reloads(tmp_path):
     # Reloads under the CURRENT feature version (default) -> no mismatch.
     reloaded = XGBoostTypingModel.load(str(path))
     assert reloaded.metadata.feature_version == FEATURE_VERSION
+
+
+# --- practice term + layout weights (the R1W recipe, productionized) --------------------
+
+
+def test_practice_term_recovers_a_planted_per_bigram_offset():
+    """Plant a large per-bigram additive offset on top of a flat geometry world; the
+    fitted practice term must recover it (sign and rough magnitude), and the offset must
+    NOT leak into g's predictions (which are geometry-only)."""
+    fast, slow = "th", "qz"
+    rows = []
+    for ngram, offset in ((fast, -60), (slow, +60)):
+        # Same positions for both -> geometry identical; only the offset differs.
+        samples = [(90, 150 + offset + (i % 5), i, 50) for i in range(200)]
+        rows.append(
+            StrokeRow(
+                layout="qwerty",
+                positions=((-1, 3), (1, 2)),
+                ngram=ngram,
+                frequency=200,
+                samples=samples,
+            )
+        )
+    model = train_bigram_model(rows, target_wpm=90, n_estimators=20, max_depth=2)
+    b = model.metadata.extra["training"]["practice_term"]["values"]
+    assert b[fast] < -20, b  # planted -60, shrunk toward 0 is fine; sign + size must show
+    assert b[slow] > +20, b
+    # b(fast) + b(slow) ~ 0 (g absorbs the shared mean).
+    assert abs(b[fast] + b[slow]) < 20
+
+
+def test_practice_term_can_be_disabled():
+    rows = _synthetic_bigram_rows()
+    model = train_bigram_model(
+        rows, target_wpm=90, n_estimators=5, max_depth=2, practice_term=False
+    )
+    assert model.metadata.extra["training"]["practice_term"] is None
+
+
+def test_layout_weights_flag_recorded():
+    rows = _synthetic_bigram_rows()
+    on = train_bigram_model(rows, target_wpm=90, n_estimators=5, max_depth=2)
+    off = train_bigram_model(rows, target_wpm=90, n_estimators=5, max_depth=2, layout_weights=False)
+    assert on.metadata.extra["training"]["layout_weights"] is True
+    assert off.metadata.extra["training"]["layout_weights"] is False
+
+
+def test_layout_balance_weights_equalize_shares():
+    import numpy as np
+
+    from keybo.training.train import layout_balance_weights
+
+    layouts = np.array(["qwerty"] * 90 + ["dvorak"] * 10, dtype=object)
+    w = layout_balance_weights(layouts)
+    assert w.mean() == pytest.approx(1.0)
+    # Each layout's total weight is ~equal after balancing.
+    assert w[:90].sum() == pytest.approx(w[90:].sum(), rel=0.01)
+
+
+def test_practice_shrinkage_suppresses_rare_ngrams():
+    import numpy as np
+
+    from keybo.training.train import fit_practice_term
+
+    ngrams = np.array(["aa"] * 3 + ["bb"] * 300, dtype=object)
+    resid = np.array([-50.0] * 3 + [-50.0] * 300)
+    counts = np.ones(303)
+    b = fit_practice_term(ngrams, resid, counts, k=100.0)
+    # Same residual, but 'aa' has 3 samples vs 'bb' 300: shrinkage must bite 'aa' hard.
+    assert abs(b["aa"]) < 5
+    assert b["bb"] < -35

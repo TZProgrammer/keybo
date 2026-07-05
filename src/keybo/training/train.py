@@ -7,6 +7,25 @@ model's metadata records the ``FEATURE_VERSION`` it was trained under.
 
 Each stroke row contributes one training example per WPM group: the target is the IQR-mean
 of that group's durations, and the WPM enters as a feature so a single model spans the range.
+
+Two corrections found by the real-data LOLO harness (2026-07-04/05, arm R1W — see
+``agent-artifacts/OQ1-frequency-feature.md``) are built in for bigram training:
+
+- **Additive practice term.** Frequent bigrams are fast partly because they are practiced —
+  a layout-independent effect. Left unmodeled, the geometry model absorbs it (frequent
+  bigrams' qwerty positions look "fast" — omitted-variable bias); modeled as a raw freq
+  feature it becomes a per-position memorization key (98.7% of the data is qwerty). The fix:
+  fit ``time = g(geometry, wpm) + b(bigram)`` by backfitting — b is the shrunk per-bigram
+  mean residual, g refits on the residualized target ``y − b̂``. b is keyed by bigram
+  identity, so it cancels exactly in layout comparisons; its only job is cleaning g's
+  training target. Measured: pooled out-of-sample layout tau +0.667 → +1.0.
+- **Layout balance weights.** Inverse-layout-share example weights (capped) stop the 98.7%
+  qwerty majority from dominating the fit. Measured: composes with the practice term
+  (rho/ceiling .928 → .931).
+
+Both are on by default and controllable (``practice_term=False`` / ``layout_weights=False``).
+The fitted practice term is stored in the model metadata (``extra["practice_term"]``) for
+inspection; scoring deliberately ignores it (layout-independent ⇒ ranking-irrelevant).
 """
 
 from __future__ import annotations
@@ -25,6 +44,14 @@ from keybo.geometry import ROW_STAGGERED_30, Geometry
 from keybo.models.base import ModelMetadata
 from keybo.models.xgboost_model import XGBoostTypingModel
 
+#: practice-term shrinkage: b(ngram) = sum(w·resid) / (sum(w) + K). Pre-registered at 100
+#: raw samples; the LOLO conclusion is robust across k ∈ [10, 1000] (audit 2026-07-05).
+PRACTICE_SHRINKAGE_K = 100.0
+#: backfit iterations (b and g alternate); 2 sufficed in every measured arm.
+PRACTICE_BACKFIT_ITERS = 2
+#: cap on inverse-layout-share weights, so a 64-participant layout can't dominate.
+LAYOUT_WEIGHT_CAP = 50.0
+
 
 def _rows_to_examples(row: StrokeRow, geometry: Geometry, ngram: str):
     """Yield (feature_vector, target_time) per WPM group in a stroke row."""
@@ -35,14 +62,10 @@ def _rows_to_examples(row: StrokeRow, geometry: Geometry, ngram: str):
     for wpm, durations in by_wpm.items():
         target = iqr_average(durations)
         if ngram == "bigram":
-            vec = bigram_features_from_positions(
-                geometry, row.positions, freq=row.frequency, wpm=wpm
-            )
+            vec = bigram_features_from_positions(geometry, row.positions, wpm=wpm)
         else:
-            vec = trigram_features_from_positions(
-                geometry, row.positions, tg_freq=row.frequency, wpm=wpm
-            )
-        yield vec, target
+            vec = trigram_features_from_positions(geometry, row.positions, wpm=wpm)
+        yield vec, target, len(durations)
 
 
 def build_training_matrix(
@@ -59,6 +82,14 @@ def build_training_matrix(
     metadata by the ``train_*`` helpers. ``progress`` shows a tqdm bar over the stroke rows
     (feature building is the visible-latency stage on a real-sized table).
     """
+    X, y, _ngrams, _layouts, _n = _build_matrix_full(
+        rows, ngram=ngram, geometry=geometry, progress=progress
+    )
+    return X, y
+
+
+def _build_matrix_full(rows, ngram, geometry, progress=False):
+    """(X, y, example ngram ids, example layouts, example raw-sample counts)."""
     iterator = rows
     if progress:
         from tqdm import tqdm
@@ -66,22 +97,78 @@ def build_training_matrix(
         iterator = tqdm(rows, desc="building features", unit="row", leave=False)
     features: list[np.ndarray] = []
     targets: list[float] = []
+    ngrams: list[str] = []
+    layouts: list[str] = []
+    counts: list[float] = []
     for row in iterator:
-        for vec, target in _rows_to_examples(row, geometry, ngram):
+        for vec, target, n in _rows_to_examples(row, geometry, ngram):
             features.append(vec)
             targets.append(target)
+            ngrams.append(row.ngram)
+            layouts.append(row.layout)
+            counts.append(float(n))
     if not features:
-        return np.empty((0, 0)), np.empty((0,))
-    return np.vstack(features), np.array(targets, dtype=np.float64)
+        return (
+            np.empty((0, 0)),
+            np.empty((0,)),
+            np.empty((0,), dtype=object),
+            np.empty((0,), dtype=object),
+            np.empty((0,)),
+        )
+    return (
+        np.vstack(features),
+        np.array(targets, dtype=np.float64),
+        np.array(ngrams, dtype=object),
+        np.array(layouts, dtype=object),
+        np.array(counts, dtype=np.float64),
+    )
+
+
+def layout_balance_weights(layouts: np.ndarray, cap: float = LAYOUT_WEIGHT_CAP) -> np.ndarray:
+    """Inverse-layout-share example weights, capped, normalized to mean 1."""
+    share: dict[str, float] = defaultdict(float)
+    for la in layouts:
+        share[la] += 1.0
+    total = float(len(layouts))
+    w = np.array([min(cap, total / (len(share) * share[la])) for la in layouts])
+    return w / w.mean()
+
+
+def fit_practice_term(
+    ngrams: np.ndarray,
+    residuals: np.ndarray,
+    counts: np.ndarray,
+    k: float = PRACTICE_SHRINKAGE_K,
+) -> dict[str, float]:
+    """Shrunk per-ngram mean residual: b = Σ(count·resid) / (Σcount + k).
+
+    ``counts`` are raw-sample counts per example, so a bigram seen 10,000 times gets its
+    full residual while a bigram seen 5 times is shrunk hard toward 0 (no practice claim
+    from noise).
+    """
+    num: dict[str, float] = defaultdict(float)
+    den: dict[str, float] = defaultdict(float)
+    for ng, r, c in zip(ngrams, residuals, counts, strict=True):
+        num[ng] += c * r
+        den[ng] += c
+    return {ng: num[ng] / (den[ng] + k) for ng in num}
 
 
 def _train(
-    rows, ngram, target_wpm, wpm_range, geometry, progress=False, **params
+    rows,
+    ngram,
+    target_wpm,
+    wpm_range,
+    geometry,
+    progress=False,
+    practice_term=True,
+    layout_weights=True,
+    **params,
 ) -> XGBoostTypingModel:
     from keybo.features.schema import BIGRAM_FEATURE_NAMES, TRIGRAM_FEATURE_NAMES
 
-    X, y = build_training_matrix(
-        rows, ngram=ngram, target_wpm=target_wpm, geometry=geometry, progress=progress
+    X, y, ngrams, layouts, counts = _build_matrix_full(
+        rows, ngram=ngram, geometry=geometry, progress=progress
     )
     names = BIGRAM_FEATURE_NAMES if ngram == "bigram" else TRIGRAM_FEATURE_NAMES
     metadata = ModelMetadata(
@@ -90,8 +177,39 @@ def _train(
         wpm_range=wpm_range,
         ngram=ngram,
     )
-    model = XGBoostTypingModel(metadata, **params)
-    model.fit(X, y)
+
+    weights = layout_balance_weights(layouts) if layout_weights and len(y) else None
+
+    def fit(target):
+        model = XGBoostTypingModel(metadata, **params)
+        model._regressor.fit(X, target, sample_weight=weights)
+        model._fitted = True
+        return model
+
+    if not practice_term or not len(y):
+        model = fit(y)
+        model.metadata.extra["training"] = {
+            "practice_term": None,
+            "layout_weights": bool(weights is not None),
+        }
+        return model
+
+    # Backfit: b absorbs the shrunk per-ngram residual mean; g refits on y - b.
+    model = fit(y)
+    bmap: dict[str, float] = {}
+    for _ in range(PRACTICE_BACKFIT_ITERS):
+        bmap = fit_practice_term(ngrams, y - model.predict(X), counts)
+        bvec = np.array([bmap.get(ng, 0.0) for ng in ngrams])
+        model = fit(y - bvec)
+    model.metadata.extra["training"] = {
+        "practice_term": {
+            "shrinkage_k": PRACTICE_SHRINKAGE_K,
+            "backfit_iters": PRACTICE_BACKFIT_ITERS,
+            "n_ngrams": len(bmap),
+            "values": {ng: round(float(v), 3) for ng, v in bmap.items()},
+        },
+        "layout_weights": bool(weights is not None),
+    }
     return model
 
 
@@ -101,14 +219,26 @@ def train_bigram_model(
     wpm_range: tuple[int, int] = (60, 120),
     geometry: Geometry = ROW_STAGGERED_30,
     progress: bool = False,
+    practice_term: bool = True,
+    layout_weights: bool = True,
     **params,
 ) -> XGBoostTypingModel:
-    """Fit a bigram typing-time model from bistroke rows.
+    """Fit a bigram typing-time model from bistroke rows (R1W recipe by default).
 
     ``progress`` is consumed here (feature-build bar), never forwarded into ``**params`` --
     XGBoost silently ignores unknown keyword params, so a leak would be invisible.
     """
-    return _train(rows, "bigram", target_wpm, wpm_range, geometry, progress=progress, **params)
+    return _train(
+        rows,
+        "bigram",
+        target_wpm,
+        wpm_range,
+        geometry,
+        progress=progress,
+        practice_term=practice_term,
+        layout_weights=layout_weights,
+        **params,
+    )
 
 
 def train_trigram_model(
@@ -117,7 +247,19 @@ def train_trigram_model(
     wpm_range: tuple[int, int] = (60, 120),
     geometry: Geometry = ROW_STAGGERED_30,
     progress: bool = False,
+    practice_term: bool = True,
+    layout_weights: bool = True,
     **params,
 ) -> XGBoostTypingModel:
-    """Fit a trigram typing-time model from tristroke rows. See train_bigram_model re progress."""
-    return _train(rows, "trigram", target_wpm, wpm_range, geometry, progress=progress, **params)
+    """Fit a trigram typing-time model from tristroke rows. See train_bigram_model."""
+    return _train(
+        rows,
+        "trigram",
+        target_wpm,
+        wpm_range,
+        geometry,
+        progress=progress,
+        practice_term=practice_term,
+        layout_weights=layout_weights,
+        **params,
+    )

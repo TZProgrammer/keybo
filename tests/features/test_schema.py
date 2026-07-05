@@ -30,17 +30,34 @@ def test_trigram_feature_names_are_unique():
 
 
 def test_bigram_row_keys_match_schema_in_order():
-    row = bigram_model_row(LAYOUT, "th", freq=100, wpm=90)
+    row = bigram_model_row(LAYOUT, "th", wpm=90)
     assert list(row.keys()) == BIGRAM_FEATURE_NAMES
 
 
 def test_trigram_row_keys_match_schema_in_order():
-    row = trigram_model_row(
-        LAYOUT, "the", tg_freq=100, bg1_freq=50, bg2_freq=40, sg_freq=30, wpm=90
-    )
+    row = trigram_model_row(LAYOUT, "the", wpm=90)
     assert list(row.keys()) == TRIGRAM_FEATURE_NAMES
 
 
 def test_wpm_is_the_last_model_feature():
     assert BIGRAM_FEATURE_NAMES[-1] == "wpm"
     assert TRIGRAM_FEATURE_NAMES[-1] == "wpm"
+
+
+# --- OQ-1 consequence: frequency is NOT a feature (weight-only + practice term) ---------
+
+
+def test_freq_is_not_a_bigram_feature():
+    """OQ-1 closed weight-only: the measured LOLO A/B showed freq-as-feature corrupts
+    cross-layout ranking (tau +0.333 vs +0.667/+1.0 without it)."""
+    assert "freq" not in BIGRAM_FEATURE_NAMES
+
+
+def test_no_freq_features_anywhere_in_trigram_schema():
+    """The constituent-frequency landmine (audit #5) dies with the schema, not a default."""
+    assert not [n for n in TRIGRAM_FEATURE_NAMES if "freq" in n]
+
+
+def test_feature_version_bumped_past_freq_era():
+    """Models trained with the freq column must refuse to load (train/serve skew guard)."""
+    assert FEATURE_VERSION > "2026-07-03.1"

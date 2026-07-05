@@ -1,9 +1,9 @@
 """QAP-table scorer: the exact model objective, reduced to a position-pair table.
 
-When the model's ``freq`` feature is inert (trained on a constant — the OQ-1 outcome) and
-the scoring WPM is fixed, a bigram's predicted time depends ONLY on its two key positions.
-There are just 31 positions (30 slots + the fixed space key), so the whole objective
-collapses to::
+Features are pure geometry + wpm (frequency was removed from the schema per OQ-1), so at a
+fixed scoring WPM a bigram's predicted time depends ONLY on its two key positions. There
+are just 31 positions (30 slots + the fixed space key), so the whole objective collapses
+to::
 
     fitness(layout) = sum_{c1,c2} F[c1, c2] * T[slot(c1), slot(c2)]
 
@@ -11,10 +11,6 @@ with ``F`` the corpus bigram-frequency matrix over the charset and ``T`` the mod
 961-entry position-pair time table. That is a Quadratic Assignment Problem: evaluating a
 layout is a fancy-indexed sum (microseconds) instead of a full model predict over the
 corpus (~25 ms), which is what makes deep search (millions of evaluations) feasible.
-
-The reduction is only valid for freq-inert models, so the constructor PROBES the model
-(predict at freq=1 vs freq=1e7) and refuses frequency-sensitive ones rather than silently
-optimizing a different objective than :class:`BigramModelScorer` scores.
 """
 
 from __future__ import annotations
@@ -53,25 +49,13 @@ class TableBigramScorer(IScorer):
         positions = [*geometry.slots, geometry.space_position]
         n_pos = len(positions)
 
-        # Guard: the table reduction assumes predictions are invariant to the freq feature.
-        pa, pb = positions[0], positions[1]
-        probe = np.vstack(
-            [
-                bigram_features_from_positions(geometry, (pa, pb), freq=f, wpm=target_wpm)
-                for f in (1.0, 1e7)
-            ]
-        )
-        lo, hi = model.predict(probe)
-        if abs(float(lo) - float(hi)) > 1e-9:
-            raise ValueError(
-                "model predictions depend on the freq feature; the position-pair table "
-                "reduction is invalid — use BigramModelScorer (or retrain freq-inert)"
-            )
-
-        # T: predicted time for every ordered position pair, at the scoring WPM.
+        # T: predicted time for every ordered position pair, at the scoring WPM. The
+        # reduction is valid by construction since the 2026-07-05 schema: features are pure
+        # geometry + wpm (frequency was removed per OQ-1), so a bigram's prediction depends
+        # only on its two positions.
         vectors = np.vstack(
             [
-                bigram_features_from_positions(geometry, (a, b), freq=1.0, wpm=target_wpm)
+                bigram_features_from_positions(geometry, (a, b), wpm=target_wpm)
                 for a in positions
                 for b in positions
             ]

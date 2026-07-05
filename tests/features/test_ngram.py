@@ -84,32 +84,33 @@ def test_bigram_features_returns_1d_float_array():
 
 
 def test_bigram_same_finger_flag_matches_classifier():
-    row = bigram_model_row(LAYOUT, "ft", freq=100, wpm=90)
+    row = bigram_model_row(LAYOUT, "ft", wpm=90)
     assert row["same_finger"] == 1.0
-    row2 = bigram_model_row(LAYOUT, "fd", freq=100, wpm=90)
+    row2 = bigram_model_row(LAYOUT, "fd", wpm=90)
     assert row2["same_finger"] == 0.0
 
 
 def test_bigram_dx_dy_use_stagger_offsets():
     # 'ft': f(-2,2) home index, t(-1,3) top index. dy=1.
     # dx = |(-2 + 0.0) - (-1 + -0.25)| = |-0.75| = 0.75
-    row = bigram_model_row(LAYOUT, "ft", freq=100, wpm=90)
+    row = bigram_model_row(LAYOUT, "ft", wpm=90)
     assert row["dy"] == pytest.approx(1.0)
     assert row["dx"] == pytest.approx(0.75)
 
 
 def test_bigram_row_features_are_one_hot_on_second_key():
     # 'ft' second key t is top row.
-    row = bigram_model_row(LAYOUT, "ft", freq=100, wpm=90)
+    row = bigram_model_row(LAYOUT, "ft", wpm=90)
     assert row["top"] == 1.0
     assert row["home"] == 0.0
     assert row["bottom"] == 0.0
 
 
-def test_bigram_frequency_and_wpm_are_passed_through():
-    row = bigram_model_row(LAYOUT, "th", freq=1234, wpm=88)
-    assert row["freq"] == 1234.0
+def test_bigram_wpm_is_passed_through_and_freq_is_gone():
+    row = bigram_model_row(LAYOUT, "th", wpm=88)
     assert row["wpm"] == 88.0
+    # OQ-1: frequency must not appear in the feature row at all.
+    assert "freq" not in row
 
 
 # --- geometric predicate coverage (hand-verified against the geometry) -----------------
@@ -117,7 +118,7 @@ def test_bigram_frequency_and_wpm_are_passed_through():
 
 def test_scissor_flagged_for_adjacent_two_row_reach():
     # 'qx': q(-5,3) pinky top, x(-4,1) ring bottom -> adjacent fingers, 2 rows apart.
-    row = bigram_model_row(LAYOUT, "qx", freq=1, wpm=90)
+    row = bigram_model_row(LAYOUT, "qx", wpm=90)
     assert row["scissor"] == 1.0
     assert row["adjacent"] == 1.0
 
@@ -130,7 +131,7 @@ def test_regression_same_finger_bigram_is_not_a_scissor_or_adjacent():
     |x| = |2-1| = 1), handing the model a contradictory feature row. A same-finger bigram
     must be neither adjacent nor a scissor.
     """
-    row = bigram_model_row(LAYOUT, "un", freq=1, wpm=90)
+    row = bigram_model_row(LAYOUT, "un", wpm=90)
     assert row["same_finger"] == 1.0
     assert row["adjacent"] == 0.0
     assert row["scissor"] == 0.0
@@ -141,7 +142,7 @@ def test_regression_same_finger_bigram_has_no_roll_direction_or_angle():
     roll inwards/outwards or have a roll angle. Fix #3 gated adjacent/scissor but left
     inwards/outwards/angle live for 24 same-finger pairs (incl. 'un'). Pure geometry is
     already carried by dx/dy/distance; the directional features encode roll quality."""
-    row = bigram_model_row(LAYOUT, "un", freq=1, wpm=90)
+    row = bigram_model_row(LAYOUT, "un", wpm=90)
     assert row["same_finger"] == 1.0
     assert row["inwards"] == 0.0
     assert row["outwards"] == 0.0
@@ -154,7 +155,7 @@ def test_no_corpus_bigram_is_both_same_finger_and_scissor():
     from itertools import permutations
 
     for c1, c2 in permutations(LAYOUT.chars, 2):
-        row = bigram_model_row(LAYOUT, c1 + c2, freq=1, wpm=90)
+        row = bigram_model_row(LAYOUT, c1 + c2, wpm=90)
         if row["same_finger"] == 1.0:
             for feature in ("scissor", "adjacent", "inwards", "outwards", "angle"):
                 assert row[feature] == 0.0, f"{c1}{c2}: same_finger but {feature}={row[feature]}"
@@ -162,13 +163,13 @@ def test_no_corpus_bigram_is_both_same_finger_and_scissor():
 
 def test_lsb_flagged_for_index_middle_wide_stretch():
     # 'et': e(-3,3) middle, t(-1,3) index, stagger dx = 2.0 (> 1.5) -> lateral stretch.
-    row = bigram_model_row(LAYOUT, "et", freq=1, wpm=90)
+    row = bigram_model_row(LAYOUT, "et", wpm=90)
     assert row["lsb"] == 1.0
 
 
 def test_alternating_hand_bigram_has_no_same_hand_geometry():
     # 'jf': right index to left index -> alternate; same-hand-only flags must be 0.
-    row = bigram_model_row(LAYOUT, "jf", freq=1, wpm=90)
+    row = bigram_model_row(LAYOUT, "jf", wpm=90)
     assert row["same_hand"] == 0.0
     assert row["adjacent"] == 0.0
     assert row["scissor"] == 0.0
@@ -179,10 +180,10 @@ def test_alternating_hand_bigram_has_no_same_hand_geometry():
 
 def test_inwards_and_outwards_are_mutually_exclusive_same_hand_rolls():
     # 'as': a(-5,2) pinky, s(-4,2) ring -> same row, no roll direction.
-    row = bigram_model_row(LAYOUT, "as", freq=1, wpm=90)
+    row = bigram_model_row(LAYOUT, "as", wpm=90)
     assert row["inwards"] == 0.0 and row["outwards"] == 0.0
     # 'qs': q(-5,3) pinky top, s(-4,2) ring home. Outer=q higher row -> inwards roll.
-    row2 = bigram_model_row(LAYOUT, "qs", freq=1, wpm=90)
+    row2 = bigram_model_row(LAYOUT, "qs", wpm=90)
     assert (row2["inwards"], row2["outwards"]) == (1.0, 0.0)
 
 
@@ -190,14 +191,14 @@ def test_trigram_skipgram_same_finger_detected():
     from keybo.features import trigram_model_row
 
     # 'tat': t(-1,3) and t... skipgram is first+third = 't','t' same key -> same finger.
-    row = trigram_model_row(LAYOUT, "tat", tg_freq=1, bg1_freq=1, bg2_freq=1, sg_freq=1, wpm=90)
+    row = trigram_model_row(LAYOUT, "tat", wpm=90)
     assert row["sg_same_finger"] == 1.0
 
 
 def test_trigram_embeds_both_constituent_bigrams():
     from keybo.features import trigram_model_row
 
-    row = trigram_model_row(LAYOUT, "the", tg_freq=1, bg1_freq=1, bg2_freq=1, sg_freq=1, wpm=90)
+    row = trigram_model_row(LAYOUT, "the", wpm=90)
     # bg1 = 'th', bg2 = 'he'; both prefixes present.
     assert any(name.startswith("bg1_") for name in row)
     assert any(name.startswith("bg2_") for name in row)
@@ -209,7 +210,7 @@ def test_alternate_class_when_hands_differ():
     from keybo.features import trigram_model_row
 
     # A cross-hand trigram is not a same-hand trigram.
-    row = trigram_model_row(LAYOUT, "the", tg_freq=1, bg1_freq=1, bg2_freq=1, sg_freq=1, wpm=90)
+    row = trigram_model_row(LAYOUT, "the", wpm=90)
     assert row["same_hand_trigram"] == 0.0
     assert row["redirect"] == 0.0
 
@@ -239,8 +240,8 @@ def test_regression_space_bigrams_do_not_crash():
     space = (0, 0)
     e_pos = LAYOUT.pos("e")  # (-3, 3)
     # "e " and " e" -- both must produce finite feature vectors.
-    v1 = bigram_features_from_positions(ROW_STAGGERED_30, (e_pos, space), freq=100, wpm=90)
-    v2 = bigram_features_from_positions(ROW_STAGGERED_30, (space, e_pos), freq=100, wpm=90)
+    v1 = bigram_features_from_positions(ROW_STAGGERED_30, (e_pos, space), wpm=90)
+    v2 = bigram_features_from_positions(ROW_STAGGERED_30, (space, e_pos), wpm=90)
     assert np.all(np.isfinite(v1))
     assert np.all(np.isfinite(v2))
 
@@ -258,7 +259,7 @@ def test_regression_space_trigrams_do_not_crash():
 
 def test_no_character_identity_features():
     """Raw key-ID features are intentionally dropped (they drove layout overfitting)."""
-    row = bigram_model_row(LAYOUT, "th", freq=100, wpm=90)
+    row = bigram_model_row(LAYOUT, "th", wpm=90)
     assert "k1_id" not in row
     assert "k2_id" not in row
     # Two different bigrams whose keys sit at identical positions/classes must map to
@@ -282,7 +283,7 @@ def test_trigram_same_hand_trigram_flag():
     from keybo.features import trigram_model_row
 
     # 'sad' on qwerty-ish: s(-4,2), a(-5,2), d(-3,2) all left hand -> same-hand trigram.
-    row = trigram_model_row(LAYOUT, "sad", tg_freq=10, bg1_freq=5, bg2_freq=5, sg_freq=3, wpm=90)
+    row = trigram_model_row(LAYOUT, "sad", wpm=90)
     assert row["same_hand_trigram"] == 1.0
 
 
@@ -291,5 +292,5 @@ def test_trigram_redirect_detected_on_direction_change():
 
     # 'sad': columns -4, -5, -3. |−4|>|−5|? no. Direction: a->d outward? Uses abs columns.
     # s(4)->a(5) outward, a(5)->d(3) inward => redirect.
-    row = trigram_model_row(LAYOUT, "sad", tg_freq=10, bg1_freq=5, bg2_freq=5, sg_freq=3, wpm=90)
+    row = trigram_model_row(LAYOUT, "sad", wpm=90)
     assert row["redirect"] == 1.0

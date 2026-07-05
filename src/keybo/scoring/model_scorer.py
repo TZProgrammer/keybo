@@ -8,8 +8,8 @@ Two things worth noting versus the original:
 
 - Every n-gram in the supplied corpus is scored. There is no hardcoded character subset, so
   no key is invisible to the objective (bug #2).
-- Feature vectors are built with the shared pipeline and predicted in a single batch, which
-  is both correct (identical to training features) and fast.
+- Frequency is ONLY the weight in that sum, never a feature input (OQ-1): features are pure
+  geometry + wpm, so predictions cannot memorize practiced positions via frequency.
 """
 
 from __future__ import annotations
@@ -48,7 +48,7 @@ class BigramModelScorer(_ModelScorerBase):
         freqs = []
         for bg, freq in zip(self._bigrams, self._freqs, strict=True):
             if all(layout.has_key(c) for c in bg):
-                vectors.append(bigram_features(layout, bg, freq=freq, wpm=self.target_wpm))
+                vectors.append(bigram_features(layout, bg, wpm=self.target_wpm))
                 freqs.append(freq)
         if not vectors:
             return 0.0
@@ -63,30 +63,21 @@ class TrigramModelScorer(_ModelScorerBase):
         self,
         model,
         trigram_freqs: Mapping[str, int],
-        bigram_freqs: Mapping[str, int] | None = None,
-        skipgram_freqs: Mapping[str, int] | None = None,
         target_wpm: float = 0.0,
     ) -> None:
         super().__init__(model, target_wpm)
         self._trigrams = list(trigram_freqs.keys())
         self._freqs = np.array([trigram_freqs[t] for t in self._trigrams], dtype=np.float64)
-        # bigram_freqs / skipgram_freqs are accepted for API symmetry but intentionally
-        # UNUSED: the training pipeline has no per-row corpus counts, so it builds trigram
-        # features with bg1/bg2/sg_freq = 1.0. Passing real corpus values here would make
-        # those columns differ train-vs-serve (audit finding #5). Threading real constituent
-        # frequencies would require a corpus join at TRAINING time so both sides match.
-        del bigram_freqs, skipgram_freqs
 
     def fitness(self, layout: Layout) -> float:
         # As with bigrams: score trigrams typable on this board (space included), skip those
-        # using a character the board genuinely lacks. Constituent bg/sg freqs are left at
-        # their training-time defaults (see __init__) for train/serve feature parity.
+        # using a character the board genuinely lacks.
         rows = []
         freqs = []
         for tg, freq in zip(self._trigrams, self._freqs, strict=True):
             if not all(layout.has_key(c) for c in tg):
                 continue
-            rows.append(trigram_features(layout, tg, tg_freq=freq, wpm=self.target_wpm))
+            rows.append(trigram_features(layout, tg, wpm=self.target_wpm))
             freqs.append(freq)
         if not rows:
             return 0.0

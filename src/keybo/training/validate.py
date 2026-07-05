@@ -44,7 +44,7 @@ class Cell:
     layout: str
     ngram: str
     positions: tuple[tuple[int, int], ...]
-    frequency: int  # the source row's corpus frequency (feature input)
+    frequency: int  # the source row's occurrence count (bookkeeping; NOT a feature)
     bucket: int  # bucket start wpm
     wpm: float  # bucket midpoint — the wpm fed to the model
     obs: float  # IQR-mean of the bucket's observed durations
@@ -237,13 +237,20 @@ def layout_ranking_tau(
 
 
 def _predict_cells(model, cells: list[Cell], geometry: Geometry) -> np.ndarray:
-    X = np.vstack(
-        [
-            bigram_features_from_positions(geometry, c.positions, freq=c.frequency, wpm=c.wpm)
-            for c in cells
-        ]
-    )
-    return model.predict(X)
+    """g(geometry, wpm) + b(ngram) per cell — the model's full prediction.
+
+    The practice term b (stored in the model's training metadata, when trained with it)
+    is added by NGRAM IDENTITY: it is a legitimate, layout-independent part of predicted
+    time. It cancels exactly in the layout-ranking tau (verified structurally); the
+    per-cell rho does credit it, which is honest — see the OQ-1 artifact's decomposition.
+    """
+    X = np.vstack([bigram_features_from_positions(geometry, c.positions, wpm=c.wpm) for c in cells])
+    pred = model.predict(X)
+    practice = (model.metadata.extra.get("training") or {}).get("practice_term")
+    if practice:
+        values = practice.get("values", {})
+        pred = pred + np.array([values.get(c.ngram, 0.0) for c in cells])
+    return pred
 
 
 def _distance(positions) -> float:
