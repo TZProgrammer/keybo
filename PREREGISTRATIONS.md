@@ -98,4 +98,21 @@ super-additive. Between ±10 ms ⇒ bigram sums approximately suffice and the tr
 objective's value is small. (E) any row/finger error-rate spread > 1.5× between best and
 worst cell, or sfb-preceded error rate > 1.5× alt-preceded ⇒ error term enters the
 objective backlog with measured weights; else error stays out of scope.
-**Outcome:** (pending)
+**Outcome (R):** MIXED, surprising in one direction. Deltas vs sum-of-bigram-medians:
+alt-alt −24 ms, run-continue −46, run-flat −21, run-redirect −46, mixed −37 (all
+sub-additive — trigram spans overlap constituent windows, so the LEVEL is expected
+negative; the CONTRASTS carry the signal). run-continue − alt-alt = −22 ms → ROLLS ARE
+SUB-ADDITIVE per the rule → the trigram objective materially matters. run-redirect −
+alt-alt = −22 ms too → REDIRECTS ARE **NOT** SUPER-ADDITIVE — a same-hand direction
+reversal costs no more than its bigrams say, contradicting community doctrine that
+redirects deserve extra penalty. Roll-through and redirect deltas are equal; what
+distinguishes them must already live in the constituent bigrams. Consequence: a trigram
+objective should reward same-hand continuation (~−22 ms per occurrence vs alternation)
+and NOT add a redirect penalty beyond bigram costs.
+**Outcome (E):** error rate is essentially geometry-FLAT where it matters: rows 5.4–5.9%
+(spread 1.09×), fingers 4.9–6.2% except right-pinky 10.4% (qwerty right-pinky keys are
+p and ;/-row edges — plausibly letter-difficulty, not geometry; and right-pinky load in
+any sane layout is small), sfb-preceded 6.29% vs alt 5.15% (1.22× < the 1.5× bar).
+Per the rule: ERROR STAYS OUT OF THE OBJECTIVE. The SFB-error correlation is another
+reason SFBs are bad, but their time penalty already prices them.
+
