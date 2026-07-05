@@ -125,3 +125,17 @@ any sane layout is small), sfb-preceded 6.29% vs alt 5.15% (1.22× < the 1.5× b
 Per the rule: ERROR STAYS OUT OF THE OBJECTIVE. The SFB-error correlation is another
 reason SFBs are bad, but their time penalty already prices them.
 
+
+## 2026-07-05 — skill stratification of objective-driving effects (user challenge)
+
+Experiment: `skill_strata.py` — roll/redirect contrasts, lag-2 penalty, SFB penalty,
+alternation gap, each re-measured within wpm bands 40–70 / 70–100 / 100–130 (qwerty,
+matched construction to the pooled probes); plus the model-side check (do the shipped
+models' wpm-conditioned table contrasts track the raw per-band physics?).
+Rule: an effect is SKILL-DEPENDENT if |band3 − band1| > max(10 ms, 50% of the pooled
+effect) AND monotone across bands. Consequences: skill-dependent roll/SFB effects ⇒
+per-wpm objective tables become REQUIRED (machinery already supports them — one batch
+predict per wpm) and layouts should be optimized at the user's target wpm; ~flat ⇒ pooled
+tables stand, documented. Model-side disagreement in sign ⇒ the wpm feature isn't
+capturing the interaction and needs explicit wpm×class features.
+**Outcome:** (pending)
