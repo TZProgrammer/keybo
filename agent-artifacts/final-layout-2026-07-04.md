@@ -92,3 +92,27 @@ Probes: `keybo-e2e/takeover_probes.{py,log}`, `probe_b_alone.{py,log}`, plus inl
 - Driver: `agent-artifacts/experiments/final_search.py` (archived copy).
 - Arm-matrix evidence for R1W: `agent-artifacts/OQ1-frequency-feature.md` (tables),
   `keybo-e2e/runs/arms_matrix.json`.
+
+## Trigram-objective round (2026-07-05 late — `runs/trigram_search.json`)
+
+The LOLO-validated trigram model, searched directly (31³ table, 161 µs/eval, 24 restarts):
+
+- **tri-best:** `fdnlmkioheswrtcpuabyjxqgv,.;z/` — +1.78% vs qwerty under the trigram
+  objective; the bigram-best (d3) layout scores +1.45% under the same objective, and
+  tri-best gives back 0.75% under the bigram objective. The two objectives agree far more
+  than they disagree — the cross-objective tension is ~0.3–0.8 pp, small against the +1.5–2.5%
+  gains. E5 postflight clean (home 35.6%, SFB 1.67%, max finger load 18.1%).
+- **Rank-stability (the 4.4 deliverable, first run):** 21 of 24 restarts landed on
+  DISTINCT layouts within 0.5% of the best, and **0/30 slots reach 80% letter consensus**
+  — the trigram landscape is even flatter than the bigram one. "The best layout" under
+  any single objective is a set, not a string. This elevates the certificate + top-K
+  presentation from nice-to-have to the only honest deliverable shape.
+- Named layouts under the trigram objective: colemak +0.41% > qwerty (dvorak/semimak/
+  graphite unscored — their charsets differ from the table's; a charset-general rescore
+  is a follow-up).
+
+Consequence for the combined objective: with this much plateau overlap, a combined
+bigram+trigram scalarization will mostly re-rank within the shared plateau; the decisive
+gains now live in (a) skill-stratified physics (in flight), (b) comfort constraints
+narrowing the set, (c) the Phase D data. The layout SET, with consensus statistics and
+certificates, is the product.
