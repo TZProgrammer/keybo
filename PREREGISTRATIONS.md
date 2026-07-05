@@ -228,3 +228,16 @@ Note on the watchdog's LOLO suggestion: LOLO validates predictive MODELS; the fi
 term is an OBJECTIVE preference (the lag-2 probe measured that no speed mechanism exists
 to validate it against). Its correct verification is this frontier study. Recorded here
 so the discipline distinction is durable.
+
+## 2026-07-06 — trigram-only vs combined + oxey joint-optimization (user questions)
+
+A (trigram-only sufficiency): the trigram full-span target embeds bigram physics, so the
+combined sum's implicit ~3:1 bigram-physics weight is an unprincipled (if lower-variance)
+ensemble. Rule: search both objectives; if mutual cross-objective regret ≤ 0.15% (plateau
+noise), SIMPLIFY to trigram-only as the canonical objective; else keep combined with the
+ensemble justification documented.
+B (oxey frontier): sweep community-judgment weight w ∈ {0, 0.5, 1, 2, 4} (w=1 ≈ 1% of
+speed fitness); record the speed price of community-approved pattern profiles (sfb%,
+dsfb%, rolls%, redirects%). Sanity: oxey score must improve monotonically with w. No
+adoption rule — the weight is user-owned; the deliverable is the priced frontier.
+**Outcome:** (pending)
