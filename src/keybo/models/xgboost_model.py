@@ -21,7 +21,10 @@ from keybo.models.base import ModelMetadata, TypingModel
 _DEFAULT_PARAMS = {
     "objective": "reg:squarederror",
     "n_estimators": 300,
-    "max_depth": 5,
+    # depth 3, not 5: the LOLO feature-arm matrix measured depth-5 trees spending their
+    # extra splits memorizing training-family idiosyncrasies (held-out rho/ceiling .94 ->
+    # ~1.0 at depth 3, layout tau intact; depth 2 over-regularizes and breaks tau).
+    "max_depth": 3,
     "learning_rate": 0.05,
     "subsample": 0.7,
     "colsample_bytree": 0.7,

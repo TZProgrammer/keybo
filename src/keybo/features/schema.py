@@ -5,32 +5,30 @@ feature set (order, names, or meaning) MUST bump it; loading a model whose store
 differs from this one is a hard error, which is what prevents silently scoring with a model
 trained on a different feature layout (train/serve skew).
 
-Frequency is deliberately NOT a feature (2026-07-05 bump): the real-data LOLO A/B (OQ-1)
+Frequency is deliberately NOT a feature (2026-07-05.1): the real-data LOLO A/B (OQ-1)
 showed freq-as-feature corrupts cross-layout ranking — with 98.7%-qwerty data it acts as a
 per-position memorization key. Frequency lives in exactly two places instead: the objective
 WEIGHT (fitness = sum time*freq) and the identity key of the additive practice term the
 training pipeline residualizes out (see keybo.training.train).
 
+The bigram set is the RELATIONAL + GEOMETRIC core only (2026-07-05.2): the feature-arm
+matrix (agent-artifacts/bigram-experiment-backlog.md; runs/feature_arms{,2}.json) measured
+that the second-key row/finger one-hots were memorization capacity, not transferable
+signal — dropping them plus capping tree depth at 3 raised held-out rho from .94 to ~1.0
+of the noise ceiling at layout-ranking tau +1.0. The trigram set still carries the full
+per-constituent placement features: the C2A5 evidence is bigram-only, and the trigram
+world gets its own harness round before its schema moves.
+
 The name lists here are the single source of truth for column order. ``keybo.features.ngram``
-produces rows keyed by exactly these names, and a test asserts the two stay in lockstep.
+produces rows keyed by (a superset of) exactly these names, and a test asserts the two stay
+in lockstep.
 """
 
-FEATURE_VERSION = "2026-07-05.1"
+FEATURE_VERSION = "2026-07-05.2"
 
-# Placement / relational / geometry features for a single bigram, in order. Row and finger
-# one-hots describe the *second* (landing) key; the first key enters through the relational
-# and geometric features. Character identity is deliberately absent.
-_BIGRAM_PLACEMENT_NAMES = [
-    # second-key row (one-hot)
-    "bottom",
-    "home",
-    "top",
-    # second-key finger (one-hot; index covers columns 1 and 2)
-    "pinky",
-    "ring",
-    "middle",
-    "index",
-    "lateral",
+# The bigram feature set: relational + geometric core (C2A5). Character identity and
+# absolute key position are deliberately absent — position enters only through relations.
+_BIGRAM_RELATIONAL_GEOMETRIC = [
     # relational
     "same_hand",
     "same_finger",
@@ -46,7 +44,23 @@ _BIGRAM_PLACEMENT_NAMES = [
     "outwards",
 ]
 
-BIGRAM_FEATURE_NAMES = [*_BIGRAM_PLACEMENT_NAMES, "wpm"]
+BIGRAM_FEATURE_NAMES = [*_BIGRAM_RELATIONAL_GEOMETRIC, "wpm"]
+
+# The full placement row (second-key one-hots + the core) — still produced by the pipeline
+# and still consumed by the TRIGRAM constituents below.
+_BIGRAM_PLACEMENT_NAMES = [
+    # second-key row (one-hot)
+    "bottom",
+    "home",
+    "top",
+    # second-key finger (one-hot; index covers columns 1 and 2)
+    "pinky",
+    "ring",
+    "middle",
+    "index",
+    "lateral",
+    *_BIGRAM_RELATIONAL_GEOMETRIC,
+]
 
 # Trigram-level features, then the skipgram (first+third key) features, then the two
 # constituent bigrams' placement features (prefixed), then wpm.
