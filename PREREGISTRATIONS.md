@@ -205,7 +205,24 @@ must shrink monotonically with w (else the term is mis-wired); (b) record the sp
 of balance — if spread halves for <0.2% speed loss, balance is a near-free lunch (plateau
 logic) and a nonzero DEFAULT becomes defensible to propose to the user; if it costs >1%,
 balance genuinely fights speed and the default stays 0.
-**Outcome:** (pending)
+**Outcome (both sanity checks pass; cost sits between the pre-registered thresholds):**
+| w | speed loss | max/min load | spread | pinkies |
+|---|---|---|---|---|
+| 0 | — | 20.9%/3.4% | 17.5% | 7.2% |
+| 20 | +0.27% | 13.2%/5.5% | 7.7% | 12.4% |
+| 50 | +0.37% | 13.2%/6.7% | 6.5% | 13.7% |
+| 100 | +0.43% | 12.6%/7.0% | 5.6% | 14.5% |
+| 200 | +0.55% | 12.7%/7.3% | 5.4% | 14.6% |
+(a) PASS: spread shrinks monotonically 17.5%→5.4% — the term is wired right. (b) The big
+move is the FIRST step: w=20 buys 56% of the total spread reduction for +0.27% — more
+than the 0.2% "free lunch" bar but far under the 1% "fights speed" bar. Per the rule:
+neither branch fires cleanly ⇒ DEFAULT STAYS 0 (strict reading), with the honest note
+that w≈20 is an attractive elbow the user may want (semimak-like balance for a quarter
+percent of predicted speed). One surprise worth flagging: balancing RAISES pinky load
+(7.2%→12–15%) — the unconstrained optimizer had been sparing the pinkies more than the
+capacity-weighted balance target does; a user who mainly wants LOW PINKY LOAD should
+lower the pinky capacities rather than raise w.
+
 
 Note on the watchdog's LOLO suggestion: LOLO validates predictive MODELS; the finger-load
 term is an OBJECTIVE preference (the lag-2 probe measured that no speed mechanism exists
