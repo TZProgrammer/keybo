@@ -21,6 +21,21 @@ def add_arguments(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--n-iter", type=int, default=50)
     parser.add_argument("--cv", type=int, default=5)
     parser.add_argument("--seed", type=int, default=42)
+    parser.add_argument(
+        "--objective",
+        choices=["lolo", "cv-mae"],
+        default="lolo",
+        help="lolo (default): score candidates by leave-one-layout-out TRANSFER "
+        "(rho/ceiling gated on ranking tau) — what the optimizer needs. cv-mae: the "
+        "legacy pooled-CV fit objective (rewards memorization; kept for comparison).",
+    )
+    parser.add_argument(
+        "--lolo-seeds",
+        type=int,
+        nargs="+",
+        default=[0],
+        help="Training seeds per candidate for --objective lolo",
+    )
 
 
 def run(args: argparse.Namespace) -> int:
@@ -37,8 +52,30 @@ def run(args: argparse.Namespace) -> int:
         print("No stroke rows survived filtering; check the input and thresholds.")
         return 1
 
-    X, y = build_training_matrix(rows, ngram=args.ngram, target_wpm=args.target_wpm)
-    best = tune_hyperparameters(X, y, n_iter=args.n_iter, cv=args.cv, seed=args.seed)
+    if args.objective == "lolo":
+        import numpy as np
+
+        from keybo.training.tune import tune_lolo
+
+        rng = np.random.default_rng(args.seed)
+        candidates = [
+            {
+                "n_estimators": int(rng.integers(100, 500)),
+                "max_depth": int(rng.integers(2, 6)),
+                "learning_rate": float(rng.uniform(0.02, 0.2)),
+                "min_child_weight": int(rng.integers(1, 6)),
+                "subsample": float(rng.uniform(0.6, 1.0)),
+            }
+            for _ in range(args.n_iter)
+        ]
+        best, leaderboard = tune_lolo(
+            rows, candidates=candidates, seeds=args.lolo_seeds, ngram=args.ngram
+        )
+        for params, score in leaderboard[:5]:
+            print(f"  rho/ceiling {score:+.4f}  {params}")
+    else:
+        X, y = build_training_matrix(rows, ngram=args.ngram, target_wpm=args.target_wpm)
+        best = tune_hyperparameters(X, y, n_iter=args.n_iter, cv=args.cv, seed=args.seed)
     with open(args.output, "w") as f:
         json.dump(best, f, indent=2)
     print(f"Best hyperparameters -> {args.output}: {best}")

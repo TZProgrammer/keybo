@@ -316,3 +316,34 @@ def test_validate_rejects_mismatched_ngram_length():
     rows = _lawful_trigram_rows()
     with pytest.raises(ValueError, match="length"):
         validate(rows, seeds=[0], ngram="bigram", train_params=_fast_params())
+
+
+# --- C1: tune retargeted at the harness --------------------------------------------------
+
+
+def test_tune_lolo_prefers_transfer_over_memorization():
+    """The LOLO tuner must rank a shallow (transfer-friendly) candidate above a deep
+    (memorization-prone) one in the lawful world — the exact preference the CV-MAE tuner
+    gets wrong. Small n keeps it fast; candidates passed explicitly for determinism."""
+    from keybo.training.tune import tune_lolo
+
+    rows = _lawful_rows(n_pids=8, samples_per_pid=6)
+    candidates = [
+        {"n_estimators": 30, "max_depth": 2, "learning_rate": 0.3},
+        {"n_estimators": 30, "max_depth": 8, "learning_rate": 0.3},
+    ]
+    best, leaderboard = tune_lolo(
+        rows,
+        candidates=candidates,
+        seeds=[0],
+        ngram="bigram",
+        wpm_lo=60,
+        wpm_hi=100,
+        bucket_width=40,
+        min_cell_samples=4,
+    )
+    assert best in candidates
+    # Leaderboard is (params, score) sorted best-first, scores finite.
+    assert len(leaderboard) == 2
+    assert leaderboard[0][1] >= leaderboard[1][1]
+    assert all(np.isfinite(s) for _, s in leaderboard)

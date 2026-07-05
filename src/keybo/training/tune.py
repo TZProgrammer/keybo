@@ -53,3 +53,60 @@ def tune_hyperparameters(
     )
     search.fit(X, y)
     return dict(search.best_params_)
+
+
+def tune_lolo(
+    rows,
+    candidates: list[dict],
+    seeds: list[int],
+    ngram: str = "bigram",
+    wpm_lo: int = 40,
+    wpm_hi: int = 140,
+    bucket_width: int = 20,
+    min_cell_samples: int = 10,
+) -> tuple[dict, list[tuple[dict, float]]]:
+    """Hyperparameter selection scored by TRANSFER, not fit (backlog C1).
+
+    The randomized-CV search above optimizes pooled CV MAE, which *rewards* memorizing
+    training-family idiosyncrasies — the exact failure the LOLO harness exists to catch
+    (measured: default depth-5 lost ~0.06 rho/ceiling to depth-3 while winning CV fit).
+    This selector runs each candidate through the leave-one-layout-out harness and scores
+    it by mean held-out rho/ceiling, GATED on the pooled layout-ranking tau staying at
+    the maximum achieved by any candidate (a candidate that wins rho by breaking the
+    ranking loses; the tau gate is the same principle as the arm-matrix decision rule).
+
+    Returns (best_params, leaderboard) with the leaderboard sorted best-first as
+    (params, gated_score) pairs. Candidates are explicit — reproducible and testable;
+    callers wanting a random search generate the candidate list themselves.
+    """
+    from keybo.training.validate import validate
+
+    results: list[tuple[dict, float, float]] = []  # (params, mean_frac, min_tau)
+    for params in candidates:
+        report = validate(
+            rows,
+            seeds=seeds,
+            ngram=ngram,
+            wpm_lo=wpm_lo,
+            wpm_hi=wpm_hi,
+            bucket_width=bucket_width,
+            min_cell_samples=min_cell_samples,
+            n_boot=10,  # ceilings are shared context here, not the contest
+            train_params=params,
+        )
+        fracs = [
+            m["rho_frac_ceiling"]
+            for fold in report["folds"].values()
+            for m in fold["seeds"]
+            if m["rho_frac_ceiling"] is not None
+        ]
+        taus = [p["tau_heldout"] for p in report["pooled"]]
+        mean_frac = float(np.mean(fracs)) if fracs else float("-inf")
+        min_tau = float(min(taus)) if taus else float("-inf")
+        results.append((params, mean_frac, min_tau))
+
+    best_tau = max(r[2] for r in results)
+    # tau gate: only candidates achieving the best observed ranking quality compete on rho.
+    gated = [(p, f if t >= best_tau - 1e-9 else float("-inf")) for p, f, t in results]
+    leaderboard = sorted(gated, key=lambda pf: -pf[1])
+    return leaderboard[0][0], leaderboard
