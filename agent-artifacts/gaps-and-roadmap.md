@@ -46,11 +46,20 @@ balancing loads minimizes expected same-finger collisions at all lags plus fatig
   per-finger SFB share, lag-2 same-finger share, row/hand/motion-class shares, vs named
   layouts. Every future objective gap conversation starts from this table.
 
-**1.2 Trigram effects — rolls, redirects (KNOWN, top priority).** Measured: the bigram
-objective structurally cannot see roll quality; it's why dvorak wins our scoreboard.
-Tristrokes are processed (29.5M windows). Needed: trigram LOLO harness → does real data
-show roll sub-additivity (trigram time < sum of constituent bigrams) and redirect
-super-additivity? Then a combined objective (bigram + trigram correction terms).
+**1.2 Trigram effects — rolls, redirects. MEASURED (2026-07-05, roll_error_probe):**
+rolls ARE sub-additive — a same-hand roll-through beats the alternation-context baseline
+by −22 ms per trigram (run-continue −46 vs alt-alt −24, deltas vs sum-of-constituent
+medians) → the trigram objective materially matters, confirming the dvorak red-flag
+analysis. SURPRISE: redirects are NOT super-additive (−46, same as roll-through) — a
+same-hand direction reversal costs nothing beyond its constituent bigrams, contradicting
+community doctrine that redirects deserve extra penalty. Consequence for the combined
+objective: reward same-hand continuation ≈22 ms/occurrence; do NOT add a redirect
+penalty. Trigram LOLO harness SHIPPED (`keybo validate --ngram trigram`, commit 0874c57);
+first real-data run in flight — its pre-registered rule is in PREREGISTRATIONS.md.
+
+**1.5-outcome (error rate): measured FLAT — stays out of the objective.** Rows spread
+1.09× (5.4–5.9%), sfb-preceded 1.22× (< the 1.5× bar); right-pinky's 10.4% is
+letter-difficulty-confounded and low-load. Recorded in PREREGISTRATIONS.md.
 
 **1.3 Comfort/effort (OQ-4) — now with a concrete first job.** OQ-14 proved top-vs-home is
 a speed tie ⇒ a comfort term breaks it toward home at ~zero cost. Beyond that: explicit
