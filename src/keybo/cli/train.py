@@ -21,8 +21,10 @@ def add_arguments(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--ngram", choices=["bigram", "trigram"], default="bigram")
     parser.add_argument("--output", required=True, help="Where to write the model (.json)")
     parser.add_argument("--target-wpm", type=float, default=90.0)
-    parser.add_argument("--wpm-threshold", type=int, default=60, help="Drop samples below this WPM")
-    parser.add_argument("--min-samples", type=int, default=25, help="Min samples to keep a row")
+    # Defaults 0/1 match the harness-VALIDATED recipe (every LOLO result was measured
+    # at these values; the old 60/25 silently trained a different model than validated).
+    parser.add_argument("--wpm-threshold", type=int, default=0, help="Drop samples below this WPM")
+    parser.add_argument("--min-samples", type=int, default=1, help="Min samples to keep a row")
     parser.add_argument(
         "--hyperparams",
         help="Path to a JSON dict of XGBoost params (e.g. from `keybo tune`). "

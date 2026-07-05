@@ -12,7 +12,10 @@ from keybo.data.strokes import load_strokes
 
 
 def add_arguments(parser: argparse.ArgumentParser) -> None:
-    parser.add_argument("--strokes", required=True, help="Path to the bistroke TSV (new schema)")
+    parser.add_argument(
+        "--strokes", required=True, help="Path to the bistroke/tristroke TSV (new schema)"
+    )
+    parser.add_argument("--ngram", choices=["bigram", "trigram"], default="bigram")
     parser.add_argument(
         "--holdout",
         nargs="*",
@@ -59,13 +62,15 @@ def run(args: argparse.Namespace) -> int:
         with open(args.hyperparams, encoding="utf-8") as f:
             train_params = json.load(f)
 
-    rows = load_strokes(args.strokes, ngram_len=2, wpm_threshold=0, min_samples=1)
+    ngram_len = 2 if args.ngram == "bigram" else 3
+    rows = load_strokes(args.strokes, ngram_len=ngram_len, wpm_threshold=0, min_samples=1)
     if not rows:
-        raise SystemExit(f"no bigram stroke rows loaded from {args.strokes}")
+        raise SystemExit(f"no {args.ngram} stroke rows loaded from {args.strokes}")
 
     report = validate(
         rows,
         seeds=args.seeds,
+        ngram=args.ngram,
         holdouts=args.holdout,
         wpm_lo=args.wpm_lo,
         wpm_hi=args.wpm_hi,

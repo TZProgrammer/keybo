@@ -213,7 +213,7 @@ def test_validate_reports_no_transfer_for_a_lawless_holdout():
     assert report["ceilings"]["layD"] < 0.6
 
 
-def test_validate_rejects_trigram_rows():
+def test_validate_defaults_to_bigram_and_rejects_trigram_rows_without_flag():
     rows = [
         StrokeRow(
             layout="layA",
@@ -223,5 +223,96 @@ def test_validate_rejects_trigram_rows():
             samples=[(70, 150, 1, 50)] * 6,
         )
     ]
-    with pytest.raises(NotImplementedError):
+    with pytest.raises(ValueError, match="length"):
         validate(rows, seeds=[0], train_params=_fast_params())
+
+
+# --- eval hardening: calibration slope, worst cell, bootstrap CI (backlog E4/E2/E1) ----
+
+
+def test_calibration_slope_detects_compression():
+    from keybo.training.validate import calibration_slope
+
+    rng = np.random.default_rng(0)
+    obs = rng.uniform(100, 300, 200)
+    # Perfect calibration -> slope ~1; compressed predictions (half the range) -> ~2.
+    assert calibration_slope(obs + rng.normal(0, 2, 200), obs) == pytest.approx(1.0, abs=0.05)
+    compressed = obs.mean() + (obs - obs.mean()) * 0.5
+    assert calibration_slope(compressed, obs) == pytest.approx(2.0, abs=0.1)
+
+
+def test_validate_reports_slope_worst_cell_and_ci():
+    rows = _lawful_rows(n_pids=10, samples_per_pid=8)
+    report = validate(
+        rows,
+        seeds=[0],
+        wpm_lo=60,
+        wpm_hi=100,
+        bucket_width=40,
+        min_cell_samples=4,
+        n_boot=10,
+        train_params=_fast_params(),
+    )
+    for fold in report["folds"].values():
+        m = fold["seeds"][0]
+        # slope near 1 in the lawful world (geometry fully explains times)
+        assert 0.5 < m["calibration_slope"] < 2.0
+        # worst {wpm-bucket} cell rho reported alongside the mean
+        assert "worst_bucket" in m and "worst_bucket_rho" in m
+        assert m["worst_bucket_rho"] <= m["rho"] + 1e-9
+        # participant-bootstrap CI brackets the point estimate
+        lo, hi = m["rho_ci95"]
+        assert lo <= m["rho"] <= hi
+
+
+# --- trigram harness support (Phase B keystone enabler) --------------------------------
+
+
+def _lawful_trigram_rows(seed=0, n_pids=8, samples_per_pid=6):
+    """Trigram world: duration = 100 + 20*(d(a,b)+d(b,c)) + noise; same 4-layout shift
+    construction as the bigram world so the true ranking is layA < layB < layC < layD."""
+    rng = np.random.default_rng(seed)
+    rows = []
+    tris = ["abc", "def", "ghi", "jkl", "mno", "pqr"]
+    for base, layout in [(2, "layA"), (3, "layB"), (4, "layC"), (5, "layD")]:
+        for i, tg in enumerate(tris):
+            p1 = _D[base + i]
+            positions = (p1[0], p1[1], _D[min(base + i + 1, 10)][0])
+            dsum = _distance(positions[:2]) + _distance(positions[1:])
+            samples = []
+            for pid in range(1, n_pids + 1):
+                for _ in range(samples_per_pid):
+                    wpm = int(rng.integers(65, 95))
+                    dur = int(100 + 20 * dsum + rng.normal(0, 5))
+                    samples.append((wpm, dur, pid, 50))
+            rows.append(
+                StrokeRow(
+                    layout=layout, positions=positions, ngram=tg, frequency=50, samples=samples
+                )
+            )
+    return rows
+
+
+def test_validate_supports_trigram_rows():
+    rows = _lawful_trigram_rows(n_pids=10, samples_per_pid=8)
+    report = validate(
+        rows,
+        seeds=[0],
+        ngram="trigram",
+        wpm_lo=60,
+        wpm_hi=100,
+        bucket_width=40,
+        min_cell_samples=4,
+        n_boot=10,
+        train_params=_fast_params(),
+    )
+    assert set(report["folds"]) == {"layA", "layB", "layC", "layD"}
+    for fold in report["folds"].values():
+        assert fold["seeds"][0]["rho"] > 0.5  # lawful world must transfer
+    assert report["pooled"][0]["tau_heldout"] > 0
+
+
+def test_validate_rejects_mismatched_ngram_length():
+    rows = _lawful_trigram_rows()
+    with pytest.raises(ValueError, match="length"):
+        validate(rows, seeds=[0], ngram="bigram", train_params=_fast_params())

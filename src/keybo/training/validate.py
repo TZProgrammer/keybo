@@ -33,7 +33,7 @@ import numpy as np
 from scipy.stats import kendalltau, spearmanr
 
 from keybo.data.strokes import StrokeRow, iqr_average
-from keybo.features import bigram_features_from_positions
+from keybo.features import bigram_features_from_positions, trigram_features_from_positions
 from keybo.geometry import ROW_STAGGERED_30, Geometry
 
 
@@ -128,6 +128,68 @@ def _centered_spearman(cells: list[Cell], pred: np.ndarray, obs: np.ndarray) -> 
         return float("nan")
     rho = spearmanr(_bucket_centered(cells, pred), _bucket_centered(cells, obs)).statistic
     return float(rho)
+
+
+def calibration_slope(pred: np.ndarray, obs: np.ndarray) -> float:
+    """OLS slope of obs on pred. 1 = calibrated; >1 = predictions COMPRESS the true range
+    (rank metrics are blind to this, but fitness is a weighted sum — gaps are load-bearing;
+    backlog E4)."""
+    pred = np.asarray(pred, dtype=np.float64)
+    obs = np.asarray(obs, dtype=np.float64)
+    var = ((pred - pred.mean()) ** 2).sum()
+    if var <= 0:
+        return float("nan")
+    return float(((pred - pred.mean()) * (obs - obs.mean())).sum() / var)
+
+
+def _per_bucket_rho(cells: list[Cell], pred: np.ndarray, obs: np.ndarray) -> dict[int, float]:
+    """Plain Spearman within each wpm bucket (already single-bucket => no centering
+    needed). Buckets with < 5 cells are skipped (a 3-cell rho is noise)."""
+    by_bucket: dict[int, list[int]] = defaultdict(list)
+    for i, c in enumerate(cells):
+        by_bucket[c.bucket].append(i)
+    out: dict[int, float] = {}
+    for bucket, idx in sorted(by_bucket.items()):
+        if len(idx) < 5:
+            continue
+        rho = spearmanr(pred[idx], obs[idx]).statistic
+        if np.isfinite(rho):
+            out[bucket] = float(rho)
+    return out
+
+
+def _bootstrap_rho_ci(
+    cells: list[Cell],
+    pred: np.ndarray,
+    obs: np.ndarray,
+    n_boot: int = 200,
+    seed: int = 0,
+) -> tuple[float, float]:
+    """95% CI on the centered rho via PARTICIPANT-level bootstrap (backlog E1).
+
+    Cells are resampled by the participants that contribute to them: draw participants
+    with replacement, weight each cell by how many draws hit its contributors. Cells store
+    their samples' pids, so contributor sets are exact; a cell whose contributors are all
+    un-drawn drops out of that replicate.
+    """
+    pid_sets = [frozenset(s[2] for s in c.samples) for c in cells]
+    all_pids = sorted(set().union(*pid_sets)) if pid_sets else []
+    if len(all_pids) < 2:
+        return (float("nan"), float("nan"))
+    rng = np.random.default_rng(seed)
+    rhos: list[float] = []
+    for _ in range(n_boot):
+        drawn = set(rng.choice(all_pids, size=len(all_pids), replace=True).tolist())
+        keep = [i for i, ps in enumerate(pid_sets) if ps & drawn]
+        if len(keep) < 3:
+            continue
+        sub = [cells[i] for i in keep]
+        rho = _centered_spearman(sub, pred[keep], obs[keep])
+        if np.isfinite(rho):
+            rhos.append(rho)
+    if len(rhos) < 20:
+        return (float("nan"), float("nan"))
+    return (float(np.percentile(rhos, 2.5)), float(np.percentile(rhos, 97.5)))
 
 
 # --- noise ceiling ----------------------------------------------------------------------
@@ -244,7 +306,12 @@ def _predict_cells(model, cells: list[Cell], geometry: Geometry) -> np.ndarray:
     time. It cancels exactly in the layout-ranking tau (verified structurally); the
     per-cell rho does credit it, which is honest — see the OQ-1 artifact's decomposition.
     """
-    X = np.vstack([bigram_features_from_positions(geometry, c.positions, wpm=c.wpm) for c in cells])
+    featurize = (
+        trigram_features_from_positions
+        if len(cells[0].positions) == 3
+        else bigram_features_from_positions
+    )
+    X = np.vstack([featurize(geometry, c.positions, wpm=c.wpm) for c in cells])
     pred = model.predict(X)
     practice = (model.metadata.extra.get("training") or {}).get("practice_term")
     if practice:
@@ -254,8 +321,13 @@ def _predict_cells(model, cells: list[Cell], geometry: Geometry) -> np.ndarray:
 
 
 def _distance(positions) -> float:
-    (x1, y1), (x2, y2) = positions
-    return float(np.hypot(x1 - x2, y1 - y2))
+    """Sum of consecutive-pair euclidean distances (1 term for bigrams, 2 for trigrams)."""
+    return float(
+        sum(
+            np.hypot(a[0] - b[0], a[1] - b[1])
+            for a, b in zip(positions, positions[1:], strict=False)
+        )
+    )
 
 
 def _baseline_fit(train_cells: list[Cell]) -> np.ndarray:
@@ -277,6 +349,7 @@ def _baseline_predict(coef: np.ndarray, cells: list[Cell]) -> np.ndarray:
 def validate(
     rows: list[StrokeRow],
     seeds: list[int],
+    ngram: str = "bigram",
     holdouts: list[str] | None = None,
     wpm_lo: int = 40,
     wpm_hi: int = 140,
@@ -304,10 +377,12 @@ def validate(
     ``pooled`` is the strictest number: every layout scored only by the fold that held it
     out, so the ranking is fully out-of-sample.
     """
-    from keybo.training.train import train_bigram_model
+    from keybo.training.train import train_bigram_model, train_trigram_model
 
-    if any(len(r.ngram) != 2 for r in rows):
-        raise NotImplementedError("the validation harness supports bigram stroke rows only")
+    n_expected = {"bigram": 2, "trigram": 3}[ngram]
+    if any(len(r.ngram) != n_expected for r in rows):
+        raise ValueError(f"row ngram length does not match ngram={ngram!r} (expected {n_expected})")
+    train_fn = train_bigram_model if ngram == "bigram" else train_trigram_model
 
     all_layouts = sorted({r.layout for r in rows})
     holdouts = list(holdouts) if holdouts is not None else all_layouts
@@ -359,7 +434,7 @@ def validate(
         fold = report["folds"].setdefault(holdout, {"n_cells": len(test_cells), "seeds": []})
 
         params = {**(train_params or {}), "random_state": seed, "n_jobs": 1}
-        model = train_bigram_model(train_rows, target_wpm=(wpm_lo + wpm_hi) / 2, **params)
+        model = train_fn(train_rows, target_wpm=(wpm_lo + wpm_hi) / 2, **params)
 
         obs = np.array([c.obs for c in test_cells])
         pred = _predict_cells(model, test_cells, geometry)
@@ -374,10 +449,16 @@ def validate(
         pred_all = _predict_cells(model, all_cells, geometry)
         tau_all4 = layout_ranking_tau(obs_table, aggregate_layout_table(all_cells, pred_all))
 
+        bucket_rhos = _per_bucket_rho(test_cells, pred, obs)
+        worst_bucket, worst_rho = (
+            min(bucket_rhos.items(), key=lambda kv: kv[1]) if bucket_rhos else (None, float("nan"))
+        )
+        ci_lo, ci_hi = _bootstrap_rho_ci(test_cells, pred, obs, n_boot=max(100, n_boot), seed=seed)
         fold["seeds"].append(
             {
                 "seed": seed,
                 "rho": rho,
+                "rho_ci95": [ci_lo, ci_hi],
                 "ceiling": ceiling,
                 "rho_frac_ceiling": (
                     rho / ceiling if np.isfinite(ceiling) and abs(ceiling) > 0.05 else None
@@ -386,6 +467,10 @@ def validate(
                 "mae_model": mae_model,
                 "mae_baseline": mae_baseline,
                 "beats_baseline": mae_model < mae_baseline,
+                "calibration_slope": calibration_slope(pred, obs),
+                "worst_bucket": worst_bucket,
+                "worst_bucket_rho": float(worst_rho),
+                "bucket_rhos": {str(k): v for k, v in bucket_rhos.items()},
             }
         )
         pred_heldout[seed][holdout] = aggregate_layout_table(test_cells, pred)[holdout]
