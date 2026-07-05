@@ -160,3 +160,27 @@ capturing the interaction and needs explicit wpm×class features.
   (27→32→38). No explicit wpm×class features needed for bigrams; the trigram model's
   roll interaction should be verified the same way when the combined objective lands.
 
+
+## 2026-07-06 — trigram target decomposition A/B (user question; OQ-10's untested fork)
+
+Experiment: reprocess tristrokes with `--time-mode last` (target = press2→press3, the
+CONDITIONED second bigram; features unchanged = all three positions) and run the trigram
+LOLO; compare against the existing full-span run (`runs/lolo_trigram_v1.json`).
+Why `last` should win on theory: Σ f·t(bg2|bg1) telescopes EXACTLY into corpus time (full
+span double-counts, ~2x, ranking-safe but blunt), and the conditioned target isolates the
+context effect (the measured roll physics) instead of smearing it with bg1's geometry
+variance.
+Rule: adopt `last` as the trigram target iff pooled τ stays +1.0 all seeds AND mean
+ρ/ceiling exceeds the full-span run's on the SAME folds (ceilings recomputed per target —
+they are target-definition-dependent — so the comparison is frac-of-own-ceiling). If
+`last` wins: retrain trigram models on last-mode, re-run the per-wpm combined search with
+the corrected objective (fitness then = corpus time exactly, no 2x note), update docs.
+If it loses or ties: keep full-span, document that the double-count is empirically
+harmless.
+**Outcome:** (pending)
+
+Local-WPM note (user asked): not re-run for trigrams. The bigram end-to-end arms rejected
+local-as-replacement decisively (0.841 vs 0.918) and the mechanism is interval-level
+(OQ-9: within-session autocorrelation ≈ 0 after session-speed removal) — it applies to
+any interval target, trigram included. A trigram-specific arm would be confirmatory with
+a strong null prior; deprioritized rather than run, noted here for honesty.
