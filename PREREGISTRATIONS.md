@@ -138,4 +138,25 @@ per-wpm objective tables become REQUIRED (machinery already supports them — on
 predict per wpm) and layouts should be optimized at the user's target wpm; ~flat ⇒ pooled
 tables stand, documented. Model-side disagreement in sign ⇒ the wpm feature isn't
 capturing the interaction and needs explicit wpm×class features.
-**Outcome:** (pending)
+**Outcome (mixed — the user's intuition confirmed on the decisive effect):**
+- **ROLL BONUS: SKILL-DEPENDENT, fires the rule.** Roll contrast −8 → −22 → −28 ms across
+  40-70/70-100/100-130 (|Δ|=20 ms > 10 ms and ~90% of pooled −22; monotone). Motor
+  chunking IS a fluency skill: beginners get almost no roll benefit; experts get 3.5× the
+  beginner bonus. **Per-wpm objective tables are now REQUIRED for the trigram objective**,
+  and "optimize at your WPM" is a real product dimension. Redirect contrast tracks the
+  roll contrast at every band (−6/−23/−28) — the redirect-null is skill-robust: at NO
+  skill level do redirects cost extra beyond their bigrams.
+- **SFB penalty: mildly skill-dependent, fires the rule.** +27 → +32 → +38 ms (Δ=11 ms >
+  10 ms, monotone) — absolute penalty GROWS with speed while everything else shrinks;
+  relative to interval it roughly doubles (13%→29%). Fast typists should avoid SFBs even
+  harder — direction favors per-wpm tables too.
+- **Alternation gap: skill-INVARIANT.** +32/+31/+32 ms — remarkably constant; the
+  alternation advantage is not practice, it is structure. (Relative share grows with
+  speed since intervals shrink — consistent with the colemak-vs-qwerty flip at 120.)
+- **Lag-2: null at every band** (−8/−7/+2 ms) — the reclassification to comfort is
+  skill-robust.
+- **Model-side: the shipped bigram model's wpm feature captures the direction** — its
+  sfb-vs-alt contrast grows 29→36→40 ms across wpm 55/85/115, matching the raw physics
+  (27→32→38). No explicit wpm×class features needed for bigrams; the trigram model's
+  roll interaction should be verified the same way when the combined objective lands.
+
