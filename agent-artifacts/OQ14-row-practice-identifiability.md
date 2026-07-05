@@ -1,6 +1,38 @@
 # OQ-14 — Is the home-row advantage biomechanics or practice? (opened 2026-07-05)
 
-**Status: 🔴 open — surfaced by the E5 gate firing on the corrected (d3) model's layout.**
+**Status: 🟢 RESOLVED (2026-07-05, same day): for SPEED, top≈home is what the data
+actually says — the home-row question is a COMFORT question (OQ-4), not extractable from
+this speed data. Three pre-registered tests (driver
+`agent-artifacts/experiments/oq14_position_practice.py`, results
+`keybo-e2e/runs/oq14_position_practice.json`):**
+
+- **Probe S (skill-scaling discriminator):** qwerty's same-row top-vs-home gap by WPM band
+  is +1 / +6 / +3 ms (40–70 / 70–100 / 100–130) — TINY (1–4% of interval, vs the ~50 ms
+  bottom-row penalty) and NOT growing with skill, which a practice-driven gap must (reps
+  accumulate). Within the dominant layout, top and home are speed-equivalent.
+- **Arm PU (position-usage practice features, u = log letter-freq of each key's letter;
+  equilibrium serve semantics):** LOLO improves decisively (mean ρ/ceiling 1.032, τ +1.0
+  all seeds — the channel is real), yet the E5 search still lands at 34.1% home share
+  (d3: 33.7%; a rise within restart noise). Accounting for position practice does NOT
+  reveal a hidden home-row speed preference — the optimizer's indifference is faithful.
+- **Arm DW (dvorak-emphasis, 40% weight):** home share rises to 42.8% — confirming the
+  home-preference signal lives specifically in dvorak's thin data (64 typists), not in the
+  qwerty bulk.
+
+**Resolution:** the bottom-row penalty is real biomechanics (all layouts agree, ~50 ms);
+the top-vs-home choice is a near-tie for speed, and community layouts' home-row
+maximalism is a comfort/ergonomics commitment the speed data neither supports nor
+refutes. Consequence: (a) the d3-best layout's top-heavy structure is a legitimate
+optimum of the speed objective, not an artifact — but SHOULD be tie-broken toward home by
+an explicit OQ-4 comfort term if the user wants conventional ergonomics (the fitness cost
+of doing so is ~0 by construction of the tie); (b) arm PU is validated-available (its
+LOLO gain is unambiguous) but NOT adopted — the pre-registered E5 criterion ("home share
+must rise") passed only within search noise, so by the ties-break-simpler standing rule
+the shipped recipe holds; PU's equilibrium semantics ("score assumes the user has
+mastered the candidate layout") is philosophically right for the objective and is the
+first thing to revisit when a comfort term lands.
+
+*Original diagnosis below, kept for the record.*
 
 ## How it surfaced
 
