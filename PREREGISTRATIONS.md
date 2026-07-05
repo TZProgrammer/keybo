@@ -241,3 +241,28 @@ speed fitness); record the speed price of community-approved pattern profiles (s
 dsfb%, rolls%, redirects%). Sanity: oxey score must improve monotonically with w. No
 adoption rule — the weight is user-owned; the deliverable is the priced frontier.
 **Outcome:** (pending)
+
+## 2026-07-06 — conditioned-target program (user challenge #4: the full-span win is an artifact)
+
+User's argument, ACCEPTED with a sharpened mechanism: the full-span target's ρ advantage
+is earned by re-predicting bigram-sum variance the bigram model already captures —
+t(1→3) = t(bg1) + t(bg2) + context, and frac-of-own-ceiling measures share-of-predictable
+variance, NOT novelty. The trigram model's only job is the CONTEXT increment, so the
+conditioned target (press2→press3, features = all three positions) is canonical BY
+DESIGN-ARGUMENT; the earlier A/B's frame ("which target is easier to predict") was the
+wrong question. Model selection now happens ON the conditioned target.
+
+Experiment (cond_target_arms.py): sample-aligned join of full-span and last-mode tables
+gives per-occurrence prev = t(bg1) (the sharpest possible local-context signal — one
+actual interval back, same trigram occurrence). Arms on the conditioned target, shipped
+recipe, shared folds: C-BASE (anchor, must reproduce 1.043) / C-D2 / C-D4 (architecture)
+/ C-PREV (+ actual-prev feature, teacher-forced at eval; serve-side story required if it
+wins) / C-PREV-D2. Local-window wpm arm not run: prev IS the local signal here, strictly
+sharper than any window (bigram-window null carries; reasoning recorded).
+Rule: winner = highest mean ρ/own-ceiling holding τ +1.0. If C-PREV wins by >0.02,
+the local-context channel is REAL for trigram targets (contra the bigram null) →
+productionize prev into the schema + a serve-side story. Secondary novelty check on the
+winner: its predicted run-continue-vs-alt-alt contrast must agree in sign with the
+measured −22 ms. Either way, the trigram objective REBUILDS on the winning conditioned
+model and the trigram-only-vs-combined A/B re-runs on the new tables.
+**Outcome:** (pending)
