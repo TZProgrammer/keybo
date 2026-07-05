@@ -103,6 +103,18 @@ Consequence for the north star: the final search (see `runs/final_layout.json` a
 qwerty; all gains compress ~4×) — direct evidence the freq-live model's rankings were
 practice-inflated, i.e. this harness caught exactly the failure it was built to catch.
 
+**C2A5 feature adoption + re-verification (2026-07-05 late, `runs/lolo_v5_c2a5.json`):**
+after the feature-arm matrix (bigram schema reduced to the 11-feature relational+geometric
+core, default depth 3 — commit `e00b8d6`), the shipped path scores: pooled τ +1.0 (all
+seeds), beats-baseline 12/12, ρ/ceiling azerty **1.08**, dvorak **1.09**, qwertz **1.07**
+— three folds ABOVE their split-half ceilings — and qwerty **.763–.765**. The honest
+trade-off: the mean sits at the ceiling (~1.0 vs .937 before), but the qwerty fold gave
+back ~0.035 (was .796–.800). Qwerty is the structurally hardest fold (predict the 31M-
+sample layout from 405k non-qwerty samples, against the highest ceiling .964), and the
+one-hots C2A5 removed were evidently carrying some qwerty-specific signal. Verdict stands
+(the pre-registered arm rule is mean-ρ/ceiling gated on τ, which C2A5 wins decisively);
+the qwerty fold is the standing remediation target (backlog E3 deep-dive).
+
 **Production-path verification (2026-07-05, `runs/lolo_v4_prod.json`):** after R1W was
 productionized into `keybo train` (freq features deleted from the schema, practice term +
 layout weights default-ON, FEATURE_VERSION 2026-07-05.1), the shipped `keybo validate`
