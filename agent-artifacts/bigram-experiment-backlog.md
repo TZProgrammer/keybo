@@ -95,6 +95,11 @@ consequences, one benign, one not:
 - **E1. Bootstrap CIs** (participant-level) on τ and ρ — needed as arms get closer.
 - **E2. OQ-8 worst-cell matrix** — a great mean with one terrible {layout×wpm} cell is a trap.
 - **E3. Qwerty-fold deep-dive** — the borderline fold; which bigram classes miss?
+- **E4. Calibration slope per fold** (user question, 2026-07-05): regress observed on
+  predicted held-out cell times; want slope ≈ 1. Rank metrics (τ, ρ) are blind to
+  dynamic-range COMPRESSION — perfect ranks with squashed gaps mis-weight the optimizer's
+  trade-offs (fitness is a weighted sum; relative gaps are load-bearing). MAE-vs-baseline
+  only partially guards this; the slope isolates it.
 
 ## Sequencing
 
