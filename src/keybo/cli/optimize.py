@@ -48,6 +48,15 @@ def add_arguments(parser: argparse.ArgumentParser) -> None:
         help="JSON file overriding individual comfort weights by name",
     )
     parser.add_argument(
+        "--oxey-weight",
+        type=float,
+        default=0.0,
+        help="Add oxey_weight * community-heuristic pattern score (oxeylyzer-style "
+        "sfb/dsfb/roll/redirect judgment — keybo.scoring.oxey; a documented PREFERENCE "
+        "approximation, incl. patterns our data measured time-neutral). 0 = off. "
+        "Bigram objective only; loads the skipgram+trigram corpora beside --bigram-freqs.",
+    )
+    parser.add_argument(
         "--finger-load-weight",
         type=float,
         default=0.0,
@@ -86,7 +95,7 @@ def run(args: argparse.Namespace) -> int:
         # Validate before the (long) search, not when writing the result at the end.
         ensure_writable_output(args.out, "--out")
     scorer = build_scorer(args)
-    if args.comfort_weight or args.finger_load_weight:
+    if args.comfort_weight or args.finger_load_weight or args.oxey_weight:
         if args.ngram != "bigram":
             raise SystemExit(
                 "--comfort-weight/--finger-load-weight currently support the bigram objective only"
@@ -108,12 +117,26 @@ def run(args: argparse.Namespace) -> int:
         if args.finger_load_weight:
             fl = FingerLoadScorer(bigram_freqs=freqs)
             scorer = CompositeScorer(scorer, fl, comfort_weight=args.finger_load_weight)
+        if args.oxey_weight:
+            import os
+
+            from keybo.data.corpus import load_frequencies
+            from keybo.scoring.oxey import OxeyStyleScorer
+
+            corpus_dir = os.path.dirname(args.bigram_freqs)
+            oxey = OxeyStyleScorer(
+                freqs,
+                load_frequencies(os.path.join(corpus_dir, "1-skip.txt")),
+                load_frequencies(os.path.join(corpus_dir, "trigrams.txt")),
+            )
+            scorer = CompositeScorer(scorer, oxey, comfort_weight=args.oxey_weight)
     search_scorer = scorer
     if (
         args.ngram == "bigram"
         and not args.no_table
         and not args.comfort_weight
         and not args.finger_load_weight
+        and not args.oxey_weight
     ):
         # Exact same objective, ~1000x faster per evaluation (parity-tested). The search
         # explores permutations of --start's charset, which is what the table fixes.
