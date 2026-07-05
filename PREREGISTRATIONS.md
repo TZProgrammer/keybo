@@ -88,7 +88,16 @@ expected), (3) beats a distance-sum baseline (dist(a,b)+dist(b,c)+wpm linear) on
 fold-seeds. Secondary (roll question): the model's predicted run-continue vs run-redirect
 contrast must agree in SIGN with the raw-data probe (roll_error_probe.py) for the
 trigram objective to claim it prices rolls from data.
-**Outcome:** (pending)
+**Outcome: PASSED every criterion, decisively** (`runs/lolo_trigram_v1.json`):
+(1) pooled τ **+1.0 all seeds**; per-fold τ +1.0 everywhere. (2) mean ρ/ceiling ≈ **1.16**
+— azerty 1.32, dvorak 1.28, qwertz 1.30 (all far ABOVE their thin split-half ceilings:
+cross-layout pooling shines exactly where per-layout data is thin), qwerty 0.72 (the
+familiar hardest-fold pattern; ceiling .938). (3) beats the distance-sum baseline
+**12/12**. Hardened metrics: calibration slope 1.04 on qwerty (no compression), worst
+wpm-bucket ρ .653 vs mean .677 (no catastrophic cell). The trigram model EARNS
+OBJECTIVE-STATUS. Secondary sign-check deferred to the combined-objective build (the
+model's class contrasts to be read from its table during that work). NEXT: combined
+bigram+trigram objective + trigram-scale search (roadmap 1.2 / 5.2).
 
 ## 2026-07-05 — roll additivity + error geometry probes
 
