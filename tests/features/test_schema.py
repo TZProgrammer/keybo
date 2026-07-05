@@ -29,17 +29,9 @@ def test_trigram_feature_names_are_unique():
     assert len(TRIGRAM_FEATURE_NAMES) == len(set(TRIGRAM_FEATURE_NAMES))
 
 
-def test_bigram_row_covers_schema_and_vector_follows_schema_order():
-    # The pipeline row is a SUPERSET of the bigram schema (it still carries the second-key
-    # one-hots for the trigram constituents); the model vector selects schema columns only.
-    import numpy as np
-
-    from keybo.features import bigram_features
-
+def test_bigram_row_keys_match_schema_in_order():
     row = bigram_model_row(LAYOUT, "th", wpm=90)
-    assert set(BIGRAM_FEATURE_NAMES) <= set(row.keys())
-    vec = bigram_features(LAYOUT, "th", wpm=90)
-    np.testing.assert_array_equal(vec, [row[n] for n in BIGRAM_FEATURE_NAMES])
+    assert list(row.keys()) == BIGRAM_FEATURE_NAMES
 
 
 def test_trigram_row_keys_match_schema_in_order():
@@ -71,18 +63,17 @@ def test_feature_version_bumped_past_freq_era():
     assert FEATURE_VERSION > "2026-07-03.1"
 
 
-def test_bigram_schema_is_the_c2a5_relational_core():
-    """Feature-arm adoption (2026-07-05, runs/feature_arms2.json): dropping the second-key
-    row/finger one-hots + capping depth at 3 took held-out rho/ceiling from .937 to 1.000
-    at tau +1.0. The one-hots were memorization capacity, not transferable signal."""
+def test_bigram_schema_keeps_row_and_finger_onehots():
+    """Goodhart regression (2026-07-05, agent-artifacts/goodhart-row-blindness.md): a
+    feature round removed these because held-out LOLO rho improved — and the next layout
+    search parked junk on the home row: without the row one-hot, same-row bigrams are
+    featurewise identical ACROSS rows, a null space real-layout evaluation can't see but
+    the optimizer immediately exploits. They are load-bearing for the optimizer."""
     for name in ("bottom", "home", "top", "pinky", "ring", "middle", "index", "lateral"):
-        assert name not in BIGRAM_FEATURE_NAMES, name
-    # The relational + geometric core stays.
+        assert name in BIGRAM_FEATURE_NAMES, name
     for name in ("same_hand", "same_finger", "adjacent", "scissor", "lsb", "distance", "wpm"):
         assert name in BIGRAM_FEATURE_NAMES, name
 
 
 def test_trigram_schema_keeps_its_constituent_placement_features():
-    """The C2A5 evidence is bigram-only; trigram features are untouched until the trigram
-    world gets its own harness round."""
     assert "bg1_home" in TRIGRAM_FEATURE_NAMES and "bg2_pinky" in TRIGRAM_FEATURE_NAMES

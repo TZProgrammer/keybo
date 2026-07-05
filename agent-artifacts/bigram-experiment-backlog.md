@@ -95,6 +95,12 @@ consequences, one benign, one not:
 - **E1. Bootstrap CIs** (participant-level) on τ and ρ — needed as arms get closer.
 - **E2. OQ-8 worst-cell matrix** — a great mean with one terrible {layout×wpm} cell is a trap.
 - **E3. Qwerty-fold deep-dive** — the borderline fold; which bigram classes miss?
+- **E5. Optimizer-side sanity gate for feature changes** (Goodhart incident, 2026-07-05):
+  LOLO evaluates on real layouts; the optimizer queries far off that distribution and
+  exploits pricing null spaces (see goodhart-row-blindness.md — deleting row one-hots
+  looked LOLO-free and made the search park junk on the home row). Any feature DELETION
+  must also pass a quick search + structural check (home-row corpus share of the optimized
+  layout >= every named layout's). Regularization over deletion by default.
 - **E4. Calibration slope per fold** (user question, 2026-07-05): regress observed on
   predicted held-out cell times; want slope ≈ 1. Rank metrics (τ, ρ) are blind to
   dynamic-range COMPRESSION — perfect ranks with squashed gaps mis-weight the optimizer's
