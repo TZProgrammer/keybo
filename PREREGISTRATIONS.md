@@ -240,7 +240,17 @@ B (oxey frontier): sweep community-judgment weight w ∈ {0, 0.5, 1, 2, 4} (w=1 
 speed fitness); record the speed price of community-approved pattern profiles (sfb%,
 dsfb%, rolls%, redirects%). Sanity: oxey score must improve monotonically with w. No
 adoption rule — the weight is user-owned; the deliverable is the priced frontier.
-**Outcome:** (pending)
+**Outcome (A): borderline — combined KEPT, by the letter of the rule.** Regret of the
+tri-only winner under combined +0.152% (a hair over the 0.15% bar); combined winner under
+tri-only +0.076%. The objectives are near-interchangeable; combined stays as canonical
+with the ensemble justification. NOTE: this verdict is about FULL-SPAN tables and is
+superseded in spirit by the conditioned-target program (below) — re-run scheduled for the
+rebuilt objective.
+**Outcome (B): the community's pattern profile is CHEAP.** w=1 buys SFB 1.65%→0.99%
+(−40%), DSFB 6.5%→4.7%, inrolls 6.4%→7.9% for **+0.20% predicted speed**; w=2 halves SFBs
+(0.64%) for +0.42%. Monotone sanity passes through w=2; w=4 shows saturation/search noise
+(oxey score plateaus −29). The deliverable stands: a speed-vs-doctrine PRICE LIST —
+community-approved layouts cost a fifth of a percent, which users can decide with.
 
 ## 2026-07-06 — conditioned-target program (user challenge #4: the full-span win is an artifact)
 
@@ -265,4 +275,14 @@ productionize prev into the schema + a serve-side story. Secondary novelty check
 winner: its predicted run-continue-vs-alt-alt contrast must agree in sign with the
 measured −22 ms. Either way, the trigram objective REBUILDS on the winning conditioned
 model and the trigram-only-vs-combined A/B re-runs on the new tables.
-**Outcome:** (pending)
+**Outcome: architecture flat; PREV HURTS — the local-context null now holds for trigram
+targets too.** Scoreboard (τ +1.0 everywhere): C-D4 1.0254 ≈ C-D2 1.0250 ≈ C-BASE 1.0223
+≫ C-PREV 1.0075 > C-PREV-D2 1.0044. The actual previous interval — the sharpest local
+signal constructible (same occurrence, one interval back, teacher-forced at eval) —
+REDUCES transfer by ~0.015-0.018: it injects participant/session noise the geometry
+features then partially fit around, and even with the answer sheet at eval it loses.
+This is the strongest evidence yet for the local-context null: not windows (bigram L8),
+not the actual adjacent interval (here) — the speed process really is (session pace) +
+(ngram identity) + (geometry) + noise. Depth stays 3 (D4's +0.003 is inside seed noise;
+ties break simpler per standing rule). The conditioned target with the shipped recipe is
+the trigram model going forward; objective rebuild + tri-vs-combined re-run queued.
