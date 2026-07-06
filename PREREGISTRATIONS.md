@@ -343,6 +343,13 @@ P5 (tune): tune-lolo pattern re-ranked by wmae (τ-gated): 16 bigram + 8 cond-tr
   candidates. Adopt iff wmae beats incumbent by >0.5% relative at τ +1.0.
 P6 (sweep): tuned models → corrected T3c at wpm 90 → layouts at oxey w ∈ {0, .5, 1, 2}
   with stability + pattern stats. The user's requested deliverable.
+  **P5/P6 outcome:** bigram tuning adopt=False (incumbent already optimal, 16 candidates);
+  cond-trigram ADOPTED cand-4 (wmae 18.51 vs 19.09, τ +1.0) — ⚠ selected pre-guard; the
+  rare-decile re-verification of this adoption is the flagged next step (T-MAE's guard
+  firing shows the risk is real). P6 family (runs/p6_oxey_sweep.json, tuned models,
+  wpm 90): w=0 `gyou,lntscdeaiprmbfwj;/.khvxqz` (sfb 1.52%); w=0.5 +0.017%; w=1 +0.044%
+  (sfb 1.52%); w=2 +0.51% (sfb 0.82% — halved). Post-tuning, community doctrine is even
+  cheaper than the pre-tuning frontier (+0.04% vs +0.20% at w=1).
 **Outcomes P1–P4 (runs/grand_p*.json):**
 - **P1 (matrix):** both champions hold τ +1.0 with calibration slopes ~1.0 per fold. The
   per-bucket matrices (in JSON) answer the user's dvorak question: high-band ρ stays
@@ -495,4 +502,24 @@ Rules: T/P arms adopt iff τ ≥ anchor AND ρ/ceiling > anchor + 0.005 AND wmae
 recomputed per target variant (target definition changes the ceiling). Caution prior
 recorded: interval-level wins have died at cell level four times (EWMA et al.); the
 session-level arms (T-MED, P-MED) are the structurally-favored survivors.
-**Outcome:** (pending)
+**Outcome (runs/robustness_arms.json; anchor τ +0.67 — this driver's frame
+under-reproduces prod τ +1.0, so any adoption needs prod-path confirmation):**
+- **T-CAP (hesitation filter): ADOPT-CANDIDATE — clean sweep.** ρ/ceiling **1.0104** vs
+  anchor 0.9706 (ceilings recomputed per frame, so this is a genuine relative gain, not
+  an easier-task artifact), wmae −23.5%, umae −25.7%, rare-decile −23.2%, τ equal. The
+  user's mechanism (hesitations are cognition, not biomechanics) wins decisively; the
+  OQ-12 counter-hypothesis (hard bigrams cause hesitations) did not bind. PENDING:
+  prod-path confirmation before productionizing (filter into the pipeline + shipped
+  validate).
+- **T-MAE: REJECTED by the rare-ngram guard — the user's warned failure mode, observed.**
+  wmae −24.8% (huge head win) but rare-decile MAE +8.1% (29.27 vs 27.07): absolute-error
+  loss concentrates on the frequent head and abandons rare cells. The guard exists for
+  exactly this; it fired on its second use.
+- **T-MED: REJECTED** (ρ/ceiling 0.9610 < anchor; magnitude gains real but rank quality
+  pays). IQR-mean already captures most of the median's robustness.
+- **P-MED / P-M5: REJECTED per the rule's letter** (ρ/ceiling 0.964/0.966 < bar), with
+  an honest note: both lift τ to +1.0/+1.0 (vs anchor +0.67) and their wmae/umae are on
+  DIFFERENT cell frames (pace label changes bucketing) so the magnitude conditions were
+  not fairly evaluable — a matched-frame follow-up is registered as future work, lower
+  priority than T-CAP productionization.
+
