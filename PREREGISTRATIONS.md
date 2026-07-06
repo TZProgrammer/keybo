@@ -444,4 +444,24 @@ sentence-position index), L4 log-space, L5 the +0.60% per-offset ridge as refere
 Rules: frontier reported; end-to-end LOLO re-plumb only if the best clean model beats
 LOO mean by ≥5% test MAE (the earlier 2% rule answered 'is there anything'; 5% is the
 'worth re-plumbing' bar). All candidates leakage-audited.
-**Outcome:** (pending)
+**Outcome: BAR CROSSED — the first material pace win of the program (1.84M held-out
+intervals, participant-level split):**
+| candidate | test MAE | vs LOO mean |
+| M0 LOO session mean (incumbent) | 61.87 | — |
+| M1 LOO session MEDIAN | 57.53 | **+7.02%** |
+| M2 participant prior alone | 57.40 | **+7.23%** |
+| M5 full blend, LOG space | **57.14** | **+7.65%** |
+| M3/M4 raw-space blends | 60.9/60.7 | +1.6/+2.0% (heavy tail wrecks raw-space ridge) |
+| L5 offsets ridge (reference) | 61.50 | +0.60% |
+Leakage audit: M5 residual ngram-R² 0.1108 vs incumbent 0.1109 — PASS, no content info
+added. READING: the gains are NOT local-neighbor signal (still ~0.6%); they are (a)
+ROBUST LOCATION — the session median beats the mean by 7% alone (hesitation tail pollutes
+the mean), and (b) CROSS-SESSION EVIDENCE — the typist's other sessions predict this one
+as well as its own median does. Log-space fixes the blend (pace is a scale factor).
+Consequence per rule: the end-to-end LOLO arm is now REQUIRED — pace label upgraded from
+session-mean-wpm to the blind stage-1 estimate. Registered arms: S (anchor) / MED
+(session-median pace — isolates the robust-location lever) / M5 (full blind blend).
+Adoption rule: standing (τ ≥ anchor AND ρ/ceiling > S + 0.005), PLUS the rare-ngram guard
+(umae + bottom-decile non-degradation). Caution prior: the EWMA round showed
+interval-level gains can still hurt cell-level transfer — MED (session-level, no local
+terms) is the arm most likely to survive.
