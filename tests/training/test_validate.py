@@ -347,3 +347,47 @@ def test_tune_lolo_prefers_transfer_over_memorization():
     assert len(leaderboard) == 2
     assert leaderboard[0][1] >= leaderboard[1][1]
     assert all(np.isfinite(s) for _, s in leaderboard)
+
+
+# --- magnitude metrics (user directive: ordering is not enough) --------------------------
+
+
+def test_weighted_mae_and_mape_reported_per_fold_and_bucket():
+    """Corpus-weighted MAE/MAPE per fold-seed AND per wpm bucket: the optimizer consumes
+    magnitudes (fitness is a weighted sum), and only affine miscalibration is harmless —
+    rank metrics are blind to nonlinear compression that moves the argmax."""
+    rows = _lawful_rows(n_pids=10, samples_per_pid=8)
+    report = validate(
+        rows,
+        seeds=[0],
+        wpm_lo=60,
+        wpm_hi=100,
+        bucket_width=20,
+        min_cell_samples=4,
+        n_boot=10,
+        train_params=_fast_params(),
+    )
+    for fold in report["folds"].values():
+        m = fold["seeds"][0]
+        assert m["wmae"] > 0 and np.isfinite(m["wmae"])
+        assert 0 < m["wmape"] < 1  # lawful world: errors well under 100%
+        # per-bucket magnitude matrix rows: {bucket: {rho, wmae, slope, n}}
+        assert m["bucket_matrix"]
+        for stats in m["bucket_matrix"].values():
+            assert set(stats) >= {"rho", "wmae", "slope", "n"}
+            assert stats["n"] >= 5
+
+
+def test_weighted_mae_weights_by_cell_frequency():
+    """A high-frequency cell's error must dominate wmae (weights proxy objective weights)."""
+    from keybo.training.validate import weighted_mae
+
+    class C:  # minimal cell stub
+        def __init__(self, freq):
+            self.frequency = freq
+
+    cells = [C(1000), C(1)]
+    pred = np.array([110.0, 200.0])
+    obs = np.array([100.0, 100.0])
+    # errors: 10 (weight 1000) and 100 (weight 1) -> wmae ~ 10, not ~55
+    assert weighted_mae(cells, pred, obs) == pytest.approx((10 * 1000 + 100 * 1) / 1001)

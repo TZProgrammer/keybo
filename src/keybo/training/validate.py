@@ -142,6 +142,32 @@ def calibration_slope(pred: np.ndarray, obs: np.ndarray) -> float:
     return float(((pred - pred.mean()) * (obs - obs.mean())).sum() / var)
 
 
+def weighted_mae(cells, pred: np.ndarray, obs: np.ndarray) -> float:
+    """Corpus-frequency-weighted MAE: the magnitude error the OPTIMIZER actually feels.
+
+    Fitness is sum(freq * t-hat), so a cell's prediction error matters in proportion to its
+    corpus weight; rank metrics are invariant to all monotone transforms while the
+    optimizer is only invariant to AFFINE ones — this metric covers the gap (user
+    directive 2026-07-06: same ordering does not imply same optimal layout)."""
+    w = np.array([c.frequency for c in cells], dtype=np.float64)
+    if not w.sum():
+        return float("nan")
+    return float((w * np.abs(np.asarray(pred) - np.asarray(obs))).sum() / w.sum())
+
+
+def weighted_mape(cells, pred: np.ndarray, obs: np.ndarray) -> float:
+    """Weighted mean absolute PERCENT error (scale-free companion to weighted_mae)."""
+    obs = np.asarray(obs, dtype=np.float64)
+    ok = obs > 0
+    if not ok.any():
+        return float("nan")
+    w = np.array([c.frequency for c in cells], dtype=np.float64)[ok]
+    if not w.sum():
+        return float("nan")
+    rel = np.abs(np.asarray(pred)[ok] - obs[ok]) / obs[ok]
+    return float((w * rel).sum() / w.sum())
+
+
 def _per_bucket_rho(cells: list[Cell], pred: np.ndarray, obs: np.ndarray) -> dict[int, float]:
     """Plain Spearman within each wpm bucket (already single-bucket => no centering
     needed). Buckets with < 5 cells are skipped (a 3-cell rho is noise)."""
@@ -450,6 +476,20 @@ def validate(
         tau_all4 = layout_ranking_tau(obs_table, aggregate_layout_table(all_cells, pred_all))
 
         bucket_rhos = _per_bucket_rho(test_cells, pred, obs)
+        by_bucket_idx: dict[int, list[int]] = defaultdict(list)
+        for _i, _c in enumerate(test_cells):
+            by_bucket_idx[_c.bucket].append(_i)
+        bucket_matrix = {}
+        for _b, _idx in sorted(by_bucket_idx.items()):
+            if len(_idx) < 5:
+                continue
+            _sub = [test_cells[_k] for _k in _idx]
+            bucket_matrix[str(_b)] = {
+                "rho": bucket_rhos.get(_b, float("nan")),
+                "wmae": weighted_mae(_sub, pred[_idx], obs[_idx]),
+                "slope": calibration_slope(pred[_idx], obs[_idx]),
+                "n": len(_idx),
+            }
         worst_bucket, worst_rho = (
             min(bucket_rhos.items(), key=lambda kv: kv[1]) if bucket_rhos else (None, float("nan"))
         )
@@ -468,6 +508,9 @@ def validate(
                 "mae_baseline": mae_baseline,
                 "beats_baseline": mae_model < mae_baseline,
                 "calibration_slope": calibration_slope(pred, obs),
+                "wmae": weighted_mae(test_cells, pred, obs),
+                "wmape": weighted_mape(test_cells, pred, obs),
+                "bucket_matrix": bucket_matrix,
                 "worst_bucket": worst_bucket,
                 "worst_bucket_rho": float(worst_rho),
                 "bucket_rhos": {str(k): v for k, v in bucket_rhos.items()},
