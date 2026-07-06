@@ -400,3 +400,20 @@ centered-R² gain < 0.01), the stage-1 premise is unattainable in this data ⇒ 
 two-stage idea closes without an end-to-end arm. If it beats it materially ⇒ build the
 full LOLO arm with the winning estimator as the wpm feature.
 **Outcome:** (pending)
+
+## 2026-07-06 — rare-ngram guard on magnitude selection (user directive #8)
+
+User's point, accepted: wmae concentrates on the top-k frequent ngrams and can let
+selection abandon rare cells — which are exactly the evidence for position pairs the
+optimizer explores off the frequency distribution. Two clarifications recorded for
+scope-honesty: (1) TRAINING never used wmae — the loss is per-cell squared error with
+layout-balance weights, so the model sees rare ngrams at full strength; the exposure is
+confined to SELECTION (P5 tuning + P4 re-verification). (2) The P5 bigram verdict
+(adopt=False, incumbent kept) is immune — nothing was selected. The P5 trigram verdict
+(pending in the resume; the leading challenger wins on wmae) is the one selection made
+under the exposed metric.
+Harness upgraded: umae + freq_decile_mae now reported per fold-seed. Amended selection
+rule going forward: a challenger must improve wmae WITHOUT degrading umae by more than
+2% relative or worsening the bottom-3 frequency deciles' MAE. Pending action: re-verify
+the P5 trigram adoption under the amended rule before blessing P6 outputs built on it.
+**Outcome:** (pending the resume run's P5-trigram verdict re-check)
