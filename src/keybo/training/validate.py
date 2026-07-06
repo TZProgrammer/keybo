@@ -155,6 +155,28 @@ def weighted_mae(cells, pred: np.ndarray, obs: np.ndarray) -> float:
     return float((w * np.abs(np.asarray(pred) - np.asarray(obs))).sum() / w.sum())
 
 
+def uniform_mae(pred: np.ndarray, obs: np.ndarray) -> float:
+    """Unweighted per-cell MAE — the rare-ngram guard (user directive 2026-07-06).
+
+    wmae is objective-aligned but the OPTIMIZER queries position pairs off the frequency
+    distribution: rare cells are the only evidence for many pairs the search explores, so
+    selection must not abandon them. Caveat: uniform weighting overweights noisy thin
+    cells; use beside wmae + the decile profile, not instead of them."""
+    return float(np.mean(np.abs(np.asarray(pred) - np.asarray(obs))))
+
+
+def freq_decile_mae(cells, pred: np.ndarray, obs: np.ndarray) -> dict[int, float]:
+    """MAE per cell-frequency decile (1 = rarest cells, 10 = most frequent)."""
+    err = np.abs(np.asarray(pred) - np.asarray(obs))
+    order = np.argsort([c.frequency for c in cells])
+    out: dict[int, float] = {}
+    splits = np.array_split(order, 10)
+    for d, idx in enumerate(splits, start=1):
+        if len(idx):
+            out[d] = float(err[idx].mean())
+    return out
+
+
 def weighted_mape(cells, pred: np.ndarray, obs: np.ndarray) -> float:
     """Weighted mean absolute PERCENT error (scale-free companion to weighted_mae)."""
     obs = np.asarray(obs, dtype=np.float64)
@@ -510,6 +532,8 @@ def validate(
                 "calibration_slope": calibration_slope(pred, obs),
                 "wmae": weighted_mae(test_cells, pred, obs),
                 "wmape": weighted_mape(test_cells, pred, obs),
+                "umae": uniform_mae(pred, obs),
+                "freq_decile_mae": freq_decile_mae(test_cells, pred, obs),
                 "bucket_matrix": bucket_matrix,
                 "worst_bucket": worst_bucket,
                 "worst_bucket_rho": float(worst_rho),

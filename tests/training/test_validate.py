@@ -391,3 +391,24 @@ def test_weighted_mae_weights_by_cell_frequency():
     obs = np.array([100.0, 100.0])
     # errors: 10 (weight 1000) and 100 (weight 1) -> wmae ~ 10, not ~55
     assert weighted_mae(cells, pred, obs) == pytest.approx((10 * 1000 + 100 * 1) / 1001)
+
+
+def test_uniform_mae_and_decile_profile_reported():
+    """Rare-ngram guard: wmae alone lets selection abandon rare cells, which are the only
+    evidence for position pairs the optimizer explores off the frequency distribution."""
+    rows = _lawful_rows(n_pids=10, samples_per_pid=8)
+    report = validate(
+        rows,
+        seeds=[0],
+        wpm_lo=60,
+        wpm_hi=100,
+        bucket_width=20,
+        min_cell_samples=4,
+        n_boot=10,
+        train_params=_fast_params(),
+    )
+    for fold in report["folds"].values():
+        m = fold["seeds"][0]
+        assert m["umae"] > 0 and np.isfinite(m["umae"])
+        assert len(m["freq_decile_mae"]) >= 3  # small synthetic world -> few deciles ok
+        assert all(v >= 0 for v in m["freq_decile_mae"].values())
