@@ -428,3 +428,20 @@ rule going forward: a challenger must improve wmae WITHOUT degrading umae by mor
 2% relative or worsening the bottom-3 frequency deciles' MAE. Pending action: re-verify
 the P5 trigram adoption under the amended rule before blessing P6 outputs built on it.
 **Outcome:** (pending the resume run's P5-trigram verdict re-check)
+
+## 2026-07-06 — blind-pace maximization (user directive: best possible stage-1, no leakage)
+
+Leakage contract (binding): stage-1 sees ONLY timing scalars + session/participant
+indices. Model class capped at linear over robust aggregates — expressive models could
+fingerprint content from neighbor-value PATTERNS (the 'space-t-h ⇒ e' channel the user
+identified). Built-in leakage audit: a candidate whose held-out residuals encode more
+ngram-identity information (R² on ngram one-hots) than the LOO-mean's residuals do is
+DISQUALIFIED regardless of MAE — the audit operationalizes "without leaking context".
+Levers: L1 participant prior (pace from the typist's OTHER sessions, shrunk — the big
+untapped one; LOO mean uses one sentence of evidence), L2 robust location (LOO median /
+trimmed mean), L3 heterogeneous linear blend (priors + windowed neighbor medians +
+sentence-position index), L4 log-space, L5 the +0.60% per-offset ridge as reference.
+Rules: frontier reported; end-to-end LOLO re-plumb only if the best clean model beats
+LOO mean by ≥5% test MAE (the earlier 2% rule answered 'is there anything'; 5% is the
+'worth re-plumbing' bar). All candidates leakage-audited.
+**Outcome:** (pending)
