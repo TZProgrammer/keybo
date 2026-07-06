@@ -318,3 +318,29 @@ trailing-median replacement, actual-adjacent-interval feature, session-seeded EW
 the within-session speed process has no exploitable local structure in this data,
 full stop. (Monkeytype's estimator is for DISPLAY of a live wpm, not prediction —
 plausible why the intuition transfers poorly.)
+
+## 2026-07-06 — grand evaluation round (user directive: magnitudes, buckets, cleaning, tune, sweep)
+
+Theory concession first: the optimizer is invariant to AFFINE miscalibration only, while
+ρ/τ are invariant to ALL monotone transforms — nonlinear compression preserves ranks and
+moves the argmax. The user is right that ranking-only arm selection was insufficient.
+Harness upgraded (82b9695): corpus-weighted MAE/MAPE + per-bucket {ρ, wmae, slope, n}.
+Scope note: recent OBJECTIVE decisions (tri-only regrets, scoreboards, plateau) were
+already magnitude-based (fitness cross-scoring); ARM selections were ρ-based → P4
+re-verifies them. The freq-feature verdict is NOT re-run: a τ collapse to +0.333 is
+disqualifying under any calibration (broken ranking cannot be repaired by magnitudes).
+
+P1 (matrix): champion bigram + conditioned trigram → full {layout × wpm-bucket}
+  {ρ, wmae, slope} matrices. Question: high-band transfer uniform across layouts, or
+  dvorak-only? No rule — this is the instrument panel.
+P2 (slow-typist removal): train-side wpm floors {0, 60, 80}. Rule: adopt a floor iff τ
+  holds AND high-band (100–130) wmae improves >1% relative AND overall wmae degrades <1%.
+P3 (cleaning): (a) drop sessions with error rate >20%; (b) drop first-2 sessions per
+  participant (warmup). Same rule as P2, judged against the SAME-extraction baseline.
+P4 (re-verify): depth {2,3,4} × practice {on,off} under wmae. Informational (P5 decides);
+  any ρ-vs-wmae disagreement is flagged and the magnitude verdict wins.
+P5 (tune): tune-lolo pattern re-ranked by wmae (τ-gated): 16 bigram + 8 cond-trigram
+  candidates. Adopt iff wmae beats incumbent by >0.5% relative at τ +1.0.
+P6 (sweep): tuned models → corrected T3c at wpm 90 → layouts at oxey w ∈ {0, .5, 1, 2}
+  with stability + pattern stats. The user's requested deliverable.
+**Outcome:** (pending)
