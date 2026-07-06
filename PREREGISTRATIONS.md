@@ -465,3 +465,34 @@ Adoption rule: standing (τ ≥ anchor AND ρ/ceiling > S + 0.005), PLUS the rar
 (umae + bottom-decile non-degradation). Caution prior: the EWMA round showed
 interval-level gains can still hurt cell-level transfer — MED (session-level, no local
 terms) is the arm most likely to survive.
+
+## 2026-07-06 — robustness round (user questions #10: combine the +7% levers; MAE vs MSE
+## for the ngram models; hesitation-tail cleanup)
+
+Context: the blind-pace frontier found median-beats-mean (+7.0%) and participant-prior
+(+7.2%) with the COMBINED M5 at +7.65% — the levers barely add because they estimate the
+SAME latent (typist pace); combination refinement targets the remaining gap. The
+median-beats-mean result also exposes that heavy tails may distort three other places:
+the cell TARGET statistic (currently IQR-mean), the training LOSS (currently squared
+error), and hesitation samples inside cells. OQ-12 rejected duration CAPS at the
+aggregate level (11.4% of clean time above 3× median = legitimate hesitation weight);
+this round re-tests at the TARGET level with a different mechanism — hesitations are
+attention/cognition, not biomechanics, so excluding them from per-cell aggregation may
+sharpen geometry estimates. Honest counter-hypothesis carried into the rule: hard
+bigrams may CAUSE hesitations, so filtering could remove real signal — LOLO decides.
+
+Arms (bigram frame, hardened harness incl. umae + deciles):
+  T-BASE  incumbent (IQR-mean targets, MSE loss, session-mean wpm) — anchor
+  T-MED   cell target = MEDIAN of durations
+  T-MAE   XGBoost objective reg:absoluteerror (IQR-mean targets)
+  T-CAP   drop samples with duration > 3 × (12000/session-wpm) before aggregation
+  P-MED   wpm label = session-MEDIAN pace (the robust-location lever, end-to-end)
+  P-M5    wpm label = full blind blend (log-space M5)
+  C       stage-1 combination refinements (log-space prior, tuned shrinkage,
+          median-of-medians) — probe-level, feeds P-M5's label if better
+Rules: T/P arms adopt iff τ ≥ anchor AND ρ/ceiling > anchor + 0.005 AND wmae improves
+>1% relative AND neither umae nor bottom-3 decile MAE degrades >2% relative. Ceilings
+recomputed per target variant (target definition changes the ceiling). Caution prior
+recorded: interval-level wins have died at cell level four times (EWMA et al.); the
+session-level arms (T-MED, P-MED) are the structurally-favored survivors.
+**Outcome:** (pending)
