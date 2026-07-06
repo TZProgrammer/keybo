@@ -343,4 +343,27 @@ P5 (tune): tune-lolo pattern re-ranked by wmae (τ-gated): 16 bigram + 8 cond-tr
   candidates. Adopt iff wmae beats incumbent by >0.5% relative at τ +1.0.
 P6 (sweep): tuned models → corrected T3c at wpm 90 → layouts at oxey w ∈ {0, .5, 1, 2}
   with stability + pattern stats. The user's requested deliverable.
-**Outcome:** (pending)
+**Outcomes P1–P4 (runs/grand_p*.json):**
+- **P1 (matrix):** both champions hold τ +1.0 with calibration slopes ~1.0 per fold. The
+  per-bucket matrices (in JSON) answer the user's dvorak question: high-band ρ stays
+  positive on every layout; magnitude quality (wmae) is uniform enough that no
+  layout×band cell is catastrophic. Instrument panel established.
+- **P2 (slow-typist removal): REJECTED per rule, with the instructive gradient.**
+  floor=60: τ degrades to +0.667; floor=80: τ collapses to [0.33, 0.0, 0.33] — even
+  though high-band wmae improves dramatically (14.4 → 9.4 → 7.9). Dropping slow data
+  sharpens high-band magnitudes at the cost of cross-layout RANKING: the slow bands
+  carry a large share of the cross-layout identification (thin layouts are dispropor-
+  tionately mid/slow). The right construction, noted for future work: per-band tables
+  from a full-data model (the model already conditions on wpm), not floored training.
+- **P3 (cleaning): both arms REJECTED — nothing to clean.** errclean: wmae 15.82 vs
+  baseline 15.72 (worse); warmdrop: 16.01 (worse); neither improves high-band; errclean
+  even costs τ on some seeds. The existing hygiene (contiguity, QUOTE_NONE, IQR-mean,
+  rejection counters) already extracts a clean signal; further filtering only removes
+  identification.
+- **P4 (re-verify under wmae): every ρ-based adoption SURVIVES the magnitude standard.**
+  Practice term dominates wmae exactly as it dominated ρ (d3: 15.55 with vs 28.15
+  without — nearly 2×); depth is secondary (d2/d3/d4 with practice: 15.90/15.55/15.86
+  overall; d4 best in high band at 13.85 but inside noise of d3's 14.28). No ρ-vs-wmae
+  disagreement found — the flagged risk did not materialize on these arms. Depth 3
+  stands.
+
