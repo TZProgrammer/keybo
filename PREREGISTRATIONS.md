@@ -275,8 +275,16 @@ productionize prev into the schema + a serve-side story. Secondary novelty check
 winner: its predicted run-continue-vs-alt-alt contrast must agree in sign with the
 measured −22 ms. Either way, the trigram objective REBUILDS on the winning conditioned
 model and the trigram-only-vs-combined A/B re-runs on the new tables.
+**Rebuild outcome (cond_rebuild.py, runs/cond_rebuild.json): the corrected objective
+T3c = T2(bigram physics) + Tcond(conditioned increment) is now canonical, and the
+re-run A/B SIMPLIFIES the objective: mutual regret +0.079%/+0.010% (both under the 0.15%
+bar) ⇒ TRI-CORRECTED-ONLY is the canonical objective (the earlier borderline keep of
+'combined' is superseded — the double-count is gone by construction). Final search:
+best `bhaievlnsdpyo.utmrfcq;/,jgkwxz` +2.07% vs qwerty, 13 distinct near-optima/0
+consensus slots (plateau as always), E5 clean (home 31.9%, sfb 1.47%), bigram-component
+certificate within 2.54% of optimal.**
 **Outcome: architecture flat; PREV HURTS — the local-context null now holds for trigram
-targets too.** Scoreboard (τ +1.0 everywhere): C-D4 1.0254 ≈ C-D2 1.0250 ≈ C-BASE 1.0223
+targets too.** [See also the EWMA entry below — the null is now four-deep.] Scoreboard (τ +1.0 everywhere): C-D4 1.0254 ≈ C-D2 1.0250 ≈ C-BASE 1.0223
 ≫ C-PREV 1.0075 > C-PREV-D2 1.0044. The actual previous interval — the sharpest local
 signal constructible (same occurrence, one interval back, teacher-forced at eval) —
 REDUCES transfer by ~0.015-0.018: it injects participant/session noise the geometry
@@ -300,4 +308,13 @@ Arms: S (anchor) / ER90, ER98 (EWMA replaces session) / ES90 (both features).
 Rule: adopt iff τ ≥ anchor AND mean ρ/ceiling > S + 0.005. Prior: three-deep null stack —
 expect null; the high-α arms are the ones that could evade it (gentle regularization of
 session rather than noisy replacement).
-**Outcome:** (pending)
+**Outcome: NULL — the cleanest monotone gradient yet.** S 0.9750 > ES90 0.9657 > ER98
+0.9445 > ER90 0.9314 (τ equal across arms). Transfer degrades EXACTLY in proportion to
+how much local signal is mixed in: α=.98 (2% local) loses less than α=.90 (10% local);
+adding EWMA as a second feature loses less than replacing — but EVERY admixture loses.
+The interpolation family contains the champion, and the champion is its α→1 endpoint:
+session wpm, pure. The local-speed question is now closed four ways (window probe,
+trailing-median replacement, actual-adjacent-interval feature, session-seeded EWMA) —
+the within-session speed process has no exploitable local structure in this data,
+full stop. (Monkeytype's estimator is for DISPLAY of a live wpm, not prediction —
+plausible why the intuition transfers poorly.)
