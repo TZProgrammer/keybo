@@ -286,3 +286,18 @@ not the actual adjacent interval (here) — the speed process really is (session
 (ngram identity) + (geometry) + noise. Depth stays 3 (D4's +0.003 is inside seed noise;
 ties break simpler per standing rule). The conditioned target with the shipped recipe is
 the trigram model going forward; objective rebuild + tri-vs-combined re-run queued.
+
+## 2026-07-06 — session-seeded EWMA local speed (user proposal, monkeytype-style)
+
+What is genuinely new: local = α·prev + (1−α)·rate SEEDED AT SESSION WPM is an
+INTERPOLATION between the incumbent (α→1) and pure-local (which failed three ways:
+OQ-9 window probe, L8 end-to-end, PREV teacher-forced). The family contains the champion;
+the question is whether any α < 1 beats it. Typo/modifier handling (user asked): the
+EWMA updates only on CLEAN intervals (contiguous original indices, parseable times,
+< 2000 ms) and freezes across mistypes/control keys/deletions/pauses — the contiguity
+machinery already provides this.
+Arms: S (anchor) / ER90, ER98 (EWMA replaces session) / ES90 (both features).
+Rule: adopt iff τ ≥ anchor AND mean ρ/ceiling > S + 0.005. Prior: three-deep null stack —
+expect null; the high-α arms are the ones that could evade it (gentle regularization of
+session rather than noisy replacement).
+**Outcome:** (pending)
