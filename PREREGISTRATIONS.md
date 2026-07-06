@@ -367,3 +367,36 @@ P6 (sweep): tuned models → corrected T3c at wpm 90 → layouts at oxey w ∈ {
   disagreement found — the flagged risk did not materialize on these arms. Depth 3
   stands.
 
+
+## 2026-07-06 — blind pace model (user proposal #7: two-stage decomposition)
+
+User's framing: stage 1 = a content/geometry-BLIND model predicting the current pace from
+surrounding speeds only (deliberately simple to avoid content leakage — correctly
+identified as the freq-Goodhart channel); stage 2 = geometry model conditioned on it.
+Claim: better stage-1 ⇒ better downstream. Includes the hump argument (any averaging
+underestimates at a pace extremum; centered windows beat trailing ones) and asks for an
+analytical solution.
+
+Analytical answer (to be verified by the probe): the optimal LINEAR blind predictor of
+x_t from all other intervals weights them by the inverse covariance; with the measured
+within-session autocorrelation ≈ 0 at all lags (OQ-9: lag-1 r = 0.004 after
+session-centering), the inverse covariance is ~diagonal ⇒ the optimal blind predictor IS
+the session mean. The hump scenario REQUIRES positive short-lag autocorrelation (a smooth
+latent pace process); its measured absence means either no humps at sentence scale or
+humps drowned by keystroke noise — the optimal filter ignores them either way.
+Structural fact: our "session" is ONE SENTENCE (~8 s), so session WPM is already a
+CENTERED local window (symmetric past+future by construction) at nearly the same scale
+as the proposed 10+10 window.
+
+Probe (blind_pace_probe.py; cheap, no LOLO needed — the user's own monotonicity logic
+means a stage-1 that cannot beat the session mean closes the idea): on a large sample of
+qwerty sessions, predict each held-out interval from the OTHER intervals via (a)
+leave-one-out session mean, (b) centered window means h ∈ {2, 5, 10}, (c) the user's
+exact model — ridge-fit linear weights on centered neighbors (5+5 and 10+10 where
+sentence length allows). Also report sentence-length distribution and the
+self-inclusion effect of current session wpm.
+Rule: if the best blind estimator beats LOO-session-mean by < 2% relative MAE (or
+centered-R² gain < 0.01), the stage-1 premise is unattainable in this data ⇒ the
+two-stage idea closes without an end-to-end arm. If it beats it materially ⇒ build the
+full LOLO arm with the winning estimator as the wpm feature.
+**Outcome:** (pending)
