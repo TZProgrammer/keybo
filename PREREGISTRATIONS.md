@@ -399,7 +399,18 @@ Rule: if the best blind estimator beats LOO-session-mean by < 2% relative MAE (o
 centered-R² gain < 0.01), the stage-1 premise is unattainable in this data ⇒ the
 two-stage idea closes without an end-to-end arm. If it beats it materially ⇒ build the
 full LOLO arm with the winning estimator as the wpm feature.
-**Outcome:** (pending)
+**Outcome: CLOSED under the rule — the analytical prediction held, with one refinement.**
+Test MAE on 1.84M held-out intervals: LOO session mean 62.16 ms; centered windows h=2/5/10
+WORSE (−11.1%/−3.5%/−1.3% — small windows are strictly noise-amplifiers); the user's
+ridge 10+10 model: 61.79 ms = **+0.60%**, under the 2% bar. The refinement: the ridge
+weights are NOT exactly zero — small (max 0.036), positive, symmetric past/future, and
+smoothly decaying — i.e. a real but tiny local-pace process exists (each neighbor carries
+~3% weight), worth 0.6% of interval MAE, far too small to survive aggregation into cell
+targets and model selection (consistent with all four downstream nulls). The two-stage
+idea is architecturally sound; the data's local pace signal is just ~0.6%-sized.
+Session-as-sentence (median 37 clean intervals) also confirms the incumbent is already a
+centered window at nearly the proposed scale. No end-to-end arm; stage-1 = session mean
+is within 0.6% of the best achievable blind estimator.
 
 ## 2026-07-06 — rare-ngram guard on magnitude selection (user directive #8)
 
