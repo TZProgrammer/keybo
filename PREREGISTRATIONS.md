@@ -835,3 +835,24 @@ pairs (e.g. qwerty "ce", "un" excluded — those are cross-column... precisely: 
 there equally, while alternate fingerings cannot. If the 3x concentration holds, hold
 channel is vindicated, revive D2 (overlap-conditioned target, carrying the ~8%
 fingering caveat into D2-D4 docs). If not, program CLOSES for good.
+
+### Outcome append (2026-07-07): d1prime_final — concentration 0.89x, revival FAILS. PROGRAM CLOSED.
+runs/d1prime_final.json: same-column same-finger overlap 8.30% (70,632/850,480) vs
+cross-column 7.37% (25,789/349,761) — concentration 0.89x, nowhere near the 3x bar, and
+in the WRONG direction. The 8% overlap floor is UNIFORM across mechanically-plausible
+and implausible alternate-fingering classes => it is NOT alternate fingering; mechanism
+unknown (example rows show many shifted/capital ngrams — a case/modifier timing artifact
+is plausible but untested). Per the FINAL rule: the overlap marker cannot be certified
+(unknown ~8% false-positive floor) and the QUALITY-EXECUTION TARGET PROGRAM IS CLOSED.
+Standing answers to the user's question, on the record:
+- The strategy mixture is REAL and the quality move is real, learnable (roll overlap
+  30.6%->67.6% with skill, Spearman 1.0) and hugely faster (median 1.69x within-cell) —
+  D1' gates ii/iii, unaffected by the marker's floor (signal 30-68% >> floor ~8%).
+- But no operationalization SURVIVED its preregistered gate: GMM targets failed
+  strategy-alignment/attainability; the overlap-conditioned target failed marker
+  certification twice. The incumbent IQR-mean target STANDS for the deliverable.
+- REGISTERED FUTURE DIRECTION (not run this campaign): Phase-D data with per-key
+  release capture + controlled fingering would certify the marker; the overlap-
+  conditioned target is the right design once the marker is trustworthy.
+- Side finding for the wrap: same-finger features mismatch observed motor behavior for
+  ~8% of samples (mechanism unknown: alternate fingering vs case/modifier artifacts).
