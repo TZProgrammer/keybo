@@ -871,3 +871,31 @@ must be BEFORE seeing any new result, and the interaction with the final cleanin
 recipe (registered follow-up if adopted) does not arise.
 Also noteworthy: INC's all-pair tau 0.67 vs dp-tau 1.0 in this frame independently
 confirms the tie-pair pollution of all-pair tau.
+
+### Outcome append (2026-07-07): crosseval_2x2 — fixed-frame gain is LARGE AND REAL, but both
+### formal routes fail by letter; filter adoption now rests solely on the clean-sweep guard
+Full matrix (runs/crosseval_2x2.json):
+  train-v3 eval-v3: rho/ceil 0.994 wmae 15.65 umae 19.90 dec3 26.85 tau +1.0
+  train-v4 eval-v3: rho/ceil 0.998 wmae 12.40 umae 17.69 dec3 27.72 tau +1.0  <- DECISIVE CELL
+  train-v3 eval-v4: rho/ceil 1.003 wmae 15.99 umae 19.05 dec3 22.99 tau +0.67
+  train-v4 eval-v4: rho/ceil 1.014 wmae 11.98 umae 15.25 dec3 21.68 tau +0.67
+DECISIVE CELL: on the FIXED unfiltered frame — which the filter cannot game — filtered
+training improves wmae -20.8% and umae -11.1%. The user's truncation hypothesis is
+therefore REFUTED as the whole story: most of the confirm-run gain (~-21 of -23.6%) is
+genuine training-signal improvement; target tightening contributes only the remainder.
+BUT dec3 +3.24% > the +2% guard => by the registered rule, filter_improves_generalization
+= false BY LETTER (the win concentrates in frequent cells and trades rare-decile away,
+the same signature as the MED label near-miss).
+HES-GEOMETRY: rho(hes-mass, clean-time) = +0.842; rho(hes-mass, distance) = -0.012.
+By the registered rule (either rho > 0.4) the definitional route is REJECTED: hesitation
+mass tracks how slow an ngram is. HONEST CAVEAT recorded: the distance-rho is ~0, so the
+correlate is NOT physical geometry — clean-time is confounded with ngram frequency
+(rare ngrams are both slower and more hesitation-prone, a cognitive-rarity story). The
+rule named clean-time as a geometry proxy; by its letter the route is closed. A purely
+DIAGNOSTIC partial-correlation (hes vs clean-time controlling frequency) may be run for
+the wrap's mechanism note; it CANNOT reopen the route this campaign.
+NET DISPOSITION (all preregistered rules composed): the hesitation filter enters the
+final recipe ONLY via a clean_sweep_2x2 CAP arm that passes the frozen-frame dec3 guard
+(milder caps damage rare cells less — that is what the sweep measures). tau is settled
+(decisive-pair 1.0 everywhere; the 0.67s are the tie pair on the v4 frame). No
+target-redefinition; deliverable eval stays on the unfiltered frame.
