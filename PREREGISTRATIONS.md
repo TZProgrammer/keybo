@@ -757,3 +757,31 @@ labeled rolls. RERUN (quality_d1b) with roll = same_hand AND NOT same_finger (th
 community sense — the pairs where an overlapped quality execution exists). Gate (a)
 result carries over unchanged (roll labels don't affect it). No decision taken on (b)/(c)
 before the rerun lands. Per-cell dump added (runs/quality_d1_cells.json) for D2 reuse.
+
+### Outcome append (2026-07-07): D1 rerun (correct roll labels) — gates (b) and (c) BOTH FAIL
+runs/quality_d1.json (roll = same_hand & !same_finger; 1204/3940 roll cells):
+  (b) bimodal share: roll 55.2% vs non-roll 63.1% — NOT concentrated in rolls (slightly
+      the opposite); strategy_aligned = false.
+  (c) fast-component weight FALLS monotonically with skill (roll cells: .66/.63/.58/.51/.39
+      across buckets 40->120; non-roll nearly identical .72/.69/.63/.53/.36).
+Per the registered gates, the GMM operationalization REFUTES the strategy-mixture read:
+bimodality is pervasive but uniform across move types and the fast mode is not more
+attainable with skill — consistent with a hesitation/attention mixture (already handled
+at the training level by the cleaning program). GMM-based quality targets are DEAD.
+
+## D1' OVERLAP TEST (registered 2026-07-07 BEFORE results — the direct measurement)
+The GMM was an indirect distributional test; the data carries a DIRECT quality-execution
+marker: hold (first key's press->release). An overlapped execution (true rolling motion:
+press2 lands before release1, i.e. dur < hold) is the community's "quality roll". D1'
+computes, on v3 (no GMM, pure counting): overlap-rate by class {same-hand-diff-finger
+(roll), cross-hand (alternation), same-finger (physical near-impossibility — SANITY:
+must be < 5%, else hold data is unreliable and D1' is void)}; overlap-rate vs wpm bucket
+per class; within-cell speed delta of overlapped vs non-overlapped executions.
+REVIVAL RULE: the quality-execution program proceeds to D2 iff (i) sanity passes,
+(ii) roll overlap-rate RISES with wpm bucket (monotone trend, Spearman > 0.8 over the 5
+buckets), and (iii) overlapped executions are >= 15% faster within-cell (median across
+roll cells with >= 20 of each kind). If revived, D2 adds the overlap-conditioned target
+(cells with enough overlapped mass use mean-of-overlapped; others incumbent) alongside
+the quantile targets. If any of (i)-(iii) fails, the program CLOSES: incumbent target
+stands and the user's hypothesis is answered "the mixture is hesitation, not strategy;
+cleaning (not target redefinition) is the remedy."
