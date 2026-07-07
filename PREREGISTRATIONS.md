@@ -534,3 +534,18 @@ gain without starving rare ngrams. ADOPTION CONFIRMED; the ⚠ pre-guard flag on
 P5 cond-trigram entry is resolved and the P6 family stands.
 Honest note outside the rule: rho_frac 1.040 -> 1.006 (both above ceiling; not a rule
 condition, recorded for completeness).
+
+## P7: filtered-data rebuild (registered 2026-07-07, before tcap_prod_confirm results)
+The hesitation filter shipped as extraction code (f8b008d). Two chained rules, both
+recorded before any result:
+1. CONFIRM RULE (tcap_prod_confirm.py, v3 vs v4 bigram tables, 3 fold-seeds, shipped
+   validate): the filter's default stays 3.0 iff tau +1.0 on all pooled fold-seeds AND
+   rho/ceiling improves AND wmae, umae, dec3 all improve vs the unfiltered table.
+   Any miss: flip the CLI default to 0 (off) and document. Ceilings recomputed per arm;
+   rho judged as fraction-of-own-ceiling since the filter changes the target definition.
+2. REBUILD RULE (p7_filtered_rebuild.py, runs only on confirm): retrain bigram (shipped
+   recipe) + cond-trigram (cand-4) on filtered tables, rebuild T3c(90), re-sweep oxey
+   w in {0, .5, 1, 2} at the P6 search budget. The P7 family REPLACES P6 as the
+   deliverable iff the filtered cond-trigram LOLO matches-or-beats the unfiltered
+   cand-4 leg of the guard check (tau holds, rho/ceiling within -0.005, wmae within
+   +1%); else P6 stands and P7 is an appendix.
