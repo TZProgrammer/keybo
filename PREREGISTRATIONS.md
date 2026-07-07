@@ -622,3 +622,34 @@ tight cap concentrating drops on intrinsically-slow ngrams is deleting geometry 
 SELECTION RULE: best wmae among caps with dec3 <= anchor+2%, in-frame tau >= anchor's,
 rho/frac >= anchor's, censor_ratio <= 3.0. Plateau tie-break: LARGER cap (least
 interventionist). Selected cap feeds the P7 rebuild (re-extract if != 3.0).
+
+### CORRECTION (2026-07-07, user challenge — accepted): rand-drop conclusion DOWNGRADED
+The "filter gain is REAL" conclusion above overclaimed. The rand-drop control refutes
+only the DATA-VOLUME confound (fewer samples), not the TARGET-TRUNCATION confound the
+user raised: the filter removes the slow tail, the eval cells are rebuilt from the
+FILTERED samples, and predicting the middle of a tightened distribution scores better
+mechanically (the "keep one decile, guess its middle, score amazing" case). Random
+dropping does not tighten the target, so both "contamination removal" and "target
+truncation" predict exactly the observed control result. Partial mitigations on file
+(IQR-mean targets attenuate tail influence; rho/own-ceiling rose) are suggestive, not
+decisive. Status revised: filter gain = 🟠 INFERRED, decisive test registered below.
+
+## CROSSEVAL-2x2 + HESITATION-GEOMETRY (registered 2026-07-07, before results)
+crosseval_2x2.py: train on {v3, v4} x evaluate on {v3-target, v4-target} frames, LOLO,
+2 seeds, shipped recipe. All four (train, eval) cells report wmae/umae/dec3/rho-frac +
+in-frame pooled tau; eval frames also report target mean/stddev/n_cells (truncation
+magnitude made visible).
+DECISION RULE: the filter improves GENERALIZATION iff train-v4 beats train-v3 ON THE
+FIXED v3-TARGET frame (wmae improvement > 1% rel, umae/dec3 not worse by > 2%). If
+train-v4 ~= train-v3 on the v3 frame and the -23% appears only on the v4 frame, the
+confirm-run gain is TARGET REDEFINITION — adoption may then rest ONLY on the
+definitional argument (hesitation lag = cognition, not motor cost, so the filtered
+target is the correct optimization objective), which itself requires the
+hesitation-geometry test to pass:
+hes_geometry (same driver): per qwerty ngram, hesitation mass = 1 - n_v4/n_v3 vs the
+ngram's filtered (clean) mean time + distance. If hesitation rate is ~independent of
+geometry/clean-time (|spearman| < 0.2), hesitations are content-driven and EXCLUDING
+them from the objective is principled regardless of MAE bookkeeping; if strongly
+positive (>0.4), hard geometry CAUSES hesitations, filtering censors real signal, and
+the filter is REJECTED for the objective definition even if MAE flatters it.
+Middle zone (0.2-0.4): judgment call, documented openly, default REJECT (conservative).
