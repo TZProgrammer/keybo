@@ -709,3 +709,41 @@ only ERR qualifies => recovery lag is error-cognitive; CTL qualifies => hand
 displacement lingers past the contiguity drop and the production buffer keys on
 control rows too; the winning variant supersedes the sweep's cause-blind BUF arm in
 the final recipe.
+
+## QUALITY-EXECUTION TARGET PROGRAM (registered 2026-07-07, before any results)
+User hypothesis: within a (ngram, pace) cell the sample distribution is a MIXTURE of
+execution strategies — quality execution (true roll) vs degraded (broken roll) — so the
+cell mean is polluted by fumble mass, and the layout should be judged on attainable
+QUALITY execution (a trained user of the final layout rolls most of the time), not the
+average across strategies. Proposal to evaluate: quantile/trimmed/mixture targets
+("cream of the crop") instead of IQR-mean. User's own flagged risk: does deleting slow
+mass starve the model / harm generalization?
+Four stages, each gating the next:
+D1 DIAGNOSTIC (no model, runs first — the premise test):
+  (a) BIMODALITY: for big cells (n>=100), GMM BIC 1-vs-2 components on log-durations
+      per (ngram, bucket) cell. If <10% of big cells prefer 2 components, the mixture
+      premise FAILS => program stops, quantile targets are just tail-trimming
+      (already covered by CAP arms), incumbent target stands.
+  (b) STRATEGY ALIGNMENT: among bimodal cells, is bimodality concentrated in roll/
+      inward-roll bigrams vs uniform? (mixture-of-strategies predicts concentration
+      in bigrams that HAVE a quality move; hesitation-mixture predicts uniform).
+  (c) ATTAINABILITY: fast-component share vs wpm bucket. Quality target for a wpm-90
+      layout is justified only if fast-share RISES with skill (the move is learnable).
+D2 TARGET RELIABILITY (only if D1 passes): candidate targets = IQR-mean (incumbent),
+  q25, q10, GMM fast-component mean (n>=40, else q25 fallback), fastest-third mean.
+  Split-half ceiling per target (participant split, same machinery). A target whose
+  ceiling falls >15% rel below incumbent's is DISQUALIFIED (answers "lose too much
+  data": nothing is deleted — quantiles use the full sample — but the ceiling
+  quantifies the effective information loss of the definition).
+D3 LOLO (surviving targets): each on ITS OWN frame, judged by rho/frac-of-own-ceiling
+  + decisive-pair tau (cross-frame raw MAE banned per fc15c87). Adopt-candidate iff
+  frac-of-ceiling within 0.02 of incumbent's and tau holds.
+D4 LAYOUT IMPACT (adopt-candidates only): rebuild T2 under incumbent vs quality
+  target, same QAP search budget, report argmax divergence + mutual cross-scoring
+  regret. If regret < 0.15% both ways the choice is MOOT (document, keep incumbent);
+  else present both layouts + the D1 evidence and the attainability argument decides:
+  fast-share rising with skill => quality target ships for the wpm-90 layout.
+Better-than-deletion note (registered): quantile targets/mixture means USE ALL DATA
+(an order statistic is a function of the whole sample) — strictly dominates "delete
+slowest k%" (same intent, no thrown-away rows, no per-cell n collapse); deletion arms
+are therefore NOT run.
