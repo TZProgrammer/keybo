@@ -983,3 +983,15 @@ data / harm generalization") is confirmed as the dominant effect, with the twist
 nothing was deleted — the INFORMATION loss is in the statistic, not the row count.
 QSEL closed; contributes nothing to the recipe. FINAL CLEANING RECIPE NOW LOCKED:
 BUF2-BOTH on the unfiltered frame (5c49a3e composition unchanged).
+
+## P8 FINAL REBUILD (registered 2026-07-08, launched with recipe locked at 7965aa2)
+p8_final.py — the deliverable build, composing every adopted verdict: BUF2-BOTH cleaning
+(2-clean-key buffer after gaps containing a mistype or control key; session-initial
+windows NOT buffered — buf_split semantics), unfiltered frame, no cap, no quantile
+targets, incumbent pace label; bigram = shipped recipe; trigram = conditioned target
+with cand-4 params; T3c(90) tri-corrected-only; oxey family {0,.5,1,2} at P6 budget on
+the P6-proven driver path (NOT P7's buggy diagnostics). Stages checkpointed
+(bistrokes_v5 / tristrokes_cond_v3 / p8_lolo.json / models *_v5_seed*). Its LOLO stage
+is the deliverable's evidence (expected ~ BUF2-BOTH's frozen-frame numbers); the family
++ certificate + scoreboard land in runs/p8_final.json. No decision rule here — this is
+the assembly, all decisions already made upstream.
