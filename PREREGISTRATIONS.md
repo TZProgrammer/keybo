@@ -575,3 +575,28 @@ BOTH tables, the pair is declared undecidable, tau is reported henceforth ONLY o
 decisive pairs (CI excludes 0), and the hesitation-filter confirm verdict is RE-JUDGED
 under decisive-pair tau (magnitude sweep already reproduced). If the pair IS decidable
 in v3 and the filter genuinely flips a decidable pair, the filter stays off.
+
+## ENDGAME rules (registered 2026-07-07, before results of any of these runs)
+Context: user directive — leave nothing pending; deliver the best possible layout.
+1. RAND-DROP control (rand_drop_control.py): drop the filter's exact drop-rate (2.851%)
+   uniformly at random from v3, same 3-seed shipped validate. Interpretation rule:
+   control reproducing a large share of the filter's MAE gain => variance artifact;
+   control ~flat => the filter's gain is real contamination removal (it matters WHICH
+   samples go). Report control's share of the filter gain per metric; also compare
+   per-arm ceilings (a pure variance shrink moves obs noise and ceiling together and
+   cannot RAISE rho/ceiling the way the filter did, 0.995->1.017).
+2. MATCHED-FRAME pace labels (matched_frame_pace.py): INC (session-mean wpm) vs MED
+   (session-median pace) vs M5 (blind log blend, the +7.65% frontier winner) with ONE
+   shared sample set, ONE cell frame (incumbent bucketing), ONE example structure —
+   only the wpm feature value varies. ADOPT rule: challenger wins iff wmae improves
+   >1% rel AND umae/dec3 degrade <=2% AND decisive-pair tau does not drop. If both
+   qualify, better wmae wins. Filter-x-label interaction: follow-up only if adopted.
+3. P7 gate AMENDMENT: the confirm verdict is re-judged under decisive-pair tau (per the
+   0597fdf rule). If azerty-qwertz is undecidable in BOTH v3 and v4 bootstrap tables,
+   the magnitude sweep carries the verdict, the hesitation filter is ADOPTED (default
+   back to 3.0), and the P7 filtered rebuild proceeds. If the pair is decidable and
+   genuinely flipped, the filter stays off and P7 aborts.
+4. FINAL DELIVERABLE assembly: best label (from 2) x best data treatment (from 1+3) =>
+   retrain -> T3c(90) -> oxey family {0,.5,1,2} at P6 budget -> stability + certificate
+   + full verdict table. If 2 adopts a new label, the P7 rebuild re-runs with it (one
+   rebuild, both levers, since each was independently gated on its own rule).
