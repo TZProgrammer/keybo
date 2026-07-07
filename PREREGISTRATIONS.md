@@ -967,3 +967,19 @@ FINAL CLEANING RECIPE (pending only QSEL): BUF2-BOTH (post-error+control 2-key b
 on the UNFILTERED frame. Hesitation caps: not in the recipe by rule letter; CAP3/4
 documented as outcome-clean near-misses blocked by a guard whose construction the
 evidence undermines — the honest wrap will present both readings.
+
+### Outcome append (2026-07-08): QSEL — all quantile-training arms REJECTED, monotone degradation
+runs/qsel_train.json (recalibrated, frozen frame; BASE wmae 13.45 rho/ceil 0.994):
+  Q25 +7.6% wmae, rho/ceil 0.924 | Q20 +9.5%, 0.907 | Q10 +15.1%, 0.857
+  F3M +14.7%, 0.887 | F5M (the literal best-fifth) +19.9%, 0.842, dec3 +12.5%
+Uniform verdict: training on faster quantiles makes generalization strictly WORSE, and
+monotonically so as the quantile tightens — even WITH affine recalibration removing the
+scale bias. Interpretation: a cell's lower tail is dominated by which-typists/how-many-
+samples noise (the 30-70% quality-execution share varies by cell, so a fixed quantile
+reads DIFFERENT strategy mixes in different cells — inconsistent targets), while the
+IQR-mean averages over the strategy mix more stably. The "biomechanical floor" reading
+of low quantiles is refuted at every tested depth; the user's worry ("lose too much
+data / harm generalization") is confirmed as the dominant effect, with the twist that
+nothing was deleted — the INFORMATION loss is in the statistic, not the row count.
+QSEL closed; contributes nothing to the recipe. FINAL CLEANING RECIPE NOW LOCKED:
+BUF2-BOTH on the unfiltered frame (5c49a3e composition unchanged).
