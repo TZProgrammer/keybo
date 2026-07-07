@@ -856,3 +856,18 @@ Standing answers to the user's question, on the record:
   conditioned target is the right design once the marker is trustworthy.
 - Side finding for the wrap: same-finger features mismatch observed motor behavior for
   ~8% of samples (mechanism unknown: alternate fingering vs case/modifier artifacts).
+
+### Outcome append (2026-07-07): matched_frame_pace — MED/M5 both REJECTED by the rare-ngram guard
+Shared-frame results (runs/matched_frame_pace.json; INC anchor wmae 15.59 umae 20.13 dec3 27.16):
+  MED: wmae -7.4%, umae -2.5%, dec3 +3.5%, dp-tau 1.0 — fails ONLY the dec3 <= +2% guard
+  M5:  wmae -6.3%, umae -0.1%, dec3 +6.7%, dp-tau 1.0 — fails the guard clearly
+Now that the frame is matched, the pace labels DO deliver the magnitude gains the blind-
+pace program promised (MED -7.4% wmae — the +7% frontier carried through end-to-end),
+and MED even improves umae. But both consistently trade away rare-ngram accuracy, and
+the guard exists precisely because the optimizer explores rare position pairs. Per the
+registered rule: NOT adopted; incumbent session-mean label stands. On the record: MED
+is a near-miss (dec3 +3.5% vs +2% bar) — if the guard tolerance were ever revisited it
+must be BEFORE seeing any new result, and the interaction with the final cleaning
+recipe (registered follow-up if adopted) does not arise.
+Also noteworthy: INC's all-pair tau 0.67 vs dp-tau 1.0 in this frame independently
+confirms the tie-pair pollution of all-pair tau.
