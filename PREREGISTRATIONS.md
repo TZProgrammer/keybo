@@ -653,3 +653,23 @@ them from the objective is principled regardless of MAE bookkeeping; if strongly
 positive (>0.4), hard geometry CAUSES hesitations, filtering censors real signal, and
 the filter is REJECTED for the objective definition even if MAE flatters it.
 Middle zone (0.2-0.4): judgment call, documented openly, default REJECT (conservative).
+
+## CLEAN-SWEEP-2x2 (registered 2026-07-07, before results; supersedes the same-frame cap sweep)
+The same-frame cap_sweep was KILLED before producing results — its MAE columns inherit
+the truncation flattery (fc15c87 correction); superseded by clean_sweep_2x2.py, which
+generalizes the 2x2's decisive cell into the sweep methodology: every arm varies ONLY
+training-data cleaning; every arm is graded on ONE FROZEN eval frame (BASE-extraction
+cells + BASE ceilings). No arm can win by tightening the target.
+STAGE 1 single levers vs BASE: CAP{2,2.5,3,4,5,8} hesitation cap; BUF{1,2,3} post-error
+buffer (drop windows starting <k clean keys after a contiguity gap — recovery lag, the
+user's example); FAST{20,35} implausibly-fast floor (rollover artifacts); SESS{3,10}
+session warmup drop. STAGE 2: combine all adopted levers; keep combo iff it beats BASE
+AND the best single lever.
+ADOPT RULE per lever: frozen-frame wmae -1% rel or better, umae/dec3 <= +2%, in-frame
+tau >= BASE's; CAP arms additionally censor_ratio <= 3.0. Family plateau (within 0.5%
+wmae): least-interventionist variant (smallest drop%). Winner = FINAL cleaning recipe
+for the P7 rebuild.
+NOTE the frozen frame carries hesitation lag in its targets; a cleaning arm therefore
+competes on predicting the UNCLEANED truth better from cleaner training signal — the
+conservative direction. The definitional question (should the OBJECTIVE itself exclude
+hesitations?) is decided separately by crosseval_2x2's hes_geometry test.
