@@ -562,3 +562,16 @@ tau +0.67 as its OWN anchor too, so the swap only became visible against the pro
 DIAGNOSIS REGISTERED (tau_diag.py, running): compare v3-vs-v4 OBSERVED layout tables to
 see whether the filter moved the ground-truth ordering itself (no model involved) — the
 follow-up question is which ordering is correct, i.e. the source-of-truth question.
+
+### Outcome append (2026-07-07): tau_diag — the tau drop is an AZERTY-QWERTZ near-tie flip
+Observed (no model) common-ngram layout tables:
+  v3: dvorak 133.88 | qwerty 139.62 | qwertz 147.98 | azerty 148.34  (azerty slower by 0.36ms)
+  v4: dvorak 132.66 | qwerty 137.91 | azerty 146.17 | qwertz 146.32  (qwertz slower by 0.15ms)
+The pair that costs tau 1.0 -> 0.67 is azerty-qwertz, whose observed gap is 0.36ms/0.15ms
+in a ~14ms between-layout spread — a statistical tie that flips direction under the
+filter. Registered follow-up (pair_gap_boot.py, running): participant-bootstrap CI on
+every pair's gap in both tables; PREREGISTERED RULE: if the azerty-qwertz CI spans 0 in
+BOTH tables, the pair is declared undecidable, tau is reported henceforth ONLY over
+decisive pairs (CI excludes 0), and the hesitation-filter confirm verdict is RE-JUDGED
+under decisive-pair tau (magnitude sweep already reproduced). If the pair IS decidable
+in v3 and the filter genuinely flips a decidable pair, the filter stays off.
