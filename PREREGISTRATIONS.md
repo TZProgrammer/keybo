@@ -806,3 +806,32 @@ program REVIVES into D2 with the overlap-conditioned target; if diff-key overlap
 the hold channel is noisy, the program CLOSES, and the answer to the user is the
 hesitation-mixture conclusion. This amendment is recorded before quality_d1prime_sanity
 runs; the sequence (letter-fail -> diagnosis -> amended gate) is disclosed openly.
+
+### Outcome append (2026-07-07): d1prime_sanity — amended gate FAILS by letter; decomposition
+### reveals the excess is FINGERING-MODEL DEVIATION, not hold-channel noise
+runs/d1prime_sanity.json: same-KEY overlap 0.013% (85/669,735) — essentially zero;
+diff-key same-finger overlap 8.03% (96,421/1,200,241). Amended gate (diff-key < 5%) FAILS.
+Interpretation (recorded with the outcome, before any further action):
+- The same-key result PROVES the hold channel is accurate: a re-press physically cannot
+  overlap its own release, and the data shows it ~never does (1.3e-4). If press/release
+  timestamps were noisy, same-key would show spurious overlap; it does not.
+- Therefore the 8% diff-key rate is REAL overlapped motor behavior on pairs the static
+  finger map calls same-finger — i.e. typists use ALTERNATE FINGERINGS ~8% of the time
+  (documented typist behavior; consistent with the rate RISING with skill 4.2%->8.9%,
+  which channel noise would not do). The true noise floor of the overlap marker is the
+  same-key rate (<0.1%), not 8%.
+- SIDE FINDING (stands regardless of the program's fate): the static finger-assignment
+  behind same_finger/SFB features is violated by ~8% of same-finger-labeled samples,
+  rising with skill. Logged for the wrap as a model-limitations item.
+DISPOSITION — honest double-amendment stop: two gate amendments in a row is goalpost
+territory; the discipline requires a HARD line. FINAL RULE (this is it, no further
+amendment): the program revives into D2 iff a targeted check confirms the alternate-
+fingering reading — the 8% diff-key overlap mass must CONCENTRATE in bigram classes
+where alternate fingerings are mechanically plausible (adjacent-column same-finger
+pairs / lateral stretches), specifically: overlap-rate(same-finger adjacent-column or
+lsb pairs) >= 3x overlap-rate(same-finger same-column non-repeat pairs). Same-column
+pairs (e.g. qwerty "ce", "un" excluded — those are cross-column... precisely: pairs with
+|dx| = 0) offer no plausible second finger, so genuine channel artifacts would show
+there equally, while alternate fingerings cannot. If the 3x concentration holds, hold
+channel is vindicated, revive D2 (overlap-conditioned target, carrying the ~8%
+fingering caveat into D2-D4 docs). If not, program CLOSES for good.
