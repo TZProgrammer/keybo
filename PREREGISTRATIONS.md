@@ -1013,3 +1013,23 @@ unbuffered for trigrams; P8 stages 3-4 re-run with the winning trigram table bef
 family is final. If unbuffered-direct ~0.92 => construction is the culprit => revert to
 the join construction for the deliverable. If all within noise of each other => keep
 P8 as built. The P8 family search continuing meanwhile is provisional until this lands.
+
+## Q-OBJ (registered 2026-07-08, before results; user: QSEL's eval was whole-distribution —
+## quantile-as-OBJECTIVE on its own frame was never tested)
+User's design critique accepted: QSEL's affine recalibration removes scale bias but not
+SHAPE (mean-vs-q20 gap varies by cell via fumble rate), so QSEL only proved quantile
+training doesn't transfer to the incumbent target — not that the quantile is a bad
+objective in itself. The D2/D3 stages the quality program never reached, run now:
+qobj.py — arms BASE(IQR-mean) / Q25 / Q20 / F5M, each trained AND evaluated on ITS OWN
+frame. Truncation-safe metrics only: (D2) split-half ceiling of each arm's own target
+(participant split, agg applied per half — measures whether q20-of-a-cell is even a
+reliable quantity); (D3) LOLO rho as frac-of-OWN-ceiling + decisive-pair tau (undecided
+pairs carried from the v3 mean-frame bootstrap: azerty-qwertz, dvorak-qwerty — a
+q-frame bootstrap is a registered refinement if any arm is adopted). Own-frame wmae
+reported as INFORMATIONAL ONLY (banned as a rule metric — truncation flattery).
+ADOPT-CANDIDATE RULE: ceiling >= 85% of BASE's (D2 reliability gate) AND rho_frac >=
+BASE's - 0.02 AND min decisive-pair tau >= BASE's. If any arm qualifies -> D4 launches
+(3-seed full-data models under that target, T2 rebuild, QAP search both objectives,
+mutual cross-regret; regret < 0.15% both ways = choice moot, incumbent kept; else the
+D1' attainability evidence (overlap rises with skill) decides for the wpm-90 layout).
+If none qualifies: quantile-objective route closed with the D2/D3 numbers on record.
