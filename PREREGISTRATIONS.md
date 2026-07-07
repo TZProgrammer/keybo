@@ -899,3 +899,16 @@ final recipe ONLY via a clean_sweep_2x2 CAP arm that passes the frozen-frame dec
 (milder caps damage rare cells less — that is what the sweep measures). tau is settled
 (decisive-pair 1.0 everywhere; the 0.67s are the tie pair on the v4 frame). No
 target-redefinition; deliverable eval stays on the unfiltered frame.
+
+### Outcome append (2026-07-08): buf_split — only the COMBINED buffer qualifies (weakly)
+runs/buf_split.json, frozen frame (BASE wmae 15.76 umae 20.07 dec3 27.05):
+  BUF2-ERR  (drop 4.83%): wmae -0.95% (misses -1% by a hair), umae -0.2%, dec3 +0.4% -> not adopted
+  BUF2-CTL  (drop 6.79%): wmae +0.77% (WORSE) -> not adopted
+  BUF2-BOTH (drop 7.23%): wmae -1.39%, umae -0.3%, dec3 +1.3%, tau holds -> ADOPTED per rule
+Interpretation: post-error recovery lag is real but modest; post-control-key lag alone
+is NOT (buffering after every shift/arrow deletes legitimate data and makes the model
+WORSE — the user's SHIFT-is-weak-displacement caveat empirically confirmed). The
+combined arm crosses the bar mostly on the ERR component plus the small subset of CTL
+gaps that co-occur with corrections. Effect sizes are ~7x smaller than the hesitation
+cap's; BUF2-BOTH goes to stage-2 combination testing with whatever CAP arm the sweep
+blesses (registered: combo kept only if it beats BASE and the best single lever).
