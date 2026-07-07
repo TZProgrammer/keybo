@@ -16,10 +16,12 @@ def add_arguments(parser: argparse.ArgumentParser) -> None:
     parser.add_argument(
         "--hesitation-cap",
         type=float,
-        default=3.0,
+        default=0.0,
         help="Drop windows containing an interval > CAP x the session's median clean "
-        "interval — hesitations (cognition), not typing motion. 0 disables. (default 3.0; "
-        "adopted 2026-07-06: improved every LOLO metric ~23%%, rho/ceiling 0.97->1.01)",
+        "interval — hesitations (cognition), not typing motion. 0 (default) disables. "
+        "At 3.0 every LOLO magnitude metric improves ~23%% and rho/ceiling 0.97->1.02, "
+        "but layout tau drops 1.0->0.67 (prod confirm 2026-07-07) — the filter also "
+        "moves the observed layout ranking, so it stays opt-in pending diagnosis.",
     )
     parser.add_argument("--output", required=True, help="Where to write the stroke TSV")
     parser.add_argument("--no-progress", action="store_true", help="Disable the progress bar")

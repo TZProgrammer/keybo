@@ -549,3 +549,16 @@ recorded before any result:
    deliverable iff the filtered cond-trigram LOLO matches-or-beats the unfiltered
    cand-4 leg of the guard check (tau holds, rho/ceiling within -0.005, wmae within
    +1%); else P6 stands and P7 is an appendix.
+
+### Outcome append (2026-07-07): tcap_prod_confirm — CONFIRM RULE FAILS on tau; default flipped to OFF
+Result (3 fold-seeds, shipped validate, runs/tcap_prod_confirm.json):
+  v3 unfiltered: rho/ceil 0.995, wmae 15.71, umae 19.93, dec3 26.83, tau +1.0/+1.0/+1.0
+  v4 filtered:   rho/ceil 1.017, wmae 12.01, umae 15.26, dec3 21.66, tau +0.67/+0.67/+0.67
+Magnitude clean sweep REPRODUCES on the prod path (wmae -23.6%, umae -23.4%, dec3 -19.3%,
+rho/ceil +0.022) — but the decisive metric tau DROPS 1.0 -> 0.67 on every seed (one layout
+pair swaps). Per the rule ("tau +1.0 holds AND ..."), default-on is NOT confirmed:
+--hesitation-cap default flipped to 0 (opt-in). Note the driver-frame T-CAP run had shown
+tau +0.67 as its OWN anchor too, so the swap only became visible against the prod anchor.
+DIAGNOSIS REGISTERED (tau_diag.py, running): compare v3-vs-v4 OBSERVED layout tables to
+see whether the filter moved the ground-truth ordering itself (no model involved) — the
+follow-up question is which ordering is correct, i.e. the source-of-truth question.
