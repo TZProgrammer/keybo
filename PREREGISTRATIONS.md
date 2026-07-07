@@ -523,3 +523,14 @@ under-reproduces prod τ +1.0, so any adoption needs prod-path confirmation):**
   not fairly evaluable — a matched-frame follow-up is registered as future work, lower
   priority than T-CAP productionization.
 
+
+### Outcome append (2026-07-07): cand-4 guard recheck — ADOPTION KEEPS
+Rule (recorded in memory.md before the run): cand-4 keeps its P5 adoption iff tau holds
+and it degrades neither umae nor bottom-3-decile MAE by >2% relative vs the incumbent.
+Result (2 fold-seeds, runs/cand4_guard_check.json): wmae 19.09 -> 18.51 (-3.0%),
+tau 1.0/1.0 both arms, umae +0.14%, dec3 +1.35% — inside the guard. cand-4 is NOT
+the T-MAE failure mode (that arm bought wmae -24.8% at dec3 +8.1%); it buys its wmae
+gain without starving rare ngrams. ADOPTION CONFIRMED; the ⚠ pre-guard flag on the
+P5 cond-trigram entry is resolved and the P6 family stands.
+Honest note outside the rule: rho_frac 1.040 -> 1.006 (both above ceiling; not a rule
+condition, recorded for completeness).
