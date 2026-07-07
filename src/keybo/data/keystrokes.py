@@ -20,6 +20,7 @@ import csv
 import difflib
 import os
 import re
+import statistics
 import sys
 from collections import defaultdict
 from dataclasses import dataclass
@@ -31,6 +32,13 @@ csv.field_size_limit(sys.maxsize)
 _KEYSTROKE_FILE_RE = re.compile(r"^\d+_keystrokes\.txt$")
 
 BANNED_KEYS = {"SHIFT", "BKSP", "BACKSPACE"}
+
+# A hesitation-filter median needs at least this many clean intervals; below it the
+# session median is too noisy to define "abnormally slow", so the filter stays inactive.
+HESITATION_MIN_INTERVALS = 8
+# Intervals at or above this are pauses (thinking, looking away), not typing; they are
+# excluded from the session-median estimate the hesitation cap is relative to.
+HESITATION_PAUSE_MS = 2000.0
 
 # n-gram type -> (n, skip): bigram = 2 adjacent, trigram = 3 adjacent, skipgram = 2 with a
 # one-key gap.
@@ -110,8 +118,16 @@ def extract_occurrences(
     layout: str = "",
     pid: int = 0,
     counters: dict | None = None,
+    hesitation_cap: float = 0.0,
 ) -> list[Occurrence]:
-    """Slide an n-gram window over one session's records, applying all filters."""
+    """Slide an n-gram window over one session's records, applying all filters.
+
+    ``hesitation_cap`` > 0 drops any window containing a key-to-key interval longer than
+    ``cap x`` the session's median clean interval. Such outliers are hesitations
+    (cognition — word recall, glancing at the prompt), not the biomechanics of the
+    movement, and leaving them in pollutes every cell mean with lag that no layout can
+    change. 0 disables the filter.
+    """
     if not records:
         return []
 
@@ -153,6 +169,24 @@ def extract_occurrences(
         return []
     session_wpm = compute_session_wpm(first_press, last_press, len(correct))
 
+    # Session-median clean interval for the hesitation filter: adjacent-in-stream correct
+    # keys only (a gap means a mistype/control key sat between them — that interval spans
+    # the interruption, not a typing motion), and sub-pause (>=2s is thinking, not typing).
+    hesitation_limit = 0.0
+    if hesitation_cap > 0:
+        clean_intervals = []
+        for (idx_a, rec_a), (idx_b, rec_b) in zip(correct, correct[1:], strict=False):
+            if idx_b - idx_a != 1:
+                continue
+            try:
+                iv = float(rec_b["PRESS_TIME"]) - float(rec_a["PRESS_TIME"])
+            except (TypeError, ValueError, KeyError):
+                continue
+            if 0 < iv < HESITATION_PAUSE_MS:  # 0ms = same-timestamp artifact, not typing
+                clean_intervals.append(iv)
+        if len(clean_intervals) >= HESITATION_MIN_INTERVALS:
+            hesitation_limit = hesitation_cap * statistics.median(clean_intervals)
+
     allowed = set(char_map)
     span = n + skip * (n - 1)  # number of consecutive keys the window covers
     occurrences: list[Occurrence] = []
@@ -184,12 +218,18 @@ def extract_occurrences(
             continue
 
         try:
-            first = float(window[0]["PRESS_TIME"])
-            last = float(window[-1]["PRESS_TIME"])
-            prev = float(window[-2]["PRESS_TIME"])
+            presses = [float(r["PRESS_TIME"]) for r in window]
         except (TypeError, ValueError, KeyError):  # TypeError: None from a short csv row
             if counters is not None:
                 counters["window_bad_time"] = counters.get("window_bad_time", 0) + 1
+            continue
+        first, last, prev = presses[0], presses[-1], presses[-2]
+
+        if hesitation_limit > 0 and any(
+            b - a > hesitation_limit for a, b in zip(presses, presses[1:], strict=False)
+        ):
+            if counters is not None:
+                counters["window_hesitation"] = counters.get("window_hesitation", 0) + 1
             continue
 
         if time_mode == "full":
@@ -297,6 +337,7 @@ def process_keystroke_file(
     time_mode: str,
     layout: str = "",
     counters: dict | None = None,
+    hesitation_cap: float = 0.0,
 ) -> list[Occurrence]:
     """Process one participant's keystroke log into occurrences."""
     basename = os.path.basename(path)
@@ -309,7 +350,8 @@ def process_keystroke_file(
     for session_records in group_sessions(rows).values():
         occurrences.extend(
             extract_occurrences(
-                session_records, char_map, n, skip, time_mode, layout, pid, counters
+                session_records, char_map, n, skip, time_mode, layout, pid, counters,
+                hesitation_cap=hesitation_cap,
             )
         )
     return occurrences
@@ -322,6 +364,7 @@ def process_dataset(
     time_mode: str = "full",
     progress: bool = False,
     counters: dict | None = None,
+    hesitation_cap: float = 0.0,
 ) -> dict:
     """Process an entire keystroke dump directory into an aggregated n-gram table."""
     if ngram not in NGRAM_SPECS:
@@ -351,7 +394,8 @@ def process_dataset(
         char_map = char_maps[layout]
         all_occurrences.extend(
             process_keystroke_file(
-                os.path.join(files_dir, fname), char_map, n, skip, time_mode, layout, counters
+                os.path.join(files_dir, fname), char_map, n, skip, time_mode, layout,
+                counters, hesitation_cap=hesitation_cap,
             )
         )
     return aggregate_occurrences(all_occurrences)

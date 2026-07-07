@@ -709,3 +709,59 @@ def test_regression_double_quote_letter_does_not_corrupt_parsing(tmp_path):
     assert "sa" in ngrams and "ay" in ngrams
     assert "hi" in ngrams
     assert all(len(g) == 2 for g in ngrams)
+
+
+# --- hesitation filter (T-CAP, robustness round 2026-07-06) -----------------------------
+
+
+def test_hesitation_window_is_dropped_and_counted():
+    """A window whose interval exceeds cap x the session's median clean interval is a
+    hesitation (cognition, not biomechanics — measured: filtering it improved every
+    harness metric ~23%, rho/ceiling +0.04). Needs >=8 clean intervals to estimate the
+    median; the session below has 12 fast keys (~100ms) and one 800ms pause."""
+    cmap = build_char_map("qwerty")
+    records = []
+    t = 1000
+    for ch in "thequickfox":  # 11 chars, 10 clean ~100ms intervals
+        records.append({**rec(ch, t, t + 50), "SENTENCE": "thequickfox ha"})
+        t += 100
+    # one hesitation: 800ms > 3 x ~100ms median
+    records.append({**rec(" ", t + 700, t + 750), "SENTENCE": "thequickfox ha"})
+    records.append({**rec("h", t + 800, t + 850), "SENTENCE": "thequickfox ha"})
+    records.append({**rec("a", t + 900, t + 950), "SENTENCE": "thequickfox ha"})
+    counters: dict = {}
+    occ = extract_occurrences(
+        records, cmap, n=2, skip=0, time_mode="full", counters=counters, hesitation_cap=3.0
+    )
+    ngrams = [o.ngram for o in occ]
+    assert "x " not in ngrams  # the 800ms hesitation window dropped
+    assert "th" in ngrams and "ha" in ngrams  # clean windows kept on both sides
+    assert counters.get("window_hesitation", 0) == 1
+
+
+def test_hesitation_filter_off_by_default_value_zero():
+    cmap = build_char_map("qwerty")
+    records = []
+    t = 1000
+    for ch in "thequickfox":
+        records.append({**rec(ch, t, t + 50), "SENTENCE": "thequickfox h"})
+        t += 100
+    records.append({**rec(" ", t + 700, t + 750), "SENTENCE": "thequickfox h"})
+    records.append({**rec("h", t + 800, t + 850), "SENTENCE": "thequickfox h"})
+    occ = extract_occurrences(
+        records, cmap, n=2, skip=0, time_mode="full", hesitation_cap=0.0
+    )
+    assert "x " in [o.ngram for o in occ]  # cap=0 disables the filter
+
+
+def test_hesitation_filter_inactive_below_min_intervals():
+    """Fewer than 8 clean intervals -> median too noisy -> filter must not engage."""
+    cmap = build_char_map("qwerty")
+    records = [
+        {**rec("a", 1000, 1050), "SENTENCE": "ab"},
+        {**rec("b", 3000, 3050), "SENTENCE": "ab"},  # 2000ms gap, but only 1 interval
+    ]
+    occ = extract_occurrences(
+        records, cmap, n=2, skip=0, time_mode="full", hesitation_cap=3.0
+    )
+    assert [o.ngram for o in occ] == ["ab"]  # kept: no reliable median to filter against

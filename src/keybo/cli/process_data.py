@@ -13,6 +13,14 @@ def add_arguments(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--metadata", required=True, help="Path to metadata_participants.txt")
     parser.add_argument("--ngram", choices=["bigram", "trigram", "skipgram"], default="bigram")
     parser.add_argument("--time-mode", choices=["full", "last"], default="full")
+    parser.add_argument(
+        "--hesitation-cap",
+        type=float,
+        default=3.0,
+        help="Drop windows containing an interval > CAP x the session's median clean "
+        "interval — hesitations (cognition), not typing motion. 0 disables. (default 3.0; "
+        "adopted 2026-07-06: improved every LOLO metric ~23%%, rho/ceiling 0.97->1.01)",
+    )
     parser.add_argument("--output", required=True, help="Where to write the stroke TSV")
     parser.add_argument("--no-progress", action="store_true", help="Disable the progress bar")
 
@@ -28,6 +36,7 @@ def run(args: argparse.Namespace) -> int:
         time_mode=args.time_mode,
         progress=not args.no_progress,
         counters=counters,
+        hesitation_cap=args.hesitation_cap,
     )
     if not aggregated:
         print("No n-gram occurrences extracted; check the dataset and filters.")
@@ -50,6 +59,7 @@ def _print_counters(c: dict) -> None:
     multi = c.get("window_multi_char", 0)
     off_layout = c.get("window_off_layout", 0)
     w_bad_time = c.get("window_bad_time", 0)
+    hesitation = c.get("window_hesitation", 0)
     print(
         f"files: {files}  sessions: {sessions}"
         f" (no-single: {no_single}, no-correct: {no_correct}, bad-time: {bad_time})"
@@ -57,4 +67,5 @@ def _print_counters(c: dict) -> None:
     print(
         f"windows: kept {kept} | non-contiguous {non_contig} | banned-key {banned}"
         f" | multi-char {multi} | off-layout {off_layout} | bad-time {w_bad_time}"
+        f" | hesitation {hesitation}"
     )
