@@ -692,3 +692,20 @@ INFERRED. The tau objection is now resolved in the filter's favor, but final ado
 REMAINS PENDING the crosseval_2x2 fixed-frame verdict + hes_geometry test. The chained
 P7 rebuild (gate passed, now running on cap=3.0 tables) is INFORMATIONAL until then;
 the deliverable rebuild uses whatever recipe clean_sweep_2x2 + crosseval jointly bless.
+
+## BUF-SPLIT (registered 2026-07-07, before results; user: buffer after hand-displacing keys?)
+User also corrected the FAST-floor premise: sub-20ms intervals can be LEGITIMATE
+rollover typing (press1 -> press2 -> release1 -> release2; fast typists overlap presses),
+not artifacts — so FAST arms in clean_sweep_2x2 are DEMOTED to informational: even if
+FAST qualifies on the adopt rule, it is NOT adopted without a follow-up showing the
+removed mass is artifact, not rollover (e.g. hold-overlap analysis). Registered here
+before the sweep's FAST results are known.
+buf_split.py (frozen-frame methodology): gaps classified by cause — mistyped single-char
+(ERR) vs control/multi-char rows: BKSP/SHIFT/CTRL/arrows (CTL, the hand-displacement
+case; unknown-cause gaps count as both, conservative). Arms: BUF2-ERR / BUF2-CTL /
+BUF2-BOTH vs BASE, buffer k=2 clean keys. ADOPT RULE: same frozen-frame rule as
+clean_sweep_2x2 (wmae -1%, umae/dec3 <= +2%, tau holds). Interpretation registered:
+only ERR qualifies => recovery lag is error-cognitive; CTL qualifies => hand
+displacement lingers past the contiguity drop and the production buffer keys on
+control rows too; the winning variant supersedes the sweep's cause-blind BUF arm in
+the final recipe.
