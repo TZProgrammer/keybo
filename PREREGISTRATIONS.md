@@ -600,3 +600,14 @@ Context: user directive — leave nothing pending; deliver the best possible lay
    retrain -> T3c(90) -> oxey family {0,.5,1,2} at P6 budget -> stability + certificate
    + full verdict table. If 2 adopts a new label, the P7 rebuild re-runs with it (one
    rebuild, both levers, since each was independently gated on its own rule).
+
+### Outcome append (2026-07-07): RAND-DROP control — the hesitation filter's gain is REAL
+Dropping the filter's exact drop-rate (2.853% achieved vs 2.851% target) uniformly at
+random from v3 reproduces essentially NONE of the filter's improvement
+(runs/rand_drop_control.json, same 3-seed shipped validate):
+  control: rho/ceil 1.001, wmae 15.77, umae 19.91, dec3 26.63, tau +1.0 x3 (~= v3 baseline)
+  share of filter gain reproduced: wmae -1.7%, umae +0.5%, dec3 +4.0%
+Per the rule: the filter's ~23% gains come from WHICH samples it removes (the hesitation
+tail), not from having less data/variance. Also, the random control did NOT flip the
+azerty-qwertz pair (tau stayed +1.0), consistent with the near-tie flip being specific
+to removing slow-tail mass. Confound REJECTED; magnitude verdict stands as real.
