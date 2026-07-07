@@ -912,3 +912,13 @@ combined arm crosses the bar mostly on the ERR component plus the small subset o
 gaps that co-occur with corrections. Effect sizes are ~7x smaller than the hesitation
 cap's; BUF2-BOTH goes to stage-2 combination testing with whatever CAP arm the sweep
 blesses (registered: combo kept only if it beats BASE and the best single lever).
+
+### Outcome append (2026-07-08): P7 informational rebuild — REPLACE RULE FAILS; P6 stands; diagnostics suspect
+runs/p7_filtered_rebuild.json (cap=3.0 filtered tables, informational per 89bed9a):
+filtered cond-trigram LOLO (cand-4): rho/ceil 0.982 vs unfiltered-leg 1.006 => fails the
+"within -0.005" condition (wmae 15.38 vs 18.51 passes; tau 1.0 holds). Per the
+registered replace rule: P7 does NOT replace P6 — appendix only. Additionally its
+diagnostics are UNTRUSTWORTHY: sfb_pct 76-137% (>100% impossible) and stable_slots 0/30
+on every arm — a driver bug in the pattern-shares/stability bookkeeping (not
+investigated further; the run is appendix material). Layouts NOT to be cited. The
+deliverable rebuild will come from the clean_sweep recipe on the P6-proven driver path.
