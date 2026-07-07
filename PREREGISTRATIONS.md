@@ -922,3 +922,17 @@ diagnostics are UNTRUSTWORTHY: sfb_pct 76-137% (>100% impossible) and stable_slo
 on every arm — a driver bug in the pattern-shares/stability bookkeeping (not
 investigated further; the run is appendix material). Layouts NOT to be cited. The
 deliverable rebuild will come from the clean_sweep recipe on the P6-proven driver path.
+
+## QSEL (registered 2026-07-08, before results; user: "train on best fifth of the data")
+qsel_train.py — quantile-selected TRAINING signal on the frozen BASE frame. Distinct
+from CAP (session-relative hesitation removal): selects within each (row, wpm) group's
+OWN distribution — the training-side realization of the closed quality-target program
+(legal because the eval frame never moves). Arms: BASE(IQR-mean) / Q25 / Q20 / Q10 /
+F3M(fastest-third mean) / F5M(fastest-fifth mean — the user's literal proposal).
+DESIGN CONTROL: every arm gets affine recalibration (a+b*pred, OLS) fitted on HELD-IN
+layouts' frozen-frame cells only — a fast-quantile model is systematically low, frozen-
+frame MAE would punish pure scale bias the (affine-invariant) optimizer doesn't feel;
+recalibration isolates structure-generalization from calibration. ADOPT RULE: same as
+the sweep (recalibrated wmae -1%+, umae/dec3 <= +2%, in-frame tau holds vs recalibrated
+BASE). Plateau: mildest quantile. If adopted: composes with the cleaning recipe in the
+final stage-2 combination test.
