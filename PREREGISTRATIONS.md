@@ -936,3 +936,34 @@ recalibration isolates structure-generalization from calibration. ADOPT RULE: sa
 the sweep (recalibrated wmae -1%+, umae/dec3 <= +2%, in-frame tau holds vs recalibrated
 BASE). Plateau: mildest quantile. If adopted: composes with the cleaning recipe in the
 final stage-2 combination test.
+
+### Outcome append (2026-07-08): clean_sweep_2x2 — stage-1 adopts NOTHING by letter; recipe = BASE (sweep-internal)
+Full scoreboard (runs/clean_sweep_2x2.json; BASE wmae 15.76 umae 20.07 dec3 27.05, all
+taus 0.67 = the tie pair, in-frame deltas only):
+  CAP2   wmae -24.4% BUT dec3 +18.6% and censor 8.2  -> fail (rare-decile carnage)
+  CAP2.5 wmae -24.5%, dec3 +6.0%, censor 8.3         -> fail
+  CAP3   wmae -20.9%, dec3 +0.8% OK, censor 8.6      -> fail ONLY on censor_ratio
+  CAP4   wmae -13.6%, dec3 -1.7% (BETTER), censor 9.9 -> fail ONLY on censor_ratio
+  CAP5   wmae  -8.6%, dec3 -1.8%, censor 11.3         -> fail ONLY on censor_ratio
+  CAP8   wmae  -2.6%, dec3 -0.6%, censor 12.9         -> fail ONLY on censor_ratio
+  BUF1/2/3: wmae -0.5%/-0.4%/-1.7%; BUF3 dec3 +2.1% > +2% -> all fail
+  FAST20/35: ~zero effect (and censor 0.58/0.02 — the removed mass is FAST ngrams,
+    confirming the user's rollover point empirically); demoted anyway
+  SESS3/10: no wmae gain -> fail
+Composed verdict per the rules as registered:
+1. The sweep's own recipe is BASE. The censor_ratio <= 3.0 guard is what excludes every
+   CAP arm — documented TENSION: that guard's intent was geometry-censoring, and
+   crosseval showed hesitation mass tracks FREQUENCY/rarity (dist-rho -0.01), which the
+   slowest-decile-ngram construction cannot distinguish from geometry. CAP3/CAP4 are
+   NEAR-MISSES failing only that letter (CAP4 even IMPROVES the rare decile, dec3 -1.7%,
+   directly contradicting the censoring the guard infers). Rule stands this campaign;
+   the guard construction (control for frequency in the slow-decile definition) is a
+   registered improvement for any future round.
+2. buf_split's BUF2-BOTH adoption STANDS (its own preregistered rule, its own frame;
+   the sweep's cause-blind BUF2 differs — it also buffers session-initial windows and
+   fails). Registered supersession applies: BUF2-BOTH is the cleaning recipe's only
+   adopted lever. Stage-2 combination is moot (no second lever).
+FINAL CLEANING RECIPE (pending only QSEL): BUF2-BOTH (post-error+control 2-key buffer),
+on the UNFILTERED frame. Hesitation caps: not in the recipe by rule letter; CAP3/4
+documented as outcome-clean near-misses blocked by a guard whose construction the
+evidence undermines — the honest wrap will present both readings.
