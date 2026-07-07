@@ -673,3 +673,22 @@ NOTE the frozen frame carries hesitation lag in its targets; a cleaning arm ther
 competes on predicting the UNCLEANED truth better from cleaner training signal — the
 conservative direction. The definitional question (should the OBJECTIVE itself exclude
 hesitations?) is decided separately by crosseval_2x2's hes_geometry test.
+
+### Outcome append (2026-07-07): pair_gap_boot — azerty-qwertz IS a statistical tie (and so is dvorak-qwerty)
+Participant-bootstrap 95% CIs on observed common-ngram layout gaps (runs/pair_gap_boot.json):
+  DECISIVE in both tables (4/6): azerty-dvorak (~-13.6ms), azerty-qwerty (~-9ms),
+  dvorak-qwertz (~+13.4ms), qwerty-qwertz (~+8.7ms)
+  TIE in both tables (2/6): azerty-qwertz (v3 -0.46 [-5.45,+4.52]; v4 -0.01 [-4.94,+4.90])
+  and dvorak-qwerty (v3 +4.49 [-2.39,+10.96]; v4 +4.94 [-2.27,+11.26])
+Per the 0597fdf rule: the tau-costing pair is UNDECIDABLE in both tables — the filter's
+tau 1.0 -> 0.67 "failure" was a coin-flip on a tie, not a real ranking error. Decisive-
+pair tau is +1.0 for both v3 and v4 models. NOTE ALSO dvorak-qwerty is undecidable:
+the observed data can rank only 4 of 6 layout pairs; all-pair tau overstated our
+layout-level resolution all along.
+INTERACTION with the truncation correction (fc15c87), honest sequencing: the 306958f
+amendment ("undecidable => magnitude sweep carries the verdict => filter adopted") was
+registered BEFORE the user's truncation challenge downgraded that magnitude sweep to
+INFERRED. The tau objection is now resolved in the filter's favor, but final adoption
+REMAINS PENDING the crosseval_2x2 fixed-frame verdict + hes_geometry test. The chained
+P7 rebuild (gate passed, now running on cap=3.0 tables) is INFORMATIONAL until then;
+the deliverable rebuild uses whatever recipe clean_sweep_2x2 + crosseval jointly bless.
