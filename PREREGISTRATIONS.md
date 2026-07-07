@@ -611,3 +611,14 @@ Per the rule: the filter's ~23% gains come from WHICH samples it removes (the he
 tail), not from having less data/variance. Also, the random control did NOT flip the
 azerty-qwertz pair (tau stayed +1.0), consistent with the near-tie flip being specific
 to removing slow-tail mass. Confound REJECTED; magnitude verdict stands as real.
+
+## CAP-SWEEP (registered 2026-07-07, before results; user: "try different values for the filter")
+One extraction records per-window ratio = interval / session-median clean interval;
+arms thresholded in memory at cap in {1.5, 2, 2.5, 3, 4, 5, 8, inf}. Controls for the
+two structural hazards: (A) target drift — per-arm ceilings + rho/frac-of-own-ceiling
+reported, never raw MAE alone; (B) signal censoring — censor_ratio = slowest-decile-
+ngram drop% / overall drop% (a content-blind hesitation filter drops ~uniformly; a
+tight cap concentrating drops on intrinsically-slow ngrams is deleting geometry signal).
+SELECTION RULE: best wmae among caps with dec3 <= anchor+2%, in-frame tau >= anchor's,
+rho/frac >= anchor's, censor_ratio <= 3.0. Plateau tie-break: LARGER cap (least
+interventionist). Selected cap feeds the P7 rebuild (re-extract if != 3.0).
