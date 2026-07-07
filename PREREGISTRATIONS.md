@@ -995,3 +995,21 @@ the P6-proven driver path (NOT P7's buggy diagnostics). Stages checkpointed
 is the deliverable's evidence (expected ~ BUF2-BOTH's frozen-frame numbers); the family
 + certificate + scoreboard land in runs/p8_final.json. No decision rule here — this is
 the assembly, all decisions already made upstream.
+
+## P8-TRI ATTRIBUTION (registered 2026-07-08, before results; triggered by P8 stage-2 evidence)
+P8's LOLO evidence: bigram side healthy (rho/ceil 0.973, wmae 15.44, dec3 26.34 — all
+consistent-or-better vs buf_split's BUF2-BOTH arm; tau 1.0). But cond-trigram rho/ceil
+= 0.923 vs the unfiltered JOIN construction's 1.006 (cand-4 guard-check leg) — a real
+frame-normalized drop. CONFOUND: P8's trigram table differs from the incumbent in TWO
+ways at once — (a) BUF2-BOTH cleaning (adopted on BIGRAM-only evidence; no trigram rule
+existed) and (b) construction (direct one-pass extraction vs the tristrokes_v1 x
+tristrokes_last join). Attribution arm now launched: DIRECT extraction with BUF_K=0
+(same construction, no buffer), cand-4 LOLO, 2 seeds.
+RULE (registered before its result): the deliverable's trigram table is whichever of
+{unfiltered join (1.006), buffered direct (0.923), unbuffered direct (pending)} has the
+best rho/ceil with tau 1.0 intact. If unbuffered-direct ~1.0 => the buffer hurts
+trigrams (heavier window loss) => recipe becomes SPLIT: BUF2-BOTH for bigrams,
+unbuffered for trigrams; P8 stages 3-4 re-run with the winning trigram table before the
+family is final. If unbuffered-direct ~0.92 => construction is the culprit => revert to
+the join construction for the deliverable. If all within noise of each other => keep
+P8 as built. The P8 family search continuing meanwhile is provisional until this lands.
