@@ -747,3 +747,13 @@ Better-than-deletion note (registered): quantile targets/mixture means USE ALL D
 (an order statistic is a function of the whole sample) — strictly dominates "delete
 slowest k%" (same intent, no thrown-away rows, no per-cell n collapse); deletion arms
 are therefore NOT run.
+
+### D1 partial outcome + rerun note (2026-07-07)
+First D1 run: bimodal_share = 0.607 of 3940 big cells (gate (a) PASSES decisively — the
+within-cell mixture is real and pervasive; median mode separation 1.26x, p90 2.02x).
+BUT gates (b)/(c) were VOID: the driver classified rolls via schema features named
+*roll* — none exist; inwards/outwards fire only on cross-row rolls, so 0 cells were
+labeled rolls. RERUN (quality_d1b) with roll = same_hand AND NOT same_finger (the
+community sense — the pairs where an overlapped quality execution exists). Gate (a)
+result carries over unchanged (roll labels don't affect it). No decision taken on (b)/(c)
+before the rerun lands. Per-cell dump added (runs/quality_d1_cells.json) for D2 reuse.
