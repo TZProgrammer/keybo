@@ -785,3 +785,24 @@ roll cells with >= 20 of each kind). If revived, D2 adds the overlap-conditioned
 the quantile targets. If any of (i)-(iii) fails, the program CLOSES: incumbent target
 stands and the user's hypothesis is answered "the mixture is hesitation, not strategy;
 cleaning (not target redefinition) is the remedy."
+
+### Outcome append (2026-07-07): D1' overlap test — gates (ii)/(iii) pass DECISIVELY, gate (i) fails by letter (5.16% vs 5%)
+runs/quality_d1prime.json (31.6M samples, only 56 without usable hold):
+  (ii) roll overlap-rate rises monotonically with skill: 30.6% -> 67.6% (buckets 40->120),
+       Spearman 1.0. Cross-hand alternation similar (23.6% -> 59.1%). The quality move is
+       real, dominant at high skill, and LEARNABLE — the user's attainability claim,
+       measured directly.
+  (iii) overlapped executions are 69% faster within-cell (median ratio 1.69, 1032 roll
+       cells with >=20 of each) — far above the 15% bar.
+  (i) SANITY: same-finger overlap 5.16% vs the < 5% bar — fails BY LETTER, marginally.
+Per the registered rule the program cannot revive on this run. DIAGNOSIS REGISTERED
+before running it (d1prime_sanity.py): decompose the 5.16% into same-KEY repeats
+("ee": dur < hold is physically impossible for a re-press => autorepeat/key-bounce
+artifact, arguably not a same-finger MOVEMENT at all) vs same-finger-different-key
+(true impossibility => genuine noise floor). AMENDED RULE (registered NOW, before the
+diagnostic result): if same-finger-DIFFERENT-KEY overlap < 5%, sanity is judged passed
+(the excess is same-key artifacts, excluded from the class by definition) and the
+program REVIVES into D2 with the overlap-conditioned target; if diff-key overlap >= 5%,
+the hold channel is noisy, the program CLOSES, and the answer to the user is the
+hesitation-mixture conclusion. This amendment is recorded before quality_d1prime_sanity
+runs; the sequence (letter-fail -> diagnosis -> amended gate) is disclosed openly.
