@@ -1179,3 +1179,16 @@ from F5M-target models on the join table, GATED by a LOLO sanity first (F5M cond
 rho/frac-of-own-ceiling >= mean's - 0.05 AND dp-tau holds; else Tcond falls back to
 the mean-target models and the family is documented as mixed-objective); then
 T3c_q(90) -> oxey {0,.5,1,2} at the P6 budget -> stability + certificate.
+
+### Outcome append (2026-07-08): P8b — the incumbent-objective DELIVERABLE family is final
+runs/p8b_final.json (v5 BUF2-BOTH bigrams + join cand-4 trigrams, T3c(90), rng 880099):
+  w=0.0 ctsnhkuoepdwflr.iaygbjqmv,x/;z  +2.23% vs qwerty | sfb 1.21% | 12 near-optima
+  w=0.5 gyou,lntscdeaipmrbfwj;/.xhkvqz  +2.29% | sfb 1.50% (P6-family shape recurs)
+  w=1.0 gyou,ldntcseai.mfrpwj/;zxhkbvq  +2.12% | sfb 1.09%
+  w=2.0 hsndv.geoilcrtmwpuayjqxbkf,z;/  +1.76% | sfb 0.70% | inroll 10.5%
+  Bigram-component GL certificate: within 3.64% of optimal. Scoreboard: best +2.23%,
+  colemak +0.64%, qwerty 0.
+Note the family's plateau: w=0.5 scoring +2.29 vs w=0's +2.23 on the speed axis is
+within search noise (different anneal trajectories; own-fitness ordering is correct by
+construction) — the speed surface is FLAT across the family, consistent with every
+prior round: heuristic quality (sfb halving) costs ~0.5% at most. Deliverable stands.
