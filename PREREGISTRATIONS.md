@@ -1089,3 +1089,16 @@ q~0.2 for a trained user, but near-gate margins in this family mean the user cho
 If any gate fails: QIN closed on the record; F5M/D4 verdict (in flight) stands alone.
 Practice term note: fitted across all q replicas (q-averaged, keyed by ngram) —
 documented simplification; a per-q practice term is a registered refinement if adopted.
+
+### Outcome append (2026-07-08): D4 — NOT MOOT; the quality objective changes the layout
+runs/qobj_d4.json (bigram T2 surfaces, matched search): incumbent argmax
+ydea,nrtscpgouilmwfbq/;.xhkvjz vs F5M argmax paedinrtsw,goyumflcbq;./khxvjz.
+Cross-regret: incumbent layout under the F5M objective +0.343%; F5M layout under the
+incumbent objective +0.182% — both above the 0.15% moot bar. The two objectives
+genuinely prefer different layouts (shared core nrts/aei blocks, different vowel-hand
+arrangement). Per the registered rule: D1' attainability (quality execution rises
+30.6%->67.6% with skill) decides FOR the quality objective at wpm 90, WITH the
+registered caveat (F5M's Q-OBJ gates were razor-thin) => BOTH families ship, user
+chooses. Composition note: D4 was bigram-T2-only by design; the quality-arm deliverable
+family (full T3c + oxey sweep) builds after the QIN verdict decides WHICH quality
+surface (QIN q=0.2 slice if QIN adopts, else F5M) — one quality-arm assembly, not two.
