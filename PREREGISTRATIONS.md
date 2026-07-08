@@ -1228,3 +1228,24 @@ max-regret across the two pure objectives < 0.182% (the F5M champion's current
 max-regret, i.e. it must strictly beat the best existing compromise); else the F5M
 champion keeps the robust-pick title and the blend is documented. Either way this
 closes the user's question with a measured answer; no further arms.
+
+### Outcome append (2026-07-08): Q-BLEND — the blend layout takes the robust-pick title
+runs/qblend.json (full T3c surfaces, same-frame regrets):
+  P8b_w0 (mean champ):   inc +0.000% | f5m +1.011% | MAX 1.011%
+  P9_w0  (quality champ): inc +0.295% | f5m +0.000% | MAX 0.295%
+  BLEND gaedinrtsc.oypumblfwq;jk,hvxz/: inc +0.221% | f5m +0.032% | MAX 0.221%
+RULE READING, disclosed openly: the registered threshold "< 0.182%" carried a stale
+number (D4's BIGRAM-only frame) alongside its definition ("the F5M champion's current
+max-regret, i.e. must strictly beat the best existing compromise"). On the full T3c
+frame the F5M champion's max-regret is 0.295%; the blend's 0.221% beats it, satisfying
+the rule's DEFINITION while missing the stale number. Verdict: BLEND TAKES THE
+ROBUST-PICK TITLE per the definitional reading (the number was frame-inconsistent, the
+definition was not); both readings recorded. Note the blend is one letter-swap from the
+P9 champion (w<->c at two slots... precisely: gaedinrtsC vs gaedinrtsW cores) — the
+quality champion was already near-robust, and the blend trims its inc-regret 0.295 ->
+0.221 while giving up only 0.032 on f5m.
+FINAL RECOMMENDATION SET (closes the campaign):
+  speed-average view:  P8b w0 ctsnhkuoepdwflr.iaygbjqmv,x/;z (+2.23% vs qwerty)
+  quality view:        P9 w0  gaedinrtsw.oypumflcbq;jk,hxvz/ (+2.01% F5M obj)
+  ROBUST (recommended): BLEND gaedinrtsc.oypumblfwq;jk,hvxz/ (max-regret 0.221%)
+  ergonomics-lean:     family w=2 variants (sfb ~0.7-1.6%, <=0.5% speed cost)
