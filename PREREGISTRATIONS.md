@@ -1046,3 +1046,22 @@ composition: bigram = v5 (BUF2-BOTH, healthy at 0.973), trigram = join/cand-4 (1
 P8's in-flight family (direct-buffered trigram table) = provisional/appendix; P8b
 launched = bigram_v5 models + join-construction cand-4 trigram models -> T3c(90) ->
 family at the same budget/searcher. P8b is the DELIVERABLE build.
+
+### Outcome append (2026-07-08): Q-OBJ — F5M is an ADOPT-CANDIDATE on its own frame; D4 launches
+runs/qobj.json (own-frame, truncation-safe metrics):
+  BASE own-ceiling 0.815, rho/own-ceil 0.994 | Q25 0.803/0.941 | Q20 0.795/0.937
+  F5M  own-ceiling 0.709 (ratio 0.870 >= 0.85 gate), rho/own-ceil 0.974
+       (delta -0.0199, inside the -0.02 gate BY A HAIR), dp-tau 1.0 => ADOPT-CANDIDATE.
+Reading: quantile POINTS (q25/q20) are reliably measurable but the model predicts their
+cross-layout structure notably worse (-5pp of own ceiling) — refuted as objectives.
+The fastest-fifth MEAN is a noisier quantity (ceiling 0.709 vs 0.815) but its structure
+transfers almost as well as the incumbent's (0.974 vs 0.994) — averaging within the
+fast tail is stabler than a point quantile AND carries the quality-execution signal.
+Both F5M gate margins are razor-thin (0.870 vs 0.85; -0.0199 vs -0.02) — recorded
+honestly; the candidate earns D4, not adoption.
+D4 (per 63e06f8, no new rules): 3-seed full-data bigram models under F5M target -> T2_f5m
+-> QAP search under {incumbent T2, T2_f5m} -> mutual cross-regret. < 0.15% both ways =>
+choice MOOT, incumbent kept (document). Else: D1' attainability (overlap rises with
+skill => trained-user premise) decides FOR the quality objective at wpm 90 — with the
+explicit caveat that F5M's -metrics are near-gate and the layout ships alongside the
+incumbent one for the user's choice if divergence is material.
