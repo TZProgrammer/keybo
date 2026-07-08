@@ -1192,3 +1192,21 @@ Note the family's plateau: w=0.5 scoring +2.29 vs w=0's +2.23 on the speed axis 
 within search noise (different anneal trajectories; own-fitness ordering is correct by
 construction) — the speed surface is FLAT across the family, consistent with every
 prior round: heuristic quality (sfb halving) costs ~0.5% at most. Deliverable stands.
+
+### Outcome append (2026-07-08): P9 — the quality-objective (F5M) family is final; CAMPAIGN COMPLETE
+Trigram gate PASSED (F5M cond-tri raw rho 0.632 > 0.55) => full-F5M family, not mixed.
+runs/p9_final.json (same pipeline as P8b, objective = fastest-fifth mean, rng 880111):
+  w=0.0 gaedinrtsw.oypumflcbq;jk,hxvz/  +2.01% vs qwerty (F5M objective) | sfb 2.39%
+  w=0.5 coeainrtswpgy.umbldfq;j/,hkvxz  +1.94% | sfb 1.93%
+  w=1.0 waedilstnb.oupymfcrkq;zj,hgvx/  +1.90% | sfb 2.30%
+  w=2.0 coeuinrtswgayp,lbmdfq;/.khxvzj  +1.93% | sfb 1.56%
+  Bigram-component certificate: within 4.38%. Scoreboard ON THE F5M OBJECTIVE:
+  P9-best +2.01%, qwerty 0, colemak -1.90% (colemak is SLOWER than qwerty at quality
+  execution per this model — a substantive, falsifiable claim of the quality view).
+Family notes: consonant core nrts/stn + right-hand w placement recurs across weights;
+sfb runs higher than the incumbent family at equal w (the quality surface prices SFBs
+lower — overlapped execution can't happen on same-finger pairs, so their PENALTY is
+already in the mean; at the fast tail the relative cost of rolls drops more). Oxey
+weights barely move the speed axis (flat surface again).
+Both deliverable families now exist; the campaign's compute is COMPLETE. Remaining:
+the wrap (both families + verdict ledger + user-gated list).
