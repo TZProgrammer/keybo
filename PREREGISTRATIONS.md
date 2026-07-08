@@ -1033,3 +1033,16 @@ BASE's - 0.02 AND min decisive-pair tau >= BASE's. If any arm qualifies -> D4 la
 mutual cross-regret; regret < 0.15% both ways = choice moot, incumbent kept; else the
 D1' attainability evidence (overlap rises with skill) decides for the wpm-90 layout).
 If none qualifies: quantile-objective route closed with the D2/D3 numbers on record.
+
+### Outcome append (2026-07-08): tri-attribution — CONSTRUCTION is the culprit, not the buffer
+runs/tri_attrib.json: unbuffered-direct rho/ceil 0.9218 ~= buffered-direct 0.9226, both
+far below the join construction's 1.006. The buffer costs the trigram side ~nothing;
+the direct one-pass extraction itself is what degrades it (mechanism note, 🟠: the
+join's sample-alignment filters — full-span/last-interval consistency + 0<=df-dl<=5000
+— act as an implicit cleaning step the direct path lacks). Per rule f06c695: the
+deliverable's trigram table REVERTS to the join construction (tristrokes_v1 x
+tristrokes_last, cand-4) — i.e. the P6 tuned trigram models stand. Deliverable
+composition: bigram = v5 (BUF2-BOTH, healthy at 0.973), trigram = join/cand-4 (1.006).
+P8's in-flight family (direct-buffered trigram table) = provisional/appendix; P8b
+launched = bigram_v5 models + join-construction cand-4 trigram models -> T3c(90) ->
+family at the same budget/searcher. P8b is the DELIVERABLE build.
