@@ -1102,3 +1102,27 @@ registered caveat (F5M's Q-OBJ gates were razor-thin) => BOTH families ship, use
 chooses. Composition note: D4 was bigram-T2-only by design; the quality-arm deliverable
 family (full T3c + oxey sweep) builds after the QIN verdict decides WHICH quality
 surface (QIN q=0.2 slice if QIN adopts, else F5M) — one quality-arm assembly, not two.
+
+### Outcome append (2026-07-08): QIN — all three registered gates PASS, but a red flag the
+### gates did not cover: q=0.2 decisive-pair tau = 0.0
+runs/qin.json:
+  (i) q=0.2 shared strength: QIN rho/own-ceil 0.995 vs dedicated-q20 0.937 — PASS, and
+      decisively (the shared-strength mechanism works exactly as proposed).
+  (ii) q=0.5 no cost: 1.018 vs 1.001 — PASS (QIN BEATS the dedicated median model).
+  (iii) coherence: mono violations < 1% — PASS.
+  Also q=0.8: 1.071 vs 1.028 — the conditional surface is better everywhere per-cell.
+RED FLAG (eval metric named in the prereg but not gated): QIN q=0.2 dp-tau = 0.0 on
+both seeds (dedicated-q20: 1.0). Per-cell structure is excellent yet LAYOUT-level
+ranking at the exact generation slice is at chance. By rule letter ADOPT=True; building
+layouts from a surface whose layout ranking is at chance would be a Goodhart trap the
+gates failed to anticipate. DISPOSITION registered BEFORE any diagnostic result:
+qin_diag.py — hypothesis: the dp-tau 0.0 is a FRAME artifact — the "decisive" pairs
+were certified on the MEAN frame; at the q=0.2 frame the observed layout gaps may
+collapse toward ties (quality execution more layout-uniform), making tau-over-4-pairs
+noise. Diagnostic: participant-bootstrap CIs of observed layout gaps ON the q=0.2
+frame. RULE: if >= 3 of the 4 mean-frame-decisive pairs are UNDECIDABLE at q=0.2, the
+dp-tau 0.0 is uninformative (measuring ties), QIN's adoption stands, and the quality
+family builds on the QIN q=0.2 slice with layout-level validation acknowledged as
+LIMITED at the fast tail. If the pairs remain decisive at q=0.2, the flag is real:
+QIN is rejected for layout GENERATION (kept as a modeling result), and the quality
+family builds on F5M (whose dp-tau held at 1.0 in Q-OBJ).
