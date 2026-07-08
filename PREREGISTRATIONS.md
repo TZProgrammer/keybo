@@ -1065,3 +1065,27 @@ choice MOOT, incumbent kept (document). Else: D1' attainability (overlap rises w
 skill => trained-user premise) decides FOR the quality objective at wpm 90 — with the
 explicit caveat that F5M's -metrics are near-gate and the layout ships alongside the
 incumbent one for the user's choice if divergence is material.
+
+## QIN — QUALITY-AS-INPUT (registered 2026-07-08, before results; user proposal: condition
+## the model on a quality label q, then generate layouts at (wpm=90, q=0.2))
+Design (simultaneous quantile regression): add q to the feature vector; each (row, wpm)
+training group is replicated at q in {0.1, 0.2, 0.35, 0.5, 0.65, 0.8, 0.9} with target =
+the group's empirical q-quantile of duration. One model learns the full conditional
+distribution: BASE ~ central q; F5M ~ fast tail — both become slices of this surface,
+and the q=0.2 slice SHARES STRENGTH across quantiles/cells (the exact weakness of
+per-cell order statistics that Q-OBJ measured: dedicated-Q20 rho/own-ceil 0.937).
+IN-RUN comparators (same frame, same machinery, retrained for exact comparability):
+dedicated single-q models at q in {0.2, 0.5, 0.8}. Eval: per-q own-frame cells
+(quantile agg), per-q split-half ceilings, rho/frac-of-own-ceiling, dp-tau.
+ADOPTION RULE: QIN becomes the layout-generation surface iff
+  (i) at q=0.2: QIN rho/own-ceil >= dedicated-q20's (shared strength delivers),
+  (ii) at q=0.5: QIN >= dedicated-median's - 0.01 (no cost at the center),
+  (iii) coherence: monotonicity violations (pred(q_hi) < pred(q_lo)) < 1% of evaluated
+        cell q-pairs (a conditional distribution must be a distribution).
+If adopted: D4-style cross-regret at (wpm=90, q=0.2) vs the incumbent objective decides
+whether the QUALITY-CONDITIONED layout differs materially; if it does, it ships
+ALONGSIDE the incumbent-objective layout (both presented; D1' attainability argues for
+q~0.2 for a trained user, but near-gate margins in this family mean the user chooses).
+If any gate fails: QIN closed on the record; F5M/D4 verdict (in flight) stands alone.
+Practice term note: fitted across all q replicas (q-averaged, keyed by ngram) —
+documented simplification; a per-q practice term is a registered refinement if adopted.
