@@ -1150,3 +1150,32 @@ F4 MEDxQIN: QIN trained with session-median pace label vs session-mean label, sa
 Deliverable impact: winners define the QUALITY-ARM pipeline (data treatment + label +
 surface) for the second family build. The incumbent-arm family (P8b) is UNAFFECTED —
 its levers were adopted under its own target and stand.
+
+### Outcome append (2026-07-08): QIN diagnostic — the flag is REAL; QIN rejected for generation
+runs/qin_diag.json: at the q=0.2 frame, ALL FOUR mean-frame-decisive pairs remain
+decisive (azerty-dvorak -9.0 [-14.6,-3.1]; azerty-qwerty -5.3 [-8.8,-1.8]; dvorak-
+qwertz +10.3 [+4.9,+15.2]; qwerty-qwertz +6.5 [+4.7,+8.6]); frame_artifact=False (0/4).
+Two conclusions, both on the record:
+1. FINDING (positive): quality execution is NOT layout-uniform — layouts differ as much
+   at the fast tail (~gaps 5-10ms) as at the mean. The quality-objective premise
+   survives; the fast tail is rankable ground truth.
+2. QIN FAILS exactly there: per-cell structure 0.995 of ceiling, yet layout-level
+   ranking at chance — its errors must correlate WITHIN layouts (a layout-level bias,
+   plausibly the q-feature absorbing between-layout level differences). Per the rule:
+   QIN REJECTED for layout generation; KEPT as the campaign's best modeling result.
+   Diagnosing/fixing QIN's layout bias (e.g. layout-blind q encoding, per-layout
+   calibration in training) = registered FUTURE WORK, not this campaign.
+CONSEQUENCES: quality arm = F5M (dp-tau 1.0 in Q-OBJ). F-round as registered was
+QIN-gated: F1/F2/F4 are VOID (QIN-specific), F3 MOOT (F5M stands by default). To keep
+the two families cleanly comparable, the QUALITY FAMILY BUILDS ON THE SAME ADOPTED DATA
+PIPELINE as the incumbent family (v5 BUF2-BOTH bigrams + join-construction trigrams) —
+the families differ ONLY in objective (mean vs F5M). F5M-analog interaction arms
+(CAP x F5M etc.) are recorded in IDEAS-LEDGER as open, deprioritized: the mean-frame
+lever effects were small (buffer ~1%) or guard-blocked (CAP), and D4's cross-regret
+(0.18-0.34%) bounds how much pipeline fine-tuning can matter to the family choice.
+P9 QUALITY FAMILY (launching now): bigram T2 from F5M-target models on v5 data (3
+seeds, custom fit path — shipped train_* is mean-target); conditioned-trigram Tcond
+from F5M-target models on the join table, GATED by a LOLO sanity first (F5M cond-tri
+rho/frac-of-own-ceiling >= mean's - 0.05 AND dp-tau holds; else Tcond falls back to
+the mean-target models and the family is documented as mixed-objective); then
+T3c_q(90) -> oxey {0,.5,1,2} at the P6 budget -> stability + certificate.
