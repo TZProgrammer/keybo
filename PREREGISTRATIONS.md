@@ -1126,3 +1126,27 @@ family builds on the QIN q=0.2 slice with layout-level validation acknowledged a
 LIMITED at the fast tail. If the pairs remain decisive at q=0.2, the flag is real:
 QIN is rejected for layout GENERATION (kept as a modeling result), and the quality
 family builds on F5M (whose dp-tau held at 1.0 in Q-OBJ).
+
+## QIN-INTERACTION ROUND (registered 2026-07-08, before results; user: "changes we
+## previously rejected might be worth it now with the new model" — plus IDEAS-LEDGER.md
+## E-inventory committed 0fab6b1 as the standing gap map)
+Sequencing: all F-arms run ONLY if the QIN diagnostic (0e53294) clears QIN for
+generation; else the quality arm is F5M and the F-arms re-key to F5M analogs.
+F5 CALIBRATION FIRST (not a results-driven rule change): the 2% rare-decile guard was
+set against mean-frame noise. Before F1-F4, compute q-frame ceiling-implied noise and
+set the q-frame guard tolerance = 2% x (q-frame dec3 noise / mean-frame dec3 noise),
+capped at 4%. Recorded before any F-arm result exists.
+F1 CAP3xQIN: QIN trained on CAP3-filtered vs unfiltered data; judged on q in {0.2,0.5}
+  own-frames (rho/frac-of-own-ceiling; guards at F5 tolerance). Hypothesis registered:
+  hesitation mass lives in high-q by construction => q=0.2 slice ~filter-invariant,
+  and the filter's mean-frame gain may be free OR unnecessary under q-conditioning.
+  ADOPT filter for the quality pipeline iff q=0.2 AND q=0.5 slices both improve or
+  hold within guard.
+F2 BUF2xQIN: same frames; buffer KEPT unless it degrades a q-slice beyond guard.
+F3 F5M-retire check: QIN-q0.2 vs dedicated F5M on the F5M own-frame; QIN >= F5M - 0.01
+  => F5M retired (QIN strictly dominates: same signal, dialable, stronger structure).
+F4 MEDxQIN: QIN trained with session-median pace label vs session-mean label, same
+  q-frames judging. Adopt MED for the quality pipeline iff both slices improve.
+Deliverable impact: winners define the QUALITY-ARM pipeline (data treatment + label +
+surface) for the second family build. The incumbent-arm family (P8b) is UNAFFECTED —
+its levers were adopted under its own target and stand.
