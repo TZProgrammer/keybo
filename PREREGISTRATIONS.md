@@ -1210,3 +1210,21 @@ already in the mean; at the fast tail the relative cost of rolls drops more). Ox
 weights barely move the speed axis (flat surface again).
 Both deliverable families now exist; the campaign's compute is COMPLETE. Remaining:
 the wrap (both families + verdict ledger + user-gated list).
+
+## Q-BLEND (registered 2026-07-08, before results; user: sample q in [0,0.2] as the target +
+## "regularization during SA")
+Math note recorded first: mean-over-q-in-[0,0.2] IS the tail expectation = F5M exactly
+(the P9 objective) — the user's proposal re-derives why F5M survived Q-OBJ while point
+quantiles died (integration stabilizes the order statistic). Random per-evaluation q
+sampling in SA optimizes the same expectation NOISILY; the expectation is exactly
+computable (T2_f5m is the tail-mean surface), and SA accept/reject + 2-opt polish
+degrade under evaluation noise => deterministic integration dominates; no sampling arm.
+The genuinely new, testable piece of the user's regularization instinct: CROSS-REGIME
+ROBUSTNESS. qblend.py: objective = mean of the two qwerty-normalized surfaces
+(T3c_inc / fit_inc(qwerty) + T3c_f5m / fit_f5m(qwerty)) / 2, searched at the P6 budget
+(rng 880222). Judged by cross-regret under BOTH pure objectives vs both pure champions
+(P8b w0, P9 w0). RULE: the blend layout becomes the RECOMMENDED ROBUST PICK iff its
+max-regret across the two pure objectives < 0.182% (the F5M champion's current
+max-regret, i.e. it must strictly beat the best existing compromise); else the F5M
+champion keeps the robust-pick title and the blend is documented. Either way this
+closes the user's question with a measured answer; no further arms.
