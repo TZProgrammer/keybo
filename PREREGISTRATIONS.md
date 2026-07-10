@@ -1935,3 +1935,23 @@ efficiency; the mirror-asymmetry question (most typists are right-handed) was te
 as A2 (hand indicators) and rejected twice — ms era and FEAT-LR (+0.45% wmae). So:
 no trigram analogue of the pinky gap exists; the trigram feature map is injective up
 to the intended symmetry.
+
+### Outcome append (2026-07-10): PINKY-GAP — REAL, decisively; the user found a genuine schema hole
+runs/pinky_gap_probe.json (qwerty matched pairs, vector identity asserted per pair —
+11/16 byte-identical, 5 excluded honestly; practice controlled at -45/-33 ms per
+log10(count) by bucket):
+  as/ds  +31.2 / +26.9 ms   po/io  +48.0 / +43.6 ms   (pinky-first vs middle-first)
+  we/re  +22.3 / +22.3 ms   oi/ui   +8.6 /  +2.0 ms   (ring-first vs index-first)
+  count-weighted mean d_adj +27.4ms, 8/8 cells positive => RULE FIRES (>=5ms & >65%).
+The origin-finger effect is LARGE — same order as the SFB penalty (+27-38ms) — and
+graded by finger (pinky-first worst, ring-vs-index smaller), exactly the biomechanic
+ordering. The model prices these pairs IDENTICALLY by construction; the optimizer has
+been placing bigrams into pinky-first patterns it cannot price. NOTE the raw gaps are
+sometimes NEGATIVE (as/ds raw -14ms) — practice masks the physics; only the matched-
+pair + practice-control design exposes it. Caveat: 8 cells from 4 pair families,
+one layout (qwerty), one hand each mostly; graded consistency + magnitude make 🟡 HIGH.
+FIX ARM (rule 0f77e65, now active): add first-key finger one-hots + signed same-row
+column-order term; DUAL rule — LOLO wmae within +1% (non-degradation) + umae/dec3
+guards + E5-v2 cross-regret <= 0.75% + fixed model prices the probe pairs with the
+measured sign (pinky-first slower). FEATURE_VERSION bump + retrain + family re-run
+on adoption.
