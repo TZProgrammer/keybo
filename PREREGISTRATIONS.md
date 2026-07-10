@@ -1624,3 +1624,26 @@ RULE (dual clause, set before results): SMOOTH adopts iff
 Either adoption additionally requires the E5 search gate (residual aggregates are
 position-keyed train-fold statistics — same memorization class as A8/HOLD; HOLD's
 failure raises the prior that this too is confounded, recorded honestly).
+
+## QIN-LR — quantile-as-input under LOGRAT (registered 2026-07-10, BEFORE results;
+## brainstorm lever C — the user's QIN proposal, retested in the adopted target space)
+HISTORY: QIN (0e53294) passed all 3 registered gates decisively in ms space (q=.2
+rho/own-ceil 0.995 vs dedicated 0.937) but was REJECTED for generation on a red flag
+the gates didn't cover: dp-tau 0.0 at q=0.2 (layout-level ranking at chance) —
+diagnosed (91b3f94) as the q-feature absorbing between-layout LEVEL. HYPOTHESIS now:
+that level absorption is a SCALE artifact of exactly the kind LOGRAT removes (the
+pace/level nuisance lives in the label; in LOGRAT space levels are already factored
+out). HONEST PRIOR: the twostage round showed NOT every defect dissolves in LOGRAT
+(the S1 trade didn't); this is a test, not a formality.
+DESIGN (qin_lograt.py): as qin.py (7 q-replicas {.1,.2,.35,.5,.65,.8,.9}, q appended
+to features, group empirical-quantile targets) but target = log(q_quantile(durs) *
+wpm/12000); comparator = dedicated single-q LOGRAT models at q in {.2,.5,.8}; eval on
+each q's own cell frame (cells aggregated at that q), ceilings per q-frame; per-cell
+rho/own-ceiling + the dp-tau diagnostic at every eval q. bistrokes_v3 (same data as
+original QIN — isolates the space change), 2 seeds.
+RULE: QIN-LR is ADOPT-CANDIDATE iff the original three gates hold in LOGRAT space
+((i) q=.2 QIN >= dedicated - 0.005 rho/own-ceil; (ii) q=.5 >= dedicated - 0.01;
+(iii) mono violations < 1%) AND the red flag CLEARS: dp-tau at q=0.2 = 1.0 both seeds.
+Adoption-candidate => the quality family (P9/F5M) gets a QIN-LR q=0.2 rebuild as a
+NEW registration; any gate fails or dp-tau < 1.0 => lever C closes (the bias is not a
+scale artifact), F5M stands.
