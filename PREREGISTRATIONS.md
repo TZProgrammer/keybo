@@ -1888,3 +1888,32 @@ differently. P10 REPLACES p8b as the speed deliverable family per the ship rule.
 NOTE vs qwerty margin (+3.87% vs p8b-era +2.23%): numbers are NOT comparable across
 objectives (different tables/scales); the cross-objective regrets above are the
 apples-to-apples statement.
+
+## PINKY-GAP probe (registered 2026-07-10, BEFORE results; user challenge: "pinky->ring
+## and middle->ring produce the same vector — a large gap we should fix")
+WHY THE COLLISION EXISTS (mechanism, for the record): the schema encodes the LANDING
+key fully (row+finger one-hots) but the origin key only through relational/geometric
+features. For same-row neighbors those are symmetric: dy=0 gates angle/inwards/
+outwards to 0, dx is unsigned (and stagger cancels within a row), distance/adjacent
+equal => pinky->ring and middle->ring into the same key are byte-identical. Deliberate
+abstraction (hand-mirroring, unsigned geometry pools data for transfer) reaching one
+config too far. A1 (first-key one-hots) failed the corpus-weighted LOLO rule twice
+(ms era; FEAT-LR +1.21% wmae) — but LOLO is blind to the fix's value BY CONSTRUCTION:
+collision configs are rare on real layouts, while the OPTIMIZER prices them freely
+(same null-space logic as E5). So the decisive question is the DATA, not LOLO:
+IS there a first-finger timing signal the schema cannot see?
+PROBE (pinky_gap_probe.py): qwerty matched pairs differing ONLY in first-key finger
+(vector identity asserted programmatically per pair): into-ring dx=1 pinky-vs-middle
+(as/ds, qw/ew, zx/cx, po/io, ;l/kl, /.-,.); into-middle dx=2 pinky-vs-index (qe/te,
+ad/gd, zc/bc, pi/yi, ;k/hk); into-middle dx=1 ring-vs-index (sd/fd, we/re, xc/vc,
+oi/ui, lk/jk). Per (pair, wpm-bucket 60-80/80-100) with BOTH members n>=50: IQR-mean
+each; practice control = per-bucket OLS of cell time on log10(total qwerty samples)
+over ALL qwerty same-hand same-row non-same-finger bigrams (n>=50);
+  d_adj = [t_outerfirst - t_innerfirst] - c1*[log10 n_outer - log10 n_inner].
+RULE: the gap is REAL iff count-weighted mean d_adj >= +5ms AND >65% of qualifying
+cells have d_adj > 0 (weight = min pair count). REAL => preregister the FIX arm
+(first-key finger one-hots + signed same-row column-order term) under a DUAL rule:
+LOLO wmae within +1% (non-degradation; p95 noise 0.91%) + guards + E5-v2 cross-regret
+<= 0.75% + the fix model must price the probe pairs with the measured sign. NULL =>
+the collision is documented HARMLESS (the abstraction is correct: origin finger does
+not matter for into-key time) and the feature stays out.
