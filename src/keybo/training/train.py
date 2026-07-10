@@ -209,26 +209,34 @@ def _train(
         wpm_col = np.maximum(X[:, names.index("wpm")], 1.0)
         y = _TARGET_TRANSFORMS[target_space](y, wpm_col)
 
-    # First-finger calibration (PINKY-CAL): subtract the measured offset from calibrated
-    # classes' targets so g fits the class's inner-first level; serving adds it back per
+    # First-finger calibration (PINKY-FIT): fit the per-class deltas from THESE rows
+    # (matched-cell estimator — the identifying restriction a free fit lacks), subtract
+    # the offset from calibrated classes' targets so g fits the class's inner-first
+    # level; serving reads the fitted deltas from the sidecar and adds them back per
     # position pair. Bigram + LOGRAT only (the probe measured bigram intervals; the ms
     # path predates the seam and no ms model is in production).
-    calibrated = bool(calibration and ngram == "bigram" and target_space == "LOGRAT" and len(y))
-    if calibrated:
-        from keybo.training.calibration import delta_log, finger_class
+    fitted_deltas: dict[str, float] = {}
+    if calibration and ngram == "bigram" and target_space == "LOGRAT" and len(y):
+        from keybo.training.calibration import (
+            delta_log,
+            finger_class,
+            fit_first_finger_deltas,
+        )
 
-        # one class per row (positions are row-constant); expand to the example grid
-        row_cls = {id(r): finger_class(geometry, *r.positions) for r in rows}
-        adj = np.zeros(len(y))
-        i = 0
-        for row in rows:
-            n_groups = len({s[0] for s in row.samples})
-            cls = row_cls[id(row)]
-            if cls is not None:
-                for j in range(i, i + n_groups):
-                    adj[j] = delta_log(cls, wpm_col[j])
-            i += n_groups
-        y = y - adj
+        fitted_deltas = fit_first_finger_deltas(rows, geometry)
+        if fitted_deltas:
+            # one class per row (positions are row-constant); expand to the example grid
+            row_cls = {id(r): finger_class(geometry, *r.positions) for r in rows}
+            adj = np.zeros(len(y))
+            i = 0
+            for row in rows:
+                n_groups = len({s[0] for s in row.samples})
+                cls = row_cls[id(row)]
+                if cls is not None:
+                    for j in range(i, i + n_groups):
+                        adj[j] = delta_log(cls, wpm_col[j], fitted_deltas)
+                i += n_groups
+            y = y - adj
 
     weights = layout_balance_weights(layouts) if layout_weights and len(y) else None
 
@@ -240,7 +248,14 @@ def _train(
 
     from keybo.training.calibration import CALIBRATION_VERSION
 
-    calibration_tag = CALIBRATION_VERSION if calibrated else None
+    calibration_tag = (
+        {
+            "version": CALIBRATION_VERSION,
+            "deltas_ms": {k: round(float(v), 3) for k, v in fitted_deltas.items()},
+        }
+        if fitted_deltas
+        else None
+    )
 
     if not practice_term or not len(y):
         model = fit(y)

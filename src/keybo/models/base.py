@@ -118,18 +118,19 @@ class TypingModel(ABC):
         The calibrated classes' feature vectors are byte-identical to their inner-first
         mirrors (the 184-collision family), so the plain feature path cannot separate
         them; position-aware callers must use this (or the table scorers, which apply
-        the same offset per pair). No-op for models trained without the calibration.
+        the same offset per pair). The deltas come from the model's OWN sidecar (fitted
+        at training time); no-op for models trained without the calibration.
         """
         pred = self.predict(X)
-        training = self.metadata.extra.get("training") or {}
-        if training.get("calibration"):
+        cal = (self.metadata.extra.get("training") or {}).get("calibration")
+        if cal and cal.get("deltas_ms"):
             from keybo.geometry import ROW_STAGGERED_30
             from keybo.training.calibration import delta_log, finger_class
 
             cls = finger_class(ROW_STAGGERED_30, *positions)
             if cls is not None:
                 wpm = np.asarray(X)[:, self.metadata.feature_names.index("wpm")]
-                pred = pred + np.array([delta_log(cls, w) for w in wpm])
+                pred = pred + np.array([delta_log(cls, w, cal["deltas_ms"]) for w in wpm])
         return self.to_ms(pred, X)
 
     # --- persistence: shared sidecar logic, artifact handled by the subclass -----------

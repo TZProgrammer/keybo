@@ -65,20 +65,21 @@ class TableBigramScorer(IScorer):
 
         self._T = predict_ms(model, vectors).reshape(n_pos, n_pos)
 
-        # First-finger calibration (PINKY-CAL): the calibrated classes' vectors collide
+        # First-finger calibration (PINKY-FIT): the calibrated classes' vectors collide
         # with their inner-first mirrors, so the offset must be applied by POSITION —
         # exactly what a table indexed by position pair can do and a feature path cannot.
-        # Serve restores exactly what training subtracted: the log-space offset, i.e. a
-        # multiplicative factor on the ms entry.
+        # Serve restores exactly what training subtracted (the model's own sidecar
+        # deltas): a log-space offset, i.e. a multiplicative factor on the ms entry.
         training = (getattr(model, "metadata", None) and model.metadata.extra.get("training")) or {}
-        if training.get("calibration"):
+        cal = training.get("calibration")
+        if cal and cal.get("deltas_ms"):
             from keybo.training.calibration import delta_log, finger_class
 
             for i, a in enumerate(positions):
                 for j, b in enumerate(positions):
                     cls = finger_class(geometry, a, b)
                     if cls is not None:
-                        self._T[i, j] *= float(np.exp(delta_log(cls, target_wpm)))
+                        self._T[i, j] *= float(np.exp(delta_log(cls, target_wpm, cal["deltas_ms"])))
 
         # F: corpus frequency between character indices (charset + space at index n-1).
         charset = set(self._chars) | {" "}
