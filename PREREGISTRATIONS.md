@@ -1471,3 +1471,45 @@ CONSEQUENCE: P10 Stage B UNGATED — launches now with SESS label,
 TRIGRAM_MODELS=models/trigram_cond_lograt_join_seed (Stage A pick).
 The shipped stage-1 model (M5) remains the best BLIND-PACE PREDICTOR (that finding
 stands); it is just not a better TRAINING LABEL than session mean — two different jobs.
+
+### Outcome append (2026-07-10): KB-STRAT — transfer holds, feature rejected, S3 fails the 0.25pp letter (argmax hardware-invariant)
+runs/kb_strat.json (S1/S2 carried verbatim from kb_strat.log — the original driver crashed
+at the S3 scoreboard on a charset edge (dvorak carries ' where qwerty has /; KeyError) and
+never wrote JSON; kb_strat_s3_resume.py re-ran S3 with a charset-guarded fitness (dvorak =
+reference row, marked skipped) — decisive finalists all share the qwerty charset, unaffected):
+S1 TRANSFER (LOGRAT space): full->full 1.0409/10.83, full->laptop 1.0083/10.67,
+  laptop->full 1.0361/11.43, laptop->laptop 1.0107/10.89 (rho/ceil / wmae). Cross-hardware
+  prediction costs ~nothing. HOLDS.
+S2 is_laptop FEATURE: BASE wmae 10.54 vs KBFLAG 10.49 (-0.40% < 1% bar) => NOT adopted.
+S3 FINALIST CROSS-STRATUM REGRET (3-seed LOGRAT T2 tables per stratum, wpm 90):
+  mean:  P8b_w0 0/0 (wins BOTH strata), P9_w0 +0.48/+0.96 (spread .48pp),
+         BLEND +0.34/+0.77 (.43pp), qwerty +3.2/+3.9, colemak +1.7/+1.2
+  f5m:   P9_w0 0/+0.05 (.05pp), BLEND +0.04/0 (.04pp), P8b_w0 +2.57/+2.22 (.34pp),
+         colemak +6.8/+6.3 (f5m strongly dislikes colemak — echoes D4)
+RULE VERDICT: NOT confirmed by letter (P9/BLEND spreads 0.43-0.48pp > 0.25pp under mean;
+P8b 0.34pp under f5m). HONEST READING: the ARGMAX is hardware-invariant in both
+objectives (same winner both strata everywhere); what varies is the margin — laptop
+regrets run ~2x full under the mean objective 🟠 (no CIs on these regrets; magnitude
+nuance, not a pick-flip). Consequence: one layout family serves both hardware types;
+the .25pp bar was calibrated tighter than the measurement noise floor — a future
+re-registration should add bootstrap CIs before re-adjudicating.
+
+## OCC — occurrence-level training (registered 2026-07-10, BEFORE results; brainstorm
+## lever A: stop pre-aggregating before training)
+The incumbent compresses 31.6M occurrences into ~145k (row, session-wpm) IQR-mean
+examples BEFORE the fit — a structural choice from the ms era (robustness via IQR trim)
+that LOGRAT plausibly obsoletes (the log tames the tail the trim existed for). OCC
+trains on EVERY occurrence (target = log(dur*wpm/12000) per sample, features at the
+sample's wpm, practice backfit at occurrence level, layout weights at occurrence level,
+counts=1 per example in the shrinkage denominator so k=100 bites identically).
+EVAL: unchanged shared cell frame from trel_arms (bistrokes_v5, same CELL_KW, same
+ceilings) — cells/targets identical, ONLY the training set construction varies.
+Anchor = grouped-LOGRAT (trel_arms wmae 9.67). 2 seeds x 4 folds, shipped depth-3 recipe.
+RULE: OCC adopts iff wmae >1% rel better than grouped-LOGRAT AND umae/dec3 within +2%
+AND neither all-pair nor decisive-pair tau lower. Adoption consequence: trainer gains
+example_level="occurrence" (default flips), deliverable rebuilds once more; rejection
+closes the lever on the record. Risks recorded: (a) hesitation tail now enters raw —
+LOGRAT compresses but does not delete it (if OCC fails, a capped-OCC follow-up is a new
+registration, not a silent amendment); (b) 218x more examples => qwerty's occurrence
+dominance is re-weighted by the same capped inverse-share formula (cap 50 now binds
+differently — the weight cap's interaction is part of what's being tested).
