@@ -2056,3 +2056,23 @@ conditioned-trigram increment shares the origin-finger blindness for key2->key3,
 the probe measured isolated bigram intervals; extrapolating the deltas to the
 conditioned increment is a NEW measurement question (registered as a follow-up, not
 assumed). T3c inherits the fix through T2.
+
+### Outcome append (2026-07-10): T2 QIN-F5M — DED-LR takes the quality role (LOGRAT-F5M
+### round discharged, big win); QIN-INT REJECTED for this role (level bias confirmed)
+runs/qin_f5m.json (F5M frame, own ceilings; 2 seeds x 4 folds):
+  DED-MS   rho/ceil 1.0442  wmae 27.57  umae 30.10  dec3 33.09  (P9-era anchor)
+  DED-LR   rho/ceil 1.0555  wmae 17.17 (-37.7%)  umae 23.70  dec3 28.81  taus 1.0
+    => ADOPTED as the quality model: the LOGRAT lever transfers to the F5M target
+    fully intact (-37.7% ~= the mean-target -37.4%). The P9/F5M quality family's
+    model is now DED-LR; a quality-family rebuild (P9-LR) is licensed.
+  QIN-INT  rho/ceil 1.1455(!) but wmae +27.0% vs DED-LR, umae +13.4%, dec3 +8.4%,
+    all-pair tau 0.33, dp-tau 0.0 => REJECTED decisively for the quality-MODEL role.
+READING: exactly the breakdown's prediction — QIN's tail LEVELS are pooling-biased
+(the quadrature integrates q=.025-.175, the most-biased slices), and at the F5M frame
+that bias is layout-correlated enough to break even the ranking (dp-tau 0.0). The
+per-cell rho/ceil 1.146 being the HIGHEST ever recorded while wmae/tau fail is the
+sharpest demonstration in the campaign that rank-metrics-only selection would have
+shipped a broken model (the user's magnitude standard, vindicated again).
+QIN's ledger closes: best-in-class per-cell conditional-distribution model (kept as a
+modeling result), NOT usable for speed (structure), tail generation (pending
+qin_tail_readj), or quality-model (this).
