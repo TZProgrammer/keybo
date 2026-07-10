@@ -1294,3 +1294,34 @@ HONEST PRIOR: RAT/LOGRAT should win wmae (pace-as-scale is measured physics here
   slow typists). Risk: heteroscedasticity reweighting could trade the rare decile —
   exactly what the guard watches. Keyboard-type stratification (ledger E2) is REGISTERED
   AS NEXT, sequenced AFTER this verdict, on the winning target space.
+
+## KB-STRAT — keyboard-hardware stratification (ledger E2; registered 2026-07-10, BEFORE
+## results; sequenced after T-REL, runs in the T-REL-winning target space — INC if none won)
+USER QUESTION: "do we know if high quality at 90 wpm generalizes across keyboards?" —
+never tested; KEYBOARD_TYPE (full/laptop) is in metadata col 10, pipeline keeps both and
+pools them. The quality signal is rollover/overlap physics (overlapped executions 1.69x
+faster), exactly where laptop vs full hardware differs (key travel, rollover) — a real
+generalization threat to F5M/blend. NO RE-EXTRACTION NEEDED: samples carry pid; map
+pid -> KEYBOARD_TYPE from metadata (driver kb_strat.py; data = bistrokes_v5.tsv).
+ARMS/QUESTIONS (bigram level; trigram deferred to a follow-up if S3 flags divergence):
+- S1 TRANSFER: per-stratum LOLO (full-only vs laptop-only training data, same 4-layout
+  folds, per-stratum split-half ceilings). Question: does rho/own-ceiling hold per
+  stratum, and does a model trained on ONE stratum predict the OTHER's cells (cross-
+  hardware wmae vs within-hardware)?
+- S2 FEATURE: is_laptop as a feature on the pooled frame (serve-time: a user parameter).
+  Adoption rule = standard challenger rule (wmae >1% better, umae/dec3 within +2%,
+  neither tau lower, 2 seeds x 4 folds).
+- S3 DECISIVE (the user's actual question): per-stratum T2 tables at wpm 90 (3 seeds,
+  mean-target AND F5M fast-fifth target per stratum = 4 tables), qwerty-normalized;
+  score the three finalists (P8b_w0, P9_w0, BLEND) + qwerty/colemak/dvorak under all.
+  RULE: hardware GENERALIZATION CONFIRMED for a target iff every finalist's cross-stratum
+  regret (its gap-to-best under full-table vs laptop-table) < 0.25% (the robust-pick
+  margin zone); any finalist exceeding it => hardware materially moves the argmax =>
+  per-hardware families become a deliverable question (registered consequence, not run
+  unprompted). F5M-vs-mean comparison per stratum reported (is the QUALITY target more
+  hardware-sensitive than the mean target? — informational).
+GUARDS: laptop stratum is ~55% of participants but strata differ in wpm mix => all
+stratum comparisons at matched wpm buckets (same 40-140 frame); per-stratum cell floors
+unchanged (10) — starved cells drop, counts reported. Small-stratum layouts (dvorak n=64
+splits further) may starve folds: a fold with <100 cells is reported UNUSABLE, not
+laundered into means.
