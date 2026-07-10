@@ -1434,3 +1434,18 @@ UNCHANGED this round (its target was validated in ms space; a LOGRAT-F5M A/B is 
 registered FUTURE round, not assumed). If twostage_2x2 adopts the S1 label, Stage A is
 void (the label changes the frame) and the rebuild re-plans — accepted risk; the prior
 favors SESS (matched-frame M5 rejection).
+
+### Outcome append (2026-07-10): P10 Stage A — JOIN keeps the construction title under LOGRAT
+runs/join_lograt.json (JOIN frame: tristrokes_v1 x tristrokes_last, 20183 rows, 693830
+examples, 27346 cells; cand-4, 2 seeds x 4 folds):
+  join INC     rho/ceil 1.0063  wmae 18.51  umae 22.12  dec3 27.31   (taus 1.0)
+  join LOGRAT  rho/ceil 1.0107  wmae 14.16 (-23.5%)  umae -14.8%  dec3 -5.4%  (taus 1.0)
+Self-check PASSED: INC-join reproduces the f06c695 number (1.0063 ~ 1.006).
+LOGRAT-within-join QUALIFIED (all guards improved). CONSTRUCTION PICK per rule: JOIN
+(1.0107 > direct-LOGRAT 0.9928, all taus 1.0). LOGRAT lifts BOTH constructions by
+similar relative amounts — the mechanism is orthogonal to construction, as expected.
+Consequence executed: 3-seed all-data retrain saved as
+models/trigram_cond_lograt_join_seed{0,1,2}.json (target_space=LOGRAT sidecars).
+P10 Stage B will run with TRIGRAM_MODELS=models/trigram_cond_lograt_join_seed, still
+gated on the twostage_2x2 verdict (in flight; SESSxLOGRAT already replicated the bigram
+LOGRAT gain on the independent matched frame: wmae 15.59 -> 9.64, -38.2%).
