@@ -1591,3 +1591,36 @@ ARMS: ANCHOR / HOLD (= ANCHOR features + h1_mean + ro_rate, per-fold aggregates)
 RULE: HOLD adopts iff wmae >1% rel better AND umae/dec3 within +2% AND neither tau
 lower (2 seeds x 4 folds); adoption => E5 search gate, then production re-extract of
 v5-with-hold + FEATURE_VERSION bump.
+
+### Outcome append (2026-07-10): HOLD — REJECTED, decisively; lever B closed at the bigram level
+runs/hold_arm.json (bistrokes_v3 own frame; anchor healthy at 1.0169/9.56):
+  ANCHOR rho/ceil 1.0169  wmae  9.56  umae 16.68  dec3 28.29
+  HOLD   rho/ceil 0.9373  wmae 10.93 (+14.29%)  umae +7.91%  dec3 +3.02%  (taus 1.0)
+NOT the mass-reallocation signature — HOLD hurts EVERYWHERE, dense cells worst, and
+rho/ceiling collapses (1.017 -> 0.937). Mechanism reading 🟠: position-keyed aggregates
+are population-confounded — h1_mean[p]/ro_rate[p1,p2] are computed overwhelmingly from
+qwerty typists, so at a cross-layout fold they inject the TRAINING population's
+position-behavior as if it were the held-out layout's, actively mispricing. The A8
+memorization caveat was right but understated: it's not a mild channel, it dominates.
+The hold CHANNEL's physics findings stand (rollover 5.6->87% w/ skill; overlap 1.69x
+faster) — what failed is the position-aggregate FEATURE route to pricing it. Remaining
+hold routes (occurrence-level hold as a target decomposition; overlap-conditioned
+targets) died earlier on certification (D1'/538e16e). Lever B closed for this dataset;
+Phase-D data with certified release capture is the revival path.
+
+## SMOOTH — spatially-pooled residual correction (registered 2026-07-10, BEFORE
+## results; brainstorm lever E — the one direction the emerging law favors: pooling
+## strength ACROSS neighboring position pairs to help rare cells specifically)
+Two-stage: shipped XGB-LOGRAT (anchor) + per-position-pair TRAIN-fold mean residual
+(post practice term, LOGRAT space), kernel-smoothed over pair geometry:
+  K(pair_a, pair_b) = exp(-(d(a1,b1)^2 + d(a2,b2)^2) / (2 h^2)), h = 1.0 key units
+  corr(pair) = sum_b K * n_b * rbar_b / (sum_b K * n_b + LAM), LAM = 200 count units
+(self included; n_b = train sample count). Serve-computable (kernel lookup by
+position). FIXED h/LAM — no tuning; a tuned variant would be a NEW registration.
+RULE (dual clause, set before results): SMOOTH adopts iff
+  (a) standard: wmae >1% rel better AND umae/dec3 within +2% AND taus no lower; OR
+  (b) rare-cell clause: umae AND dec3 BOTH >3% rel better AND wmae within +0.5% AND
+      taus no lower — the arm's actual design target.
+Either adoption additionally requires the E5 search gate (residual aggregates are
+position-keyed train-fold statistics — same memorization class as A8/HOLD; HOLD's
+failure raises the prior that this too is confounded, recorded honestly).
