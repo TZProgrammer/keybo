@@ -2123,3 +2123,44 @@ both classes and within a factor of 2 of the probe's (+42.1/+21.3 — estimator-
 sanity, not a tuning knob); (b) LOLO non-degradation + guards; (c) E5-v2 <= 0.75%;
 (d) served-sign >= 6/8. Then P11 builds on the fitted seam. Any failure => report
 honestly and hold P11 for a decision (the hardcoded seam is NOT silently kept).
+
+## PACE-2 — the pace-label investigation, reopened with mechanism hypotheses
+## (registered 2026-07-10, BEFORE results; user: "investigate more carefully the pace
+## label model idea — I believe it can be better than session average")
+WHY REOPEN (goalpost discipline — new DESIGN, not a re-roll): three prior rejections
+(P-MED, matched-frame M5, twostage S1) all showed the same signature — dense-cell wmae
+wins (-4.7 to -6.3%), rare-cell guard breach (dec3 +3.5 to +7.2%). Two NEWLY-IDENTIFIED
+mechanisms could produce that breach WITHOUT the label being worse, plus one untested
+decomposition:
+H1 CONVERSION NOISE (eval plumbing): back-conversion to ms divides by the CELL-MEAN of
+  the arm's label. SESS is the bucketing variable (within-cell spread <= 20wpm, mean
+  well-constrained); M5 is not (unbounded within-cell spread) => small cells get extra
+  multiplicative conversion noise that dense cells don't. Predicts: breach concentrates
+  in the smallest-n cells; a SHRUNK conversion label removes it.
+H2 POPULATION-CONFOUNDED PRIOR: M5's participant prior shrinks toward the GLOBAL
+  median (130ms, qwerty-dominated) => rare-layout typists' labels are biased toward
+  qwerty pace => their LOGRAT targets systematically mis-normalized. Predicts: breach
+  concentrates on non-qwerty cells; a LAYOUT-aware prior reduces it.
+H3 ROLE DECOMPOSITION (never tested): the label enters as FEATURE and as DENOMINATOR;
+  prior rounds tested the roles as a unit. Either alone may carry the win without the
+  breach.
+Also fixed in-construction: prior arms transformed the GROUP-MEAN ms with a GROUP-MEAN
+label (approximate — M5 varies within a (row, sess-wpm) group); the new arms use
+PER-SAMPLE targets: IQR-mean over samples of log(ms_i * L_i / 12000) (exact).
+ARMS (driver pace2_arms.py; shared incumbent-bucketed frame, LOGRAT, 2 seeds x 4 folds):
+  ANCHOR      SESS/SESS, shipped construction (must reproduce twostage 9.64)
+  ANCHOR-PS   SESS/SESS, per-sample targets (isolates the construction change)
+  F-M5        feature=M5, denom=SESS (role H3a)
+  S1-PS-RAW   feature+denom=M5, per-sample, raw cell-mean conversion (old plumbing)
+  S1-PS-SHR   same + SHRUNK conversion label: (n*mean_cell + 25*mean(layout,bucket))
+              / (n+25) — input-side info only, no timing leakage (H1 fix)
+  M5L-PS-SHR  M5 with LAYOUT-median prior (H2 fix) + shrunk conversion
+RULE: best arm adopts iff wmae >1% rel better than ANCHOR AND umae/dec3 <= +2% AND
+neither tau lower. DIAGNOSTIC (registered, per-cell detail persisted): dec3/umae
+deltas by cell-size tercile and by layout — H1 predicts smallest-tercile concentration
+shrinking RAW->SHR; H2 predicts non-qwerty concentration shrinking M5->M5L. If no arm
+qualifies, the route closes WITH mechanism attribution (the investigation deliverable);
+adoption => stage-1 model becomes a shipped artifact + deliverable rebuild, as always.
+HONEST PRIOR: the stage-1 model is a proven better PACE PREDICTOR (+7.65%); what three
+rounds failed to show is that this transfers to a better TRAINING LABEL. These arms
+are the first that could show the failures were plumbing, not physics.
