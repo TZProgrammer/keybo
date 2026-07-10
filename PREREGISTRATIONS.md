@@ -1408,3 +1408,29 @@ property — TypingModel.target_space/to_ms/predict_ms; train_{bigram,trigram}_m
 default target_space="LOGRAT"; every scorer (model + table, bigram + trigram) and the
 LOLO harness convert predictions to ms through the seam; train CLI grows --target-space
 {LOGRAT,MS}. Old ms-space artifacts load unchanged (absent sidecar key => MS).
+
+## P10 — LOGRAT deliverable rebuild (registered 2026-07-10, BEFORE results)
+Stage A (join_lograt.py, launching now): construction re-selection under LOGRAT. The
+f06c695 rule (deliverable trigram table = best rho/own-ceiling with tau 1.0 among
+constructions) was decided under the ms objective; LOGRAT moved the direct construction
+0.9226 -> 0.9928, and join-under-LOGRAT is unmeasured. Arms INC/LOGRAT on the JOIN frame
+(tristrokes_v1 x tristrokes_last, p8b join code verbatim; 2 seeds x 4 folds, cand-4,
+same machinery as the direct A/B). Frame self-check: INC-join should reproduce ~1.006.
+RULE: deliverable trigram construction = best rho/own-ceiling with all-pair + dp taus
+1.0 among {join-LOGRAT, direct-LOGRAT 0.9928}; the within-frame INC->LOGRAT challenger
+guards (wmae >1% better, umae/dec3 <= +2%) apply as before. If join-LOGRAT qualifies
+AND wins the construction pick: 3-seed all-data retrain
+(models/trigram_cond_lograt_join_seed{0,1,2}).
+Stage B (p10_family.py, GATED on twostage_2x2 + kb_strat verdicts per the ONE-rebuild
+sequencing): T2 = mean predict_ms tables of bigram_logratv5_seed{0,1,2} at wpm 90;
+Tcond = mean predict_ms of the selected construction's 3 seeds; T3c = T2 + Tcond;
+SA+2opt 12 restarts x 12k iters (p8b budget), oxey weights {0, .5, 1, 2}, rng 880333;
+E5 postflight; GL certificate on the bigram component; cross-objective A/B: p8b family
+scored under T3c_lograt and the P10 winners under T3c_inc (argmax-movement report — the
+user's same-ordering != same-argmax standard). SHIP RULE: P10 replaces P8b as the speed
+deliverable family — the model-level verdicts already adopted LOGRAT at both ngram
+levels; the family is the consequence, not a new decision. P9/F5M quality family is
+UNCHANGED this round (its target was validated in ms space; a LOGRAT-F5M A/B is a
+registered FUTURE round, not assumed). If twostage_2x2 adopts the S1 label, Stage A is
+void (the label changes the frame) and the rebuild re-plans — accepted risk; the prior
+favors SESS (matched-frame M5 rejection).
