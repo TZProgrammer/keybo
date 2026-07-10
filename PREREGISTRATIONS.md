@@ -1249,3 +1249,48 @@ FINAL RECOMMENDATION SET (closes the campaign):
   quality view:        P9 w0  gaedinrtsw.oypumflcbq;jk,hxvz/ (+2.01% F5M obj)
   ROBUST (recommended): BLEND gaedinrtsc.oypumblfwq;jk,hvxz/ (max-regret 0.221%)
   ergonomics-lean:     family w=2 variants (sfb ~0.7-1.6%, <=0.5% speed cost)
+
+## T-REL — target relativization (registered 2026-07-10, BEFORE results; user directive:
+## "we should be predicting some relative term... the label is already adjusted")
+MOTIVATION (measured, not vibes): shap-report on bigram_v5 shows wpm mean|SHAP| 27.1ms vs
+9.3ms for the top geometry feature — the model spends most capacity reproducing the pace
+hyperbola t~12000/wpm per geometry class (trees have no multiplicative structure; every
+geometry leaf must re-learn the wpm curve). Math note: session wpm = (chars/5)/min, so
+12000/wpm IS the session's mean ms/char — duration*wpm/12000 is exactly "multiple of this
+typist's average keystroke" (the user's 0.8 example).
+DESIGN (driver trel_arms.py; data = bistrokes_v5.tsv, the adopted BUF2-BOTH extraction;
+NO re-extraction — targets are transforms of (duration, wpm) already in the TSV):
+- SHARED FRAME: one cell set (40-140, width 20, floor 10), one example structure (grouped
+  by row x integer session wpm — wpm constant within a group, so every arm's group target
+  is a DETERMINISTIC TRANSFORM of the same IQR-mean; differences attribute entirely to
+  training-space geometry). Ceilings computed once, reused (data property).
+- ARMS (all keep the wpm FEATURE — lets the model learn skill-dependence of the ratio,
+  per user: "maybe it learns it matters more at high WPM"; all use production recipe:
+  depth-3 defaults, practice backfit x2 IN ARM SPACE, layout weights):
+  INC     y = ms                       (anchor; must reproduce p8b-zone numbers)
+  RAT     y = ms * wpm / 12000         (user's proposal: multiple of typist's mean keystroke)
+  LOGRAT  y = log(RAT)                 (multiplicative structure additive; symmetric rel-error)
+  DIFF    y = ms - 12000/wpm           (additive normalization — the obvious control:
+                                        is it the SCALE or just the LEVEL that hurts?)
+- EVAL: predictions mapped back to ms at cell midpoint wpm (RAT: *12000/wpm; LOGRAT:
+  exp then *12000/wpm; DIFF: +12000/wpm); ALL metrics in ms on the identical frame
+  (rho/own-ceiling, wmae, umae, dec3, all-pair tau + decisive-pair tau from
+  pair_gap_boot v3_nofilter). Jensen gap of per-bucket conversion is second-order and
+  shared. LOGRAT trains on log(group-IQR-mean), not IQR-mean(log) — same group statistic
+  across arms, documented.
+RULE (before results): an arm is ADOPTED over INC iff mean over 2 seeds x 4 LOLO folds:
+  wmae improves >1% rel AND umae, dec3 within +2% rel (rare-ngram guard) AND decisive-pair
+  tau no lower than INC's AND all-pair tau no lower. Multiple qualifiers -> best wmae.
+  Adoption consequence (registered): retrain winner 3 seeds all-data, save as
+  bigram_trel_* models, shap-report before/after (the user's SHAP-evolution question:
+  EXPECTATION recorded — wpm's |SHAP| share should collapse in the winning relative
+  space; geometry share should rise; this is informational, not a gate), THEN apply the
+  same transform to the conditioned-trigram target as a follow-up arm with its own LOLO
+  check; ONE deliverable rebuild after both settle. No adoption -> route closed on the
+  record, SHAP comparison still reported (null is informative: the wpm feature + 300
+  trees already suffice in the 40-140 band).
+HONEST PRIOR: RAT/LOGRAT should win wmae (pace-as-scale is measured physics here —
+  blind-pace found participant pace multiplicative; ms-space squared loss overweights
+  slow typists). Risk: heteroscedasticity reweighting could trade the rare decile —
+  exactly what the guard watches. Keyboard-type stratification (ledger E2) is REGISTERED
+  AS NEXT, sequenced AFTER this verdict, on the winning target space.
