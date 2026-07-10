@@ -2164,3 +2164,40 @@ adoption => stage-1 model becomes a shipped artifact + deliverable rebuild, as a
 HONEST PRIOR: the stage-1 model is a proven better PACE PREDICTOR (+7.65%); what three
 rounds failed to show is that this transfers to a better TRAINING LABEL. These arms
 are the first that could show the failures were plumbing, not physics.
+
+### Outcome append (2026-07-10): PACE-2 — a REAL adoption (per-sample targets), H1+H2
+### refuted, H3 answered, and the M5 route closes WITH mechanism localization
+runs/pace2_arms.json (fresh extraction; ANCHOR reproduced twostage SESSxLOGRAT 9.64 ✓):
+  ANCHOR      wmae 9.64  umae 15.74  dec3 27.14
+  ANCHOR-PS   wmae 9.49 (-1.61%)  umae +0.09%  dec3 +1.43%  taus equal => QUALIFIED
+  F-M5        wmae +25%, tau 0.0(!) — catastrophic
+  S1-PS-RAW   wmae 8.72 (-9.58%)  umae +0.73%(clean!)  dec3 +6.73% => dec3-fail
+  S1-PS-SHR   wmae -9.44%  dec3 +6.49% => dec3-fail   (H1 fix moved dec3 by 0.24pp)
+  M5L-PS-SHR  wmae -8.24%  dec3 +7.43% => dec3-fail   (H2 fix moved it NEGATIVELY)
+VERDICTS BY HYPOTHESIS:
+  H1 (conversion noise) REFUTED — SHR ~= RAW on every metric; the breach is not
+    eval-plumbing. H2 (population prior) REFUTED — layout-median prior does not help,
+    and the layout diagnostic shows the damage is ON QWERTY (umae 21.7->22.9), with
+    azerty/qwertz IMPROVING (12.6->12.2) — opposite of H2's prediction.
+  H3 (role split) ANSWERED — feature and denominator must stay COUPLED: M5-feature
+    with SESS-denominator destroys even tau (0.0). The wpm feature's job under LOGRAT
+    is indexing the target's own normalization; decoupling them is incoherent.
+  CONSTRUCTION FIX ADOPTED — ANCHOR-PS qualifies: per-sample log targets (= robust
+    LOG-space aggregation; equals IQR-mean of log(d_i) + log(w/12000), i.e. a trimmed
+    geometric mean) beat log-of-IQR-mean by -1.61% wmae with guards held. Consistent
+    with the whole LOGRAT story: multiplicative noise => aggregate in log space.
+  M5 ROUTE CLOSED, mechanism LOCALIZED: with per-sample construction the label's win
+    is bigger than ever measured (-9.6% wmae) and umae is now CLEAN (+0.73%) — the
+    residual failure is specifically the rare-FREQUENCY deciles, concentrated on
+    qwerty (which owns most rare-ngram cells), NOT small-n cells (tercile-0 flat),
+    NOT the prior, NOT conversion. Remaining candidate mechanism (🟠, would need a NEW
+    registration): practice-term interaction — rare ngrams get b~0 by shrinkage, so
+    their predictions ride on g alone, and g trained on sharper-label targets shifts
+    the g/b decomposition against ngrams the backfit cannot reach.
+CONSEQUENCE (executing): productionize per-sample LOGRAT aggregation in train.py
+(TDD); pinkyfit_gates (in flight, old code in memory) stays valid as the calibration-
+isolated verdict on the incumbent construction; then ONE COMPOSED verification
+(per-sample + calibration vs the group-mean anchor, v5 frame, standard guards +
+E5-v2 + served-sign — the no-silent-stacking rule) gates P11, which rebuilds on the
+composed recipe. The old direct pinkyfit->P11 chain is retired in favor of
+pinkyfit -> composed_gates -> P11.
