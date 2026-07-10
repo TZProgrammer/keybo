@@ -2099,3 +2099,27 @@ documented: representable, marginally mispriced, adoption unjustified at this da
 size. Census note extended: user's triple_roll instinct was HALF right — there IS an
 unpriced ~10-14ms effect, but it is corpus-weight-invisible; Phase-D data with more
 roll-heavy layouts is the revival path.
+
+## PINKY-FIT (registered 2026-07-10, BEFORE results; user challenge: "hardcoded offset
+## smells like a hack — the model should learn this properly")
+CONCEDED: the literal DELTA_MS in calibration.py is bad engineering (frozen, non-
+updating, doctrine-shaped). NOT conceded: that a free fit can learn the effect — that
+was PINKYFIX, sign-inverted 0/8, and the failure is IDENTIFIABILITY, not capacity:
+within one layout first-finger-class is a function of ngram identity, so class effect
+and per-ngram practice are collinear; any estimator needs an identifying restriction
+(the probe's: practice = global smooth curve in log count). Under that restriction a
+curve-anchored joint fit converges to the probe estimator — "learn it" and "calibrate
+it" coincide; the actionable defect is WHERE the number lives.
+CHANGE (PINKY-FIT): calibration deltas are FITTED IN-PIPELINE from the training rows —
+fit_first_finger_deltas(rows): generic matched-cell estimator (per layout: same-row
+adjacent-finger position pairs, outer-first vs inner-first-control cells per wpm
+bucket, practice-adjusted via the layout+bucket log-count slope, min-count floor 50,
+count-weighted pooling). train_bigram_model(calibration=True) fits on ITS OWN rows
+(leakage-clean per LOLO fold), stores fitted deltas_ms in the sidecar; ALL serve paths
+(predict_ms_at, TableBigramScorer) read deltas from the SIDECAR, never module
+constants. Insufficient data for a class => that class uncalibrated, recorded.
+RULE: PINKY-FIT replaces PINKY-CAL iff (a) full-data fitted deltas are positive for
+both classes and within a factor of 2 of the probe's (+42.1/+21.3 — estimator-port
+sanity, not a tuning knob); (b) LOLO non-degradation + guards; (c) E5-v2 <= 0.75%;
+(d) served-sign >= 6/8. Then P11 builds on the fitted seam. Any failure => report
+honestly and hold P11 for a decision (the hardcoded seam is NOT silently kept).
