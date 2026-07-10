@@ -1716,3 +1716,34 @@ model, so generation stays on F5M." Revival path: more layout diversity (Phase D
 sharpen the q=.2 decisive pairs, not further modeling.
 Brainstorm levers now: A/B/C/D/E all closed on the record; F (new data) is the sole
 remaining lever, user-gated.
+
+## QIN-ROLE — two follow-ups from the user challenge "shouldn't we adopt QIN?"
+## (registered 2026-07-10, BEFORE results)
+The challenge: QIN-LR dominates dedicated models per-cell at every q — adoption?
+Adoption requires a ROLE. The speed objective is closed by structure (total time =
+sum freq*E[t]; quantiles are not additive). The q=.2 generation role failed gate iv —
+but for EVERY model class, and gate iv has a registered weakness. Two tests:
+T1 TAIL-GAP (tail_gap_boot.py, launches now): gate iv judged the q=.2 frame with
+  MEAN-frame decisive pairs (pair_gap_boot v3_nofilter). A mean-decisive pair can be a
+  TIE at the tail (precedent: the azerty-qwertz all-pair-tau incident). Participant
+  bootstrap (200x) of every layout pair's observed gap ON the q=.2 frame (bistrokes_v3,
+  same CELL_KW, table = aggregate_layout_table semantics). RE-ADJUDICATION RULE (set
+  now): the QIN q=.2 generation route REOPENS iff dp-tau computed over TAIL-decisive
+  pairs (from qin_breakdown's persisted tables) = 1.0 both seeds for QIN-LR. Pair
+  tail-decisive AND still flipped => gate iv stands; lever C stays closed.
+T2 QIN-F5M (qin_f5m.py, chained after qin_breakdown exits): the CERTIFIABLE quality
+  role (F5M frame dp-tau 1.0 per Q-OBJ). F5M = (1/0.2) integral_0^0.2 Q(u) du ~= mean
+  of Q at u in {.025, .075, .125, .175} (midpoint quadrature). Arms on the F5M cell
+  frame (bistrokes_v5 = the adopted pipeline, f5m aggregation, own split-half ceilings):
+    DED-MS   dedicated f5m-target model, ms space (anchor — P9-era recipe)
+    DED-LR   dedicated f5m-target, LOGRAT space (discharges the registered
+             LOGRAT-F5M future round)
+    QIN-INT  QIN trained w/ QS={.025,.075,.125,.175,.35,.5,.65,.8} on LOGRAT
+             group-quantile targets; F5M prediction = mean of the 4 tail slices (ms)
+  RULES: DED-LR adopts over DED-MS iff standard challenger (wmae >1%, umae/dec3 <=+2%,
+  taus no lower). QIN-INT takes the QUALITY-MODEL role iff it beats the best DED arm:
+  wmae >1% rel better AND guards AND rho/own-ceil >= best-DED - 0.005 AND dp-tau no
+  lower. Registered noise source: empirical q=.025 on small groups ~ interpolated group
+  min — the arm's known risk, not amendable after results.
+  STAKES (registered): winner refreshes the QUALITY family model only (P9/F5M);
+  the speed deliverable is untouched by construction.
