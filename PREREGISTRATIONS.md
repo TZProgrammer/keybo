@@ -1360,3 +1360,28 @@ SESS-label AND umae/dec3 within +2% AND neither tau lower (2 seeds x 4 folds). A
 consequence: stage-1 model becomes a shipped artifact (serve story: pace estimate from
 the user's own typing sample), deliverable rebuild inherits it; else SESS label stands
 and the route closes on the record.
+
+### Outcome append (2026-07-10): T-REL — LOGRAT ADOPTED, decisively
+runs/trel_arms.json (shared v5 frame, 2 seeds x 4 LOLO folds; all arms tau 1.0/dp-tau 1.0):
+  INC    rho/ceil 0.9725  wmae 15.44  umae 19.69  dec3 26.34   (reproduces p8b zone ✓)
+  RAT    rho/ceil 0.9890  wmae 12.38 (-19.9%)  umae -10.8%  dec3 -2.4%   QUALIFIED
+  LOGRAT rho/ceil 1.0174  wmae  9.67 (-37.4%)  umae -20.8%  dec3 +0.9%   QUALIFIED <= WINNER
+  DIFF   wmae -2.7%  umae -2.6%  dec3 -1.8%   qualified but marginal
+ATTRIBUTION the DIFF control buys: the gain is the multiplicative SCALE structure
+(RAT/LOGRAT), not the additive level (DIFF ~nothing) — the user's mechanism as stated.
+LOGRAT's rho/ceiling 1.0174 EXCEEDS the split-half ceiling (cross-layout strength
+borrowing, seen before on azerty/qwertz folds; not an error). Largest single-lever wmae
+gain of the campaign (prior record: hesitation filter -23.6%, which was guard-blocked).
+Consequences now owed per the rule: 3-seed all-data retrain (bigram_trel_*), SHAP
+before/after, conditioned-trigram analog arm, then ONE deliverable rebuild; KB-STRAT
+runs at TARGET_SPACE=LOGRAT.
+
+### Outcome append (2026-07-10): S1-REL — M5 STANDS (relativization not adopted at stage 1)
+runs/blind_pace_rel.json: R0/M5 +7.65% (reproduced exactly), R1 ratio +1.92%,
+R2 log-ratio +7.83%, R3 scale-free +7.91%; all pass leakage audit. R3 beats M5 by only
++0.28% rel (< the 1% adoption bar). Reading: M5's log-space fit already captures the
+multiplicative structure; the explicit per-typist anchor adds ~nothing at stage 1
+(contrast with stage 2, where the label transform moved wmae -37%: stage 1 predicts a
+single interval where the typist scale is largely in the features already; stage 2's
+target AGGREGATES across typists, where the scale mismatch does the damage).
+Two-stage 2x2 proceeds with S1 label = M5 (the shipped stage-1 winner) per the rule.
