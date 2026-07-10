@@ -1820,3 +1820,28 @@ re-adjudication (features x tuning) in the new space.
 NOTE ON THE NEAR-MISS: +0.815% vs 0.75% is within plausible search noise of the bar;
 per goalpost discipline the letter stands (FAIL), and the margin note is recorded so a
 future round with more restarts can re-test — as a NEW registration, not a re-read.
+
+### Outcome append (2026-07-10): T1 TAIL-GAP — the user's red flag CONFIRMED at the frame level
+runs/tail_gap_boot.json (200x participant bootstrap ON the q=0.2 frame) vs the mean
+frame's pair verdicts (pair_gap_boot v3_nofilter):
+  pair            mean-frame verdict        tail-frame verdict
+  azerty-dvorak   DECISIVE (az -13.7ms)     TIE   (+1.7, CI [-8.3,+7.4])
+  azerty-qwerty   DECISIVE (az  -9.2ms)     DECISIVE (az +6.9 — SIGN FLIPPED)
+  azerty-qwertz   TIE                       TIE
+  dvorak-qwerty   TIE                       DECISIVE (dv +5.2 — qwerty faster)
+  dvorak-qwertz   DECISIVE (qz +13.2ms)     TIE   (-1.0, CI [-5.6,+11.0])
+  qwerty-qwertz   DECISIVE (qz  +8.7ms)     DECISIVE (qw -6.1 — SIGN FLIPPED)
+THE TAIL IS A DIFFERENT WORLD: qwerty is FASTEST at q=0.2 (92.9ms vs dvorak 98.1,
+qwertz 99.1, azerty 99.8) while mid-pack on means; two mean-decisive pairs are tail
+TIES; two pairs flip sign outright. Gate iv therefore judged tail predictions on a
+pair set where HALF the pairs are tail coin-flips — dp-tau 0.5 was uninterpretable
+by construction (exactly audit finding G-C: decisive sets are frame-specific).
+RE-ADJUDICATION (rule 14f929a, unchanged): QIN's q=.2 generation route reopens iff
+dp-tau over the TAIL-decisive pairs {azerty-qwerty, dvorak-qwerty, qwerty-qwertz}
+= 1.0 both seeds, computed from qin_breakdown's persisted tables (run in flight).
+CAVEAT registered with the tail frame itself: per-cell empirical q=0.2 with n as low
+as 10 carries small-sample quantile bias, and layer n differs ~1000x across layouts
+(qwerty deepest); the bootstrap CIs capture variance, not this bias. The qwerty-fastest
+-at-tail finding is 🟠 pending a bias probe (matched-n subsample) — registered as a
+follow-up, NOT blocking the pair re-adjudication (bias affects LEVELS; the decisive
+pairs' SIGNS at these magnitudes would need implausible bias to flip).
