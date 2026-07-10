@@ -1863,3 +1863,28 @@ Gate-audit doc updated with the measured floors. Bottom line of the audit: one g
 voided+fixed (E5), one pair-set bug found+fixed at the tail frame (gate iv / G-C),
 one threshold flagged (tune bar), everything else measured DEFENSIBLE — and no past
 verdict flips from calibration alone.
+
+### Outcome append (2026-07-10): P10 Stage B — THE LOGRAT DELIVERABLE FAMILY; the argmax MOVED
+runs/p10_family.json + runs/p10_reverse_ab.json (T2 = bigram_logratv5 x3, Tcond =
+trigram_cond_lograt_join x3, wpm 90, rng 880333, 12 restarts x 12k + 2opt):
+  w=0    cgldk.yuo,srthmpnieaxqwbvfj/;z  +3.87% vs qwerty  sfb 1.14%  home 53.9%
+  w=0.5  clgmk.,ouysrthdpnaeiqxwbvfz/;j  +3.91%(*)         sfb 0.74%  home 55.0%
+  w=1    bnldk.yuo,srthmgcieaxqjfvpwz;/  +3.79%            sfb 0.78%
+  w=2    hrfkv.y,oulnstdgciaezxbmqwpj;/  +3.68%            sfb 0.59%  inroll 8.5%
+  (*) w=0.5 scoring 0.038% better on SPEED than w=0 = search noise; the family
+  plateau is ~0.2% wide, consistent with every prior round.
+  Bigram-component certificate: within 3.35% of optimal (GL bound).
+  Scoreboard under the LOGRAT objective: P10 +3.87% > p8b +2.74% > colemak +2.09%.
+CROSS-OBJECTIVE A/B (the user's same-ordering != same-argmax standard, both directions):
+  p8b-w0 regret under the LOGRAT objective: +1.18%
+  P10-w0 regret under the ms-era objective:  +0.62%
+  Shared positions: 5/30.
+The argmax GENUINELY MOVED — both regrets exceed the ~0.2% plateau width. P10's
+asymmetric advantage (its layout loses only 0.62% on the old surface; the old layout
+loses 1.18% on the new one) is what adopting the better-validated objective buys.
+STRUCTURE of the new family: consonant home core srth|nie-a (left-right split), vowels
+upper-right, c/l/g/d top-left — a rolls-forward arrangement the wmae-blind era priced
+differently. P10 REPLACES p8b as the speed deliverable family per the ship rule.
+NOTE vs qwerty margin (+3.87% vs p8b-era +2.23%): numbers are NOT comparable across
+objectives (different tables/scales); the cross-objective regrets above are the
+apples-to-apples statement.
