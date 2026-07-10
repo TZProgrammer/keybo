@@ -1647,3 +1647,16 @@ RULE: QIN-LR is ADOPT-CANDIDATE iff the original three gates hold in LOGRAT spac
 Adoption-candidate => the quality family (P9/F5M) gets a QIN-LR q=0.2 rebuild as a
 NEW registration; any gate fails or dp-tau < 1.0 => lever C closes (the bias is not a
 scale artifact), F5M stands.
+
+### Outcome append (2026-07-10): SMOOTH — REJECTED (null, both clauses); lever E closed
+runs/smooth_arm.json (v5 frame; anchor reproduced 9.67/1.0174):
+  SMOOTH rho/ceil 1.0218 (+0.004)  wmae 9.67 (-0.05%)  umae +1.63%  dec3 +3.36%
+Clause (a) fails (no wmae gain); clause (b) fails (rare cells got WORSE, not better —
+the design target inverted). Reading: the XGB trees already pool geometry-locally
+(that's what splits on dx/dy/distance ARE); an extra kernel smoother has nothing left
+to add on dense cells and, like every position-keyed train-fold statistic this round,
+drags cross-population level into rare cells. Milder than HOLD (corrections shrink
+toward 0 by construction) but the same family of failure. Lever E closed. The
+residual-structure conclusion: after LOGRAT + practice term + depth-3 trees, per-pair
+train-fold residual means carry ~no transferable signal — the model is extracting
+essentially everything position-pair-shaped from this dataset.
