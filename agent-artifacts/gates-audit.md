@@ -25,8 +25,11 @@ runs/gate_noise.json (gate_noise.py, 10 seeds x 4 folds on the anchor config).
 - **Purpose:** don't churn the production recipe for noise-level gains.
 - **Calibration:** same gate_noise run. If p95 pairwise seed noise on wmae > 0.5%, the
   tune bar is inside noise and lucky seeds can qualify; the 1% bar has more margin.
-- **Status: PENDING gate_noise verdict** (thresholds bumped to ceil(p95) for future
-  rounds if flagged; existing verdicts stand).
+- **Status: MEASURED (runs/gate_noise.json).** wmae p95 pairwise noise 0.91% => the
+  1% adopt bar is defensible (thin margin); the 0.5% tune bar is INSIDE noise =>
+  flagged, future tuning rounds use 1%. umae (0.38%) and dec3 (0.73%) floors leave
+  the 2% guards 2.7-5x clear. Retro-check: no past verdict flips (every rejection's
+  breach was >=4.8x the floor; TUNE-LR's no-change stands under either bar).
 
 ### 3. tau / decisive-pair tau (must not degrade)
 - **Purpose:** magnitude gains must not break layout ORDERING — the one thing the
