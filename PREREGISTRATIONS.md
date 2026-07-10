@@ -1696,3 +1696,23 @@ default-params change (tuning), retrain, THEN the P10 family re-runs once more �
 family always rebuilds on the final recipe (P10's current build becomes the anchor).
 SEQUENCING: launches AFTER QIN-LR returns (user directive) — QIN-LR's verdict decides
 the quality-family question first; FEAT-LR/TUNE-LR are speed-model rounds.
+
+### Outcome append (2026-07-10): QIN-LR — NOT ADOPTED by rule letter; but the QIN-specific bias DID dissolve
+runs/qin_lograt.json (bistrokes_v3, same data as ms-era QIN; LOGRAT space):
+  gates: i q=.2 shared-strength PASS (QIN 1.0352 vs dedicated 1.0080 rho/own-ceil)
+         ii q=.5 no-cost PASS (1.0375 vs 1.0126)  iii coherence PASS
+         iv dp-tau q=.2 clears: FAIL — QIN [0.5, 0.5], required 1.0
+  (q=.8: QIN 1.0668 vs dedicated 0.9849 — shared strength largest at the tail)
+THE NUANCE THE RULE LETTER COMPRESSES: in ms space the flag was QIN-SPECIFIC (QIN
+dp-tau 0.0 vs dedicated 1.0 — the q-feature absorbed between-layout level). In LOGRAT,
+QIN [0.5,0.5] EQUALS dedicated [0.5,0.5]: the QIN-specific level absorption DISSOLVED
+(the scale-artifact hypothesis was RIGHT for the model-class defect), and what remains
+is a FRAME property — at q=0.2 on this data, no model of either class ranks the
+decisive layout pairs perfectly. Per the registered rule (dp-tau < 1.0 => close),
+lever C CLOSES and F5M stands as the quality objective; the honest summary is
+"QIN-LR is the best per-cell conditional-distribution model we have (dominates
+dedicated at every q), but the fast-tail frame cannot certify layout ranking for ANY
+model, so generation stays on F5M." Revival path: more layout diversity (Phase D) to
+sharpen the q=.2 decisive pairs, not further modeling.
+Brainstorm levers now: A/B/C/D/E all closed on the record; F (new data) is the sole
+remaining lever, user-gated.
