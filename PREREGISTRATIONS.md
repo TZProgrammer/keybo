@@ -2035,3 +2035,24 @@ RE-ADJUDICATION MECHANICS: qin_breakdown persisted per-cell predictions but NOT
 per-ngram tables (needed for the common-ngram layout scores); a targeted rerun
 (qin_tail_readj.py, q=0.2 eval only, both model kinds, per-pair agreement vs the
 TAIL-frame observed gaps over tail-decisive pairs) launches now.
+
+### Outcome append (2026-07-10): PINKY-CAL — ADOPTED, all three stages
+runs/pinky_cal.json (deltas from the probe: pinky_first +42.1ms, ring_first +21.3ms;
+1923 calibrated examples of 140537):
+  Stage A LOLO: wmae -0.05%, umae +0.03%, dec3 -0.22%, taus 1.0 => PASS (non-degrading;
+    the offset is nearly invisible to corpus-weighted metrics, as expected — the
+    calibrated classes are rare on real layouts)
+  Stage B E5-v2: +0.130% cross-regret => PASS (the CAL optimum stays near-optimal on
+    the trusted surface; the offset steers placement without distorting the rest)
+  Stage C served-sign: 8/8 — as/ds, po/io, we/re, oi/ui all priced outer-first slower
+    at both wpms (e.g. as 158.9 vs ds 124.6 @90)
+CONSEQUENCE (executing now): productionize as a first-class calibration seam
+(keybo/training/calibration.py: finger_class + delta in LOGRAT units; train subtracts
+for bigram LOGRAT models, sidecar records it, position-aware consumers add it back),
+FEATURE-level version unchanged (features untouched) but CALIBRATION_VERSION recorded;
+retrain production bigram models; P10 family re-runs (P11) with the calibrated T2.
+SCOPE NOTE (registered): the calibration applies to the BIGRAM surface only. The
+conditioned-trigram increment shares the origin-finger blindness for key2->key3, but
+the probe measured isolated bigram intervals; extrapolating the deltas to the
+conditioned increment is a NEW measurement question (registered as a follow-up, not
+assumed). T3c inherits the fix through T2.
