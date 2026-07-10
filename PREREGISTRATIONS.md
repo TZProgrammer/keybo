@@ -1569,3 +1569,25 @@ shipped equal-group-weight + robust-target recipe sits at the guard-defended opt
 everything tested. Levers A and D are closed; capacity-reallocation as a direction is
 exhausted — remaining upside must come from NEW INFORMATION (lever B: hold/rollover
 channel; lever F: more layouts), not re-slicing the same information.
+
+## HOLD — hold/rollover position aggregates (registered 2026-07-10, BEFORE results;
+## brainstorm lever B = backlog A8 + OQ-11 carry-forward, now under LOGRAT + magnitude metrics)
+The recorded-but-unused channel: per-sample hold = release(key1) - press(key1); rollover
+(hold > interval) goes 5.6% -> 87% with skill and overlapped executions are ~1.69x
+faster within-cell (D1'). NOT usable as a raw feature (not serve-computable for a
+candidate layout) => enters as POSITION-KEYED TRAIN-FOLD AGGREGATES (A8 recipe):
+  h1_mean[p1]    mean hold of the first key's position (train rows, hold>=0 only)
+  ro_rate[p1,p2] shrunk P(hold > interval) for the position pair:
+                 (n_ro + 50*global_rate) / (n + 50)
+Serve semantics: candidate layout's bigram at (p1,p2) looks up the same aggregates —
+position-keyed, so the optimizer prices positions, which is the objective. CAVEAT
+(registered, from A8): position-keyed data aggregates are a mild memorization channel;
+adoption additionally requires an E5-style search gate before production.
+DATA: bistrokes_v3 (the prod extraction; carries hold. v5's driver wrote hold=0 — a
+re-extract follows only on adoption). Frame = v3 cells with own ceilings; ANCHOR =
+LOGRAT + shipped recipe on the same frame (v3-frame numbers differ from v5's; the
+comparison is arm-internal, same standard as every prior round).
+ARMS: ANCHOR / HOLD (= ANCHOR features + h1_mean + ro_rate, per-fold aggregates).
+RULE: HOLD adopts iff wmae >1% rel better AND umae/dec3 within +2% AND neither tau
+lower (2 seeds x 4 folds); adoption => E5 search gate, then production re-extract of
+v5-with-hold + FEATURE_VERSION bump.
