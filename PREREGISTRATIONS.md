@@ -1547,3 +1547,25 @@ RULE: best arm adopts iff wmae >1% rel better than ANCHOR AND umae/dec3 within +
 neither tau lower. DIAGNOSTIC (registered): if W-N reproduces OCC's umae/dec3 failure,
 OCC's defect was the weight distribution (capacity allocation); if W-N is clean, it was
 the raw target (hesitation tail). Same frame/driver as occ_arm.
+
+### Outcome append (2026-07-10): WEIGHTS — ALL REJECTED; the OCC decomposition is clean; lever D closed
+runs/weights_arm.json (same frame; ANCHOR reproduced 9.67/1.0174 exactly):
+  ANCHOR  rho/ceil 1.0174  wmae 9.67  umae 15.59  dec3 26.58
+  W-N     rho/ceil 0.9743  wmae 9.23 (-4.59%)  umae +5.67%  dec3 +12.61%  => guard-fail
+  W-SQRT  rho/ceil 1.0046  wmae 9.27 (-4.16%)  umae +0.55%  dec3 +4.45%   => dec3-fail
+  W-INV   rho/ceil 0.9573  wmae 9.40 (-2.86%)  umae +10.55% dec3 +17.87%  => guard-fail
+DIAGNOSTIC (the registered question): W-N reproduces MOST of OCC's guard breach on the
+robust target => OCC's rare-cell damage was primarily the WEIGHT DISTRIBUTION (capacity
+tilted to dense mass). But W-N gains wmae -4.59% where OCC gained +0.23% => the raw
+target's hesitation tail separately erased the dense-cell gain. Both halves were bad,
+for different metrics.
+HONEST MISS: I predicted W-INV would be guard-FRIENDLY ("sharpens low-noise rare
+groups"). Wrong, and worst of the three: rare groups have few samples => HIGH variance
+estimates => 1/s2 DOWN-weights them; dense groups have high n AND low variance => n/s2
+is doubly concentrated. Efficient global estimation != uniform-coverage allocation.
+EMERGING LAW (four tests now: S1-label, OCC, W-N, W-INV): every reallocation of training
+emphasis toward the data mass buys dense-cell wmae and pays rare-cell umae/dec3. The
+shipped equal-group-weight + robust-target recipe sits at the guard-defended optimum of
+everything tested. Levers A and D are closed; capacity-reallocation as a direction is
+exhausted — remaining upside must come from NEW INFORMATION (lever B: hold/rollover
+channel; lever F: more layouts), not re-slicing the same information.
