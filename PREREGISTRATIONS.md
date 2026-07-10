@@ -1660,3 +1660,39 @@ toward 0 by construction) but the same family of failure. Lever E closed. The
 residual-structure conclusion: after LOGRAT + practice term + depth-3 trees, per-pair
 train-fold residual means carry ~no transferable signal — the model is extracting
 essentially everything position-pair-shaped from this dataset.
+
+## FEAT-LR + TUNE-LR — feature engineering + hyperparameter tuning under LOGRAT
+## (registered 2026-07-10, BEFORE results; user directive: "now that we are using
+## lograt, we should try feature engineering and hyperparameter tuning again")
+WHY RE-RUN: every feature-arm and tuning verdict on the books was adjudicated in ms
+space under rank metrics (depth-3 adoption pre-dated wmae; P5's 16 bigram candidates
+were wmae-ranked but in ms space). LOGRAT changed both the target GEOMETRY (what depth
+is needed: the wpm hyperbola is gone, so shallow trees may now suffice — or deeper may
+now safely add interactions the hyperbola previously ate capacity for) and the metric
+regime (magnitude + guards). Two drivers, one shared v5 frame (trel_arms cells +
+ceilings; anchor must reproduce wmae 9.67 / rho-frac 1.0174):
+FEAT-LR (feat_lograt.py) arms, all on the LOGRAT target + shipped recipe:
+  ANCHOR  shipped 20 features, depth 3
+  A1      + first-key row/finger one-hots (8) — the measured pinky-ring collision fix
+  A2      + hand indicators (2)
+  A3      signed dx/dy replacing absolute
+  A5      - second-key row/finger one-hots (8) — the abstraction endpoint
+  A7      + explicit interactions (same_finger*distance, scissor*dy, lsb*dx) — pairs
+          with shallow trees, which cannot form 3-way interactions themselves
+  (C2/C3 fold into TUNE-LR's depth/monotone axes; A1xA3 combo runs ONLY if both parents
+  qualify individually — registered to avoid garden-of-forking-paths)
+RULE (per arm, vs ANCHOR): adopt iff wmae >1% rel better AND umae/dec3 within +2% AND
+neither tau lower. Any adopted DELETION (A5) additionally requires the E5 search gate
+(Goodhart row-blindness precedent). Winner = best qualifying wmae; ties to simpler.
+TUNE-LR (tune_lograt.py): 16 sampled candidates (rng 424242, same sampling ranges as
+P5: n_estimators 150-600, depth 2-6, lr 0.03-0.15 log, min_child_weight 1-8, subsample
+.5-1, colsample .5-1) + the P5-era incumbent default, on the FEAT-LR winner's feature
+set (ANCHOR's if none qualify). Scored by LOLO wmae, tau-gated, guards as above.
+RULE: candidate adopts iff wmae >0.5% rel better than the depth-3 default AND guards
+hold (P5's bar). Composition: FEAT-LR winner feeds TUNE-LR; if TUNE-LR also adopts,
+one composed verification run re-checks guards before production (no silent stacking).
+Production consequence on any adoption: schema/FEATURE_VERSION bump (features) or
+default-params change (tuning), retrain, THEN the P10 family re-runs once more — the
+family always rebuilds on the final recipe (P10's current build becomes the anchor).
+SEQUENCING: launches AFTER QIN-LR returns (user directive) — QIN-LR's verdict decides
+the quality-family question first; FEAT-LR/TUNE-LR are speed-model rounds.
