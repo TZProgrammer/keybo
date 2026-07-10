@@ -1917,3 +1917,21 @@ LOLO wmae within +1% (non-degradation; p95 noise 0.91%) + guards + E5-v2 cross-r
 <= 0.75% + the fix model must price the probe pairs with the measured sign. NULL =>
 the collision is documented HARMLESS (the abstraction is correct: origin finger does
 not matter for into-key time) and the feature stays out.
+
+### Trigram collision census (2026-07-10, user question: "make sure trigrams don't
+### conflict either") — CLEAN
+All 31^3 = 29,791 ordered position triples featurized (46-col trigram row, wpm 90):
+28,006 distinct vectors; 1,785 collision classes, every one of size EXACTLY 2, and
+every one a pure LEFT-RIGHT HAND MIRROR (x -> -x on all three keys); zero classes
+survive mirror-quotienting. Contrast the bigram world: 961 -> 765 with 184 classes,
+some NOT mirror-explained (the pinky->ring/middle->ring same-row family — under
+active probe). Why trigrams are cleaner: the row carries BOTH constituent bigrams'
+placement features + trigram-level sg_* features, so an origin ambiguity in bg1's
+relational encoding is usually broken by bg2's landing one-hots and the skipgram
+geometry; the same-row degeneracy needs MORE symmetry to survive one level up, and
+only the exact mirror provides it. Hand-mirroring is the schema's DELIBERATE pooling
+assumption (symmetric hands), shared with the bigram model and load-bearing for data
+efficiency; the mirror-asymmetry question (most typists are right-handed) was tested
+as A2 (hand indicators) and rejected twice — ms era and FEAT-LR (+0.45% wmae). So:
+no trigram analogue of the pinky gap exists; the trigram feature map is injective up
+to the intended symmetry.
