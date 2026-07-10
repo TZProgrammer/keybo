@@ -1845,3 +1845,21 @@ as 10 carries small-sample quantile bias, and layer n differs ~1000x across layo
 -at-tail finding is 🟠 pending a bias probe (matched-n subsample) — registered as a
 follow-up, NOT blocking the pair re-adjudication (bias affects LEVELS; the decisive
 pairs' SIGNS at these magnitudes would need implausible bias to flip).
+
+### Outcome append (2026-07-10): GATE-NOISE — three thresholds defensible; tune bar inside noise
+runs/gate_noise.json (10 seeds x 4 folds, anchor config; pairwise rel deltas):
+  wmae  p95 0.91% (max 1.29%) | umae p95 0.38% | dec3 p95 0.73% | rho_frac p95 0.26%
+  wmae 1% adopt bar: DEFENSIBLE (barely — 1.0% vs 0.91%; margin thin, keep 2-seed
+    verdicts honest by preferring bigger effects)
+  umae/dec3 2% guards: DEFENSIBLE (5x / 2.7x above floor). Near-miss annotations:
+    W-SQRT dec3 +4.45% and MED +3.5% are 6x/4.8x the p95 floor => NOT noise; those
+    rejections stand on the merits. (The annotation-on-near-miss clause turns out to
+    be unneeded for past verdicts — nothing rejected was within the floor.)
+  tune 0.5% bar: INSIDE NOISE (0.5% < 0.91%) => FLAGGED. Consequence per the rule:
+    future tuning rounds use ceil(p95) = 1% adopt bar. Retro-check: TUNE-LR's winner
+    was -0.19% — inside noise under EITHER bar, so the no-change verdict is UNAFFECTED
+    (and P5's ms-era cand-4 trigram adoption was -3.4%, well above any floor).
+Gate-audit doc updated with the measured floors. Bottom line of the audit: one gate
+voided+fixed (E5), one pair-set bug found+fixed at the tail frame (gate iv / G-C),
+one threshold flagged (tune bar), everything else measured DEFENSIBLE — and no past
+verdict flips from calibration alone.
