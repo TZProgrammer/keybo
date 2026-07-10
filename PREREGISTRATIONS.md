@@ -1747,3 +1747,22 @@ T2 QIN-F5M (qin_f5m.py, chained after qin_breakdown exits): the CERTIFIABLE qual
   min — the arm's known risk, not amendable after results.
   STAKES (registered): winner refreshes the QUALITY family model only (P9/F5M);
   the speed deliverable is untouched by construction.
+
+### Outcome append (2026-07-10): FEAT-LR + TUNE-LR — A5 qualifies (E5-gated, RUNNING); tuning stands
+runs/feat_lograt.json (v5 frame, anchor reproduced 9.67/1.0174):
+  A1 +1.21% / A2 +0.45% / A3 +1.33% / A7 -0.44% wmae => all no. First-key one-hots,
+  hand indicators, signed geometry, explicit interactions: the LOGRAT model needs none
+  of them (echoes the ms-era abstraction-wins finding, now under magnitude metrics).
+  A5 (drop second-key row/finger one-hots): wmae -2.07%, umae +0.02%, dec3 +0.34%,
+  taus 1.0, rho/ceil 1.0336 => QUALIFIED by the letter. HISTORY: the SAME deletion won
+  LOLO in ms space (C2A5, 2026-07-05) and was REVERTED after the Goodhart row-blindness
+  incident (optimizer parked junk on the home row — deletion removed the pricing basis
+  for rows). E5 gate (e5_a5_lograt.py, running): 3-seed A5-LOGRAT retrain, wpm-90 table,
+  12-restart search; PASS = optimized layout's home-row corpus share >= every named
+  layout's. Gate verdict decides adoption; qualification alone does NOT.
+runs/tune_lograt.json (16 candidates rng 424242 + default, on A5's 12 features):
+  default (300/d3/lr.05) wmae 9.475; best cand-9 (174/d4/lr.043) 9.457 = -0.19% < 0.5%
+  bar; cands 5/12 similar. Depth 5-6 arms all WORSE (10.2-11.0). => NO tuning change;
+  depth-3 default re-earned under LOGRAT. The ms-era P5 conclusion (defaults near-
+  optimal) replicates in the new space; LOGRAT did not shift the optimum enough to
+  matter at the 0.5% bar.
