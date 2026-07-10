@@ -1766,3 +1766,37 @@ runs/tune_lograt.json (16 candidates rng 424242 + default, on A5's 12 features):
   depth-3 default re-earned under LOGRAT. The ms-era P5 conclusion (defaults near-
   optimal) replicates in the new space; LOGRAT did not shift the optimum enough to
   matter at the 0.5% bar.
+
+## GATE-AUDIT round (registered 2026-07-10, user directive: "audit if our gates are
+## doing the right thing")
+FINDING G1 (immediate, BEFORE e5_a5_lograt results — verified on known-good layouts
+only, A5's own number unseen): the E5-LOGRAT bar as registered (home share >= every
+named layout's, i.e. >= colemak's 59.8%) FAILS KNOWN-GOOD MODELS: the incumbent
+full-feature optimizer outputs measure 53.9% (P10 w=0) and 31.6% (P8b w=0) — the
+measured top~home speed tie (OQ-14) means speed-optimal layouts do NOT maximize home
+share; colemak's figure is doctrine, not physics. A gate that known-good models fail
+is uninformative in BOTH directions.
+AMENDMENT (E5-LOGRAT v2, registered before reading the A5 search output): the Goodhart
+detector is CROSS-REGRET UNDER THE TRUSTED SURFACE — score the A5-optimized layout
+under the incumbent LOGRAT T2 (bigram_logratv5 seeds, wpm 90): regret vs the
+incumbent-optimized layout <= 0.75% (plateau 0.5% + margin) = PASS. Home share becomes
+INFORMATIONAL (reported, not gating); the distinct-vector diagnostic likewise. This is
+the test the original incident would have failed loudly (junk-on-home-row scores
+terribly under any trusted surface). The registered home-share clause is VOID as a
+decision rule — voided for miscalibration measured on independent evidence, not
+because of anything A5-specific.
+FINDING G2 (structural, to quantify): every guard compares 2-seed x 4-fold means and
+treats +/-2% rel as signal; no gate threshold has a measured NOISE FLOOR. If seed noise
+on dec3_rel is ~2%, the rare-ngram guard fires on coin flips near the boundary (the
+big rejections — S1 +7.2%, OCC +15.6%, W-INV +17.9% — are far above any plausible
+floor; the near-misses — W-SQRT +4.45%, MED +3.5% — may not be).
+GATE-NOISE run (gate_noise.py, launches now): anchor config (v5 frame, LOGRAT,
+shipped recipe), seeds 0..9, all 4 folds; report the distribution of PAIRWISE rel
+deltas |m_i - m_j|/mean for wmae/umae/dec3 across the 45 seed pairs. RULE: a guard
+threshold is DEFENSIBLE iff it exceeds the 95th percentile of its metric's pairwise
+seed noise; any threshold below that is flagged and future rounds bump it to
+ceil(p95) (existing verdicts stand — goalpost discipline — but near-misses within the
+measured floor get an explicit "possibly noise" annotation in the record).
+AUDIT DOC: agent-artifacts/gates-audit.md — every gate in force (rare-ngram guard,
+tau/dp-tau, E5, censor_ratio, kb_strat spread bar, ceilings-as-normalizer, adoption
+bars), purpose, calibration status, known misfires, fix. Committed with outcomes.
