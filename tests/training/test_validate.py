@@ -412,3 +412,27 @@ def test_uniform_mae_and_decile_profile_reported():
         assert m["umae"] > 0 and np.isfinite(m["umae"])
         assert len(m["freq_decile_mae"]) >= 3  # small synthetic world -> few deciles ok
         assert all(v >= 0 for v in m["freq_decile_mae"].values())
+
+
+def test_validate_evaluates_lograt_models_in_ms():
+    """With the LOGRAT default the harness's per-cell predictions must be converted back
+    to ms before any metric: rho survives a monotone transform but wmae/umae/slope do
+    not (raw log predictions would produce wmae ~ the whole duration scale)."""
+    rows = _lawful_rows(n_pids=10, samples_per_pid=8)
+    report = validate(
+        rows,
+        seeds=[0],
+        wpm_lo=60,
+        wpm_hi=100,
+        bucket_width=40,
+        min_cell_samples=4,
+        n_boot=10,
+        train_params=_fast_params(),
+    )
+    for fold in report["folds"].values():
+        m = fold["seeds"][0]
+        # lawful world durations are 60-320ms; a log-space leak would give wmae > 100
+        # (every |pred - obs| ~ obs) and a wildly non-unit calibration slope.
+        assert m["wmae"] < 60
+        assert m["rho"] > 0.6
+        assert 0.3 < m["calibration_slope"] < 3.0

@@ -52,7 +52,8 @@ class TableBigramScorer(IScorer):
         # T: predicted time for every ordered position pair, at the scoring WPM. The
         # reduction is valid by construction since the 2026-07-05 schema: features are pure
         # geometry + wpm (frequency was removed per OQ-1), so a bigram's prediction depends
-        # only on its two positions.
+        # only on its two positions. The table stores MILLISECONDS: a LOGRAT-space model's
+        # raw output is log(ms*wpm/12000), and only ms entries sum to a corpus time.
         vectors = np.vstack(
             [
                 bigram_features_from_positions(geometry, (a, b), wpm=target_wpm)
@@ -60,7 +61,9 @@ class TableBigramScorer(IScorer):
                 for b in positions
             ]
         )
-        self._T = model.predict(vectors).reshape(n_pos, n_pos)
+        from keybo.scoring.model_scorer import predict_ms
+
+        self._T = predict_ms(model, vectors).reshape(n_pos, n_pos)
 
         # F: corpus frequency between character indices (charset + space at index n-1).
         charset = set(self._chars) | {" "}

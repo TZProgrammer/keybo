@@ -55,6 +55,12 @@ def _sidecar_path(artifact_path: str) -> Path:
     return Path(artifact_path).with_suffix(".meta.json")
 
 
+#: target spaces a model may be trained in. MS: predict() is milliseconds directly.
+#: LOGRAT: predict() is log(ms * wpm / 12000) — the pace-normalized log-ratio target
+#: (T-REL, 2026-07-10: -37% cross-layout wmae); ms = exp(pred) * 12000 / wpm.
+TARGET_SPACES = ("MS", "LOGRAT")
+
+
 class TypingModel(ABC):
     """Abstract typing-time model. Subclasses implement predict + artifact (de)serialization."""
 
@@ -64,6 +70,47 @@ class TypingModel(ABC):
     @abstractmethod
     def predict(self, X: np.ndarray) -> np.ndarray:
         """Predict per-row typing time for a 2-D feature matrix."""
+
+    @property
+    def target_space(self) -> str:
+        """The space predict() returns in, from the training sidecar; "MS" when absent."""
+        space = str((self.metadata.extra.get("training") or {}).get("target_space") or "MS").upper()
+        if space not in TARGET_SPACES:
+            raise ValueError(
+                f"unknown target_space {space!r} in model metadata (known: {TARGET_SPACES}); "
+                "the model was saved by a newer pipeline — upgrade before scoring with it"
+            )
+        return space
+
+    def to_ms(self, pred: np.ndarray, X: np.ndarray) -> np.ndarray:
+        """Convert raw predict() output to milliseconds.
+
+        Every consumer that needs a TIME (scorers building QAP tables, cell evaluation)
+        must route through here rather than assume predict() is ms: a LOGRAT model's raw
+        output is log(ms*wpm/12000), and summing that over a corpus is not a time. The wpm
+        the prediction was conditioned on is recovered from the feature matrix itself (the
+        schema's "wpm" column), so the conversion can never use a different pace than the
+        prediction did.
+        """
+        if self.target_space == "MS":
+            return pred
+        try:
+            wpm_col = self.metadata.feature_names.index("wpm")
+        except ValueError:
+            raise ValueError(
+                "LOGRAT model has no 'wpm' feature; cannot convert predictions to ms"
+            ) from None
+        wpm = np.asarray(X)[:, wpm_col]
+        if np.any(wpm <= 0):
+            raise ValueError(
+                "LOGRAT->ms conversion needs wpm > 0 for every row (a scorer built with "
+                "target_wpm=0 would divide by zero); pass a real target wpm"
+            )
+        return np.exp(pred) * 12000.0 / wpm
+
+    def predict_ms(self, X: np.ndarray) -> np.ndarray:
+        """predict() in milliseconds regardless of the model's training target space."""
+        return self.to_ms(self.predict(X), X)
 
     # --- persistence: shared sidecar logic, artifact handled by the subclass -----------
 

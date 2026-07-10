@@ -34,6 +34,13 @@ def add_arguments(parser: argparse.ArgumentParser) -> None:
     # right precedence (explicit flag > --hyperparams file > built-in default).
     parser.add_argument("--n-estimators", type=int, default=None)
     parser.add_argument("--max-depth", type=int, default=None)
+    parser.add_argument(
+        "--target-space",
+        choices=["LOGRAT", "MS"],
+        default=None,
+        help="Training target space (default: the trainer's validated recipe, LOGRAT). "
+        "MS is the pre-2026-07-10 escape hatch for A/B experiments.",
+    )
     parser.add_argument("--no-progress", action="store_true", help="Disable the progress bar")
 
 
@@ -82,10 +89,13 @@ def run(args: argparse.Namespace) -> int:
 
     params = _resolve_params(args)
     trainer = train_bigram_model if args.ngram == "bigram" else train_trigram_model
-    # progress is an explicit kwarg, deliberately NOT merged into params: params is recorded
-    # as hyperparameter provenance and forwarded to XGBoost, where a stray key would be
-    # silently ignored.
-    model = trainer(rows, target_wpm=args.target_wpm, progress=not args.no_progress, **params)
+    # progress and target_space are explicit kwargs, deliberately NOT merged into params:
+    # params is recorded as hyperparameter provenance and forwarded to XGBoost, where a
+    # stray key would be silently ignored.
+    space_kw = {"target_space": args.target_space} if args.target_space else {}
+    model = trainer(
+        rows, target_wpm=args.target_wpm, progress=not args.no_progress, **space_kw, **params
+    )
 
     # Record the resolved hyperparameters actually used, for provenance. ModelMetadata is a
     # frozen dataclass, but `extra` is a mutable dict field, so mutating it in place is fine

@@ -45,7 +45,8 @@ class TableTrigramScorer(IScorer):
         positions = [*geometry.slots, geometry.space_position]
         n = len(positions)
 
-        # T3: predicted time for every ordered position triple, one batch predict.
+        # T3: predicted time for every ordered position triple, one batch predict. As with
+        # the bigram table, entries are MILLISECONDS (target-space-aware conversion).
         vectors = np.vstack(
             [
                 trigram_features_from_positions(geometry, (a, b, c), wpm=target_wpm)
@@ -54,7 +55,9 @@ class TableTrigramScorer(IScorer):
                 for c in positions
             ]
         )
-        self._T3 = model.predict(vectors).reshape(n, n, n)
+        from keybo.scoring.model_scorer import predict_ms
+
+        self._T3 = predict_ms(model, vectors).reshape(n, n, n)
 
         charset = set(self._chars) | {" "}
         char_idx = {c: i for i, c in enumerate(self._chars)}

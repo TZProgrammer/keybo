@@ -347,12 +347,16 @@ def layout_ranking_tau(
 
 
 def _predict_cells(model, cells: list[Cell], geometry: Geometry) -> np.ndarray:
-    """g(geometry, wpm) + b(ngram) per cell — the model's full prediction.
+    """g(geometry, wpm) + b(ngram) per cell, in MILLISECONDS — the model's full prediction.
 
     The practice term b (stored in the model's training metadata, when trained with it)
     is added by NGRAM IDENTITY: it is a legitimate, layout-independent part of predicted
     time. It cancels exactly in the layout-ranking tau (verified structurally); the
     per-cell rho does credit it, which is honest — see the OQ-1 artifact's decomposition.
+
+    b lives in the model's target space (it was backfit there), so the order is fixed:
+    add b to the raw prediction FIRST, then convert the sum to ms. For a LOGRAT model
+    the reverse order would apply a log-space offset to a millisecond value.
     """
     featurize = (
         trigram_features_from_positions
@@ -365,7 +369,7 @@ def _predict_cells(model, cells: list[Cell], geometry: Geometry) -> np.ndarray:
     if practice:
         values = practice.get("values", {})
         pred = pred + np.array([values.get(c.ngram, 0.0) for c in cells])
-    return pred
+    return model.to_ms(pred, X)
 
 
 def _distance(positions) -> float:

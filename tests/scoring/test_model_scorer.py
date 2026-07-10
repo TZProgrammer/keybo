@@ -6,6 +6,7 @@ would NOT have detected the change.
 """
 
 import numpy as np
+import pytest
 
 from keybo.geometry import ROW_STAGGERED_30
 from keybo.layout import Layout
@@ -154,3 +155,47 @@ def test_scorer_still_skips_genuinely_off_layout_chars_but_keeps_space():
     lay = Layout(LAYOUT, ROW_STAGGERED_30)
     scorer = BigramModelScorer(StubModel(1.0), bigram_freqs={"th": 1, "a;": 1, "e ": 1})
     assert scorer.fitness(lay) == 2.0  # 'th' and 'e ' kept; 'a;' dropped
+
+
+# --- LOGRAT target space (T-REL, 2026-07-10) ----------------------------------------------
+
+
+class LogratStubModel:
+    """A stub in the LOGRAT space: raw predict() returns log(ms*wpm/12000) for a fixed
+    ms, carrying the sidecar shape a real saved LOGRAT model has."""
+
+    def __init__(self, ms=100.0):
+        from keybo.features.schema import BIGRAM_FEATURE_NAMES, FEATURE_VERSION
+        from keybo.models.base import ModelMetadata
+
+        self.ms = ms
+        self.metadata = ModelMetadata(
+            feature_version=FEATURE_VERSION,
+            feature_names=list(BIGRAM_FEATURE_NAMES),
+            wpm_range=(40, 140),
+            ngram="bigram",
+            extra={"training": {"target_space": "LOGRAT"}},
+        )
+
+    def predict(self, X):
+        from keybo.features.schema import BIGRAM_FEATURE_NAMES
+
+        wpm = np.asarray(X)[:, BIGRAM_FEATURE_NAMES.index("wpm")]
+        return np.log(self.ms * wpm / 12000.0)
+
+    # borrow the conversion seam from the real base class
+    from keybo.models.base import TypingModel
+
+    target_space = TypingModel.target_space
+    to_ms = TypingModel.to_ms
+    predict_ms = TypingModel.predict_ms
+
+
+def test_lograt_model_scorer_sums_ms_not_log_values():
+    """fitness must be Σ freq·ms — for a constant-100ms LOGRAT model with freqs 3+5
+    that is 800, not the (near-zero) sum of raw log predictions."""
+    lay = Layout(LAYOUT, ROW_STAGGERED_30)
+    scorer = BigramModelScorer(
+        LogratStubModel(ms=100.0), bigram_freqs={"th": 3, "he": 5}, target_wpm=90.0
+    )
+    assert scorer.fitness(lay) == pytest.approx(800.0, rel=1e-9)

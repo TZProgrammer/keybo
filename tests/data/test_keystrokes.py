@@ -748,9 +748,7 @@ def test_hesitation_filter_off_by_default_value_zero():
         t += 100
     records.append({**rec(" ", t + 700, t + 750), "SENTENCE": "thequickfox h"})
     records.append({**rec("h", t + 800, t + 850), "SENTENCE": "thequickfox h"})
-    occ = extract_occurrences(
-        records, cmap, n=2, skip=0, time_mode="full", hesitation_cap=0.0
-    )
+    occ = extract_occurrences(records, cmap, n=2, skip=0, time_mode="full", hesitation_cap=0.0)
     assert "x " in [o.ngram for o in occ]  # cap=0 disables the filter
 
 
@@ -761,7 +759,5 @@ def test_hesitation_filter_inactive_below_min_intervals():
         {**rec("a", 1000, 1050), "SENTENCE": "ab"},
         {**rec("b", 3000, 3050), "SENTENCE": "ab"},  # 2000ms gap, but only 1 interval
     ]
-    occ = extract_occurrences(
-        records, cmap, n=2, skip=0, time_mode="full", hesitation_cap=3.0
-    )
+    occ = extract_occurrences(records, cmap, n=2, skip=0, time_mode="full", hesitation_cap=3.0)
     assert [o.ngram for o in occ] == ["ab"]  # kept: no reliable median to filter against

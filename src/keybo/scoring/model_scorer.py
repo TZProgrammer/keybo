@@ -2,7 +2,7 @@
 
 The fitness of a layout is the total predicted time to type the corpus:
 
-    fitness(layout) = sum over n-grams of  predict(features(layout, n-gram)) * frequency
+    fitness(layout) = sum over n-grams of  predict_ms(features(layout, n-gram)) * frequency
 
 Two things worth noting versus the original:
 
@@ -10,6 +10,9 @@ Two things worth noting versus the original:
   no key is invisible to the objective (bug #2).
 - Frequency is ONLY the weight in that sum, never a feature input (OQ-1): features are pure
   geometry + wpm, so predictions cannot memorize practiced positions via frequency.
+
+Predictions are summed in MILLISECONDS, not raw model output: a LOGRAT-space model's raw
+predict() is log(ms*wpm/12000) (T-REL, 2026-07-10), and a sum of log-ratios is not a time.
 """
 
 from __future__ import annotations
@@ -21,6 +24,16 @@ import numpy as np
 from keybo.features import bigram_features, trigram_features
 from keybo.layout import Layout
 from keybo.scoring.base import IScorer
+
+
+def predict_ms(model, X: np.ndarray) -> np.ndarray:
+    """The scorer-side prediction: always milliseconds.
+
+    Routes through ``TypingModel.predict_ms`` (target-space aware) when the model provides
+    it; a plain object with only ``predict`` (test stubs) is ms-space by construction.
+    """
+    fn = getattr(model, "predict_ms", None)
+    return fn(X) if fn is not None else model.predict(X)
 
 
 class _ModelScorerBase(IScorer):
@@ -52,7 +65,7 @@ class BigramModelScorer(_ModelScorerBase):
                 freqs.append(freq)
         if not vectors:
             return 0.0
-        predicted = self.model.predict(np.vstack(vectors))
+        predicted = predict_ms(self.model, np.vstack(vectors))
         return float(np.sum(predicted * np.array(freqs)))
 
 
@@ -81,5 +94,5 @@ class TrigramModelScorer(_ModelScorerBase):
             freqs.append(freq)
         if not rows:
             return 0.0
-        predicted = self.model.predict(np.vstack(rows))
+        predicted = predict_ms(self.model, np.vstack(rows))
         return float(np.sum(predicted * np.array(freqs)))

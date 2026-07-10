@@ -26,6 +26,16 @@ Two corrections found by the real-data LOLO harness (2026-07-04/05, arm R1W — 
 Both are on by default and controllable (``practice_term=False`` / ``layout_weights=False``).
 The fitted practice term is stored in the model metadata (``extra["practice_term"]``) for
 inspection; scoring deliberately ignores it (layout-independent ⇒ ranking-irrelevant).
+
+A third correction (T-REL, 2026-07-10): models train in the **LOGRAT target space** —
+``log(ms * wpm / 12000)``, time as a log-multiple of the typist's session-mean keystroke.
+The ms label carries the typist-pace scale, so every geometry leaf must re-learn the wpm
+hyperbola; pre-factoring it out cut cross-layout wmae 37% (bigram) with the rare-ngram
+guards held (an additive DIFF control moved nothing ⇒ the multiplicative scale structure
+is the mechanism), and the conditioned-trigram A/B reproduced it (wmae −30.7%, every
+guard improved). ``predict()`` therefore returns log-ratios for these models; consumers
+convert back via ``TypingModel.predict_ms`` / ``to_ms``. The practice term is backfit in
+the training space, so for LOGRAT models the stored b values are log-scale.
 """
 
 from __future__ import annotations
@@ -51,6 +61,13 @@ PRACTICE_SHRINKAGE_K = 100.0
 PRACTICE_BACKFIT_ITERS = 2
 #: cap on inverse-layout-share weights, so a 64-participant layout can't dominate.
 LAYOUT_WEIGHT_CAP = 50.0
+
+#: target-space transforms: name -> (ms -> training target, given the example's wpm).
+#: LOGRAT is the adopted bigram space (T-REL 2026-07-10, -37% cross-layout wmae).
+_TARGET_TRANSFORMS = {
+    "MS": lambda ms, wpm: ms,
+    "LOGRAT": lambda ms, wpm: np.log(np.maximum(ms, 1.0) * wpm / 12000.0),
+}
 
 
 def _rows_to_examples(row: StrokeRow, geometry: Geometry, ngram: str):
@@ -163,9 +180,16 @@ def _train(
     progress=False,
     practice_term=True,
     layout_weights=True,
+    target_space="MS",
     **params,
 ) -> XGBoostTypingModel:
     from keybo.features.schema import BIGRAM_FEATURE_NAMES, TRIGRAM_FEATURE_NAMES
+
+    target_space = str(target_space).upper()
+    if target_space not in _TARGET_TRANSFORMS:
+        raise ValueError(
+            f"unknown target_space {target_space!r} (known: {sorted(_TARGET_TRANSFORMS)})"
+        )
 
     X, y, ngrams, layouts, counts = _build_matrix_full(
         rows, ngram=ngram, geometry=geometry, progress=progress
@@ -178,6 +202,12 @@ def _train(
         ngram=ngram,
     )
 
+    # The training target lives in the model's target space; the per-example wpm needed
+    # for the transform is the schema's own wpm column (the same one to_ms reads back).
+    if len(y):
+        wpm_col = np.maximum(X[:, names.index("wpm")], 1.0)
+        y = _TARGET_TRANSFORMS[target_space](y, wpm_col)
+
     weights = layout_balance_weights(layouts) if layout_weights and len(y) else None
 
     def fit(target):
@@ -189,24 +219,29 @@ def _train(
     if not practice_term or not len(y):
         model = fit(y)
         model.metadata.extra["training"] = {
+            "target_space": target_space,
             "practice_term": None,
             "layout_weights": bool(weights is not None),
         }
         return model
 
-    # Backfit: b absorbs the shrunk per-ngram residual mean; g refits on y - b.
+    # Backfit: b absorbs the shrunk per-ngram residual mean; g refits on y - b. Runs in
+    # the target space, so a LOGRAT model's b values are log-ratios (stored at higher
+    # precision — rounding log-scale values to 3 decimals would destroy them).
     model = fit(y)
     bmap: dict[str, float] = {}
     for _ in range(PRACTICE_BACKFIT_ITERS):
         bmap = fit_practice_term(ngrams, y - model.predict(X), counts)
         bvec = np.array([bmap.get(ng, 0.0) for ng in ngrams])
         model = fit(y - bvec)
+    b_digits = 3 if target_space == "MS" else 6
     model.metadata.extra["training"] = {
+        "target_space": target_space,
         "practice_term": {
             "shrinkage_k": PRACTICE_SHRINKAGE_K,
             "backfit_iters": PRACTICE_BACKFIT_ITERS,
             "n_ngrams": len(bmap),
-            "values": {ng: round(float(v), 3) for ng, v in bmap.items()},
+            "values": {ng: round(float(v), b_digits) for ng, v in bmap.items()},
         },
         "layout_weights": bool(weights is not None),
     }
@@ -221,9 +256,10 @@ def train_bigram_model(
     progress: bool = False,
     practice_term: bool = True,
     layout_weights: bool = True,
+    target_space: str = "LOGRAT",
     **params,
 ) -> XGBoostTypingModel:
-    """Fit a bigram typing-time model from bistroke rows (R1W recipe by default).
+    """Fit a bigram typing-time model from bistroke rows (R1W + LOGRAT recipe by default).
 
     ``progress`` is consumed here (feature-build bar), never forwarded into ``**params`` --
     XGBoost silently ignores unknown keyword params, so a leak would be invisible.
@@ -237,6 +273,7 @@ def train_bigram_model(
         progress=progress,
         practice_term=practice_term,
         layout_weights=layout_weights,
+        target_space=target_space,
         **params,
     )
 
@@ -249,9 +286,14 @@ def train_trigram_model(
     progress: bool = False,
     practice_term: bool = True,
     layout_weights: bool = True,
+    target_space: str = "LOGRAT",
     **params,
 ) -> XGBoostTypingModel:
-    """Fit a trigram typing-time model from tristroke rows. See train_bigram_model."""
+    """Fit a trigram typing-time model from tristroke rows. See train_bigram_model.
+
+    LOGRAT by default per the conditioned-trigram A/B (2026-07-10): wmae −30.7% with
+    umae/dec3/taus all improved — the bigram mechanism carries.
+    """
     return _train(
         rows,
         "trigram",
@@ -261,5 +303,6 @@ def train_trigram_model(
         progress=progress,
         practice_term=practice_term,
         layout_weights=layout_weights,
+        target_space=target_space,
         **params,
     )

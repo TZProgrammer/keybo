@@ -100,3 +100,46 @@ def test_table_is_much_faster_than_model_scorer(model, freqs):
         table.fitness(lay)
     t_table = time.perf_counter() - t0
     assert t_table < t_ref  # conservatively "faster"; in practice ~1000x
+
+
+# --- LOGRAT target space (T-REL, 2026-07-10) ----------------------------------------------
+# The module `model` fixture trains in the LOGRAT default now, so every parity test above
+# already exercises the predict_ms conversion end-to-end against BigramModelScorer. The
+# tests below pin the semantics directly.
+
+
+def _reencoded_lograt(base_model):
+    """A second LOGRAT model encoding the SAME millisecond times as ``base_model``, built
+    by hand-applying the transform to base_model's ms output (the saved-artifact shape)."""
+    import copy
+
+    m2 = copy.deepcopy(base_model)
+    m2.metadata.extra.setdefault("training", {})["target_space"] = "LOGRAT"
+    ms_of = base_model.predict_ms
+
+    def lograt_predict(X):
+        from keybo.features.schema import BIGRAM_FEATURE_NAMES
+
+        wpm = np.asarray(X)[:, BIGRAM_FEATURE_NAMES.index("wpm")]
+        return np.log(np.maximum(ms_of(X), 1.0) * wpm / 12000.0)
+
+    m2.predict = lograt_predict
+    return m2
+
+
+def test_lograt_reencoding_builds_the_identical_table(model, freqs):
+    """Two models encoding the SAME times — one via its own booster, one via an explicit
+    log(ms*wpm/12000) re-encoding — must build the same table: the scorer converts every
+    prediction to ms before storing."""
+    ref = TableBigramScorer(model, freqs, target_wpm=90.0, chars=QWERTY)
+    re_enc = TableBigramScorer(_reencoded_lograt(model), freqs, target_wpm=90.0, chars=QWERTY)
+    lay = Layout(QWERTY, ROW_STAGGERED_30)
+    assert re_enc.fitness(lay) == pytest.approx(ref.fitness(lay), rel=1e-6)
+
+
+def test_lograt_table_rejects_zero_target_wpm(model, freqs):
+    """target_wpm=0 makes the LOGRAT->ms conversion divide by zero; it must raise at
+    construction, not emit inf into the table. (The module model IS LOGRAT-space.)"""
+    assert model.target_space == "LOGRAT"
+    with pytest.raises(ValueError, match="wpm"):
+        TableBigramScorer(model, freqs, target_wpm=0.0, chars=QWERTY)

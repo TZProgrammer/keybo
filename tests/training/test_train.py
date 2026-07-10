@@ -106,7 +106,11 @@ def test_trained_model_saves_and_reloads(tmp_path):
 def test_practice_term_recovers_a_planted_per_bigram_offset():
     """Plant a large per-bigram additive offset on top of a flat geometry world; the
     fitted practice term must recover it (sign and rough magnitude), and the offset must
-    NOT leak into g's predictions (which are geometry-only)."""
+    NOT leak into g's predictions (which are geometry-only).
+
+    Pinned to the MS space so the planted ±60ms offsets stay additive; the LOGRAT
+    analogue (log-scale b) is asserted separately below.
+    """
     fast, slow = "th", "qz"
     rows = []
     for ngram, offset in ((fast, -60), (slow, +60)):
@@ -121,7 +125,7 @@ def test_practice_term_recovers_a_planted_per_bigram_offset():
                 samples=samples,
             )
         )
-    model = train_bigram_model(rows, target_wpm=90, n_estimators=20, max_depth=2)
+    model = train_bigram_model(rows, target_wpm=90, n_estimators=20, max_depth=2, target_space="MS")
     b = model.metadata.extra["training"]["practice_term"]["values"]
     assert b[fast] < -20, b  # planted -60, shrunk toward 0 is fine; sign + size must show
     assert b[slow] > +20, b
@@ -169,3 +173,80 @@ def test_practice_shrinkage_suppresses_rare_ngrams():
     # Same residual, but 'aa' has 3 samples vs 'bb' 300: shrinkage must bite 'aa' hard.
     assert abs(b["aa"]) < 5
     assert b["bb"] < -35
+
+
+# --- target space: LOGRAT (pace-normalized log-ratio, T-REL 2026-07-10) ------------------
+
+
+def test_bigram_training_defaults_to_lograt_space():
+    """LOGRAT is the adopted bigram recipe (T-REL: -37% cross-layout wmae); like the
+    practice term and layout weights, the shipped default IS the validated recipe."""
+    rows = _synthetic_bigram_rows()
+    model = train_bigram_model(rows, target_wpm=90, n_estimators=5, max_depth=2)
+    assert model.metadata.extra["training"]["target_space"] == "LOGRAT"
+    assert model.target_space == "LOGRAT"
+
+
+def test_trigram_training_defaults_to_lograt_space():
+    """The conditioned-trigram LOGRAT A/B adopted (2026-07-10: wmae -30.7%, all guards
+    improved), so the trigram default matches the bigram one."""
+    from keybo.training.train import train_trigram_model
+
+    rows = [
+        StrokeRow(
+            layout="qwerty",
+            positions=((-1, 3), (1, 2), (-2, 2)),
+            ngram="the",
+            frequency=5,
+            samples=[(90, 200 + i, i, 50) for i in range(4)],
+        )
+        for _ in range(30)
+    ]
+    model = train_trigram_model(rows, target_wpm=90, n_estimators=5, max_depth=2)
+    assert model.metadata.extra["training"]["target_space"] == "LOGRAT"
+    assert model.target_space == "LOGRAT"
+
+
+def test_lograt_model_predict_ms_recovers_duration_scale():
+    """A LOGRAT-trained model's raw predict() is in log space (small numbers), but
+    predict_ms must come back in the data's duration scale."""
+    rows = _synthetic_bigram_rows(n=120)
+    model = train_bigram_model(
+        rows, target_wpm=90, n_estimators=30, max_depth=2, target_space="LOGRAT"
+    )
+    X, y = build_training_matrix(rows, ngram="bigram", target_wpm=90)
+    raw = model.predict(X)
+    ms = model.predict_ms(X)
+    assert np.all(np.abs(raw) < 5)  # log-ratio scale
+    assert 50 < np.median(ms) < 400  # duration scale (data is ~100-150ms)
+
+
+def test_lograt_practice_term_lives_in_log_space():
+    """In LOGRAT space the backfit residuals are log-ratios, so stored b values must be
+    log-scale (|b| << 1), not the ±60ms of the planted offset."""
+    fast, slow = "th", "qz"
+    rows = []
+    for ngram, offset in ((fast, -60), (slow, +60)):
+        samples = [(90, 150 + offset + (i % 5), i, 50) for i in range(200)]
+        rows.append(
+            StrokeRow(
+                layout="qwerty",
+                positions=((-1, 3), (1, 2)),
+                ngram=ngram,
+                frequency=200,
+                samples=samples,
+            )
+        )
+    model = train_bigram_model(
+        rows, target_wpm=90, n_estimators=20, max_depth=2, target_space="LOGRAT"
+    )
+    b = model.metadata.extra["training"]["practice_term"]["values"]
+    # log(90/150) ~ -0.51, log(210/150) ~ +0.34: log-scale, correct signs.
+    assert -1.0 < b[fast] < -0.1, b
+    assert 0.1 < b[slow] < 1.0, b
+
+
+def test_train_rejects_unknown_target_space():
+    rows = _synthetic_bigram_rows()
+    with pytest.raises(ValueError, match="target_space"):
+        train_bigram_model(rows, target_wpm=90, n_estimators=5, target_space="RATIO")

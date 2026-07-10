@@ -1385,3 +1385,26 @@ multiplicative structure; the explicit per-typist anchor adds ~nothing at stage 
 single interval where the typist scale is largely in the features already; stage 2's
 target AGGREGATES across typists, where the scale mismatch does the damage).
 Two-stage 2x2 proceeds with S1 label = M5 (the shipped stage-1 winner) per the rule.
+
+### Outcome append (2026-07-10): T-REL consequences — trigram LOGRAT ADOPTED; SHAP evolution as predicted
+runs/trel_retrain.json (conditioned-trigram A/B, tristrokes_cond_v3, cand-4 params,
+2 seeds x 4 LOLO folds, shared frame; challenger rule from 046b92e):
+  tri INC     rho/ceil 0.9226  wmae 20.73  umae 24.08  dec3 28.05   (taus 1.0)
+  tri LOGRAT  rho/ceil 0.9928  wmae 14.38 (-30.66%)  umae -22.01%  dec3 -9.71%  (taus 1.0)
+QUALIFIED with every guard IMPROVED (unlike the bigram arm where dec3 was merely inside
+tolerance) — the multiplicative-scale mechanism carries to the conditioned increment.
+Consequence executed per rule: 3-seed all-data retrain saved as
+models/trigram_cond_logratv3_seed{0,1,2}.json (target_space=LOGRAT sidecar).
+SHAP evolution (Stage C, registered expectation: wpm's share collapses in LOGRAT space):
+  INC bigram_v5_seed0:    wpm |SHAP| share 43.8% (wpm 27.1ms, bottom 9.3, same_hand 5.1)
+  LOGRAT logratv5_seed0:  wpm |SHAP| share 28.1% (wpm .083 logs, bottom .054, same_finger .033)
+Expectation CONFIRMED in direction (43.8% -> 28.1%), not to zero: the residual wpm share
+is the model using pace to modulate GEOMETRY effects (skill-dependent physics measured
+earlier: SFB penalty grows with skill, roll bonus grows with skill), which is exactly the
+wpm interaction we want the model to keep — the hyperbola (pure level) is what LOGRAT
+removed. Geometry features' relative shares rose accordingly.
+Repo consequence (committed with this entry): target_space is now a first-class model
+property — TypingModel.target_space/to_ms/predict_ms; train_{bigram,trigram}_model
+default target_space="LOGRAT"; every scorer (model + table, bigram + trigram) and the
+LOLO harness convert predictions to ms through the seam; train CLI grows --target-space
+{LOGRAT,MS}. Old ms-space artifacts load unchanged (absent sidecar key => MS).
