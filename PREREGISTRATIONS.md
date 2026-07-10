@@ -1800,3 +1800,23 @@ measured floor get an explicit "possibly noise" annotation in the record).
 AUDIT DOC: agent-artifacts/gates-audit.md — every gate in force (rare-ngram guard,
 tau/dp-tau, E5, censor_ratio, kb_strat spread bar, ceilings-as-normalizer, adoption
 bars), purpose, calibration status, known misfires, fix. Committed with outcomes.
+
+### Outcome append (2026-07-10): E5-LOGRAT on A5 — BLOCKED by the corrected gate; row-blindness is space-invariant
+Sequence (all timestamps in events.log): the v1 home-share gate was VOIDED for
+miscalibration BEFORE the A5 search output was read (5d4228e — known-good incumbent
+outputs measure 53.9%/31.6% vs the 59.8% bar; OQ-14's top~home tie means speed-optimal
+does not maximize home share). The v2 cross-regret gate then ran per the amendment:
+  A5-optimized layout nzcdgxaihelwstb,oukyrmfpvq./;j scored under the INCUMBENT
+  LOGRAT T2: regret +0.815% vs the incumbent optimum (bar 0.75%; qwerty +4.21% for
+  scale) => FAIL. runs/e5_a5_v2.json; runs/e5_a5_lograt.json (v1 informational:
+  home share 31.0%, distinct vectors 961->155 vs full set's 765).
+VERDICT: A5 adoption BLOCKED. The LOLO gain (-2.07% wmae) is real ON REAL LAYOUTS but
+the deletion still hands the optimizer a null space (155 distinct vectors = 5x more
+collisions); its optimum drifts +0.815% off the trusted surface — beyond plateau
+noise. Row-blindness is confirmed SPACE-INVARIANT (ms-era incident reproduced under
+LOGRAT, now with a calibrated detector). ANCHOR features stand; FEAT-LR round closes
+with zero adoptions; the shipped 20-feature depth-3 LOGRAT recipe survives its full
+re-adjudication (features x tuning) in the new space.
+NOTE ON THE NEAR-MISS: +0.815% vs 0.75% is within plausible search noise of the bar;
+per goalpost discipline the letter stands (FAIL), and the margin note is recorded so a
+future round with more restarts can re-test — as a NEW registration, not a re-read.
