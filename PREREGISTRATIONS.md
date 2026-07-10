@@ -1955,3 +1955,27 @@ column-order term; DUAL rule — LOLO wmae within +1% (non-degradation) + umae/d
 guards + E5-v2 cross-regret <= 0.75% + fixed model prices the probe pairs with the
 measured sign (pinky-first slower). FEATURE_VERSION bump + retrain + family re-run
 on adoption.
+
+## TRI-FEAT — triple_roll + back_forth trigram features (registered 2026-07-10, BEFORE
+## results; user proposals: "roll with 3 consecutive fingers, same hand, no redirect"
+## and "third key == first key, middle on a different finger")
+REPRESENTABILITY AUDIT (measured, runs in the record): neither is a collision — the
+schema DISTINGUISHES both patterns (in-roll vs out-roll triple differ via landing
+one-hots; a-b-a is exactly sg_distance==0 & !bg1_same_finger). The question is
+UNDERFITTING, not blindness: back_forth is a 2-split conjunction (trivially formable);
+triple_roll is a 4-way conjunction (same_hand_tri & !redirect & bg1_adjacent &
+bg2_adjacent) — formable on one depth-5 path (trigram prod uses cand-4 depth 5) but
+capacity-expensive; an explicit column is a shortcut. Precedent AGAINST: A7 explicit
+interactions failed for bigrams. Untested at trigram level.
+DRIVER (trifeat_arm.py), JOIN cond frame (canonical), cand-4, 2 seeds x 4 folds:
+Stage 0 DIAGNOSTIC (free, from ANCHOR's held-out predictions): mean signed residual
+  (obs - pred, ms) by pattern class {triple_roll_in, triple_roll_out, back_forth,
+  redirect-nonroll, other-same-hand, alternating} — does the INCUMBENT already price
+  these classes? |mean resid| <~ 3ms => already priced.
+Arms: ANCHOR / +TRIPLE (triple_roll_in, triple_roll_out — signed, 2 cols) / +BF
+  (back_forth, 1 col) / +BOTH.
+RULE (per arm vs ANCHOR, trigram challenger standard): adopt iff wmae >1% rel better
+AND umae/dec3 <= +2% AND taus no lower. Stage-0 large-residual on a class + its arm
+qualifying => productionize (TRIGRAM_FEATURE_NAMES + FEATURE_VERSION bump + family
+re-run, composed with whatever pinkyfix decides). All-null + Stage-0 small => both
+features documented as already-priced; census note extended.
