@@ -1325,3 +1325,38 @@ stratum comparisons at matched wpm buckets (same 40-140 frame); per-stratum cell
 unchanged (10) — starved cells drop, counts reported. Small-stratum layouts (dvorak n=64
 splits further) may starve folds: a fold with <100 cells is reported UNUSABLE, not
 laundered into means.
+
+## S1-REL + TWO-STAGE 2x2 (registered 2026-07-10, BEFORE results; user proposal: the
+## stage-1 blind-pace model should also use the relative-speed mechanism, then feed the
+## main model — A/B both stages)
+STAGE-1 (driver blind_pace_rel.py; same extraction/split/leakage-audit as blind_pace_max):
+the incumbent frontier winner M5 predicts ABSOLUTE interval ms (log-space blend). Arms
+relativize the stage-1 TARGET to the typist's own scale (prior = shrunk mean of the
+typist's other sessions' medians — the scale anchor available without leakage):
+  R0  M5 as shipped (anchor; must reproduce +7.65% vs LOO-mean)
+  R1  predict y/prior (ratio target), same features, prediction re-scaled by prior
+  R2  predict log(y/prior) (log-ratio), re-scaled
+  R3  fully scale-free: features ALSO divided by prior (loo_med/prior, w3/prior, w10/prior)
+      + log-ratio target — the "model learns shape only" reading of the user's mechanism
+RULE: winner = lowest test MAE (ms) among arms passing the leakage audit (residual
+ngram-R2 <= LOO-mean's + 0.002). Stage-1 relativization ADOPTED iff winner beats M5 by
+>=1% rel. NOTE the honest prior: M5's log-space fit already captures much of the
+multiplicative structure; R1-R3's marginal value is the explicit per-typist anchor.
+STAGE-2 2x2 (driver twostage_2x2.py, runs AFTER T-REL verdict; matched-frame methodology
+from matched_frame_pace.py — one cell frame bucketed by INCUMBENT session wpm; only the
+pace label value and target space vary):
+  arms = {label: SESS (session-mean wpm), S1 (stage-1 winner's pace estimate)} x
+         {target space: INC (ms), W (T-REL winner; skipped if T-REL adopts nothing)}
+  The label enters BOTH the wpm feature AND the target transform denominator (one
+  mechanism, tested as a unit; per-cell eval back-conversion uses the arm's own
+  cell-mean label, mirroring matched_frame_pace).
+  CONTEXT RECORDED: SESSxINC = anchor; S1xINC re-tests the REJECTED M5-label arm
+  (matched_frame verdict: wmae -6.3% but dec3 +3.5% > +2% guard) — the user's
+  relativization hypothesis is exactly that the winning target space changes this trade
+  (ledger F4 logic, now justified by a changed architecture rather than re-rolling a
+  rejected arm).
+RULE: S1-label ADOPTED iff in the WINNING target space it improves wmae >1% rel over
+SESS-label AND umae/dec3 within +2% AND neither tau lower (2 seeds x 4 folds). Adoption
+consequence: stage-1 model becomes a shipped artifact (serve story: pace estimate from
+the user's own typing sample), deliverable rebuild inherits it; else SESS label stands
+and the route closes on the record.
