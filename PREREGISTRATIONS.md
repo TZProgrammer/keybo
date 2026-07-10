@@ -1449,3 +1449,25 @@ models/trigram_cond_lograt_join_seed{0,1,2}.json (target_space=LOGRAT sidecars).
 P10 Stage B will run with TRIGRAM_MODELS=models/trigram_cond_lograt_join_seed, still
 gated on the twostage_2x2 verdict (in flight; SESSxLOGRAT already replicated the bigram
 LOGRAT gain on the independent matched frame: wmae 15.59 -> 9.64, -38.2%).
+
+### Outcome append (2026-07-10): TWO-STAGE 2x2 — SESS STANDS; the S1 dec3 trade is target-space-INVARIANT
+runs/twostage_2x2.json (matched frame, fresh extraction: 31.6M occurrences, 5924 cells,
+145k examples; 2 seeds x 4 folds):
+  SESSxINC     rho/ceil 0.9720  wmae 15.59  umae 20.13  dec3 27.16   (ap-tau .67, dp-tau 1.0)
+  SESSxLOGRAT  rho/ceil 1.0162  wmae  9.64 (-38.2%)  umae 15.74  dec3 27.14
+  S1xINC       rho/ceil 0.9757  wmae 14.61 (-6.3% vs SESSxINC)  dec3 28.97 (+6.7%)
+  S1xLOGRAT    rho/ceil 1.0067  wmae  9.19 (-4.7% vs SESSxLOGRAT)  umae +2.75%  dec3 +7.23%
+VERDICT per a94a2ba: S1 fails the guard IN THE WINNING SPACE (umae +2.75% > +2%,
+dec3 +7.23% > +2%) => SESS label stands; the two-stage route closes on the record.
+The registered context question is answered NO: the S1/M5 label's frequent-cell-win /
+rare-decile-trade signature (matched_frame: wmae -6.3%, dec3 +3.5%) does NOT dissolve
+in LOGRAT space — it REPLICATES in INC (-6.3%/+6.7%, near-exact) and persists in LOGRAT.
+The blind-pace label sharpens dense cells and blurs rare ones regardless of target
+space; relativization was orthogonal, not curative.
+Bonus replications on this independent frame: SESSxLOGRAT -38.2% (T-REL's -37.4%);
+S1xINC's all-pair tau 1.0 (the sharper label happens to break the azerty-qwertz tie,
+but dp-tau was already 1.0 everywhere — not verdict-relevant).
+CONSEQUENCE: P10 Stage B UNGATED — launches now with SESS label,
+TRIGRAM_MODELS=models/trigram_cond_lograt_join_seed (Stage A pick).
+The shipped stage-1 model (M5) remains the best BLIND-PACE PREDICTOR (that finding
+stands); it is just not a better TRAINING LABEL than session mean — two different jobs.
