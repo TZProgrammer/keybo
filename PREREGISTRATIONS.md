@@ -1979,3 +1979,36 @@ AND umae/dec3 <= +2% AND taus no lower. Stage-0 large-residual on a class + its 
 qualifying => productionize (TRIGRAM_FEATURE_NAMES + FEATURE_VERSION bump + family
 re-run, composed with whatever pinkyfix decides). All-null + Stage-0 small => both
 features documented as already-priced; census note extended.
+
+### Outcome append (2026-07-10): PINKY-FIX — Stages A+B PASS, Stage C FAILS 0/8; the
+### free-fit route is UNIDENTIFIED, not the physics wrong
+runs/pinkyfix_arm.json: LOLO non-degradation PASS (wmae +0.44% <= 1%); E5-v2 PASS
+(+0.179% cross-regret — the new columns are harmless to the optimizer); sign agreement
+FAIL 0/8 — the fitted g prices outer-first FASTER by 5-11ms, the OPPOSITE of the
+measured +27ms.
+MECHANISM (diagnosed from the practice terms, runs/pinkyfix_arm.json + sidecars):
+time = g(geometry) + b(ngram) is NEARLY UNIDENTIFIED for identity-correlated geometry
+within one layout: on qwerty (98.7% of data) "first finger of this position pair" is a
+function of BIGRAM IDENTITY, so the per-ngram b and the new finger columns compete for
+the same variance. The backfit let b keep the physics (b_fix(as)-b_fix(ds) = -0.061,
+nearly the incumbent's -0.093 = the raw practice+physics blend), leaving g's new
+columns to fit noise — sign inverted. The probe could see the physics only because its
+design (matched pairs + GLOBAL practice curve) constrains the decomposition; the free
+per-ngram b does not. The cross-layout rows that would identify it are 1.3% of data.
+CONSEQUENCE: the feature-column route via free fitting is CLOSED (Stage C is exactly
+the check that caught it — the dual rule worked). The physics finding STANDS (probe
+🟡 HIGH); what failed is attribution, and it needs a CONSTRAINED estimator:
+## PINKY-CAL (registered now, BEFORE results): calibrated-offset route
+Instead of learnable columns, inject the finger effect as a FIXED offset measured by
+the probe's constrained design, at the pipeline level:
+  t_adj = t_raw setting: target' = y_arm - delta(first_finger_class) applied at
+  TRAINING; serve adds delta back per candidate-layout position pair. deltas (LOGRAT
+  units, from the probe's per-class means at the band midpoints): pinky-first-into-
+  adjacent +0.19, ring-first-into-adjacent(vs index) +0.15, else 0 — computed from
+  d_adj/typical-ms; exact values recomputed in-driver from runs/pinky_gap_probe.json
+  and recorded.
+RULE: PINKY-CAL adopts iff LOLO wmae within +1% AND guards AND E5-v2 <= 0.75% AND the
+served surface prices the probe pairs with the measured sign (>=6/8 — by construction
+it should be 8/8; the check verifies the plumbing). Else the pinky physics is
+documented as measured-but-not-installable pending more cross-layout data (Phase D),
+and the collision note stands with the sign-inversion caveat.
