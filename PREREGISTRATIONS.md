@@ -2076,3 +2076,26 @@ shipped a broken model (the user's magnitude standard, vindicated again).
 QIN's ledger closes: best-in-class per-cell conditional-distribution model (kept as a
 modeling result), NOT usable for speed (structure), tail generation (pending
 qin_tail_readj), or quality-model (this).
+
+### Outcome append (2026-07-10): qin_tail_readj — route stays CLOSED; the miss is
+### MODEL-CLASS-INDEPENDENT (and shared with dedicated), plus TRI-FEAT null
+runs/qin_tail_readj.json: over the TAIL-decisive pairs, QIN agrees on dvorak-qwerty
+and qwerty-qwertz but MISSES azerty-qwerty — and the dedicated model misses the SAME
+pair identically (both seeds, both kinds: predicted azerty < qwerty; tail-observed
+azerty > qwerty by +6.9ms). dp-tau 2/3, rule requires 3/3 => the q=0.2 generation
+route stays closed. READING: with the corrected pair set the failure is no longer
+uninterpretable — it is a REAL, SHARED miss: no trained model reproduces qwerty's
+observed tail advantage over azerty (plausibly practice-at-the-tail, which g cannot
+carry cross-layout by design). Fair gate, honest fail, both model classes equal =>
+adopting QIN would still buy nothing for tail generation. F5M remains the sole
+certified quality frame.
+### TRI-FEAT outcome: all arms NULL (+TRIPLE -0.17%, +BF +0.19%, +BOTH -0.06% wmae —
+all inside the 0.91% noise floor); Stage-0 diagnostic: back_forth residual +4.2ms ~=
+the global +4.4ms mean (already priced); triple_roll_in +14.3ms / out +8.3ms residuals
+EXIST (n=182/174 cells — the incumbent does underprice fast triple rolls by ~10ms) but
+the classes are too rare (0.6% of cells) to move any corpus-weighted metric, and the
+explicit columns did not transfer that residual into held-out gains. Both features
+documented: representable, marginally mispriced, adoption unjustified at this data
+size. Census note extended: user's triple_roll instinct was HALF right — there IS an
+unpriced ~10-14ms effect, but it is corpus-weight-invisible; Phase-D data with more
+roll-heavy layouts is the revival path.
