@@ -112,6 +112,26 @@ class TypingModel(ABC):
         """predict() in milliseconds regardless of the model's training target space."""
         return self.to_ms(self.predict(X), X)
 
+    def predict_ms_at(self, X: np.ndarray, positions) -> np.ndarray:
+        """predict_ms for ONE position pair, applying the first-finger calibration.
+
+        The calibrated classes' feature vectors are byte-identical to their inner-first
+        mirrors (the 184-collision family), so the plain feature path cannot separate
+        them; position-aware callers must use this (or the table scorers, which apply
+        the same offset per pair). No-op for models trained without the calibration.
+        """
+        pred = self.predict(X)
+        training = self.metadata.extra.get("training") or {}
+        if training.get("calibration"):
+            from keybo.geometry import ROW_STAGGERED_30
+            from keybo.training.calibration import delta_log, finger_class
+
+            cls = finger_class(ROW_STAGGERED_30, *positions)
+            if cls is not None:
+                wpm = np.asarray(X)[:, self.metadata.feature_names.index("wpm")]
+                pred = pred + np.array([delta_log(cls, w) for w in wpm])
+        return self.to_ms(pred, X)
+
     # --- persistence: shared sidecar logic, artifact handled by the subclass -----------
 
     @abstractmethod

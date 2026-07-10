@@ -181,6 +181,7 @@ def _train(
     practice_term=True,
     layout_weights=True,
     target_space="MS",
+    calibration=True,
     **params,
 ) -> XGBoostTypingModel:
     from keybo.features.schema import BIGRAM_FEATURE_NAMES, TRIGRAM_FEATURE_NAMES
@@ -208,6 +209,27 @@ def _train(
         wpm_col = np.maximum(X[:, names.index("wpm")], 1.0)
         y = _TARGET_TRANSFORMS[target_space](y, wpm_col)
 
+    # First-finger calibration (PINKY-CAL): subtract the measured offset from calibrated
+    # classes' targets so g fits the class's inner-first level; serving adds it back per
+    # position pair. Bigram + LOGRAT only (the probe measured bigram intervals; the ms
+    # path predates the seam and no ms model is in production).
+    calibrated = bool(calibration and ngram == "bigram" and target_space == "LOGRAT" and len(y))
+    if calibrated:
+        from keybo.training.calibration import delta_log, finger_class
+
+        # one class per row (positions are row-constant); expand to the example grid
+        row_cls = {id(r): finger_class(geometry, *r.positions) for r in rows}
+        adj = np.zeros(len(y))
+        i = 0
+        for row in rows:
+            n_groups = len({s[0] for s in row.samples})
+            cls = row_cls[id(row)]
+            if cls is not None:
+                for j in range(i, i + n_groups):
+                    adj[j] = delta_log(cls, wpm_col[j])
+            i += n_groups
+        y = y - adj
+
     weights = layout_balance_weights(layouts) if layout_weights and len(y) else None
 
     def fit(target):
@@ -216,12 +238,17 @@ def _train(
         model._fitted = True
         return model
 
+    from keybo.training.calibration import CALIBRATION_VERSION
+
+    calibration_tag = CALIBRATION_VERSION if calibrated else None
+
     if not practice_term or not len(y):
         model = fit(y)
         model.metadata.extra["training"] = {
             "target_space": target_space,
             "practice_term": None,
             "layout_weights": bool(weights is not None),
+            "calibration": calibration_tag,
         }
         return model
 
@@ -244,6 +271,7 @@ def _train(
             "values": {ng: round(float(v), b_digits) for ng, v in bmap.items()},
         },
         "layout_weights": bool(weights is not None),
+        "calibration": calibration_tag,
     }
     return model
 
@@ -257,9 +285,10 @@ def train_bigram_model(
     practice_term: bool = True,
     layout_weights: bool = True,
     target_space: str = "LOGRAT",
+    calibration: bool = True,
     **params,
 ) -> XGBoostTypingModel:
-    """Fit a bigram typing-time model from bistroke rows (R1W + LOGRAT recipe by default).
+    """Fit a bigram typing-time model from bistroke rows (R1W + LOGRAT + PINKY-CAL recipe).
 
     ``progress`` is consumed here (feature-build bar), never forwarded into ``**params`` --
     XGBoost silently ignores unknown keyword params, so a leak would be invisible.
@@ -274,6 +303,7 @@ def train_bigram_model(
         practice_term=practice_term,
         layout_weights=layout_weights,
         target_space=target_space,
+        calibration=calibration,
         **params,
     )
 
