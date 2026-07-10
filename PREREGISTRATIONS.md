@@ -1513,3 +1513,37 @@ LOGRAT compresses but does not delete it (if OCC fails, a capped-OCC follow-up i
 registration, not a silent amendment); (b) 218x more examples => qwerty's occurrence
 dominance is re-weighted by the same capped inverse-share formula (cap 50 now binds
 differently — the weight cap's interaction is part of what's being tested).
+
+### Outcome append (2026-07-10): OCC — REJECTED by the rare-ngram guard; lever A closed
+runs/occ_arm.json (identical frame to trel_arms; GROUPED anchor reproduced it EXACTLY —
+wmae 9.67, rho/ceil 1.0174, taus 1.0 — so the delta attributes to training-set
+construction alone):
+  GROUPED  rho/ceil 1.0174  wmae 9.67  umae 15.59  dec3 26.58
+  OCC      rho/ceil 0.9646  wmae 9.70 (+0.23%)  umae +9.73%  dec3 +15.58%  (taus 1.0)
+Occurrence-level training leaves dense cells unchanged and materially DEGRADES rare
+cells — the exact trade the guard exists to block (and the same signature as the S1
+label). Mechanism reading 🟠: the example distribution shifts from ~group-count to
+~occurrence-count proportional, so per-ngram capacity allocation tilts further toward
+the dense mass (th:rare goes ~10^3:1 -> ~10^4:1), while the raw target re-admits the
+hesitation tail the IQR-mean trimmed. Both registered risks materialized; which
+dominates is decided by the WEIGHTS decomposition below. rho/ceil also fell (1.017 ->
+0.965) — occurrence training is worse even on ranks. Pre-aggregation is NOT dead weight:
+the group-mean + IQR-trim construction is doing real statistical work.
+
+## WEIGHTS — evidence-weighted group training (registered 2026-07-10, BEFORE results;
+## brainstorm lever D + the OCC decomposition)
+OCC changed two things at once: the effective example DISTRIBUTION (~counts) and the
+TARGET (raw vs IQR-mean). WEIGHTS isolates the distribution half on the robust target:
+group-level IQR-mean examples as shipped, only sample_weight varies. Arms (all weights
+normalized to mean 1 after construction; practice-term counts stay n_i as shipped):
+  ANCHOR  shipped: w = bal_grp(layout), inverse GROUP-share balance, cap 50
+  W-N     w = n_i * bal_occ(layout); bal_occ = min(50, T/(4*T_l)) on OCCURRENCE shares
+          (this reproduces OCC's weight distribution exactly; only the target differs)
+  W-SQRT  w = sqrt(n_i) * bal_sqrt(layout); balance on sqrt-count shares (cap 50)
+  W-INV   w = (n_i/s2_i) * bal_iv(layout); s2_i = per-group var of log(duration) (wpm
+          constant within group => equals LOGRAT-space var), floored at 1e-4, groups
+          with n_i<3 get the global-median s2; balance on n/s2 shares (cap 50)
+RULE: best arm adopts iff wmae >1% rel better than ANCHOR AND umae/dec3 within +2% AND
+neither tau lower. DIAGNOSTIC (registered): if W-N reproduces OCC's umae/dec3 failure,
+OCC's defect was the weight distribution (capacity allocation); if W-N is clean, it was
+the raw target (hesitation tail). Same frame/driver as occ_arm.
