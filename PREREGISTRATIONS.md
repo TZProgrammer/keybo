@@ -2012,3 +2012,26 @@ served surface prices the probe pairs with the measured sign (>=6/8 — by const
 it should be 8/8; the check verifies the plumbing). Else the pinky physics is
 documented as measured-but-not-installable pending more cross-layout data (Phase D),
 and the collision note stands with the sign-inversion caveat.
+
+### Outcome append (2026-07-10): QIN-BREAKDOWN — the user's wmae table; QIN's real profile is SHARPER than "just better"
+runs/qin_breakdown.json (diagnostic re-run, per-cell predictions persisted):
+wmae (ms) by quality x layout, QIN vs dedicated (rel delta):
+  q=0.2: azerty +10.6%, dvorak -12.9%, qwerty +21.1%, qwertz +22.3% (overall +21.1%)
+  q=0.5: azerty -1.2%, dvorak -5.9%, qwerty -8.4%, qwertz +3.3% (overall -8.3%)
+  q=0.8: azerty +14.9%, dvorak -2.1%, qwerty +18.3%, qwertz +15.3% (overall +18.2%)
+READING: QIN dominates on RANKS everywhere (rho/own-ceil 1.035/1.038/1.067) and on
+MAGNITUDES at the median (-8.3%), but its TAIL MAGNITUDES are 18-21% WORSE — the
+shared-q model compresses extreme-quantile LEVELS toward the body (classic pooling
+bias). Exception: dvorak (n=64, scarcest data) where shared strength wins even at the
+tails — pooling helps where data is scarce, biases where it is plentiful. wpm profile:
+QIN's q=.2 deficit concentrates at low wpm (40-bucket +26%) and vanishes at 120.
+CONSEQUENCE for the pending decisions: (a) T2 (QIN-F5M) is now sharper — QIN-INT
+integrates the exact tail slices where QIN's levels are biased; if it still beats the
+dedicated F5M models, shared-strength ranks outweigh level bias, else the bias story
+holds. (b) The tail re-adjudication (T1 rule) proceeds as registered, but a reopened
+generation route would additionally face this magnitude deficit at any adoption test
+(noted now, before the re-adjudication result).
+RE-ADJUDICATION MECHANICS: qin_breakdown persisted per-cell predictions but NOT
+per-ngram tables (needed for the common-ngram layout scores); a targeted rerun
+(qin_tail_readj.py, q=0.2 eval only, both model kinds, per-pair agreement vs the
+TAIL-frame observed gaps over tail-decisive pairs) launches now.
