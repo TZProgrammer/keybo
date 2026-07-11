@@ -2332,3 +2332,33 @@ registered rule listed "taus no lower" over BOTH metrics, so the letter stands:
 trigram construction pins to GROUP-MEAN (matching the reverted bigram default —
 consistent recipe, no code change needed post-revert). The -3.9% wmae improvement is
 recorded as a near-miss for a future registration w/ a tie-aware tau clause.
+
+## DATA-BRAINSTORM outcomes + RO-MIX arm (registered 2026-07-11 ~00:50, BEFORE results)
+The data-exploitation audit (state/data-brainstorm-keybo/report.md, premises measured on
+raw files; owner's rollover correction independently verified: rollover 26/39/54% by
+band, overlap ~37ms skill-stable, overlap-FRACTION rising, same-key marker exact,
+SFdiffkey 7.6% contaminated floor) killed several owner angles cleanly on MEASUREMENT:
+KEYCODE cannot distinguish shift sides (all SHIFT=16); scalar hold covariate is
+information-free for speed (hold perp interval within-cell, r=+0.039); motor-span /
+inter-release targets duplicate press-press at cell level. The genuinely un-mined
+modalities: the ROLLOVER REGIME STRUCTURE (below), the discarded error stream (54.6% of
+substitutions physically adjacent — 5x random), non-9-10-finger population (+29% data),
+language/experience covariates. Errors + fingers + language are recorded as REGISTERED
+FUTURE ROUNDS (each needs a re-extraction; > tonight's budget).
+RO-MIX (ro_mix.py, tonight's one new-modality arm — the regime-aware release target,
+the record's own registered revival path for the overlap channel):
+  MECHANISM: press-press time is a 2-regime mixture (sequential vs rollover); the
+  incumbent prices the MIXTURE MEAN. A typist-facing objective at wpm 90+ should price
+  the mixture at the TARGET skill's regime shares, and P(rollover) is geometry-
+  dependent (same-hand rolls 40.9% vs cross-hand 35.4% at matched skill) => the
+  incumbent misprices patterns by their regime composition.
+  ARM (bigram, v5 frame, standard guards): ANCHOR = shipped. RO = shipped features ->
+  TWO extra serve-computable model heads trained on TRAIN rows: p_hat(rollover |
+  geometry, wpm) and the per-regime LOGRAT means m_seq/m_ro; serve prediction =
+  log-mix: exp-weighted combination at the cell's wpm. SFdiffkey pairs EXCLUDED from
+  regime-head training (the 7.6% floor); they fall back to the shipped single-head
+  prediction. Adopt iff wmae >0.5% better AND umae/dec3 <= +2% AND taus no lower AND
+  E5-v2 <= 0.75% before any P11 use.
+  NULL teaches: the mixture mean is already sufficient (regime composition either
+  geometry-flat or self-averaging) — closes the release channel entirely, with the
+  error stream as the dataset's remaining un-mined vein.
