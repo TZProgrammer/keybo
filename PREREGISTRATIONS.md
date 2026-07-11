@@ -2362,3 +2362,17 @@ the record's own registered revival path for the overlap channel):
   NULL teaches: the mixture mean is already sufficient (regime composition either
   geometry-flat or self-averaging) — closes the release channel entirely, with the
   error stream as the dataset's remaining un-mined vein.
+
+### Outcome append (2026-07-11): VAR — REJECTED; the mean-only objective is certified,
+### with a sharper reading than the null we registered
+runs/var_arm.json: VAR wmae +5.76%, umae +2.02% (breach), dec3 -0.70%, taus unchanged.
+NOT the registered null (flat sigma2-head => rank-invariant): the head found REAL
+geometry-dependent variance (s2_hat spread 0.123 across the grid — consistent with the
+probe's class spread) and applying exp(s2/2) made ms predictions WORSE against the
+arithmetic-mean obs. READING: the trimmed geometric mean plus the practice/calibration
+stack is apparently already calibrated to the IQR-trimmed arithmetic obs (IQR trimming
+itself removes most of the tail mass that separates the two means); adding the full
+log-normal correction OVER-corrects — the objective's "geometric mean" is closer to a
+trimmed arithmetic mean than the raw math suggested. The brainstorm's factual premise
+stands (the gap exists in raw moments); its practical consequence does not survive
+trimming. Objective-form question CLOSED: mean-only, trimmed, LOGRAT — certified.
