@@ -2518,3 +2518,20 @@ diversity; no recalibration form available on 4 layouts can keep it and certify
 ranking. DED-LR remains the quality model. Phase-D layout diversity remains the
 unlock — now with a precise statement of WHAT it unlocks (per-layout-identifiable
 per-q intercepts).
+
+### Informational (2026-07-11): community scoreboard under both final models, wpm 70/90/110
+(runs recorded in events.log; per-trigram mean ms, per-layout charset, % vs qwerty)
+SPEED model ranking (stable, tau 0.91-1.00 across wpm): P11-w0.5 +4.00 > dvorak +3.39
+> semimak +2.54 > graphite +2.49 > colemak +2.07 > colemak-dh +1.71 > workman +1.55
+> norman +1.05 > qwerty. Consistent with every prior scoreboard (alternation-heavy
+dvorak outranking modern roll-centric layouts is the model's measured signature).
+QUALITY model ranking carries a KNOWN CONFOUND for cross-layout use and is NOT a
+valid community ordering: qwerty ranks 2nd (+0 baseline) with ALL community layouts
+NEGATIVE — the signature of TAIL PRACTICE (tail_gap_boot measured qwerty FASTEST at
+q=0.2, 92.9ms vs 98-100; qwerty typists' lifetime practice shows at their best
+executions; the practice term removes bigram-identity practice, not layout-level tail
+practice). The quality model is licensed for its validated uses — per-cell prediction
+and WITHIN-search optimization (a fixed position table cannot leak layout-level
+practice into permutation comparisons) — but cross-layout quality RANKING of named
+layouts is practice-contaminated at this diversity. Recorded as the honest boundary
+of the quality family's claims; Phase-D diversity is (again) the unlock.
