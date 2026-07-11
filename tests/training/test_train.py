@@ -256,11 +256,9 @@ def test_train_rejects_unknown_target_space():
 # --- per-sample LOGRAT aggregation (PACE-2 ANCHOR-PS, adopted 0b5a29c) --------------------
 
 
-def test_lograt_targets_aggregate_per_sample_in_log_space():
-    """The adopted construction: each sample's log-ratio first, THEN the robust mean
-    (trimmed geometric mean) — not log-of-IQR-mean. A heavy outlier moves the two
-    constructions differently: log-space aggregation is less tail-sensitive, so the
-    per-sample target must sit BELOW the log-of-mean target on right-skewed data."""
+def test_lograt_targets_use_group_mean_construction():
+    """LOGRAT target = log of the group's IQR-mean duration (per-sample aggregation
+    was reverted after failing replication on the v5 frame — PS-V5, 0cb4b9d)."""
     from keybo.data.strokes import StrokeRow, iqr_average
     from keybo.training.train import _build_matrix_full
 
@@ -278,10 +276,8 @@ def test_lograt_targets_aggregate_per_sample_in_log_space():
         rows, ngram="bigram", geometry=ROW_STAGGERED_30, target_space="LOGRAT"
     )
     assert len(y) == 1
-    per_sample = iqr_average([float(np.log(d * 90 / 12000.0)) for d in durs])
     log_of_mean = float(np.log(iqr_average(durs) * 90 / 12000.0))
-    assert y[0] == pytest.approx(per_sample, abs=1e-9)
-    assert y[0] < log_of_mean  # the constructions genuinely differ on skewed data
+    assert y[0] == pytest.approx(log_of_mean, abs=1e-9)
 
 
 def test_ms_targets_unchanged_by_the_per_sample_path():

@@ -70,10 +70,17 @@ _TARGET_SPACES = ("MS", "LOGRAT")
 
 
 def _group_target(durations: list[int], wpm: int, target_space: str) -> float:
-    """The per-(row, wpm-group) training target in the given space."""
+    """The per-(row, wpm-group) training target in the given space.
+
+    LOGRAT uses the GROUP-MEAN construction (log of the IQR-mean duration): the
+    per-sample alternative was adopted on PACE-2's plain-extraction frame (-1.6%) but
+    FAILED replication on the production v5 frame (+0.4%, PS-V5 2026-07-11) — the win
+    was frame-specific (BUF2-BOTH cleaning already removes the tail the per-sample
+    robustness bought); reverted per the registered rule (0cb4b9d).
+    """
     if target_space == "LOGRAT":
         w = max(float(wpm), 1.0)
-        return iqr_average([float(np.log(max(d, 1.0) * w / 12000.0)) for d in durations])
+        return float(np.log(max(iqr_average(durations), 1.0) * w / 12000.0))
     return iqr_average(durations)
 
 
