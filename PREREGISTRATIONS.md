@@ -2265,3 +2265,51 @@ P10+P11-ablation, outer-first census. Gated on composed_gates PASS + TRI-PS verd
 frame at wpm 90, same oxey sweep, rng 882444; cross-checked vs the P9 (ms-era) family.
 6. Wrap: layout artifacts for both families' recommended picks, full verdict table,
 PREREG outcomes, index, report.
+
+### Outcome append (2026-07-11 ~00:20): COMPOSED gates FAIL by letter; TRI-PS run INVALID (driver bug); brainstorm processed
+composed_gates: ANCHOR (frozen group-mean) reproduced 9.67 exactly; COMPOSED (production
+per-sample + calibration) wmae +0.26%, umae +0.97%, dec3 +1.46% => FAILS the wmae<=0
+letter. NOTE +0.26% is INSIDE the measured wmae noise floor (p95 0.91%) and the guards
+are clean — but the expected ~-1.5% per-sample win did NOT appear on the v5 frame.
+FRAME-DEPENDENCE HYPOTHESIS (registered): PACE-2's frame was a PLAIN extraction (no
+BUF2-BOTH cleaning); per-sample log aggregation is a robustness lever, so it wins big on
+dirtier data and ~nothing on v5 where BUF2-BOTH already removed the contamination.
+tri_ps: INVALID — driver bug (per-sample target array built with sorted(by_wpm) while
+the feature matrix uses insertion order => target-feature misalignment; the +30%/tau-0.33
+"result" is the misalignment, not physics). Fixed + relaunched.
+BRAINSTORM (subagent report, state/brainstorm-keybo/report.md, 11 ideas): idea #1
+variance-corrected objective — INDEPENDENTLY VERIFIED the factual premise myself:
+LOGRAT predictions are trimmed geometric means; eval obs is arithmetic; and the decisive
+unknown MEASURED: within-cell log-variance DOES correlate with geometry class
+(same_finger s2=0.012 vs rolls/alternation 0.034-0.042 => exp(s2/2) spread 1.5%
+multiplicative — same order as family decision margins). Idea #1 and #2 get arms; #3
+(multi-wpm argmax) folds into the P11-final driver; #4-#11 recorded for the wrap.
+
+## FINAL-NIGHT ARMS (registered 2026-07-11 ~00:25, BEFORE results; all on the v5 frame,
+## standard challenger guards, 2 seeds x 4 folds unless noted)
+PS-V5 (ps_v5.py): the composition decomposed — ANCHOR (group-mean) vs PS-ONLY
+  (per-sample, calibration OFF both arms). DECIDES the production bigram construction:
+  PS-ONLY must beat ANCHOR (wmae < 0, guards) to keep per-sample in the recipe; else
+  _group_target's LOGRAT branch REVERTS to group-mean (code change + PREREG amendment:
+  adopted-on-frame-A, failed-replication-on-frame-B, reverted — the honest record) and
+  the ANCHOR-PS adoption is marked frame-specific.
+VAR (var_arm.py, brainstorm #1): shipped g + sigma2(geometry,wpm) head (2nd GBM,
+  depth 3, fit on per-cell trimmed log-variance from TRAIN rows, shrunk toward its own
+  smooth prediction for thin cells); serve T *= exp(sigma2/2). Judged vs ANCHOR on the
+  standard frame (obs is arithmetic IQR-mean => the correction should REDUCE systematic
+  under-prediction): adopt iff wmae >0.5% better AND umae/dec3 <= +2% AND taus no lower
+  AND E5-v2 <= 0.75%. Null (flat sigma2-head => rank-invariant global factor) certifies
+  the mean-only objective variance-unbiased — closes the question either way.
+B-LETTER (bletter_arm.py, brainstorm #2): practice term shrunk toward letter-additive
+  baseline u(a)+u(b) (fit by ridge on ngram residuals) instead of toward 0; arms ANCHOR
+  / B-LETTER; adopt iff dec3 OR umae >2% better AND wmae <= +0.5% AND taus no lower
+  (the rare-cell design target) OR standard wmae rule. Distinct from rejected R3W:
+  LOGRAT space, magnitude-judged, letter-additive form (untested B4).
+TRI-PS-FIXED: the repaired tri_ps rerun; rule unchanged (faa5565).
+P11-FINAL amendment: fold brainstorm #3 in — build T3c at wpm {70, 90, 110}, search
+  each (6 restarts each for the side wpms), report cross-wpm argmax regret matrix; the
+  DELIVERABLE family stays wpm-90 (skill-invariance was measured on layout choice, this
+  quantifies it on the FINAL objective); plus the standard oxey sweep at 90.
+SHIP RULE for the night: P11-final bigram models = best-verified construction +
+  calibration + any of VAR/B-LETTER that adopt (composed verification per pair; if a
+  composition check fails, ship the largest verified-clean subset, favoring simpler).
