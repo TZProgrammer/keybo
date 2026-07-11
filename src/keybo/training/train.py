@@ -62,22 +62,29 @@ PRACTICE_BACKFIT_ITERS = 2
 #: cap on inverse-layout-share weights, so a 64-participant layout can't dominate.
 LAYOUT_WEIGHT_CAP = 50.0
 
-#: target-space transforms: name -> (ms -> training target, given the example's wpm).
-#: LOGRAT is the adopted bigram space (T-REL 2026-07-10, -37% cross-layout wmae).
-_TARGET_TRANSFORMS = {
-    "MS": lambda ms, wpm: ms,
-    "LOGRAT": lambda ms, wpm: np.log(np.maximum(ms, 1.0) * wpm / 12000.0),
-}
+#: known target spaces. MS: IQR-mean of raw durations. LOGRAT (the adopted bigram
+#: space, T-REL 2026-07-10, -37% cross-layout wmae): PER-SAMPLE log-ratios robustly
+#: averaged (a trimmed geometric mean — PACE-2 ANCHOR-PS, 2026-07-10, -1.6% over
+#: log-of-mean: multiplicative noise wants log-space aggregation).
+_TARGET_SPACES = ("MS", "LOGRAT")
 
 
-def _rows_to_examples(row: StrokeRow, geometry: Geometry, ngram: str):
-    """Yield (feature_vector, target_time) per WPM group in a stroke row."""
+def _group_target(durations: list[int], wpm: int, target_space: str) -> float:
+    """The per-(row, wpm-group) training target in the given space."""
+    if target_space == "LOGRAT":
+        w = max(float(wpm), 1.0)
+        return iqr_average([float(np.log(max(d, 1.0) * w / 12000.0)) for d in durations])
+    return iqr_average(durations)
+
+
+def _rows_to_examples(row: StrokeRow, geometry: Geometry, ngram: str, target_space: str = "MS"):
+    """Yield (feature_vector, target) per WPM group in a stroke row."""
     by_wpm: dict[int, list[int]] = defaultdict(list)
     for wpm, duration, _pid, _hold in row.samples:
         by_wpm[wpm].append(duration)
 
     for wpm, durations in by_wpm.items():
-        target = iqr_average(durations)
+        target = _group_target(durations, wpm, target_space)
         if ngram == "bigram":
             vec = bigram_features_from_positions(geometry, row.positions, wpm=wpm)
         else:
@@ -105,8 +112,11 @@ def build_training_matrix(
     return X, y
 
 
-def _build_matrix_full(rows, ngram, geometry, progress=False):
-    """(X, y, example ngram ids, example layouts, example raw-sample counts)."""
+def _build_matrix_full(rows, ngram, geometry, progress=False, target_space="MS"):
+    """(X, y, example ngram ids, example layouts, example raw-sample counts).
+
+    ``y`` is already in ``target_space`` (per-sample aggregation for LOGRAT).
+    """
     iterator = rows
     if progress:
         from tqdm import tqdm
@@ -118,7 +128,7 @@ def _build_matrix_full(rows, ngram, geometry, progress=False):
     layouts: list[str] = []
     counts: list[float] = []
     for row in iterator:
-        for vec, target, n in _rows_to_examples(row, geometry, ngram):
+        for vec, target, n in _rows_to_examples(row, geometry, ngram, target_space):
             features.append(vec)
             targets.append(target)
             ngrams.append(row.ngram)
@@ -187,13 +197,13 @@ def _train(
     from keybo.features.schema import BIGRAM_FEATURE_NAMES, TRIGRAM_FEATURE_NAMES
 
     target_space = str(target_space).upper()
-    if target_space not in _TARGET_TRANSFORMS:
-        raise ValueError(
-            f"unknown target_space {target_space!r} (known: {sorted(_TARGET_TRANSFORMS)})"
-        )
+    if target_space not in _TARGET_SPACES:
+        raise ValueError(f"unknown target_space {target_space!r} (known: {sorted(_TARGET_SPACES)})")
 
+    # Targets are built directly in the model's target space (per-sample log aggregation
+    # for LOGRAT — PACE-2 ANCHOR-PS).
     X, y, ngrams, layouts, counts = _build_matrix_full(
-        rows, ngram=ngram, geometry=geometry, progress=progress
+        rows, ngram=ngram, geometry=geometry, progress=progress, target_space=target_space
     )
     names = BIGRAM_FEATURE_NAMES if ngram == "bigram" else TRIGRAM_FEATURE_NAMES
     metadata = ModelMetadata(
@@ -202,12 +212,8 @@ def _train(
         wpm_range=wpm_range,
         ngram=ngram,
     )
-
-    # The training target lives in the model's target space; the per-example wpm needed
-    # for the transform is the schema's own wpm column (the same one to_ms reads back).
     if len(y):
         wpm_col = np.maximum(X[:, names.index("wpm")], 1.0)
-        y = _TARGET_TRANSFORMS[target_space](y, wpm_col)
 
     # First-finger calibration (PINKY-FIT): fit the per-class deltas from THESE rows
     # (matched-cell estimator — the identifying restriction a free fit lacks), subtract

@@ -9,6 +9,7 @@ import numpy as np
 import pytest
 
 from keybo.data.strokes import StrokeRow
+from keybo.geometry import ROW_STAGGERED_30
 from keybo.features.schema import BIGRAM_FEATURE_NAMES, FEATURE_VERSION
 from keybo.models.xgboost_model import XGBoostTypingModel
 from keybo.training.train import build_training_matrix, train_bigram_model
@@ -250,3 +251,55 @@ def test_train_rejects_unknown_target_space():
     rows = _synthetic_bigram_rows()
     with pytest.raises(ValueError, match="target_space"):
         train_bigram_model(rows, target_wpm=90, n_estimators=5, target_space="RATIO")
+
+
+# --- per-sample LOGRAT aggregation (PACE-2 ANCHOR-PS, adopted 0b5a29c) --------------------
+
+
+def test_lograt_targets_aggregate_per_sample_in_log_space():
+    """The adopted construction: each sample's log-ratio first, THEN the robust mean
+    (trimmed geometric mean) — not log-of-IQR-mean. A heavy outlier moves the two
+    constructions differently: log-space aggregation is less tail-sensitive, so the
+    per-sample target must sit BELOW the log-of-mean target on right-skewed data."""
+    from keybo.data.strokes import StrokeRow, iqr_average
+    from keybo.training.train import _build_matrix_full
+
+    durs = [80, 90, 100, 115, 135, 165, 210, 280]  # right-skewed INTERIOR (survives trim)
+    rows = [
+        StrokeRow(
+            layout="qwerty",
+            positions=((-1, 3), (1, 2)),
+            ngram="th",
+            frequency=len(durs),
+            samples=[(90, d, i, 50) for i, d in enumerate(durs)],
+        )
+    ]
+    X, y, ngrams, layouts, counts = _build_matrix_full(
+        rows, ngram="bigram", geometry=ROW_STAGGERED_30, target_space="LOGRAT"
+    )
+    assert len(y) == 1
+    per_sample = iqr_average([float(np.log(d * 90 / 12000.0)) for d in durs])
+    log_of_mean = float(np.log(iqr_average(durs) * 90 / 12000.0))
+    assert y[0] == pytest.approx(per_sample, abs=1e-9)
+    assert y[0] < log_of_mean  # the constructions genuinely differ on skewed data
+
+
+def test_ms_targets_unchanged_by_the_per_sample_path():
+    """MS-space targets keep the incumbent construction (IQR-mean of durations)."""
+    from keybo.data.strokes import StrokeRow, iqr_average
+    from keybo.training.train import _build_matrix_full
+
+    durs = [100, 120, 140, 900]
+    rows = [
+        StrokeRow(
+            layout="qwerty",
+            positions=((-1, 3), (1, 2)),
+            ngram="th",
+            frequency=len(durs),
+            samples=[(90, d, i, 50) for i, d in enumerate(durs)],
+        )
+    ]
+    X, y, *_ = _build_matrix_full(
+        rows, ngram="bigram", geometry=ROW_STAGGERED_30, target_space="MS"
+    )
+    assert y[0] == pytest.approx(iqr_average(durs))
