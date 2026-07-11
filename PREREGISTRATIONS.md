@@ -2376,3 +2376,18 @@ log-normal correction OVER-corrects — the objective's "geometric mean" is clos
 trimmed arithmetic mean than the raw math suggested. The brainstorm's factual premise
 stands (the gap exists in raw moments); its practical consequence does not survive
 trimming. Objective-form question CLOSED: mean-only, trimmed, LOGRAT — certified.
+
+### Outcome append (2026-07-11): RO-MIX — REJECTED decisively; the release channel closes
+runs/ro_mix.json (v3 frame): RO wmae +34%, umae +25%, dec3 +17%, rho/ceil 1.017->0.994,
+all-pair tau 0.67. The regime-mixture serve (p_hat-weighted per-regime heads) is far
+worse than pricing the mixture mean directly. READING: the two per-regime heads are
+each trained on a REGIME-SELECTED subsample whose selection is skill-correlated within
+cells (who rolls over at a given wpm is a typist-quality signal), so m_seq/m_ro inherit
+a selection bias that the mixture reconstruction amplifies — while the incumbent's
+mixture-mean target integrates the selection out by construction. Combined with the
+earlier verdicts (hold-scalar dead, motor-span duplicate, travel-target regime-broken,
+overlap-target certification-failed, hold aggregates population-confounded), this
+completes the release-clock audit: SIX routes into the release channel measured, zero
+survive. The press-clock mixture mean is the right object on this dataset. The
+dataset's remaining un-mined veins are the ERROR STREAM, FINGERS population, and
+language covariates (registered future rounds, each needs re-extraction).
