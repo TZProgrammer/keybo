@@ -2655,3 +2655,29 @@ our data cannot see (lag-3 null; Phase D).
 <0.03%). (5) Successor tools noted: oxeylyzer (o-x-e-y), keymui — future parity pass.
 CONSEQUENCE for P12: pick rule's axes become {speed, oxey, genkey-fingerspeed(exact)};
 the P12 post-processor rescoring with the built genkey harness is the remaining step.
+
+## GK-WEIGHT — genkey score as an in-loop optimization term (registered 2026-07-11,
+## BEFORE results; user directive: "include genkey/keymeow weight into the
+## optimization, just like oxeylyzer")
+DESIGN: GenkeyScorer = an EXACT NATIVE PORT of genkey's Score function (read from
+generate.go/layout.go @ f1f4173): Score = 3*sum_f fspeed_w(f) + 1*(100*LSB/total) +
+0.3*|idxR-idxL|; fspeed_w(f) = 800/total * sum_{i<=j in finger f} (1.0*B[k_i k_j both
+dirs] + 0.5*S[k_i k_j both dirs]) * (staggered_dist(i,j) + 0.02) / KPS[f], default
+KPS [1.5,3.6,4.8,5.5,5.5,4.8,3.6,1.5], uniform-column fingering, trigram term disabled
+(genkey default). Corpus = ours (measured minimal delta vs shai-iweb).
+PARITY GATE (the lesson from the FSPEED flag): the port must match the BUILT genkey
+binary on the 9 gk-parity layouts — value ratio within 2% per layout after a single
+global corpus-scale factor, rank corr 1.0 — else the port is NOT used and the search
+falls back to nothing (report honestly). Approximations without parity checks are how
+FSPEED failed; never again.
+KEYMEOW: a metrics LIBRARY with no single aggregate — no canonical "keymeow score"
+exists to weight. It enters as EVALUATION columns (via the kmrun harness) on the final
+family, not as an in-loop term; genkey Score carries the community-effort signal
+in-loop (the two tools agree at Pearson .90-.95, so genkey is a faithful proxy).
+P13 FAMILY (p13_genkey.py): search T3c (calibrated speed) + w_g*UNIT*GenkeyScore for
+w_g in {0, 0.5, 1, 2} + one combined point (w_g=0.5, oxey=0.5); every member evaluated
+under: T3c speed regret, genkey Score (BINARY, not the port — the port only drives the
+search), keymeow metrics, oxey, quality T3c_q, finger tables. PICK RULE: the member
+minimizing genkey Score subject to T3c speed regret <= 0.5% (the community-robust
+pick); the pure-speed champion stays the speed pick. Deliverable: the tradeoff curve
+speed-regret vs genkey-Score — the measured price of community-doctrine compliance.
