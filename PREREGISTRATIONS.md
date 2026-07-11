@@ -2593,3 +2593,16 @@ FU-4 P12 ROBUST FAMILY: search T3c + w_d*DISLOC (w_d in {0, small, med}) at oxey
   F5M quality, oxey, FSPEED, DISLOC) + finger-usage tables; PICK RULE (registered):
   the member minimizing MAX normalized regret across {T3c, oxey, FSPEED} with T3c
   regret <= 0.5% hard cap (speed stays primary; the Q-BLEND robust-pick pattern).
+
+### Outcome append (2026-07-11): FU-1 LAG3-PROBE — NULL, cleanly; utilization is a PREFERENCE, not physics
+runs/lag3_probe.json: 2.48M 4-gram windows, 245 matched cells (k3k4-identity-matched
+controls); count-weighted mean lag-3 same-finger gap -0.06ms, share positive 52% —
+a textbook null (coin-flip direction, zero magnitude). Displaced-finger reuse at lag 3
+costs nothing measurable once lag-1/lag-2 collisions are excluded. CONSEQUENCE per the
+registered rule: the finger-utilization/dislocation term ships as an EXPLICIT
+DOCUMENTED PREFERENCE (oxey-style knob), never as calibrated physics; the finals'
+"odd" finger loads are NOT leaving measured speed on the table — they are an
+aesthetics/comfort concern, priced accordingly. This also retroactively explains WHY
+the optimizer produces them: there is genuinely no time cost in the data to stop it.
+P12 proceeds: DISLOC (user's travel-x-slowness form) + FSPEED as preference scorers,
+cross-regret pick rule unchanged.
