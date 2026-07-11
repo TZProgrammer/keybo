@@ -2481,3 +2481,25 @@ top~home tie differently than the mean surface (which centers on home). The w=0.
 member is the recommended quality pick: sfb collapses 4.58 -> 1.19% for -0.16% speed.
 BOTH DELIVERABLE FAMILIES ARE NOW FINAL: speed = P11-FINAL (fd06e42), quality = P9-LR
 (this entry). Campaign wrap follows.
+
+## QIN-LODO (registered 2026-07-11, BEFORE results; user challenge: "recal recovered
+## -48% of tail error — should we not try to get that to work? maybe modifications
+## pass the 4-layout blocker")
+THE BLOCKER, precisely: QIN-RECAL's per-q affine maps were fit on POOLED train cells
+(qwerty-dominated), so the maps absorb between-layout level; at serve on a held-out
+layout the map imports the training layouts' level => layout ranking breaks (dp-tau 0)
+even though per-cell levels are nearly fixed (-48%). Modifications that could evade it:
+  RECAL-LODO: fit the per-q recalibration LEAVE-ONE-DECILE-OUT within each layout —
+    no, the confound is BETWEEN layouts. Correct form: fit the maps on the train
+    layouts but constrain them to be LEVEL-FREE — slope-only in log space (a0 := 0,
+    a1 fit): a pure SHAPE correction cannot import a level. If the order-statistic
+    bias is mostly a compression (slope) rather than a shift, slope-only recovers most
+    of the -48% without the confound.
+  RECAL-WPM: additionally let a1 vary smoothly with wpm (2-knot linear), still no
+    intercept.
+ARM (qin_lodo.py, F5M frame, DED-LR anchor must reproduce 17.17): QIN + slope-only
+recal (Q-SLOPE) and QIN + slope(wpm) recal (Q-SLOPEW). RULE unchanged from 14f929a:
+takes the quality role iff beats DED-LR on wmae >1% with guards AND rho/own-ceil >=
+DED-LR - 0.005 AND taus no lower. Registered risk: if the bias has a large layout-
+independent SHIFT component, slope-only under-corrects and the arm nulls — which
+would localize the bias decomposition (shift vs compression) as the deliverable.
