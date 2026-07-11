@@ -2405,3 +2405,22 @@ exactly the gate-verified stack: bigram = bigram_cal_{0,1,2} (group-mean LOGRAT 
 fitted first-finger calibration; pinkyfit_gates LOLO +0.11%/E5 -0.003%/sign 8/8),
 trigram = trigram_cond_lograt_join_{0,1,2} (group-mean construction). LAUNCHING NOW
 per the registered protocol (multi-wpm argmax + oxey sweep + cert + cross-family A/B).
+
+### Outcome append (2026-07-11): P11-ablation family (calibration-only) — the pinky physics steers placement; speed surface stays flat
+runs/p11_final.json (bigram_cal group-mean-era models + join trigram, rng 881333):
+  w=0   uoy,.vldfgaeinprhtcs;/jkbmwxzq  +4.02% vs qwerty  sfb 1.24%  outer-first 0.49%
+  w=0.5 hcgkm.,ouylrstdpnaiezxwbvfjq;/  +3.95%            sfb 0.98%  outer-first 0.57%
+  w=1   gnldk.,yousrthmpcieaqxzbvfwj;/  +3.90%            sfb 0.76%  outer-first 0.48%
+  w=2   uoy,.kdlnvaeicpmhtrs;/jwbgfzxq  +3.86%            sfb 0.83%  outer-first 0.44%
+  GL certificate 3.40%. Scoreboard: P11 +4.02% > P10 +3.95% > colemak +2.07%.
+THE CALIBRATION'S SIGNATURE, measured: the family's outer-first (calibrated-class)
+corpus share collapses to 0.44-0.57% vs P10's 1.22% and qwerty's 1.08% — the optimizer
+now actively avoids the pinky/ring-initiated same-row rolls it can finally price.
+Speed cost of that avoidance ~nil: P10-w0's regret under the calibrated objective is
+only +0.072% (inside plateau noise) — the calibration reprices a NARROW pattern class,
+so the argmax moves within the plateau (0/30 shared positions is plateau-degeneracy,
+many near-equivalent optima — consistent with every rank-stability finding).
+NOTE the w=1 member gnldk.,yousrthmpcieaqxzbvfwj;/ pairs sfb 0.76% with outer-first
+0.48% at -0.12% speed vs w0 — an unusually strong balanced pick for this family.
+This build is the ABLATION REFERENCE; P11-FINAL (rng 882333 + multi-wpm stage) is the
+shipping family and is now running.
