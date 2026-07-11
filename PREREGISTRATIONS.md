@@ -2424,3 +2424,24 @@ NOTE the w=1 member gnldk.,yousrthmpcieaqxzbvfwj;/ pairs sfb 0.76% with outer-fi
 0.48% at -0.12% speed vs w0 — an unusually strong balanced pick for this family.
 This build is the ABLATION REFERENCE; P11-FINAL (rng 882333 + multi-wpm stage) is the
 shipping family and is now running.
+
+### Outcome append (2026-07-11): QIN-FIX — both arms fail by rule; the target-bias mechanism is CONFIRMED; QIN's ledger closes with a full causal story
+runs/qin_fix.json (F5M frame; DED-LR anchor reproduced 17.17):
+  QIN-PIN   wmae 48.68 (+183%) — catastrophic. The pinball route as built is broken
+    beyond the hypothesis it tested (likely compounding: practice backfit on pinball
+    residuals is ill-defined — quantile residuals aren't mean-centered — plus pooled
+    per-sample quantiles across typist mixtures != per-cell tail quantiles). Recorded
+    as an implementation-confounded null: it does NOT adjudicate the pinball idea
+    cleanly, and tonight's budget does not permit a rebuild.
+  QIN-RECAL wmae 8.98 (-47.7%!), umae -37.0%, dec3 -29.2% — the affine per-q
+    recalibration RECOVERS the tail levels almost completely => the ORDER-STATISTIC
+    TARGET-BIAS MECHANISM IS CONFIRMED (a 2-parameter log-space map per q fixes the
+    levels; the bias was systematic compression, exactly as hypothesized). BUT dp-tau
+    0.0 / all-pair 0.33: the recalibration is fit on large-n train cells (qwerty-
+    dominated), so the map absorbs between-layout level — the SAME layout-confounding
+    signature as the original QIN rejection, now moved into the recalibration layer.
+  VERDICT: neither takes the quality role; DED-LR stands. QIN's final ledger: best
+  per-cell conditional-distribution architecture; tail LEVELS fixable by
+  recalibration; layout-level ranking not certifiable on 4 layouts because every
+  flexible level-map (q-feature or recalibration) absorbs between-layout differences.
+  Phase-D layout diversity is the structural unlock. P9-LR proceeds on DED-LR.
