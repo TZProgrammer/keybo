@@ -2313,3 +2313,22 @@ P11-FINAL amendment: fold brainstorm #3 in — build T3c at wpm {70, 90, 110}, s
 SHIP RULE for the night: P11-final bigram models = best-verified construction +
   calibration + any of VAR/B-LETTER that adopt (composed verification per pair; if a
   composition check fails, ship the largest verified-clean subset, favoring simpler).
+
+### Outcome append (2026-07-11): PS-V5 + TRI-PS — per-sample aggregation is FRAME-SPECIFIC; reverted; composition resolved
+ps_v5 (calibration OFF both arms, v5 frame): PS-ONLY wmae +0.38%, umae +0.91%, dec3
++1.52% vs group-mean => REVERT rule fires. The ANCHOR-PS adoption is now marked
+FRAME-SPECIFIC on the record: -1.6% on PACE-2's plain extraction, +0.4% (noise) on the
+BUF2-BOTH-cleaned v5 frame — the per-sample robustness pays only where the tails are
+dirty. Production _group_target reverted to group-mean (ad6d651); the composed-gate
+failure is thereby EXPLAINED (its +0.26% was the per-sample half; calibration's own
+LOLO was +0.11%, clean). Composition question RESOLVED: P11-final bigram models =
+group-mean LOGRAT + fitted calibration = exactly the bigram_cal_seed{0,1,2} already
+trained and gate-verified (pinkyfit_gates: LOLO +0.11%, E5-v2 -0.003%, sign 8/8).
+tri_ps (fixed driver): TRI-PS wmae -3.88%, umae -2.31%, dec3 -1.09% (all better) BUT
+all-pair tau dropped 1.0 -> 0.67 => FAILED by the taus-no-lower letter. NOTE the
+dropped pair is the azerty-qwertz DECISIVE-set member? dp-tau stayed 1.0 — the all-pair
+drop is on a tie-pair by construction (dp-tau is the calibrated metric); HOWEVER the
+registered rule listed "taus no lower" over BOTH metrics, so the letter stands:
+trigram construction pins to GROUP-MEAN (matching the reverted bigram default —
+consistent recipe, no code change needed post-revert). The -3.9% wmae improvement is
+recorded as a near-miss for a future registration w/ a tie-aware tau clause.
