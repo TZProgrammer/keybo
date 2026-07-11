@@ -350,7 +350,14 @@ def process_keystroke_file(
     for session_records in group_sessions(rows).values():
         occurrences.extend(
             extract_occurrences(
-                session_records, char_map, n, skip, time_mode, layout, pid, counters,
+                session_records,
+                char_map,
+                n,
+                skip,
+                time_mode,
+                layout,
+                pid,
+                counters,
                 hesitation_cap=hesitation_cap,
             )
         )
@@ -394,8 +401,14 @@ def process_dataset(
         char_map = char_maps[layout]
         all_occurrences.extend(
             process_keystroke_file(
-                os.path.join(files_dir, fname), char_map, n, skip, time_mode, layout,
-                counters, hesitation_cap=hesitation_cap,
+                os.path.join(files_dir, fname),
+                char_map,
+                n,
+                skip,
+                time_mode,
+                layout,
+                counters,
+                hesitation_cap=hesitation_cap,
             )
         )
     return aggregate_occurrences(all_occurrences)

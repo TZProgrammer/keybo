@@ -79,8 +79,7 @@ class ShapReport:
                 for n, a, s in self.ranking()
             ],
             "interaction_pairs": [
-                {"a": a, "b": b, "mean_abs_interaction_ms": v}
-                for a, b, v in self.interaction_pairs
+                {"a": a, "b": b, "mean_abs_interaction_ms": v} for a, b, v in self.interaction_pairs
             ],
         }
 
@@ -228,7 +227,14 @@ def render_report(report: ShapReport, out_prefix: str, top_k: int = 12) -> list[
             ax.plot(centers, medians, color=_RED, linewidth=2)
         else:
             med = [(u, float(np.median(sv[fv == u]))) for u in uniq]
-            ax.plot([m[0] for m in med], [m[1] for m in med], color=_RED, linewidth=2, marker="o", markersize=4)
+            ax.plot(
+                [m[0] for m in med],
+                [m[1] for m in med],
+                color=_RED,
+                linewidth=2,
+                marker="o",
+                markersize=4,
+            )
         ax.axhline(0, color=_GRAY, linewidth=0.8)
         ax.set_title(name, fontsize=9)
         ax.tick_params(labelsize=8)
