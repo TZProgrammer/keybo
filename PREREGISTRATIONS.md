@@ -2239,3 +2239,29 @@ RULE: COMPOSED passes iff wmae <= ANCHOR's (improvement expected ~-1.5%) AND uma
 PASS => 3-seed all-data retrain through the production seam => P11 FINAL builds on
 those models (rng 881333 family protocol; the in-flight calibration-only P11 becomes
 the ablation reference). FAIL => report the interaction honestly; no build.
+
+## TRI-PS — per-sample trigram targets (registered 2026-07-10, BEFORE results; the
+## composition-completeness arm before the final builds)
+ANCHOR-PS was adopted on BIGRAM evidence only; the production _group_target now applies
+per-sample log aggregation to trigrams too, UNMEASURED at the trigram level. Before any
+trigram retrain flows into P11-final, the analog A/B: JOIN cond frame, cand-4, 2 seeds
+x 4 folds; ANCHOR = log-of-IQR-mean construction (join-LOGRAT baseline, must reproduce
+wmae 14.16); TRI-PS = per-sample construction (the new production default).
+RULE: TRI-PS confirms iff wmae <= ANCHOR AND umae/dec3 <= +2% AND taus no lower
+(non-degradation + expected small win, mirroring the bigram -1.6%). CONFIRMS =>
+trigram retrain through the production path joins P11-final. FAILS => trigram models
+pin target_space construction to group-mean (explicit code split) and the failure is
+reported — the composition does NOT silently ship.
+
+## ENDGAME SEQUENCE (registered 2026-07-10, the 10-hour plan)
+1. In flight: composed_gates (bigram composition), qin_fix, P11-ablation family.
+2. TRI-PS (launches now). 3. Brainstorm subagent (spawned) -> any idea implementable
+in <=40min with a clean preregisterable rule gets ONE arm each, standard guards; ideas
+needing >40min or new data are recorded for the wrap, not run.
+4. P11-FINAL (speed family): composed bigram models + best-verified trigram
+construction, wpm 90, oxey {0,.5,1,2}, rng 882333, certificate, cross-family A/B vs
+P10+P11-ablation, outer-first census. Gated on composed_gates PASS + TRI-PS verdict.
+5. P9-LR (quality family): DED-LR (+ pinball model IF qin_fix adopts it) on the F5M
+frame at wpm 90, same oxey sweep, rng 882444; cross-checked vs the P9 (ms-era) family.
+6. Wrap: layout artifacts for both families' recommended picks, full verdict table,
+PREREG outcomes, index, report.
