@@ -2561,3 +2561,35 @@ one-hand continuations HIGHER than community scorers assume, and inroll/outroll
 direction at ~0; if the community ordering (semimak > dvorak) is right about
 something, it is a quantity this dataset cannot see (comfort, error rates at speed,
 long-run fatigue) — which is a Phase-D question, not a model bug we can fix here.
+
+## FU round — finger utilization / dislocation / multi-analyzer robustness
+## (registered 2026-07-11, BEFORE results; user directives x3)
+VERIFIED PROBLEM: P11-w0.5 loads R-ring 20.0% (> both indexes), R-pinky 11% > R-middle
+9.1%; P9LR R-pinky 0.9%. MECHANISM (named in the gaps audit, never fixed): the
+objective prices lag-1 (SFB) + lag-2 (sg_*) reuse and landing costs; lag>=3 reuse and
+duty-cycle are INVISIBLE, so the optimizer freely concentrates load on one finger.
+FU-1 LAG3-PROBE (lag3_probe.py, launches now): does lag-3 same-finger reuse cost time?
+  4-gram extraction (extract_occurrences n=4, time_mode=last => press3->press4
+  increment), qwerty-only, matched design: cells where finger(k1)==finger(k4) (k1!=k4,
+  and NO closer same-finger collision within the window) vs matched controls (same
+  k3->k4 bigram class + row + wpm band, finger(k1) different). Practice-controlled via
+  the k3k4-bigram identity match (same landing bigram in both arms). RULE: lag-3
+  penalty REAL iff count-weighted mean gap >= +3ms AND >65% of matched cells positive.
+  REAL => the utilization term is calibrated PHYSICS; NULL => it ships as an explicit
+  documented PREFERENCE (like oxey), never silently.
+FU-2 DISLOC scorer (user's heuristic, exact form): per-position cost c(pos) =
+  dist(pos, home(finger(pos))) * slowness(finger(pos)); layout penalty =
+  sum_letters freq(l)*c(pos_l) (LINEAR in assignment => composes into the QAP
+  objective exactly) + optional superlinear spread term sum_f D_f^2. Slowness weights
+  MEASURED from our own data: the fitted calibration deltas (pinky +43ms, ring +21ms)
+  + T2 landing prices per finger — recorded in the scorer's docstring with provenance.
+FU-3 FSPEED scorer (genkey-style): semi's fingerspeed philosophy implemented natively
+  (per-finger distance-weighted usage / finger strength weights), as a composable
+  IScorer. HONESTY: our implementation is an approximation from documented behavior,
+  like OxeyStyleScorer; exact-tool parity (running genkey/keymeow binaries) +
+  newer-community-optimizer survey = REGISTERED FOLLOW-UP (needs tool vetting/install).
+FU-4 P12 ROBUST FAMILY: search T3c + w_d*DISLOC (w_d in {0, small, med}) at oxey 0.5;
+  deliverable = cross-regret matrix of every candidate under ALL scorers (T3c speed,
+  F5M quality, oxey, FSPEED, DISLOC) + finger-usage tables; PICK RULE (registered):
+  the member minimizing MAX normalized regret across {T3c, oxey, FSPEED} with T3c
+  regret <= 0.5% hard cap (speed stays primary; the Q-BLEND robust-pick pattern).
