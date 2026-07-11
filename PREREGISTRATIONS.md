@@ -2201,3 +2201,41 @@ isolated verdict on the incumbent construction; then ONE COMPOSED verification
 E5-v2 + served-sign — the no-silent-stacking rule) gates P11, which rebuilds on the
 composed recipe. The old direct pinkyfit->P11 chain is retired in favor of
 pinkyfit -> composed_gates -> P11.
+
+## QIN-FIX — repairing QIN-INT's tail-level bias (registered 2026-07-10, BEFORE
+## results; user: "is there an experiment we could do to fix QIN-INT tail bias?")
+MECHANISM HYPOTHESIS (new, testable): the bias may live in the TARGETS, not the model.
+QIN trains on EMPIRICAL group quantiles; for a 10-50-sample group, the empirical
+q=0.025 quantile is essentially the interpolated sample minimum, whose expectation sits
+far CENTER-ward of the true 2.5th percentile (order statistics: E[min of n=10] ~ the
+9th percentile). So the extreme-q training targets are themselves compressed toward
+the body — the model faithfully learns a biased target. Predicts: bias worst at
+extreme q and small groups; dvorak exception explained (its cells are small for BOTH
+kinds, so the dedicated F5M targets share the bias there).
+ARMS (qin_fix.py, F5M frame, same machinery/rule as qin_f5m 14f929a):
+  DED-LR    anchor (the adopted quality model; must reproduce wmae 17.17)
+  QIN-PIN   fixes the CAUSE: proper quantile regression — per-sample pinball loss
+            (xgboost reg:quantileerror, quantile_alpha=q per replica) on raw per-sample
+            LOGRAT values, no empirical-quantile targets at all; F5M by the same
+            4-slice quadrature. Asymptotically unbiased for the true quantile.
+  QIN-RECAL fixes the SYMPTOM: QIN-INT as-was + per-q affine recalibration in log
+            space, fitted on TRAIN-fold cells only (observed-vs-predicted log cell
+            quantiles per tail slice), applied at serve before quadrature.
+RULE (unchanged from 14f929a): a QIN arm takes the QUALITY-MODEL role iff it beats
+DED-LR: wmae >1% rel better AND umae/dec3 <= +2% AND rho/own-ceil >= DED-LR - 0.005
+AND taus no lower. Neither qualifies => QIN's ledger stays closed, now with the
+target-bias mechanism confirmed or refuted as the deliverable.
+
+## COMPOSED — the no-silent-stacking verification for P11 (registered 2026-07-10)
+Two adoptions landed independently: PINKY-FIT (calibration; LOLO +0.11%) and ANCHOR-PS
+(per-sample targets; LOLO -1.61%). P11 ships their COMPOSITION, which must be verified
+as a unit (composed_gates.py, v5 frame):
+  ANCHOR    group-mean LOGRAT, no calibration (frozen reference construction, manual
+            fit — the pre-2026-07-10 recipe; must reproduce wmae 9.67)
+  COMPOSED  the production train_bigram_model defaults (per-sample + fitted
+            calibration), position-aware serve
+RULE: COMPOSED passes iff wmae <= ANCHOR's (improvement expected ~-1.5%) AND umae/dec3
+<= +2% AND taus no lower AND E5-v2 cross-regret <= 0.75% AND served-sign >= 6/8.
+PASS => 3-seed all-data retrain through the production seam => P11 FINAL builds on
+those models (rng 881333 family protocol; the in-flight calibration-only P11 becomes
+the ablation reference). FAIL => report the interaction honestly; no build.
