@@ -2721,3 +2721,19 @@ weight-invisible; km's broader classes carry ~10x the corpus mass (roll=6232 cel
 so this arm has the mass TRI-FEAT lacked. Null here => the roll-chain residual is
 documented as a real-but-unfixable-by-columns effect (capacity, not blindness) and
 closes the km question; qualification => FEATURE_VERSION bump + family re-run.
+
+### Outcome append (2026-07-11): KM-ARM — NULL; km_metrics coverage question CLOSED
+runs/km_arm.json: +KM (explicit is_mini3roll/is_sr_roll/is_roll columns, km
+definitions) vs ANCHOR on the JOIN frame: wmae -0.83%, umae -0.62%, dec3 -0.37% —
+below the 1% challenger bar. Taus/dp-taus unchanged (1.0). Direction is right
+(consistent small improvement, no guard trips) but not a qualifying feature.
+Interpretation per the registered branch: the roll-chain residual (mini3roll
++8.6ms replicated in this frame's Stage-0) is REAL but is a capacity/target-noise
+effect the model cannot cash via indicator columns — the classes are already
+~identifiable from existing features (hand-run + direction columns), so explicit
+flags add little. km_metrics coverage: COMPLETE — no missing metric qualifies as a
+model feature; roll-chain underpricing documented as a known residual structure
+(relevant for interpreting per-class errors, not fixable by schema). No
+FEATURE_VERSION bump. This closes the "any km metrics we should have?" question:
+representability audit (all 23 representable) + pricing audit (sft/sfs-redir priced;
+roll-chains flagged) + feature arm (null).
