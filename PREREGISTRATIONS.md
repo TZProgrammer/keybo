@@ -2445,3 +2445,22 @@ runs/qin_fix.json (F5M frame; DED-LR anchor reproduced 17.17):
   recalibration; layout-level ranking not certifiable on 4 layouts because every
   flexible level-map (q-feature or recalibration) absorbs between-layout differences.
   Phase-D layout diversity is the structural unlock. P9-LR proceeds on DED-LR.
+
+### Outcome append (2026-07-11): P11-FINAL — THE speed deliverable family; skill-invariance confirmed on the final objective
+runs/p11F_final.json (bigram_cal + join-LOGRAT trigram, rng 882333):
+  w=0   uoy,.vlmdgaeinprhtcs;/jkbfwxzq  +3.99%  sfb 1.36%  outer-first 0.50%
+  w=0.5 cgldk.,yousrthmpnieaqxwbvfzj;/  +4.00%  sfb 1.09%  outer-first 0.42%  <= the pick
+  w=1   uoy,.kdlnbaeicpmhtrs;/jwqgfvxz  +3.89%  sfb 0.87%
+  w=2   uoy,.kdlnvaeicpmhtrs;/jwbgfzxq  +3.86%  sfb 0.83%
+  GL certificate 3.41%. Cross-family: P10-w0 regret +0.042% (plateau), outer-first
+  1.22% -> 0.50%. The w=0.5 member is speed-TIED with w=0 (+4.00 vs +3.99 = noise)
+  at sfb 1.09% and the family's lowest outer-first share — the recommended pick.
+MULTI-WPM ARGMAX (brainstorm #3, the registered stage): the wpm-90 champion carries
+  +0.057% regret at wpm 70 and -0.010%(!) at wpm 110 — i.e. it is inside the plateau
+  at BOTH ends; the per-wpm optima differ by <=0.32% cross-regret. SKILL-INVARIANCE OF
+  THE ARGMAX is now confirmed on the FINAL calibrated objective (previously only on
+  earlier surfaces): ONE layout family serves 70-110 wpm. The wpm-90 build is not a
+  compromise — it is optimal (within noise) across the band.
+Two family shapes tie on speed: uoy/aei-left (w=0/1/2) vs cgld/srth-left (w=0.5, the
+P10 lineage) — plateau degeneracy at +4%, richness for the report, robustness for the
+pick (structurally different layouts, same predicted speed).
