@@ -2606,3 +2606,27 @@ aesthetics/comfort concern, priced accordingly. This also retroactively explains
 the optimizer produces them: there is genuinely no time cost in the data to stop it.
 P12 proceeds: DISLOC (user's travel-x-slowness form) + FSPEED as preference scorers,
 cross-regret pick rule unchanged.
+
+## GK-PARITY — genkey + keymeow exact-tool evaluation (registered 2026-07-11, BEFORE
+## results; user directive: "what about genkey and keymeow?" — the registered follow-up
+## from the FU round, now executing)
+GOAL: score our finalists with semi's ACTUAL tools (not our FSPEED approximation) and
+(a) establish where our layouts rank under the community's own metrics, (b) validate/
+correct our FSPEED approximation against the real fingerspeed numbers, (c) extend the
+P12 cross-regret matrix with exact-tool columns.
+METHOD (subagent gk-parity): clone + build github.com/semilin/genkey (Go via brew) and
+github.com/semilin/keymeow (Rust via cargo) READ-ONLY LOCAL USE; convert our layouts
+(P11-w0.5, P11-w0, P9LR-w0.5, P10-w0.5, P12 picks when ready) + references (semimak,
+colemak, dvorak, qwerty, graphite) into each tool's layout format; run each tool's
+scoring on its DEFAULT corpus and, where the tool supports a custom corpus, ALSO on
+our corpus (both reported — corpus mismatch is a known confound to surface, not hide);
+extract fingerspeed/effort/total metrics per layout.
+DELIVERABLES: (1) per-tool per-layout metric table; (2) rank correlation of each
+tool's ordering vs our speed model's; (3) FSPEED-approximation validation (corr of our
+scorer vs genkey fingerspeed across the layout set; if rank-corr < 0.8 our
+approximation is flagged and P12's fspeed column is marked unreliable); (4) which of
+our finalists the community tools like best (informs the robust pick narrative).
+NOT a gate on any adoption — community metrics are PREFERENCES (lag-3 null); this
+round is about robustness reporting and approximation validation. Newer-optimizer
+survey (anything post-keymeow the community regards well) = included as a best-effort
+web-free repo search, honestly bounded.
