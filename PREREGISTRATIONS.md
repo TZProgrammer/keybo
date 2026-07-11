@@ -2701,3 +2701,23 @@ pattern) on the JOIN cond frame, seed 0, 4 folds: mean signed held-out residual 
 other}. RULE: a class with |mean residual| > 5ms AND n>=300 cells => one preregistered
 feature arm (standard challenger rule) in a follow-up; all classes <5ms => km_metrics
 coverage documented COMPLETE (already priced), no arms.
+
+### Outcome append (2026-07-11): KM-RESID — roll-chain classes FLAGGED; km coverage is
+### NOT complete; the TRI-FEAT triple-roll signal replicates at higher n
+runs/km_resid.json (incumbent residuals by km class, JOIN frame): global level sits
+~+3.5-4ms (a uniform offset); ABOVE it: mini3roll +8.38ms (n=485), sr_roll +6.23
+(n=911), roll +5.01 (n=6232, marginal). BELOW/at level: sft -1.74 (already priced —
+both halves explicit), sfs_redir -1.12, trill_redir +3.70, alt +3.16. The flagged
+family is exactly the roll-CHAIN direction the user's triple_roll probe found
+(+14.3ms at n=182); km's broader definitions (cross-row included, one-hand-switch
+rolls) replicate it at 3-30x the cells. Honest note: relative to the +3.94 global
+level the elevations are +4.4/+2.3/+1.1ms — the rule (|mean|>5ms absolute) flags
+three; the relative reading says mini3roll is the substantive one.
+KM-ARM (km_arm.py, per the registered rule): trigram schema + 3 explicit km columns
+(is_mini3roll, is_sr_roll, is_roll — km definitions exactly) on the JOIN frame,
+cand-4, standard challenger rule (wmae >1%, guards, taus). TRI-FEAT precedent
+recorded: the +TRIPLE explicit-column arm was null because the classes are corpus-
+weight-invisible; km's broader classes carry ~10x the corpus mass (roll=6232 cells),
+so this arm has the mass TRI-FEAT lacked. Null here => the roll-chain residual is
+documented as a real-but-unfixable-by-columns effect (capacity, not blindness) and
+closes the km question; qualification => FEATURE_VERSION bump + family re-run.
