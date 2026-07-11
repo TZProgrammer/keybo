@@ -2630,3 +2630,28 @@ NOT a gate on any adoption — community metrics are PREFERENCES (lag-3 null); t
 round is about robustness reporting and approximation validation. Newer-optimizer
 survey (anything post-keymeow the community regards well) = included as a best-effort
 web-free repo search, honestly bounded.
+
+### Outcome append (2026-07-11): GK-PARITY — exact tools built + run; FSPEED approximation FLAGGED; the measured-time-vs-community-effort divergence is now precisely quantified
+runs at state/gk-parity/ (report.md + artifacts/aggregate.json; spot-verified: sfb
+orderings match our oxey scorer's within definitional offsets):
+(1) FSPEED VALIDATION FAILED per the registered rule: our FingerSpeedScorer tau 0.611
+vs genkey fingerspeed (< 0.8) => P12's fspeed column is UNRELIABLE; the pick rule's
+fspeed axis is REPLACED by genkey's actual fingerspeed (the harness is built + fast;
+P12 post-processing will rescore with it). Our scorer stays as a preference knob with
+a documented unreliability note. Genkey/keymeow agree with each other (Pearson .90-.95).
+(2) COMMUNITY ORDERING: semimak < graphite < P10-w0.5 < colemak < P11-w0.5 < P11-w0 <
+dvorak < P9LR-w0.5 < qwerty (genkey Score; keymeow concurs). Both tools rank semimak +
+graphite above ALL our layouts; our P10-w0.5 is the community's favorite of ours (3rd
+overall); dvorak — our model's #2 — is near-bottom for the tools (sfb 2.2-2.8%).
+(3) THE DIVERGENCE, stated exactly: community aggregates are dominated by SFB/DSFB-
+distance terms and reward roll share; our measured objective prices alternation-vs-roll
+~neutral-to-alternation-favoring and redirects/one-hand-runs expensive, with SFB
+weighted by MEASURED time cost (+43ms) rather than distance-squared-style effort. Same
+facts (the tools' sfb/roll/alt percentages match our own pattern census), different
+value functions. Which is RIGHT for typing SPEED is exactly what our cross-layout
+harness adjudicates and community effort models do not; which is right for COMFORT
+our data cannot see (lag-3 null; Phase D).
+(4) Corpus confound MINIMAL (keybo corpus is iWeb-derived like shai-iweb; sfb delta
+<0.03%). (5) Successor tools noted: oxeylyzer (o-x-e-y), keymui — future parity pass.
+CONSEQUENCE for P12: pick rule's axes become {speed, oxey, genkey-fingerspeed(exact)};
+the P12 post-processor rescoring with the built genkey harness is the remaining step.
