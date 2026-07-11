@@ -2464,3 +2464,20 @@ MULTI-WPM ARGMAX (brainstorm #3, the registered stage): the wpm-90 champion carr
 Two family shapes tie on speed: uoy/aei-left (w=0/1/2) vs cgld/srth-left (w=0.5, the
 P10 lineage) — plateau degeneracy at +4%, richness for the report, robustness for the
 pick (structurally different layouts, same predicted speed).
+
+### Outcome append (2026-07-11): P9-LR — the QUALITY family final (pure F5M-LR, gate passed)
+runs/p9lr_final.json (F5M-LOGRAT bigram + trigram, trigate 0.69 > 0.55 => PURE quality
+family, no mixed fallback; rng 882444):
+  w=0   wothsineac.blkvyjufqzgmxdrp/,;  +2.88%  sfb 4.58%
+  w=0.5 cithsnleak.pgvfwzuojqydbmrx/,;  +2.72%  sfb 1.19%  <= the pick
+  w=1   kaedsrntiwjoyfblxpu.;qzgchmv,/  +2.61%  sfb 1.21%
+  w=2   cithslneakwygbfzquo.,pdvmrx/;j  +2.49%  sfb 1.06%
+  ms-era P9 w0 regret under the LR quality objective: +0.431% — the argmax moved
+  modestly with the -37.7% model upgrade (beyond plateau, consistent with the pattern
+  that better-calibrated surfaces relocate optima).
+FAMILY SIGNATURE preserved from ms-era P9: the quality objective puts the letter core
+on the TOP row (wothsineac / cithsnleak) — the fast-tail surface exploits the OQ-14
+top~home tie differently than the mean surface (which centers on home). The w=0.5
+member is the recommended quality pick: sfb collapses 4.58 -> 1.19% for -0.16% speed.
+BOTH DELIVERABLE FAMILIES ARE NOW FINAL: speed = P11-FINAL (fd06e42), quality = P9-LR
+(this entry). Campaign wrap follows.
