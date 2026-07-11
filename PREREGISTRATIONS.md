@@ -2681,3 +2681,23 @@ search), keymeow metrics, oxey, quality T3c_q, finger tables. PICK RULE: the mem
 minimizing genkey Score subject to T3c speed regret <= 0.5% (the community-robust
 pick); the pure-speed champion stays the speed pick. Deliverable: the tradeoff curve
 speed-regret vs genkey-Score — the measured price of community-doctrine compliance.
+
+## KM-COVER — km_metrics coverage audit (registered 2026-07-11, BEFORE results; user:
+## "any metrics in keymeow/km_metrics we don't have but should?")
+REPRESENTABILITY (from km_metrics_src/metrics/base.py @ HEAD, 23 metrics): every km
+metric is expressible in our schema — most are explicit columns (sfb, sfs=sg_same_
+finger, lsb, redirect, same_hand) or <=2-way conjunctions of explicit columns
+(alt=ABA-hand via bg same_hand pair; roll via bg1 XOR bg2 same_hand; trill-redir =
+redirect & sg_distance==0 = our tested back_forth; miniroll/minialt = bigram-level
+explicit). Distance-weighted variants (sfb-dist etc.) are STRICTLY RICHER in ours
+(continuous distance x class interactions). Known hole (already on record): same-row
+roll DIRECTION (measured ~0 in matched reverses). NOT YET AUDITED for pricing: sft
+(3-key same-finger chain), sfs-redir (redirect whose outer keys share a finger — a
+"worst redirect" axis DIFFERENT from our bad_redirect=no-index), skipalt/skiproll,
+sr-roll.
+KM-RESID (km_resid.py): incumbent-residual-by-km-class diagnostic (TRI-FEAT Stage-0
+pattern) on the JOIN cond frame, seed 0, 4 folds: mean signed held-out residual for
+{sft, sfs-redir, trill-redir, plain-redir, sr-roll, skipalt-proxy, mini3roll, alt,
+other}. RULE: a class with |mean residual| > 5ms AND n>=300 cells => one preregistered
+feature arm (standard challenger rule) in a follow-up; all classes <5ms => km_metrics
+coverage documented COMPLETE (already priced), no arms.
