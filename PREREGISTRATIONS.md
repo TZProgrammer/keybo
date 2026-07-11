@@ -2391,3 +2391,17 @@ completes the release-clock audit: SIX routes into the release channel measured,
 survive. The press-clock mixture mean is the right object on this dataset. The
 dataset's remaining un-mined veins are the ERROR STREAM, FINGERS population, and
 language covariates (registered future rounds, each needs re-extraction).
+
+### Outcome append (2026-07-11): B-LETTER — REJECTED (null); the bigram stack for P11-FINAL is settled
+runs/bletter_arm.json: B-LETTER wmae +0.34%, umae +0.40%, dec3 +1.20% — neither the
+rare-cell clause nor the standard rule fires; all deltas inside/near the noise floor.
+Letter-additive practice inheritance does not help rare cells on this frame; the
+practice-term x rare-ngram interaction (open mystery #1) is NOT resolved by a smarter
+shrinkage TARGET — the mystery narrows to the LABEL-side interaction (only sharper
+labels trigger it), consistent with PACE-2's localization. Final tally of tonight's
+improvement arms: VAR no, RO-MIX no, B-LETTER no, TRI-PS no (tau letter), per-sample
+REVERTED, brainstorm #3 folded into P11-final. ZERO adoptions => P11-FINAL builds on
+exactly the gate-verified stack: bigram = bigram_cal_{0,1,2} (group-mean LOGRAT +
+fitted first-finger calibration; pinkyfit_gates LOLO +0.11%/E5 -0.003%/sign 8/8),
+trigram = trigram_cond_lograt_join_{0,1,2} (group-mean construction). LAUNCHING NOW
+per the registered protocol (multi-wpm argmax + oxey sweep + cert + cross-family A/B).
