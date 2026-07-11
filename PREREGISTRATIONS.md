@@ -2535,3 +2535,29 @@ and WITHIN-search optimization (a fixed position table cannot leak layout-level
 practice into permutation comparisons) — but cross-layout quality RANKING of named
 layouts is practice-contaminated at this diversity. Recorded as the honest boundary
 of the quality family's claims; Phase-D diversity is (again) the unlock.
+
+### Informational (2026-07-11): dvorak-vs-moderns decomposition (user's recurring red
+### flag, now fully attributed on the final model)
+Bigram level (calibrated T2, corpus-weighted): dvorak's ENTIRE edge is alternation
+share — 80.2% vs semimak 77.4 / graphite 78.9 / colemak 72.1. Per-class PRICES are
+nearly layout-independent (alt ~127ms everywhere; rolls 133.6-136.5). Gap attribution:
+vs colemak, dvorak saves -10.1ms/bigram on alternation and gives back +12.5 on rolls
++ -1.6 SFB => net ~1.1ms. vs semimak/graphite the bigram level is a TIE (+-0.2ms) —
+the moderns' lower SFB fully pays for their roll share at the bigram level.
+Trigram level (Tcond) is where dvorak actually wins: -2.1 to -2.4ms/trigram vs all
+three moderns, attributed to (a) redirect exposure (colemak +5.8ms contrib, semimak
++2.5) and (b) mixed-flow cost (+1.3 to +3.4) — the moderns' roll-chains put more mass
+in one-hand continuations and redirects, which the conditioned increment prices at
++25-40ms over hand-switches. Verdict: NOT an artifact — a coherent two-level story
+(alternation share at bigram level ties-or-wins, redirect/continuation exposure at
+trigram level decides), robust to the calibration, and the artifact channels were
+independently controlled earlier (no-dvorak retrain kept dvorak's rank; population
+weighting controlled; tail-practice confound documented as QUALITY-side only).
+P11-w0.5 beats dvorak by winning BOTH levels: comparable alternation flow-cost with
+better within-class placement (roll price 130.3 vs 133.6 — the calibration + finger
+assignment) and a better trigram increment (-0.48ms vs dvorak).
+COMMUNITY-DOCTRINE note for the report: our data prices redirects-after-rolls and
+one-hand continuations HIGHER than community scorers assume, and inroll/outroll
+direction at ~0; if the community ordering (semimak > dvorak) is right about
+something, it is a quantity this dataset cannot see (comfort, error rates at speed,
+long-run fatigue) — which is a Phase-D question, not a model bug we can fix here.
