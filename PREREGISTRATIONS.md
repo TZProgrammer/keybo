@@ -2503,3 +2503,18 @@ takes the quality role iff beats DED-LR on wmae >1% with guards AND rho/own-ceil
 DED-LR - 0.005 AND taus no lower. Registered risk: if the bias has a large layout-
 independent SHIFT component, slope-only under-corrects and the arm nulls — which
 would localize the bias decomposition (shift vs compression) as the deliverable.
+
+### Outcome append (2026-07-11): QIN-LODO — slope-only recal FAILS; the bias decomposition lands SHIFT-dominated; QIN's ledger re-closes
+runs/qin_lodo.json: Q-SLOPE wmae 23.23 (+35% vs DED-LR 17.17; cf. affine QIN-RECAL's
+8.98), Q-SLOPEW worse; dp-tau still 0.0 for both. TWO findings:
+(1) The registered decomposition question is ANSWERED: removing the intercept destroys
+the -48% recovery => the order-statistic bias is predominantly a LEVEL SHIFT (per-q
+intercept), not a compression (slope). (2) The shift is exactly the component that
+cannot be fit without importing between-layout level on 4 layouts — AND dp-tau stayed
+0.0 even slope-only, meaning the layout confound also lives in the shared q-surface
+itself, not only in the recal layer. CONCLUSION (final, with the decomposition as the
+deliverable): the -48% is real but irreducibly entangled with layout level at this
+diversity; no recalibration form available on 4 layouts can keep it and certify
+ranking. DED-LR remains the quality model. Phase-D layout diversity remains the
+unlock — now with a precise statement of WHAT it unlocks (per-layout-identifiable
+per-q intercepts).
