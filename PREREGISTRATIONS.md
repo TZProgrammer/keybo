@@ -3439,3 +3439,50 @@ kept session's (keep the longer). Audit measured 102 such sessions (3.89% of vg-
 windows double-counted).
 Both are mechanical data-correctness fixes; they ship together with the Amendment-3
 re-ingest and are covered by the same re-run rules (R-D1/R-D2b/R-D3/R-RESID).
+
+### Outcome append (2026-07-12): RE-RUNS ON CORRECTED DATA (Amendment 3+4) — the
+### decode fix rewrites the community story: zero-shot transfer RECOVERS; alternation
+### verdict flips to mixed/tied; integration still rejected (aalto poison unchanged)
+runs/rerun_d1.json, rerun_d2.json, rerun_d2b_ci_origdef.json, rerun_d3.json,
+rerun_resid2.json. All rules verbatim from the originals (Amendment-3 R-rules).
+R-D1 ZERO-SHOT: rho/ceiling recovers on EVERY label (scrambled -> corrected):
+  colemak-dh .394->.582, recurva -.009->.510(!), castro .205->.606, alite .343->.539,
+  mtgap .144->.489, ddn -.111->.234, vg-custom .222->.396; +pseudo .371->.573,
+  +rareboost .385->.612. By the registered PASS bar (>=0.5): 4 of 9 labels pass
+  outright, two more sit at .49/.40. The original primary-4 set (chosen for sample
+  volume when geometry was scrambled) still counts 1/4 primary passes, so the
+  REGISTERED headline stays "no generalization claim" BY LETTER — but the honest
+  summary changes completely: the model's cell ordering transfers at ~half-to-0.6x of
+  each typist's own noise ceiling on alien layouts/population, roughly the in-family
+  dvorak-fold level (rho .42-.69), where the scrambled data had shown ~zero. The D1
+  failure headline was the ingest bug, as the audit predicted. Magnitude wmape ~0.27
+  (slope 1.19) — levels shift cross-population, structure transfers.
+R-D2b ALTERNATION (original class def, cell-bootstrap CIs): aalto qwerty +17.9
+  [+13.5,+22.2] alternation-faster; community: colemak-dh +10.7* alt-faster,
+  2 labels rolls-faster* (vg-custom -13.5, mtgap -14.4 — both rowStagger), 4 ties.
+  Registered challenge rule (>=3 incl 1 rowStagger) does NOT fire (2 labels) => story
+  STANDS by letter, but the evidence grade changes: the old "7/7 all-typists
+  alternation-faster" claim is VOID (it was computed on scrambled classes); corrected
+  data shows a MIXED picture — alternation-faster for the aalto population and the
+  highest-volume community typist, tied-to-reversed for several roll-trained
+  enthusiasts. The deliverable docs' "confirmed population-general" line must be
+  rewritten to this mixed verdict.
+R-D5U2 PINKY (corrected): colemak-dh pinky_first +47.1 (aalto +43.1 — replicates),
+  ring_first -41.0 (still inverts); recurva ring_first +68.8 (large, right sign),
+  pinky_first +1.2 (~null). Net: 3 of 4 label-class estimates now carry the aalto
+  sign (was 1 of 2) — transfer evidence IMPROVES but stays mixed. No bearing on
+  CAL-REMOVE (removal was decided on speed-neutrality + the user's simplicity
+  directive, which stand regardless).
+R-D3 INTEGRATION: adopt=False again — aalto folds still poisoned (qwerty +24.8%,
+  qwertz +16.5%, azerty +19.6%, dvorak +1.3%) — BUT community folds now IMPROVE
+  under merge (alite -6.3%, mtgap -8.1%, ddn -14.6%, vg -0.9%; mean -7.5% vs the
+  scrambled run's -2.2%): cross-typist community structure is REAL and learnable,
+  the blocker is purely that community rows damage aalto folds (population price
+  divergence + 1-typist labels). Verdict unchanged; mechanism sharper.
+R-RESID2 CLASS FLAGS: the scrambled run's flags were artifacts as suspected — sfb
+  and alternate flags DISSOLVE on corrected data (sfb now +23/+27 on colemak-dh
+  labels vs -24 recurva: mixed signs); surviving: outroll UNDERPRICED (+5.7..+27,
+  3 labels) and inroll OVERPRICED (-6.6..-24.1, 3 labels) — i.e. the model prices
+  in-rolls too slow and out-rolls too fast for these typists, a roll-DIRECTION
+  asymmetry rather than the roll-level story. COMM-RESID-IV re-runs on these two
+  flags (same rule; expected to fail iv-a again given aalto gating).
