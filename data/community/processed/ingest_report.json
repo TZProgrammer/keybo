@@ -1,0 +1,36 @@
+{
+ "pids": {
+  "alite": 200001,
+  "andrewcastro": 200002,
+  "ddn": 200003,
+  "grzegorzkulesza": 200004,
+  "octahedron": 200005,
+  "richarddavison": 200006,
+  "vg": 200007
+ },
+ "rows": {
+  "bistrokes": 3906,
+  "tristrokes": 23808,
+  "tristrokes_last": 23808
+ },
+ "sessions_total": 9135,
+ "sessions_deduped": 3975,
+ "sessions_kept": 3344,
+ "events_kept": 528756,
+ "files_skipped": [
+  "typingdata - Alite _.json (not a session list)",
+  "typingdata - Eve Callicoat.json (not a session list)"
+ ],
+ "labels": {
+  "recurva-variant@angleMod#vg": 2162,
+  "colemak-dh@ortholinear#grzegorzkulesza": 523,
+  "custom-aa426873@rowStagger#vg": 239,
+  "custom-abcaff22@ortholinear#andrewcastro": 130,
+  "mtgap-variant@rowStagger#richarddavison": 119,
+  "colemak@rowStagger#alite": 104,
+  "custom-d42a1f92@rowStagger#ddn": 43,
+  "custom-0f8904ec@rowStagger#octahedron": 20,
+  "qwerty@ortholinear#grzegorzkulesza": 3,
+  "qwerty@rowStagger#grzegorzkulesza": 1
+ }
+}
