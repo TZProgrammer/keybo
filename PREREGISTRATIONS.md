@@ -3382,3 +3382,45 @@ population selection (typists who tolerate sfbs choose these layouts) and/or uni
 deliberate practice on the few residual sfbs their layouts retain. Both are
 population-relative, neither transfers to the general-population deliverable; the
 COMM-RESID-IV conclusion (population divergence) stands with a sharper mechanism note.
+
+## KIAKL-INGEST Amendment 3 (2026-07-12) — CRITICAL: the key field is a QWERTY-POSITION
+## LABEL, not the produced character; every non-qwerty community session was ingested
+## with position-scrambled geometry
+EVIDENCE (runs recorded before this amendment; decode probe reproducible from raw zips):
+for every one of the 19 parseable capture files, treating data[].key as the produced
+character yields gibberish (common-word hit rate 0.00-0.01), while decoding
+produced_char = session_layout[qwerty_index(key)] yields English text (0.14-0.32; e.g.
+Andrew Castro: "pose copy five center old state office sent stay size..."). The
++pseudo file decodes to pseudo-words and the +rareboost file to rare/multilingual
+words under the SAME decode — independent confirmation via the corpus tags. Mechanism:
+these typists use monkeytype's software layout emulation; the browser event carries
+the OS-level (qwerty) character of the physical key, monkeytype remaps internally.
+The audit-data-quality subagent independently identified the same interpretation.
+CONSEQUENCE FOR THE INGEST: community.py's cmap mapped the LABEL through the SESSION
+layout (positions = P(label)); the true physical slot is the label's QWERTY slot
+(= P(produced_char)). Recorded positions are therefore wrong by the fixed slot
+permutation P∘Q⁻¹ per layout; recorded ngram text is the qwerty transliteration
+(freq column ≈ meaningless); timing values themselves are correct.
+BLAST RADIUS (all community-side results to date are VOID pending re-run — they were
+computed on scrambled geometry): D1 zero-shot (the 0/4 failure may be the scramble,
+not the model), D2a tail / D2b alternation-confirmed / D2c pinky, D3+D3b integration
+rejections, D5 all parts, DATA-CLEAN, COMM-ERR, COMM-RESID/2/IV flags (the sfb-
+overpriced pattern is exactly what class-mislabeling predicts), COMM-ALTFINGER.
+Aalto-side results (CAL-REMOVE gates, PINKY-GAP, all production models) are UNAFFECTED.
+The scrambled TSVs remain in git history; the fix regenerates them in place.
+FIX (code): decode each event to produced_char = main30[qwerty_index(key)] (identity
+for qwerty sessions; undecodable labels — Backspace, shifted chars — keep their raw
+key and break windows exactly as before). Everything downstream (cmap, windows, wpm)
+is then correct by construction. Unit tests pin the decode on a colemak-dh example
+and the qwerty identity.
+RE-RUN RULES (same rules as the originals, now on corrected data — no goalpost moves):
+  R-D1 zero-shot per-label rho/ceiling, 4 primary labels (D1 rule: PASS iff
+       rho/own-ceiling >= 0.5 AND beats distance+wpm baseline; report per label).
+  R-D2b alternation-vs-roll observed contrast per natural label (D2b rule: story
+       challenged iff >= 3 natural labels incl >= 1 rowStagger show rolls faster,
+       CI excluding 0).
+  R-D3 LODO-8 integration (D3 rule verbatim: adopt iff every aalto fold within
+       +0.91%, community mean improvement > 1%, umae/dec3 guards <= +2%).
+  R-RESID class-residual sweep + practice adjustment (COMM-RESID/2 rules verbatim).
+Anything that changes verdict gets its own outcome append; the docs' community
+section is rewritten from the re-run results only.
