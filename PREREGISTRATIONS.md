@@ -3191,3 +3191,26 @@ both ways. If (c) fails with near-zero learned magnitudes, the honest conclusion
 that the collision physics cannot be learned without an explicit offset on THIS data —
 the seam (or its removal with the dvorak caveat) are the only options, and the user
 decides between them.
+
+## COMM-ERR + COMM-RESID (registered 2026-07-12, BEFORE results; user: "try everything
+## possible to make good use of this new data")
+Two untried validation channels on the frozen production stack:
+COMM-ERR ERROR-CLUSTERING: typos as an independent difficulty signal. The model
+predicts per-position-pair TIME; if its difficulty surface is real, community typists
+should mis-hit MORE on bigrams the model prices as slow (motor difficulty produces
+both slowness and errors). Per natural label: for each bigram cell with >= 30
+attempts (windows where the first key is correct and a second press follows), error
+rate = share of second events with correct=false; Spearman(prediction, error rate)
+per label, bucket-centered, with a distance-only baseline. PASS (informational
+validation) if pooled rho > 0 with p < 0.05 AND beats the distance baseline on >= 3
+of 4 primary labels. This cannot change the deliverable; it can only add or deny an
+independent-channel validation paragraph.
+COMM-RESID SYSTEMATIC RESIDUAL SWEEP: the audit report's re-search trigger asks for
+"geometry-controlled, replicated mispricing" — nobody has actually swept for one. Per
+natural label: per-cell signed residual (obs - pred, bucket-centered) averaged by
+feature class {sfb, alternate, inroll, outroll, lsb, scissor, same_finger_skip,
+redirect-bigram-classes}; a class is FLAGGED iff |mean residual| > 5ms AND the SIGN
+replicates on >= 3 natural labels including >= 1 rowStagger. Flagged classes feed the
+audit's 4-condition trigger (they'd still need the practice-matched design + aalto
+gates + argmax move before anything changes). No flags => the model's class pricing
+survives community data — recorded as the final line of the community campaign.
