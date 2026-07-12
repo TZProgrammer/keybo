@@ -2779,3 +2779,38 @@ max-regret ORDER, unaffected.
 FAMILY WRAP: speed headline stays P11-w0.5 (+4.00%); the robust/balanced/community-
 compliant deliverable is P10-w0.5 (+3.95%, genkey 33.7, balanced fingers, disloc
 374M); quality stays P9LR-w0.5. All three documented in docs/.
+
+## KIAKL-INGEST — community monkeytype data ingestion (registered 2026-07-12, BEFORE
+## any model contact; user supplied data/community/raw/*, "make this nice and structured")
+DATA: Kiakl form-response zip (8 submitters, ~920k events) + GK single-user files
+(duplicates of in-zip content). Monkeytype capture: per-event {key, interval(ms,
+press-to-press), correct}, sessions carry {sessionID, layout string, keyboardType,
+website}. No release timestamps => hold=-1 forever for this source.
+INGESTION RULES (fixed before processing):
+1. DEDUP by sessionID across all files (byte-duplicate + subset files confirmed:
+   GK standalone == in-zip; VG topic files ⊂ VG main; GK numbered ⊂ each other).
+2. USER = form submitter (pid assigned 200001+, disjoint from aalto pids); the
+   sessionID is NOT a user (one submitter, many sessions).
+3. LAYOUT LABEL = <identified-name-or-custom-slug>@<keyboardType>#<submitter-slug>,
+   one label per (layout-string, kbt, submitter) — keeps typist and geometry visible
+   to every downstream loader; never silently pooled.
+4. WINDOW VALIDITY (bigram (e1,e2), trigram (e1,e2,e3)): every event correct=true;
+   every within-window interval in (0, 5000]; windows reset at session boundaries
+   and at any correct=false event (the following event's interval is recovery-
+   contaminated => it may not START a window's duration either).
+5. WPM per session = (n_correct_events/5) / (sum correct intervals / 60000), the
+   sample label for all samples in that session (mirrors aalto test-level wpm).
+6. OUTPUT in the exact production TSV schema (layout, positions, ngram, freq,
+   (wpm,duration,pid,hold)*): bistrokes_community.tsv (dur = press1->press2),
+   tristrokes_community.tsv (dur = press1->press3), tristrokes_last_community.tsv
+   (dur = press2->press3). positions on ROW_STAGGERED_30 slots via the layout
+   string's main-30 extraction; frequency = our corpus table (consistency with
+   production loaders). Space included (0,0) as in production.
+7. NON-DATA files (screenshot png, corpus txt, empty jsons) recorded and excluded.
+WHAT THIS REGISTRATION DOES NOT DO: no model training, no accuracy claims, no
+layout-ranking use. Any MODEL use of this data (LODO extension, QIN certification,
+practice-term fits, cross-layout validation) gets its own registration with rules
+fixed before results. Known confounds recorded now: mostly 1 typist/layout (layout
+x typist confounded within-source), ortho/angleMod geometry mismatch vs
+ROW_STAGGERED_30 features, tiny volume vs aalto, self-selected enthusiast
+population, monkeytype word-mode (no punctuation-heavy text).
