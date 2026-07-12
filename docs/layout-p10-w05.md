@@ -81,67 +81,77 @@ pinky<ring<middle≈index) where P11-w0.5 concentrates 20.0% on the right ring.
 - **Hardware:** cross-checked full-size vs laptop keyboards (kb_strat) — the layout
   ranking is hardware-invariant; one layout serves both.
 
-## Community-data validation (COMM-D, 2026-07-12)
+## Community-data validation (COMM-D, 2026-07-12; CORRECTED re-runs same day)
 
 7 community typists on 8 modern layouts (colemak-dh, recurva, mtgap-variant, colemak,
 and 4 custom), collected via the Kiakl monkeytype form (573k bigram samples,
-`data/community/`). Preregistered campaign:
+`data/community/`). **Ingest correction (KIAKL-INGEST Amendment 3):** the capture's
+`key` field is the QWERTY LABEL of the physical key, not the produced character
+(monkeytype layout emulation) — the first ingest permuted every non-qwerty position.
+All findings below are from the preregistered RE-RUNS on corrected data; the earlier
+scrambled-era verdicts are void and superseded (PREREGISTRATIONS.md carries both).
 
-- **External validity (D1):** the aalto-trained model fails to rank a single
-  community typist's cells zero-shot (best rho/ceiling 0.39). Mechanism: each
-  label is one typist, so the model has never seen that person's idiosyncrasy.
-  Magnitude errors are comparable to in-sample (~wmape parity); it is the
-  within-typist ordering that fails, not the absolute predictions. Training
-  integration (3 arms) was rejected — community typists teach idiosyncrasy, not
-  physics. The unlock for integration is multiple typists per layout (Phase D).
-- **Alternation preference CONFIRMED population-general (D2b):** all 7 community
-  typists show alternation faster than rolls (+1 to +43ms), including those who
-  chose and trained roll-optimized layouts. The assumption this deliverable's
-  structure depends on most survived its hardest-ever test.
-- **First-finger calibration transfer: MIXED (D5-U2):** one label replicates the
-  pinky sign (+25ms), another inverts the ring sign (−31ms). The calibration
-  retains its aalto evidence but transfer is not confirmed across populations.
-- **Tail practice challenged (D2a, D5-CORR):** community typists on daily-driver
-  layouts do not show the fast-tail signature (survives matched-n correction).
-  Implication for quality-model cross-layout ranking: the confound is less severe
-  at enthusiast-level practice than at aalto-qwerty decade-scale practice.
-- **Practice term (D5-U4):** the +pseudo natural experiment (same typist/layout/
-  board, ablated word familiarity) shows frequent bigrams do NOT benefit more from
-  natural text — the practice term captures within-frame repetition, not
-  transferable lifetime familiarity.
-- **Cleanliness ruled out (DATA-CLEAN, 2026-07-12):** the integration failure is
-  structural, not a data-quality artifact — error-rate session caps (10%/20%),
-  post-error window exclusion, trigram cell floors, and wpm-band tightening all
-  leave the verdicts unchanged. The ingest's typo handling was verified correct
-  (a window's first event carries no interval, so error-adjacent contamination
-  was already excluded by construction).
-- **Class-price divergence measured and population-attributed (COMM-RESID/2/IV,
-  2026-07-12):** community enthusiasts on self-chosen layouts pay ~30ms LESS for
-  sfbs, ~22ms less for outrolls, and ~9ms MORE for alternation than the model
-  prices — and this survives practice matching. But applying those prices to
-  aalto predictions degrades every fold by +15–55%: the two populations' class
-  prices are mutually exclusive. The deliverable optimizes for the
-  general-population physics BY DESIGN; a hypothetical enthusiast-priced argmax
-  differs by only +0.3% (18/30 shared keys). Self-selection and deliberate
-  alternate-fingering of residual sfbs are the leading explanations and cannot
-  be separated on this capture.
-- **Deliverable verdict:** P10-w0.5 STANDS — no integration path qualified. The
-  community data's value is as validation evidence (alternation preference
-  confirmed) and honest boundary documentation (single-typist ordering fails;
-  class prices are population-relative).
+- **External validity (R-D1): cell-structure transfer is REAL.** Zero-shot, the
+  aalto-trained model orders each community typist's cells at ~0.5–0.6× that
+  typist's own split-half noise ceiling (colemak-dh .58, castro .61, recurva .51,
+  alite .54; thinner labels .23–.49), uniform across wpm bands — comparable to the
+  in-family dvorak fold. Absolute levels shift (wmape ~0.27, slope 1.19): the model
+  transfers structure, not per-person magnitudes. (The pre-correction "transfer
+  fails" headline was the ingest bug.)
+- **Training integration still REJECTED (R-D3), with a sharper mechanism:** merged
+  training now IMPROVES community folds (mean −7.5% wmae) — cross-typist community
+  structure is learnable — but still poisons aalto folds (+1 to +25%). The blocker
+  is population price divergence + one-typist-per-layout labels, not transfer
+  failure. The unlock for integration remains multiple typists per layout (Phase D).
+- **Alternation preference: MIXED across community typists (R-D2b).** aalto qwerty
+  measures alternation faster by +17.9ms [CI +13.5,+22.2]; on corrected community
+  data the highest-volume typist agrees (+10.7ms, CI excl 0), four are ties, and
+  two rowStagger enthusiasts measure ROLLS faster (−13.5/−14.4ms, CIs excl 0). The
+  registered challenge rule (≥3 labels) does not fire, so the aalto-based structure
+  stands — but the earlier "confirmed 7/7 population-general" claim was a
+  scrambled-data artifact and is retracted. Alternation preference is
+  population-relative: general population yes, roll-trained enthusiasts sometimes no.
+- **Roll-direction asymmetry (R-RESID2/IV):** corrected residuals show the model
+  prices in-rolls too slow / out-rolls too fast for several community typists
+  (±5–27ms, survives practice matching). Injected as offsets it degrades aalto folds
+  (+1.6–8.5%) AND moves the argmax by −0.018% (nothing) — population-divergent and
+  argmax-irrelevant, doubly closed.
+- **First-finger calibration transfer improved on corrected data (R-D5U2):** 3 of 4
+  label-class estimates carry the aalto sign (colemak-dh pinky +47 vs aalto +43;
+  recurva ring +69; colemak-dh ring −41 still inverts). Moot for the pipeline — the
+  seam is removed (CAL-REMOVE) — but the physics measurement gains support.
+- **Tail practice challenged (D2a, R-D5-CORR):** community typists on daily-driver
+  layouts do not show the fast-tail signature (survives matched-n; position-agnostic,
+  so unaffected by the correction).
+- **Practice term (R-D5-U4):** the +pseudo natural experiment stays inverted
+  (rank-corr −0.11, CI excl 0) — the practice term captures within-frame repetition,
+  not transferable lifetime familiarity.
+- **Cleanliness ruled out (DATA-CLEAN):** error-rate caps, post-error exclusion,
+  trigram floors, wpm tightening — all immaterial. The one real data bug was the
+  key-decode semantics (found by the data-quality audit); fixed, re-ingested,
+  everything re-run.
+- **Deliverable verdict: P10-w0.5 UNCHANGED through every corrected re-run.** The
+  community data's corrected value: first out-of-family evidence that the model's
+  cell structure transfers (~0.5–0.6× ceiling), honest boundaries (per-person
+  magnitudes don't transfer; class prices are population-relative), and collection
+  design for Phase D (record key AND code, release timestamps, ≥2 typists/layout,
+  a qwerty control run per contributor).
 
 ## Honest caveats
 
 - Speed numbers are model predictions validated cross-layout on 4 aalto layouts
-  (qwerty/qwertz/azerty/dvorak); zero-shot transfer to single community typists
-  fails on cell ordering (D1), constraining external-validity claims to the
-  population-level physics (alternation preference, pinky cost) rather than
-  per-person prediction.
+  (qwerty/qwertz/azerty/dvorak). Corrected community data adds out-of-family
+  support for the model's cell ORDERING (~0.5–0.6× each typist's noise ceiling,
+  zero-shot) while showing absolute magnitudes are population-shifted — claims
+  about any individual's exact speedup remain extrapolation.
 - The oxey term re-introduces community heuristics the timing data measured as
   neutral (redirects, dsfb) — deliberately, as documented preferences, weight 0.5.
-- The alternation-heavy structure is what the bigram+trigram physics rewards
-  (alternation gap +32ms, rolls sub-additive but alternation still wins on this
-  data); typists who subjectively prefer rolls may prefer the w=2 sibling
-  (`hrfkv.y,oulnstdgciaezxbmqwpj;/`, sfb 0.59%, inroll 8.5%, −0.2% speed).
-- First-finger calibration transfer is mixed (D5-U2): the pinky cost is the most
-  robust claim; the ring cost may be population-specific.
+- The alternation-heavy structure is what the aalto bigram+trigram physics rewards
+  (alternation +17.9ms on qwerty). Corrected community data shows this preference
+  is population-relative: two roll-trained enthusiasts measure rolls FASTER on
+  their layouts. Typists who prefer (or have trained) rolls may prefer the w=2
+  sibling (`hrfkv.y,oulnstdgciaezxbmqwpj;/`, sfb 0.59%, inroll 8.5%, −0.2% speed).
+- First-finger calibration was REMOVED from the pipeline (CAL-REMOVE) — the
+  measured pinky effect stands as documentation (and gained community support on
+  corrected data, 3/4 sign-consistent), but it is not installed in the served
+  surface; the layout was found without it.
