@@ -3062,3 +3062,74 @@ model-improvement round.
 D5-U5: +rareboost rare-decile rho 0.27 (< 0.5) — rare-cell ordering remains the
 model's weakest axis on new data too; consistent with every dec3 guard trip.
 Informational, annotates dec3 interpretation.
+
+## CAL-REMOVE (registered 2026-07-12, BEFORE results; user directive: "remove the ring /
+## pinky calibration and find a better solution. It seems to hurt layout generation, and
+## seems too hacky")
+CONTEXT (already measured, experiment_cal_comm.json): ARM-NOCAL (retrain without
+calibration, same seeds/recipe) speed +3.90% vs production +3.95-4.00% — inside the
+~0.2% plateau; LOLO wmae 24.33 vs 24.35 (identical); the calibration's only measured
+effect is steering outer-first corpus share 1.22%->0.42% at ~nil speed cost. Community
+evidence (D5-U2): ring_first sign FLIPS on the one community label with matched cells
+(-31.0 vs aalto +20.7); pinky_first replicates on the other (+25.3 vs +43.1). The
+physics finding (PINKY-GAP +27.4ms qwerty matched pairs, 8/8 cells) STANDS as a
+measurement; what's removed is the pipeline seam that injects it into the served
+surface — single-population evidence, mixed transfer, zero speed contribution.
+CHANGE: (a) train_bigram_model(calibration=...) default flips True->False;
+calibration.py stays (the estimator is a legitimate measurement tool + D5-U2 uses it);
+TableBigramScorer/predict_ms_at keep their sidecar-reading serve path (old artifacts
+with deltas still serve correctly — backward compatible); (b) production models retrain
+WITHOUT the seam (bigram_nocal_seed{0,1,2}); (c) the deliverable docs drop the
+"calibration steers placement" provenance line and gain the removal rationale + the
+PINKY-GAP finding retained as documented-but-not-installed physics.
+RULE: the removal SHIPS iff (i) LOLO non-degradation vs calibrated production (wmae
+within +0.91% noise floor, umae/dec3 within +2%, taus no lower); (ii) re-searched
+family under the nocal surface produces a pick within 0.2% speed of P10-w0.5 under
+BOTH surfaces (cross-regret — plateau equivalence); (iii) P10-w0.5 itself stays
+within 0.2% of the new family's best under the nocal objective (the deliverable does
+NOT change unless (iii) fails, in which case the new pick replaces it with full gauge
+re-run). Deltas from experiment_cal_comm (LOLO 24.33 vs 24.35, +3.90% vs +3.95%)
+pre-satisfy (i)+(iii) directionally; this registration makes the production-path
+verification the binding check.
+
+## DATA-CLEAN (registered 2026-07-12, BEFORE results; user directive: "audit how we
+## take into account typos + how clean the data is; try everything to make good use of
+## the community data — filtering, removing thin trigrams, slow participants, pseudo
+## words")
+Parallel audit: audit-data-quality subagent (independent, read-only) reports on typo
+semantics + contamination in BOTH pipelines. This registration covers the EXPERIMENT
+arms (main agent), which run regardless of the audit's findings; any audit finding
+that changes an arm's design gets an amendment BEFORE that arm's results are read.
+ARMS ALREADY RUN (experiment_cal_comm.json, registered post-hoc as EXPLORATORY — their
+results informed THIS registration; confirmatory reruns below use held-out checks):
+thick-only/fast-only(wpm>=55)/w25/RS-only integration all FAIL (speed -1.2 to -1.4%,
+LOLO +32-35%); community-fitted calibration ring sign flips. NEW CONFIRMATORY ARMS:
+  CLEAN-1 ERROR-RATE session filter: drop community sessions with error rate > {10%,
+    20%} before window extraction (typo-adjacent contamination hypothesis: high-error
+    sessions carry polluted intervals even in all-correct windows — post-error
+    intervals measure from the error press). Re-run the D3 LODO-8 protocol (incumbent
+    vs merged) on the filtered frame. ADOPT rule identical to D3: every aalto fold
+    within +0.91%, community mean improvement >1%, guards.
+  CLEAN-2 POST-ERROR EXCLUSION: extend extract_windows to also require the event
+    BEFORE the window be correct (kills the "first interval measures from an error
+    press" channel — note the window's OWN first event carries no interval, so this
+    tests the NEXT-lag contamination). Rebuild community TSV, re-run D1 zero-shot
+    per-label rho/ceiling on the 4 primary labels. PASS if any label's rho/ceiling
+    improves >0.05 (evidence the contamination was masking transfer); else the
+    exclusion is documented as immaterial.
+  CLEAN-3 MIN-SAMPLES TRIGRAM FLOOR: the user's "remove trigrams which have less than
+    N samples" — community tristrokes cells are thin; sweep min_cell_samples {10, 20,
+    50} on the community trigram frame and recompute D1-style per-label rho/ceiling
+    for the 2 powered labels (colemak-dh, recurva). Report the curve; no adoption
+    (validation-only — trigram integration was never on the table).
+  CLEAN-4 WPM-BAND TIGHTening: drop community samples outside wpm 50-120 (the
+    thin-tail buckets contribute noisy cells at band edges). Re-run D1 rho/ceiling.
+    Informational.
+RULE: CLEAN-1 is the only arm with an adoption path (it re-tests integration under
+the strongest cleanliness hypothesis). CLEAN-2/3/4 are validation-quality probes:
+they can upgrade/annotate D1's verdict but cannot reopen integration by themselves
+(that requires CLEAN-1 to pass its D3-rule). Everything else stays validation-only
+per D3b. If ALL arms show no material change, the registered conclusion is: the
+community data's failure to integrate is NOT a cleanliness artifact at any filter
+level tested — it is structural (1 typist per layout), closing the filtering
+question with the same verdict as D3b.
