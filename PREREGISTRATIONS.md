@@ -2756,3 +2756,26 @@ compliant near-speed-optimal" member — P11-w0.5 keeps the pure-speed headline
 (regret 0.06 vs 0.099 on T3c is within noise; both <<0.5% cap), P10-w0.5 is what to
 hand a community-metrics-minded user. kmrun layout set extended with the 5 P13
 members (gk-parity/kmrun main.rs, rebuilt).
+
+### Outcome append (2026-07-11): FU-4 / P12 — dislocation term FIXES the finger-load
+### pathology at ~0.01% speed cost; registered pick = P10-w0.5 (again)
+runs/p12_robust.json (fspeed column REPLACED by exact genkey per the GK-PARITY
+amendment; pick re-run over {speed, oxey, genkey-exact}, speed cap 0.5%):
+PICK = P10-w0.5, max regret 0.04% — it dominates every purpose-built P12 member on
+the robust criterion (its oxey/genkey are the column bests while its speed regret is
+0.039%). Same verdict as P13: three independent searches (dislocation-weighted,
+genkey-weighted, combined) all converge on-or-pick P10-w0.5.
+THE UTILIZATION FINDING (user's directive answered mechanistically): the w_d=0 arm
+reproduces the pathology (R-ring 20.0%, Rm 9.1 — P11-like structure), and w_d=0.5
+FIXES it: Rr 20.0->15.1%, Rm 9.1->14.9, R-pinky 11.0->9.1, at speed regret moving
+0.074->0.049% (i.e. FREE within noise). w_d=1.5 adds nothing further (14.35 vs 14.45
+disloc regret). The user's travel-x-slowness heuristic is therefore an effective,
+near-zero-cost balance knob; 0.5 is the sufficient dose. Note P10-w0.5 achieves the
+same balance WITHOUT the term (its oxey-0.5-only search landed balanced) — the
+pathology is a P11-family/calibration-era artifact, and either recipe (P10's, or
+P11's + w_d 0.5) avoids it. Caveat recorded: oxey normalized-regret %s are inflated
+by a near-zero denominator (raw oxey spans negative values); the pick is driven by
+max-regret ORDER, unaffected.
+FAMILY WRAP: speed headline stays P11-w0.5 (+4.00%); the robust/balanced/community-
+compliant deliverable is P10-w0.5 (+3.95%, genkey 33.7, balanced fingers, disloc
+374M); quality stays P9LR-w0.5. All three documented in docs/.
