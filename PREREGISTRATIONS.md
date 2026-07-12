@@ -3214,3 +3214,43 @@ replicates on >= 3 natural labels including >= 1 rowStagger. Flagged classes fee
 audit's 4-condition trigger (they'd still need the practice-matched design + aalto
 gates + argmax move before anything changes). No flags => the model's class pricing
 survives community data — recorded as the final line of the community campaign.
+
+### Outcome append (2026-07-12): COMM-ERR null (inverted); COMM-RESID FLAGS 4 classes
+### — practice-matched design (condition iii) now decisive
+runs/comm_err_resid.json.
+COMM-ERR: NO PASS (0/4). The correlation is significantly NEGATIVE on 3 labels
+(errors cluster on bigrams the model prices FAST, rho -0.16 to -0.28) — typos do not
+mark motor-difficult pairs in this capture; plausibly errors concentrate on
+high-speed/high-frequency patterns (carelessness, rolled-through corrections), or the
+monkeytype 'key' field on incorrect events does not identify the intended bigram.
+Recorded as a null; the error channel is NOT independent validation on this data.
+COMM-RESID flags (sign-replicated >= 3 natural labels incl >= 1 rowStagger):
+  sfb OVERPRICED (obs faster than predicted): 6/7 labels, -27 to -48ms
+  outroll OVERPRICED: 4 labels, -23 to -38ms
+  inroll OVERPRICED: 3 labels, -6 to -20ms
+  alternate UNDERPRICED (obs slower): 5 labels, +7 to +15ms
+Direction = community doctrine (rolls/sfb cheaper, alternation less special, for
+enthusiasts on chosen layouts). NOT yet actionable: predictions were geometry-only
+(no practice term), and roll-optimized layouts BY DESIGN place high-frequency
+(lifetime-practiced) bigrams as rolls/sfb-remnants — the class composition is
+frequency-confounded exactly as audit trap T3 warns. Condition (iii) of the audit's
+4-condition trigger (practice-matched design) is now the decisive test.
+
+## COMM-RESID-2 (registered 2026-07-12, BEFORE results): the practice-matched design
+Per natural label: per-cell signed residual (obs - pred, bucket-centered, geometry-only
+predictions as in COMM-RESID). CONTROL: within (label, bucket), OLS of residual on
+log10(corpus frequency of the cell's ngram) + log10(label-local attempt count) — the
+two practice proxies (lifetime + this-capture volume). Class means recomputed on the
+DOUBLY-ADJUSTED residuals. A flag SURVIVES iff |adjusted mean| > 5ms AND the sign still
+replicates on >= 3 natural labels including >= 1 rowStagger.
+RULE: classes surviving (iii) proceed to condition (iv) — a calibrated class-offset arm
+(same seam mechanics as PINKY-CAL, offsets = the surviving classes' adjusted community
+deltas) gated ENTIRELY on aalto: LOLO non-degradation + guards + re-search argmax move
+> 0.2% required before the deliverable changes. Classes that do NOT survive are
+recorded as practice-composition artifacts, closing the community-mispricing question.
+NOTE the sfb flag's magnitude (-27..-48ms) rivals the aalto sfb penalty itself
+(+27-38ms); if it survived (iii)+(iv) the argmax WOULD plausibly move — this is the
+first community finding with that potential. Prior expectation (honest): the
+frequency/practice adjustment absorbs most of it; alternation's +7-15ms may partially
+survive (its cells are the LOW-practice mass on these layouts, so adjustment moves it
+the other way).
