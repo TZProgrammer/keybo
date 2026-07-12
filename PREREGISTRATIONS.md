@@ -3518,3 +3518,18 @@ stands; practice term not lifetime-transferable; pinky calibration transfer impr
 (3/4 sign-consistent) but the seam stays removed per CAL-REMOVE; no repricing or
 argmax-moving path exists from this dataset. P10-w0.5 UNCHANGED through every
 corrected re-run.
+
+## R-D3B (registered 2026-07-12, BEFORE results): corrected-data re-run of the D3b arms
+## — the one stale rejection with a live mechanism
+WHY (goalpost discipline — Amendment-3 R-rule extension, not a re-roll): D3b's ARM-W
+(community weight x0.25) and ARM-P (is_community_population column, served population=0)
+were rejected on SCRAMBLED community geometry, where the community rows could only
+inject noise. Corrected re-runs showed the community geometry now carries real signal
+(R-D1 transfer ~0.5-0.6x ceiling; R-D3 community folds improve -7.5% under merge).
+ARM-P is exactly the design that could keep aalto pricing intact (population indicator
+absorbs the price divergence; served surface uses population=0) while borrowing shared
+geometry signal — its rejection is the only one whose mechanism materially changed
+with the fix. RULES VERBATIM from D3b: per arm, LODO-8; adopt iff every aalto fold
+wmae within +0.91% of incumbent AND community-fold mean wmae improves >1% vs incumbent
+AND umae/dec3 guards <= +2% on aalto folds. Driver rerun_d3b.py = comm_d3b.py with
+corrected TSV (same path, regenerated) + rerun output name.
