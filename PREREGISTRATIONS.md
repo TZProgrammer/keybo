@@ -3424,3 +3424,18 @@ RE-RUN RULES (same rules as the originals, now on corrected data — no goalpost
   R-RESID class-residual sweep + practice adjustment (COMM-RESID/2 rules verbatim).
 Anything that changes verdict gets its own outcome append; the docs' community
 section is rewritten from the re-run results only.
+
+## KIAKL-INGEST Amendment 4 (2026-07-12) — auxiliary cleaning fixes shipping with the
+## Amendment-3 decode fix (both from the audit-data-quality report, sections S2/A2)
+(a) SHIFT RECOVERY: before decoding, unshift the key label (A-Z -> a-z; qwerty shift
+pairs '<'->',', '>'->'.', '?'->'/', ':'->';'). Recovers the 1.9-3.6% of correct events
+that are shifted presses (they are valid typing; under the old semantics they were
+silently window-breaking). Undecodable labels (Backspace, Enter, unicode chars outside
+the 30-key map) still break windows exactly as registered.
+(b) PREFIX-STREAM DEDUP (audit S2): sessionID is an export timestamp, so re-exports get
+fresh ids and survive the registered dedup. New rule: after sessionID dedup, drop any
+session whose full event stream (key, correct) sequence is a strict prefix of another
+kept session's (keep the longer). Audit measured 102 such sessions (3.89% of vg-recurva
+windows double-counted).
+Both are mechanical data-correctness fixes; they ship together with the Amendment-3
+re-ingest and are covered by the same re-run rules (R-D1/R-D2b/R-D3/R-RESID).
