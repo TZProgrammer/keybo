@@ -55,6 +55,15 @@ pinky<ring<middle≈index) where P11-w0.5 concentrates 20.0% on the right ring.
   2026-07-10: cross-layout wmae −37.4% bigram / −23.5% join-trigram, rare-ngram
   guards held). Objective T3c = T2 + Tcond at wpm 90; oxey term weight 0.5
   (documented preferences, `keybo.scoring.oxey`).
+- **First-finger calibration REMOVED (CAL-REMOVE, 2026-07-12):** the pinky/ring
+  seam was retired after measuring that generation is calibration-invariant
+  (re-search cross-regret +0.002%/+0.005% — orders of magnitude inside the
+  plateau) and its community transfer is mixed (ring sign flips on the one
+  testable label). The PINKY-GAP physics finding (+27ms outer-first on qwerty
+  matched pairs) stands as a measurement; it is documented, not installed. Cost
+  of removal is confined to the dvorak validation fold (+1.9% wmae); qwerty and
+  azerty folds actually improve. This layout was found WITHOUT the calibration,
+  so nothing about it changes.
 - **Search:** SA + exhaustive 2-opt, 12 restarts × 12k iters, rng 880333
   (`keybo-e2e/p10_family.py` → `runs/p10_family.json`); 12 distinct near-optima
   within 0.5% — a wide plateau, so treat single-swap variants as equivalent.
@@ -100,9 +109,26 @@ and 4 custom), collected via the Kiakl monkeytype form (573k bigram samples,
   board, ablated word familiarity) shows frequent bigrams do NOT benefit more from
   natural text — the practice term captures within-frame repetition, not
   transferable lifetime familiarity.
+- **Cleanliness ruled out (DATA-CLEAN, 2026-07-12):** the integration failure is
+  structural, not a data-quality artifact — error-rate session caps (10%/20%),
+  post-error window exclusion, trigram cell floors, and wpm-band tightening all
+  leave the verdicts unchanged. The ingest's typo handling was verified correct
+  (a window's first event carries no interval, so error-adjacent contamination
+  was already excluded by construction).
+- **Class-price divergence measured and population-attributed (COMM-RESID/2/IV,
+  2026-07-12):** community enthusiasts on self-chosen layouts pay ~30ms LESS for
+  sfbs, ~22ms less for outrolls, and ~9ms MORE for alternation than the model
+  prices — and this survives practice matching. But applying those prices to
+  aalto predictions degrades every fold by +15–55%: the two populations' class
+  prices are mutually exclusive. The deliverable optimizes for the
+  general-population physics BY DESIGN; a hypothetical enthusiast-priced argmax
+  differs by only +0.3% (18/30 shared keys). Self-selection and deliberate
+  alternate-fingering of residual sfbs are the leading explanations and cannot
+  be separated on this capture.
 - **Deliverable verdict:** P10-w0.5 STANDS — no integration path qualified. The
   community data's value is as validation evidence (alternation preference
-  confirmed) and honest boundary documentation (single-typist ordering fails).
+  confirmed) and honest boundary documentation (single-typist ordering fails;
+  class prices are population-relative).
 
 ## Honest caveats
 
