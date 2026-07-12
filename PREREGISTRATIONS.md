@@ -3683,3 +3683,35 @@ explanation. The wmape~0.25 level miss decomposes as range-compression (slope>1
 within labels) + per-typist idiosyncrasy, neither label-fixable. Community wpm stays
 as registered (correct-interval semantics) — it is the better-behaved label on this
 capture (D3 community folds prefer it by 3.8pp).
+
+## P10.5 (registered 2026-07-12, BEFORE results; user: "just for the sake of
+## experimentation, what would be our P10.5 if we did use the best model trained on
+## the entire data? Train it the same way P13 was trained; what is the cross regret
+## with this new layout and P10-w0.5?")
+STATUS: EXPLORATORY BY DECLARATION — the merged model failed every integration gate
+(R-D3/D3C), so P10.5 is NOT a deliverable candidate; it is the measured answer to
+"where would the argmax move if we let the community data in anyway."
+TRAINING DATA: aalto bistrokes_v5 + ALL natural community labels from the corrected
+TSV (7 typists incl the qwerty stubs; +pseudo/+rareboost EXCLUDED — non-natural
+text by registered tag; octahedron contributes 0 in-band cells). Production recipe
+verbatim (LOGRAT, practice term, layout_balance_weights, calibration OFF per
+CAL-REMOVE), 3 seeds -> bigram_merged_seed{0,1,2}. Trigram surface: the production
+join models (community trigram cells too thin to retrain — limitation recorded;
+both surfaces share it, so the A/B isolates the bigram-surface difference).
+REFERENCE SURFACE: aalto-only nocal (bigram_nocal_seed{0,1,2}, same recipe) + same
+trigram — the current-production construction.
+SEARCH (P13 recipe verbatim, rng 886777): SA 10x12k + exhaustive 2-opt on the
+MERGED T3c; arms w_g in {0, 0.5, 1.0, 2.0} (exact-genkey in-loop, oxey 0) +
+combined (w_g 0.5, oxey 0.5); candidate set = the 5 searched + P10-w0.5 + P11-w0.5
++ semimak/colemak/dvorak.
+PICK RULE (P13 verbatim): min max normalized regret over {speed(merged surface),
+genkey} s.t. merged-speed regret <= 0.5%. The pick is named P10.5.
+CROSS-REGRET REPORT (the user's question): (a) P10.5's regret vs P10-w0.5 under the
+AALTO surface; (b) P10-w0.5's regret vs P10.5 under the MERGED surface; (c) shared
+positions; (d) gauge board (genkey/oxey/sfb/alternation/rolls/max-finger) for both.
+INTERPRETATION RULE (registered): if both cross-regrets < 0.2% the merged data
+does not move the argmax beyond the plateau even when trained in (consistent with
+COMM-RESID-IV's -0.018%); if P10-w0.5's regret under the merged surface > 0.5%
+the community data materially reprices the space and P10.5 documents the
+enthusiast-leaning alternative — still not promoted (integration gates failed),
+but recorded as the "if you trust the merge" layout.
