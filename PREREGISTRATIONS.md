@@ -3486,3 +3486,35 @@ R-RESID2 CLASS FLAGS: the scrambled run's flags were artifacts as suspected — 
   in-rolls too slow and out-rolls too fast for these typists, a roll-DIRECTION
   asymmetry rather than the roll-level story. COMM-RESID-IV re-runs on these two
   flags (same rule; expected to fail iv-a again given aalto gating).
+
+### Outcome append (2026-07-12): corrected-data COMM-RESID-IV + D5 re-runs — every
+### remaining thread closes; the community campaign's final corrected ledger
+runs/rerun_resid_iv.json, rerun_d5.json.
+R-RESID-IV (offsets outroll +14.9 / inroll -13.8 from the corrected flags):
+  (iv-a) FAIL again — aalto folds degrade +1.6 to +8.5% (roll-direction offsets
+  contradict aalto pricing too, just 6x less violently than the scrambled-era sfb
+  offsets). (iv-b): P10-w0.5 regret under the offset surface -0.018% — the argmax
+  does NOT move even if the offsets were injected. DOUBLE-CLOSED: the roll-direction
+  asymmetry is population-divergent AND argmax-irrelevant. No community-derived
+  repricing path remains open.
+  Rider (per-bucket zero-shot rho, corrected): uniform ~+0.42-0.55 across ALL wpm
+  bands and labels — transfer is band-uniform, not band-structured (the scrambled
+  rider's recurva-at-120 artifact is gone).
+R-D5-CORR TAIL: community 0.777 vs aalto matched-n 0.750 — challenge STANDS on
+  corrected data (this analysis was position-agnostic, so unchanged as expected).
+R-D5-U4 PRACTICE: rank-corr -0.110 CI [-0.209, -0.007] — still inverted/not
+  validated (was -0.191). The corrected decode weakens but does not flip it; the
+  practice-term boundary finding survives.
+R-D5-U5 RAREBOOST: rare-decile rho 0.437 (was 0.27) — improves substantially on
+  corrected identities, still under the 0.5 informational bar. Rare-cell ordering
+  remains the weakest axis, but by less than the scrambled data suggested.
+FINAL CORRECTED LEDGER (supersedes the pre-Amendment-3 ledger): transfer of cell
+STRUCTURE to alien layouts/populations is REAL (~0.5-0.6x own-ceiling, uniform
+across wpm); integration remains closed (aalto poison, now attributed to price
+divergence + 1-typist labels, NOT to transfer failure); alternation-vs-rolls is
+MIXED across community typists (population-relative preference, not universal
+physics — aalto's +18ms remains the deliverable's basis); tail-practice challenge
+stands; practice term not lifetime-transferable; pinky calibration transfer improved
+(3/4 sign-consistent) but the seam stays removed per CAL-REMOVE; no repricing or
+argmax-moving path exists from this dataset. P10-w0.5 UNCHANGED through every
+corrected re-run.
