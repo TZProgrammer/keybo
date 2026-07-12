@@ -3611,3 +3611,43 @@ D3C ARM-R RESIDUAL HEAD: community folds improve mean -7.5% wmae (alite -1.5%,
 NET for the user's question: "everything improves" is achievable ONLY by
 population-conditioned architecture (ARM-R shape), never by weight/indicator mixing
 on one surface — now measured at 4 points of the frontier plus 2 indicator designs.
+
+## WPM-HARM (registered 2026-07-12, BEFORE results; user: "could the discrepancy be in
+## the pace label being fed as a feature?")
+MECHANISM UNDER TEST: the wpm label enters twice (feature + LOGRAT target normalizer)
+and its SEMANTICS differ by dataset — aalto: correct chars / elapsed first-to-last
+correct press (corrections INCLUDED in elapsed; keystrokes.py); community: correct
+chars / sum of correct intervals only (corrections EXCLUDED; community.py::_session_wpm).
+Community labels are therefore inflated for the same true pace; predicted magnitude
+10-25% (error rates 5-12% + correction keystrokes + into-error slowdowns x1.5-2.3)
+matches the observed level miss (slope 1.19). The commensurability audit subagent is
+measuring the ratio distribution independently (no model contact); THIS registration
+covers the model-contact adjudication.
+HARMONIZATION: recompute each community session's wpm AALTO-STYLE — n_correct/5 over
+elapsed minutes from first to last correct press (= sum of all intervals of events
+after the first correct press through the last correct press, error and control
+events included), n_correct >= 10 else drop (mirrors both pipelines' floors). Windows
+re-extracted with the harmonized label (decode fix retained); cells rebuilt.
+ARMS + RULES:
+  HARM-LEVEL (D1-style zero-shot, frozen production models, 4 primary labels +
+    pooled): report per label rho (expect ~unchanged — ordering is level-immune),
+    mean signed relative residual (obs-pred)/pred (expect positive BEFORE, near-zero
+    AFTER if the mechanism is right), wmape, slope. The label-semantics mechanism is
+    CONFIRMED as the level-shift driver iff pooled |mean signed residual| falls by
+    >= 50% AND slope moves into [0.95, 1.08] AND wmape falls >= 30% relative. Partial
+    movement => mixed attribution (label semantics + population), quantified by the
+    residual fraction removed.
+  HARM-D3 (LODO-8, rules VERBATIM from D3/R-D3: adopt iff every aalto fold wmae
+    within +0.91% of incumbent AND community-fold mean improves > 1% AND umae/dec3
+    guards <= +2%): re-run with harmonized labels. If adopt=True, INTEGRATION
+    REOPENS (the R-D3 rejection is re-attributed to label incommensurability) and a
+    production-ingest change (aalto-style wpm for community) ships with a full
+    family re-verify. If adopt=False with materially shrunken aalto damage, record
+    the split attribution (labels X%, population the rest). If damage unchanged,
+    label semantics is exonerated for the merge poison (level channel only).
+HONEST PRIORS: HARM-LEVEL confirm 🟡 (direction+magnitude both fit); HARM-D3 adopt
+🟠 (the class-price divergence evidence — COMM-RESID-IV offsets degrading aalto —
+was bucket-centered i.e. level-immune, so SOME population divergence survives
+harmonization; whether the residual damage clears +0.91% is genuinely open).
+DELIVERABLE EXPOSURE: none directly (the argmax never consumed community labels);
+this adjudicates validation claims + the integration door.
