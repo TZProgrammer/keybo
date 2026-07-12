@@ -2988,3 +2988,21 @@ Pick between qualifying arms: the one with better community mean wmae. If
 neither qualifies: integration CLOSED for this data volume; community data
 remains validation-only; deliverable stands with the D1 external-validity
 caveat + D2 assumption-audit evidence.
+
+### Outcome append (2026-07-12): COMM-D3b — BOTH arms rejected; integration CLOSED
+### at this data volume (community = validation-only)
+runs/comm_d3b.json. ARM-W (x0.25 weight): aalto folds still degrade +3.8 to
++19.2% (>> 0.91% floor) for community -1.95% — fails. ARM-P (population column,
+served 0 for aalto): aalto folds STILL degrade +8.9 to +20.2% — the indicator
+does not isolate the shift (tree splits shared across the column distort the
+aalto fit anyway) — and community gain evaporates (-0.13%). Per the registered
+rule: INTEGRATION CLOSED for this data volume; community data is VALIDATION-ONLY;
+the deliverable stands unchanged, carrying (a) the D1 external-validity caveat
+and (b) the D2 assumption-audit evidence (alternation preference confirmed
+population-general — the deliverable-relevant assumption SURVIVED its hardest
+test to date). The consistent cross-arm signal (community rho doubles with
+community data in training; aalto always degrades) pins the mechanism:
+single-typist labels teach typist idiosyncrasy, not population physics. The
+unlock is MORE TYPISTS PER LAYOUT, not cleverer weighting — quantified target
+for the Phase D outreach: multiple submitters on the SAME layout so a typist
+random effect is identifiable.
