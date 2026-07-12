@@ -3254,3 +3254,67 @@ first community finding with that potential. Prior expectation (honest): the
 frequency/practice adjustment absorbs most of it; alternation's +7-15ms may partially
 survive (its cells are the LOW-practice mass on these layouts, so adjustment moves it
 the other way).
+
+### Outcome append (2026-07-12): CAL-REMOVE-ADJ — ADJ-1 dvorak cost REAL (+1.90%
+### 5-seed); ADJ-2 PINKY-MONO fails 0/8 (constraint flattens to zero, cannot replace
+### the seam)
+runs/cal_remove_adj.json.
+ADJ-1: dvorak fold 5-seed mean d_wmae +1.90% (seeds +1.57 to +2.34, consistent) > 0.91%
+bar => the seam's dvorak prediction value is REAL, not seed noise. Removal trade as
+measured: qwerty -1.66%, azerty -1.57% (IMPROVE), qwertz +0.05%, dvorak +1.90%
+(DEGRADE). Generation is calibration-INVARIANT (gates ii/iii passed at +0.002%/+0.005%
+regret — orders of magnitude inside the plateau).
+ADJ-2 PINKY-MONO: monotone-constrained indicator columns learn ZERO magnitude (served
+gap +0.0ms on all 8 probe pairs — the constraint prevents PINKYFIX's sign inversion but
+the within-layout collinearity with the practice term still starves the columns of
+attributable variance; the estimator's identifying restriction cannot be replicated by
+a constraint alone). LOLO also fails (qwertz +1.57%, dvorak +1.64%). Route CLOSED: no
+learnable replacement for the seam exists on this data.
+DECISION (user-directed): the removal SHIPS — the user directed removal before these
+results ("seems too hacky"), generation is provably unaffected, and the cost is
+confined to one validation fold's prediction quality (dvorak +1.9% wmae, still
+rho +0.69). The trade is documented here and in the layout docs; reinstating the seam
+(calibration=True) remains a one-flag revert if the dvorak fold is ever load-bearing.
+
+### Outcome append (2026-07-12): COMM-RESID-2 — sfb/outroll/alternate SURVIVE the
+### practice-matched design; inroll dies; condition (iv) arm registered below
+runs/comm_resid2.json. Practice slopes are real and large (volume -2 to -54 ms/log10,
+freq +5 to +7 ms/log10 — the freq sign is POSITIVE after volume is controlled,
+i.e. corpus-frequent bigrams are SLOWER than their local-volume peers on these
+layouts; volume, not lifetime frequency, carries the speedup — consistent with
+D5-U4's inverted practice result).
+Adjusted class residuals (survival rule: |mean| > 5ms, sign-replicated >= 3 natural
+labels incl >= 1 rowStagger):
+  sfb OVERPRICED survives: -21 to -39ms, 6/6 labels (both geometries)
+  outroll OVERPRICED survives: -18 to -34ms, 4 labels incl 2 rowStagger
+  alternate UNDERPRICED survives: +5 to +12ms, 5 labels incl 3 rowStagger
+  inroll DIES (mixed signs after adjustment) — was a practice-composition artifact
+Honest mechanism caveats (recorded BEFORE the (iv) result): (a) self-selection — these
+typists chose roll-optimized layouts, plausibly BECAUSE their motor profile favors
+rolls/tolerates sfbs; no within-typist adjustment removes population selection (audit
+T6); (b) alt-fingering — enthusiasts deliberately alternate-finger their layouts'
+residual sfbs (documented ~8% canonical-map violations even in aalto); a nominal-sfb
+cell typed with two fingers is not an sfb, deflating the measured penalty; (c) the
+linear practice control may under-adjust saturation. NONE of these can be resolved on
+this capture (no release timestamps, no video, n=1/layout).
+
+## COMM-RESID-IV (registered 2026-07-12, BEFORE results): the aalto-gated offset arm —
+## audit condition (iv), the last gate before any deliverable change
+ARM: inject the surviving classes' pooled adjusted community deltas as class offsets on
+the served surface (seam mechanics, LOGRAT units at serve): sfb -30ms, outroll -25ms,
+alternate +8ms (pooled means of surviving labels; exact values recomputed in-driver
+from runs/comm_resid2.json and recorded). Then:
+  (iv-a) LOLO on aalto with the offsets applied at eval: every fold wmae within +0.91%
+         of the un-offset incumbent, umae/dec3 <= +2%.
+  (iv-b) re-search (T3c + offsets, oxey w=0.5, rng 885333): does the argmax move > 0.2%
+         (P10-w0.5 regret under the offset surface)?
+RULE: the deliverable changes ONLY if (iv-a) passes AND (iv-b) moves the argmax — in
+which case the new family runs in full (multi-gauge + docs + user sign-off). EXPECTED
+(honest prior): (iv-a) FAILS — the offsets contradict aalto's own measured physics
+(sfb +27-38ms was measured THERE), so applying community pricing should degrade aalto
+folds materially; the registered conclusion is then POPULATION DIVERGENCE, not model
+error: enthusiasts on chosen layouts genuinely pay different class prices than the
+general population, the deliverable optimizes for the general population BY DESIGN, and
+the divergence is documented in the layout docs as the community data's final lesson.
+INFORMATIONAL RIDER (no decision power): D1 zero-shot rho recomputed per wpm-bucket per
+primary label — does transfer fail uniformly or concentrate in a band?
