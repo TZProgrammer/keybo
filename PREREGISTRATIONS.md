@@ -2924,3 +2924,40 @@ NOT rank a single community typist's cells well zero-shot; whether that is
 layout-space transfer failure or single-typist noise is exactly what D3's
 LODO-8 disentangles (a fold trained WITH other community typists tests transfer
 to a new typist rather than to a new population).
+
+### Outcome append (2026-07-12): COMM-D D2 — assumption revisits; tail-practice
+### CHALLENGED, alternation-preference SUPPORTED (typist-varying), pinky transfer
+### NOT CONFIRMED (sign flip, but 52% share => noise-dominated)
+runs/comm_d2.json. Verdicts per the registered predictions:
+D2a TAIL-PRACTICE: community daily-driver q20/median 0.777 vs aalto qwerty 0.742
+(dvorak 0.753, azerty 0.735). Community tails are NOT disproportionately fast —
+the prediction FAILED. Nuance recorded: the tail-practice story claimed qwerty
+typists' lifetime practice shows at their best executions; community enthusiasts
+have months-to-years (not decades) on their layouts, so a weaker tail is
+CONSISTENT with practice-months scaling, but the strong form ("your daily driver
+gives you the fast-tail signature") is refuted at this practice level. The
+quality-model cross-layout caveat STAYS (the confound direction is unchanged);
+what changes: community data at this volume shows a LESSER tail-practice bias
+than feared => community-based quality ranking is less contaminated than the
+aalto-qwerty comparison was. Reopen quality-ranking = registered follow-up.
+D2b ALTERNATION-VS-ROLL: observed roll-minus-alt price is POSITIVE for 7/7
+community labels (+1.0 to +42.9ms) — alternation is faster than rolling even for
+typists who CHOSE roll-optimized layouts. The model's alternation preference is
+SUPPORTED as population-general, not an aalto artifact; the dvorak-#2 story
+strengthens. But the SPREAD (colemak-dh typist +42.9 vs recurva typist +7.7) says
+the roll PENALTY size is typist-specific — supporting per-typist calibration as
+the integration path, and explaining why a single global model fails D1 ordering.
+(aalto reference: qwerty +17.9, dvorak -4.3 — dvorak typists genuinely roll
+cheaper than they alternate; community never crosses zero.)
+D2c PINKY/RING: matched-cell contrast (registered PASS = same sign): aalto
+non-qwerty +0.4ms/53% pos on this coarse outer-vs-inner estimator (NOTE: much
+smaller than the +43/+21 fitted deltas — this estimator pools pinky+ring vs
+index+middle and same-row-only cells, so it is NOT the calibration's estimator;
+it under-measures by design). Community rowStagger -8.0ms/52%, ortho -14.0ms/50%.
+Share-positive ~50-53% everywhere => the contrast is NOISE-DOMINATED at community
+n; verdict: NOT CONFIRMED, NOT REFUTED (underpowered). The calibration keeps its
+aalto evidence; transfer claim stays 🟠 unverified.
+D2d GEOMETRY: rho/ceiling ortho 0.34 (n=4 labels) > rowStagger 0.15 (n=4) >
+angleMod -0.01 (n=1). Surprising direction (features assume rowStagger) —
+confounded with typist volume (GK ortho has 3x the cells of any rowStagger
+label). Informational only, as registered.
