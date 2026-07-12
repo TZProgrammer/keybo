@@ -37,6 +37,22 @@ def main() -> None:
 
     report = IngestReport()
     sessions = load_sessions(sorted(raw_dir.rglob("*.json")), report)
+    # KIAKL-INGEST amendment: the gk_typingdata.zip files carry no submitter in the
+    # filename (they are Grzegorz Kulesza's — same pid as his form submissions), and
+    # two of them are non-natural text (pseudo-words / rare-char-boosted words) that
+    # must stay distinguishable via a corpus tag on the label.
+    gk_stems = {"typingdata": None, "typingdata0003": "+pseudo", "typingdata1278": "+rareboost"}
+    for sess in sessions:
+        if sess.source_stem in gk_stems:
+            old = sess.submitter
+            sess.submitter = "grzegorzkulesza"
+            sess.layout_label = sess.layout_label.replace(f"#{old}", "#grzegorzkulesza")
+            tag = gk_stems[sess.source_stem]
+            if tag:
+                sess.layout_label += tag
+    report.labels = {}
+    for sess in sessions:
+        report.labels[sess.layout_label] = report.labels.get(sess.layout_label, 0) + 1
     pids = {who: PID_BASE + i for i, who in enumerate(sorted({s.submitter for s in sessions}))}
 
     bi = extract_windows(sessions, pids, n=2, time_mode="full")

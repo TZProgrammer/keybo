@@ -2828,3 +2828,11 @@ the same submitter across files; (b) non-natural-text sources get a corpus tag i
 the layout label (+pseudo, +rareboost) so frequency/practice analyses can exclude
 or study them explicitly — never silently pooled with natural text; (c) everything
 else per the original registration.
+
+### Amendment-2 (2026-07-12): gk typingdata.json (qwerty) is UNUSABLE — capture
+### v1.1.0 masks key identity (key in {0,2,3} category codes, correct always
+### false; 2.5k literal 'Backspace' strings are the only real keys). No ngram
+### extraction possible; excluded by the wpm>0 rule automatically. The hoped-for
+### within-typist qwerty<->colemak-dh pair does NOT materialize. Final ingest:
+### 3437 sessions, 684,507 events, 573,564 bigram samples, 12 labels (incl.
+### +pseudo/+rareboost corpus-tagged colemak-dh).

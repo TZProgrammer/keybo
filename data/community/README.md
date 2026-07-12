@@ -43,9 +43,16 @@ source of truth — `processed/` is derived and reproducible.)
   monkeytype word-mode text.
 - A few degenerate short sessions produce absurd session-wpm (max ~3400); the
   standard 40–140 wpm cell bucketing excludes them downstream.
-- `raw/gk_typingdata.zip` and `raw/gk_typingdataColemkaDH_ortholinear.json` are
-  the same submitter's files also present inside the form zip (byte/sessionID
-  duplicates — the dedup handles them); two form jsons are empty lists.
+- `raw/gk_typingdataColemkaDH_ortholinear.json` duplicates in-form-zip content
+  (sessionID-verified); two form jsons are empty lists.
+- `raw/gk_typingdata.zip` holds 136 NEW sessions from the same submitter:
+  `typingdata0003.json` (colemak-dh, pseudo-words → label tag `+pseudo`) and
+  `typingdata1278.json` (colemak-dh, rare-char-boosted words → `+rareboost`) are
+  ingested with corpus tags so non-natural text never pools silently with natural
+  text. `typingdata.json` (qwerty, capture version 1.1.0) is **unusable**: that
+  capture version masks key identity (key ∈ {0,2,3} category codes, `correct`
+  always false) — no ngram extraction is possible; it drops out via the wpm>0
+  rule and is recorded here so nobody re-mines it.
 
 Any MODEL use of this data (LODO extension, QIN certification, practice terms,
 cross-layout validation) requires its own preregistration.

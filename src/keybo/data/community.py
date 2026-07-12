@@ -55,6 +55,7 @@ def main30_from_monkeytype(layout_str: str) -> str | None:
     top row (13, trailing ``[]\\``), home row (11, trailing ``'``), bottom row (10) —
     followed by the shifted repeat. We take the first 10 of top/home/bottom.
     """
+    layout_str = layout_str.lstrip()  # one capture variant has a leading space
     if len(layout_str) < 47:
         return None
     top, home, bottom = layout_str[13:26], layout_str[26:37], layout_str[37:47]
@@ -93,6 +94,7 @@ class SessionRecord:
     main30: str
     wpm: int
     events: list[tuple[str, float, bool]]  # (key, interval_ms, correct)
+    source_stem: str = ""  # originating filename stem, for corpus tagging
 
 
 @dataclass
@@ -148,7 +150,10 @@ def load_sessions(json_paths: list[Path], report: IngestReport) -> list[SessionR
             if wpm <= 0:
                 continue
             label = f"{identify_layout(main30)}@{sess.get('keyboardType', '?')}#{who}"
-            out.append(SessionRecord(sid, who, label, main30, wpm, events))
+            # source_stem only for files WITHOUT a " - submitter" suffix (the GK zip
+            # files); form-response files must never match the GK stem overrides.
+            stem = path.stem if " - " not in path.stem else ""
+            out.append(SessionRecord(sid, who, label, main30, wpm, events, source_stem=stem))
             report.sessions_kept += 1
             report.events_kept += len(events)
             report.labels[label] = report.labels.get(label, 0) + 1

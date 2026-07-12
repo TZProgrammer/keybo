@@ -9,17 +9,18 @@
   "vg": 200007
  },
  "rows": {
-  "bistrokes": 3906,
-  "tristrokes": 23808,
-  "tristrokes_last": 23808
+  "bistrokes": 5339,
+  "tristrokes": 37982,
+  "tristrokes_last": 37982
  },
- "sessions_total": 9135,
+ "sessions_total": 9271,
  "sessions_deduped": 3975,
- "sessions_kept": 3344,
- "events_kept": 528756,
+ "sessions_kept": 3437,
+ "events_kept": 684507,
  "files_skipped": [
   "typingdata - Alite _.json (not a session list)",
-  "typingdata - Eve Callicoat.json (not a session list)"
+  "typingdata - Eve Callicoat.json (not a session list)",
+  "._typingdata.json (unparseable)"
  ],
  "labels": {
   "recurva-variant@angleMod#vg": 2162,
@@ -28,7 +29,9 @@
   "custom-abcaff22@ortholinear#andrewcastro": 130,
   "mtgap-variant@rowStagger#richarddavison": 119,
   "colemak@rowStagger#alite": 104,
+  "colemak-dh@ortholinear#grzegorzkulesza+pseudo": 60,
   "custom-d42a1f92@rowStagger#ddn": 43,
+  "colemak-dh@ortholinear#grzegorzkulesza+rareboost": 33,
   "custom-0f8904ec@rowStagger#octahedron": 20,
   "qwerty@ortholinear#grzegorzkulesza": 3,
   "qwerty@rowStagger#grzegorzkulesza": 1
