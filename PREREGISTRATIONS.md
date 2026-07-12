@@ -3715,3 +3715,43 @@ COMM-RESID-IV's -0.018%); if P10-w0.5's regret under the merged surface > 0.5%
 the community data materially reprices the space and P10.5 documents the
 enthusiast-leaning alternative — still not promoted (integration gates failed),
 but recorded as the "if you trust the merge" layout.
+
+### Reconciliation note (2026-07-12): audit-commensurability report vs the WPM-HARM
+### empirical adjudication — the audit's measurements stand, its attribution falls
+The commensurability audit (state/audit-commensurability/report.md) independently
+measured axis A (wpm semantics) as the only construction difference large enough to
+matter: window-weighted k = 1.102 (primary-4) / 1.276 (colemak-dh); aalto's own
+dead-time factor 1.174 (the asymmetry is formula, not behavior); axes B/C/D null
+(BUF2 8% of windows at x1.034; corpus coverage 0.937 vs 0.944; both clocks 1ms and
+the aalto-16ms claim DISPROVEN; hold never read). Axes E/F quantified as amplifiers
+(community = 50% of training mass at mult 1.0; ddn examples weigh 24.4x qwerty's;
+84x density gap). All of that is measurement and STANDS 🟢 — the density/weight
+numbers in particular sharpen the R-D3 attribution and motivate H3.
+Its axis-A ATTRIBUTION (predicting slope 1.19 -> 1.02-1.10, wmape 0.27 -> 0.15-0.20,
+merge poison shrinking under H1) was registered 🟠 with WPM-HARM as the decisive
+test — and WPM-HARM refutes it:
+(a) The "level shift" the mechanism must produce is a UNIFORM obs/pred offset;
+    measured before-state corpus-weighted signed residuals were ALREADY ~zero on the
+    two largest-k labels (colemak-dh +0.017, castro -0.001). Slope 1.19 with mean
+    residual ~0 is RANGE COMPRESSION (predictions too flat on the new population),
+    not a level shift — the audit read the OLS slope as a shift; the shift is absent.
+(b) The model's effective wpm-response at community label coordinates is far weaker
+    than the audit's within-cell qwerty beta=0.40: colemak-dh windows moved
+    log k ~ 0.228 under harmonization, the mean residual moved only ~ -0.048 =>
+    beta_eff ~ 0.79 (surface saturates at high wpm where aalto data thins). The
+    label barely steers the surface where community mass sits.
+(c) HARM-D3: the merge poison did NOT shrink under harmonization — it grew (qwerty
+    +33.9% vs +24.8%), and the community-side gain halved. Mechanism reading 🟡: the
+    registered (inflated) labels were mildly SHIELDING aalto by displacing community
+    examples toward higher-wpm coordinates, away from aalto's dense mass;
+    harmonization relocates the divergently-priced community targets onto aalto's
+    most-populated region => more interference. Label semantics were not the poison;
+    they were weak insulation.
+NET: H1 is adjudicated (harmonization does not ship; the registered community wpm
+stays); H2/H5 remain hygiene options; H3 (typist-count mass) is subsumed by the
+already-measured ARM-F frontier (mult 0.05 = the fix, still fails guards); the
+residual head remains the only everything-improves design. The audit's lasting
+contributions: the E/F leverage quantification, the axis-B/C/D nulls, the
+aalto-16ms-quantization disproof, and the H5 freq-column inconsistency (community
+freq = corpus count vs aalto v5 = occurrence count) — H5 is a real cross-dataset
+metric-weighting inconsistency to fix at the next ingest touch.
