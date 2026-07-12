@@ -47,6 +47,55 @@ _VARIANT_THRESHOLD = 24
 
 MAX_INTERVAL_MS = 5000.0
 
+#: the 30-key qwerty core in slot order — the FIXED physical-key labeling. The capture's
+#: ``key`` field is the QWERTY LABEL of the physical key pressed (monkeytype layout
+#: emulation records the raw browser key), NOT the produced character (KIAKL-INGEST
+#: Amendment 3: decoding every label's correct-key stream through qwerty30->main30
+#: yields fluent English; as-is yields gibberish).
+QWERTY30 = "qwertyuiopasdfghjkl;zxcvbnm,./"
+_QWERTY_INDEX = {c: i for i, c in enumerate(QWERTY30)}
+
+#: shifted-label recovery (Amendment 4a): shifted presses are valid typing; unshift the
+#: label before decoding. Letters lowercase; qwerty punctuation shift pairs map back.
+_UNSHIFT = {"<": ",", ">": ".", "?": "/", ":": ";"}
+
+
+def decode_event_key(key: str, main30: str) -> str:
+    """The character the emulated layout PRODUCED for a captured key label.
+
+    ``key`` is the qwerty label of the physical key pressed; the produced character is
+    the session layout's char on that physical slot: ``main30[qwerty_index(key)]``.
+    Identity for qwerty sessions. Undecodable labels (control keys like ``Backspace``,
+    chars outside the 30-key core) are returned unchanged — they are absent from the
+    layout's char->slot map, so they break windows exactly as before.
+    """
+    if key == " ":
+        return " "
+    k = key.lower() if len(key) == 1 and key.isalpha() else _UNSHIFT.get(key, key)
+    idx = _QWERTY_INDEX.get(k)
+    return main30[idx] if idx is not None else key
+
+
+def dedup_prefix_streams(sessions: list["SessionRecord"]) -> list["SessionRecord"]:
+    """Drop re-exported sessions (Amendment 4b): sessionID is an export timestamp, so a
+    double-export gets a fresh id and survives the id dedup. A re-export's event stream
+    is a strict prefix of the later export's (same keys, same intervals, same flags —
+    the later copy has a few trailing events). Keep the longest of each prefix chain.
+
+    Comparison includes intervals: legitimate repeats of the same monkeytype text have
+    identical (key, correct) streams but different timings — those are kept.
+    """
+    streams = [tuple(s.events) for s in sessions]
+    order = sorted(range(len(sessions)), key=lambda i: streams[i])
+    drop: set[int] = set()
+    for a, b in zip(order, order[1:]):
+        sa, sb = streams[a], streams[b]
+        if len(sa) < len(sb) and sb[: len(sa)] == sa:
+            drop.add(a)
+        elif sa == sb:
+            drop.add(b)
+    return [s for i, s in enumerate(sessions) if i not in drop]
+
 
 def main30_from_monkeytype(layout_str: str) -> str | None:
     """Extract the 30-key core from monkeytype's full layout string.
@@ -103,6 +152,7 @@ class IngestReport:
     files_skipped: list[str] = field(default_factory=list)
     sessions_total: int = 0
     sessions_deduped: int = 0
+    sessions_prefix_deduped: int = 0
     sessions_kept: int = 0
     events_kept: int = 0
     labels: dict[str, int] = field(default_factory=dict)
@@ -154,9 +204,15 @@ def load_sessions(json_paths: list[Path], report: IngestReport) -> list[SessionR
             # files); form-response files must never match the GK stem overrides.
             stem = path.stem if " - " not in path.stem else ""
             out.append(SessionRecord(sid, who, label, main30, wpm, events, source_stem=stem))
-            report.sessions_kept += 1
-            report.events_kept += len(events)
-            report.labels[label] = report.labels.get(label, 0) + 1
+    # Amendment 4b: sessionID is an export timestamp — re-exports get fresh ids. Drop
+    # sessions whose event stream is a strict prefix (or exact copy) of another's.
+    before = len(out)
+    out = dedup_prefix_streams(out)
+    report.sessions_prefix_deduped = before - len(out)
+    for sess in out:
+        report.sessions_kept += 1
+        report.events_kept += len(sess.events)
+        report.labels[sess.layout_label] = report.labels.get(sess.layout_label, 0) + 1
     return out
 
 
@@ -190,7 +246,10 @@ def extract_windows(
             ivs = [iv for _, iv, _ in win[1:]]
             if any(iv <= 0 or iv > MAX_INTERVAL_MS for iv in ivs):
                 continue
-            keys = [k for k, _, _ in win]
+            # Amendment 3: the captured key is a QWERTY LABEL; decode to the produced
+            # char. cmap[produced] is then the PHYSICAL slot pressed (main30[i] sits on
+            # slot i, so cmap[main30[qidx(label)]] == slots[qidx(label)]).
+            keys = [decode_event_key(k, sess.main30) for k, _, _ in win]
             if any(k not in cmap for k in keys):
                 continue
             positions = tuple(cmap[k] for k in keys)
