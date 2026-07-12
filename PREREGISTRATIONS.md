@@ -3368,3 +3368,17 @@ within-community correlation is negative (p < 0.05). SUPPORTED => the sfb diverg
 is at least partly EXECUTION STRATEGY, not physics — documented in the layout docs
 sentence; NOT SUPPORTED => selection/practice explanations stand unresolved (as
 registered in COMM-RESID-2).
+
+### Outcome append (2026-07-12): COMM-ALTFINGER — NOT SUPPORTED; the sfb discount is a
+### uniform shift, not an execution-strategy bimodality
+runs/comm_altfinger.json. Gate 1 FAILS cleanly: community nominal-sfb cells' fast-mode
+share (median 0.033) is indistinguishable from aalto qwerty's (0.036), Mann-Whitney
+p=0.76; p10/median ratios also match (0.719 vs 0.743). No fast sub-population exists —
+community sfb executions have the same distributional shape as aalto's, shifted faster
+overall. (Gate 2's rho -0.482 is mechanically confounded — fast-mode share lowers the
+IQR-mean directly — and moot given gate 1.) CONSEQUENCE: alternate-fingering is
+disfavored as the driver of the -30ms sfb discount; the leading explanations narrow to
+population selection (typists who tolerate sfbs choose these layouts) and/or uniform
+deliberate practice on the few residual sfbs their layouts retain. Both are
+population-relative, neither transfers to the general-population deliverable; the
+COMM-RESID-IV conclusion (population divergence) stands with a sharper mechanism note.
