@@ -1,4 +1,16 @@
-# P11-w0.5 — the speed deliverable (2026-07-11)
+# P11-w0.5 — the pure-speed headline (2026-07-11)
+
+> **Note (2026-07-11, user-approved):** the PRIMARY deliverable is now
+> **P10-w0.5** (`docs/layout-p10-w05.md`). The two are speed-TIED (+4.00% vs
+> +3.95%, inside the ~0.2% plateau), and P10-w0.5 wins every preference gauge:
+> genkey Score 33.7 vs 41.1, keymeow sfb 1.18% vs 1.70%, balanced finger loads
+> (max 15.9%) vs 20.0% concentrated on the right ring, lower dislocation. Three
+> independent multi-gauge searches (P12 dislocation-weighted, P13 genkey-weighted,
+> and the combined genkey+oxey search, which reconverged on P10's layout) all
+> selected P10-w0.5. This layout remains the argmax of the calibrated speed
+> objective alone and is retained as the pure-speed headline artifact; its
+> finger-load concentration is a documented calibration-era artifact that buys
+> no measured speed (lag-3 probe null).
 
 ```
 c g l d k   . , y o u
@@ -54,5 +66,9 @@ layout is optimal (within noise) across the 70–110 band. One layout serves the
 - The plateau is real: a structurally different family shape
   (`uoy,.vlmdgaeinprhtcs;/jkbfwxzq` and variants) ties at +3.99% — near-equivalent
   optima exist; single-swap variants of this layout are equivalent.
-- Sibling artifact: `docs/layout-p10-w05.md` (the pre-calibration pick, +0.04% regret
-  under this objective — retained for lineage).
+- Finger-load concentration: 20.0% of keystrokes land on the right ring (vs 15.9%
+  max on P10-w0.5). Measured speed cost of avoiding this: ~zero (lag-3 probe null;
+  P12's w_d=0.5 arm rebalanced at −0.025% regret). It is a preference defect, not a
+  speed feature — the reason P10-w0.5 was promoted over this layout.
+- Primary deliverable: `docs/layout-p10-w05.md` (P10-w0.5 — speed-tied, wins all
+  preference gauges, triple-search convergence).
