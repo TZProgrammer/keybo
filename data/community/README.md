@@ -5,6 +5,20 @@ Kiakl times" form. Ingested 2026-07-12 under the KIAKL-INGEST registration
 (PREREGISTRATIONS.md) — dedup, validity, labeling, and wpm rules were fixed there
 BEFORE processing.
 
+## ⚠️ Key-field semantics (Amendment 3 — read before touching raw/)
+
+The capture's `key` field is the **QWERTY LABEL of the physical key pressed**, NOT
+the produced character: these typists use monkeytype's layout emulation, so the
+browser event carries the OS-level (qwerty) key while `correct` is judged against
+the emulated layout. Decode: `produced_char = main30[qwerty_index(key)]` (identity
+for qwerty sessions). The first ingest missed this and permuted every non-qwerty
+position — found by decode-to-English probes (every label reads as fluent English
+under the decode, gibberish without), fixed in `community.py::decode_event_key`,
+and all downstream experiments were re-run (see the corrected-ledger outcome
+appends in PREREGISTRATIONS.md). Shifted labels are unshifted before decoding
+(Amendment 4a); re-exported duplicate sessions are prefix-deduped (Amendment 4b —
+`sessionID` is an export timestamp, not a test id).
+
 ## Layout
 
 ```
@@ -23,10 +37,11 @@ source of truth — `processed/` is derived and reproducible.)
 
 ## What's in it (ingest_report.json has exact numbers)
 
-- **7 submitters**, ~3.3k deduped sessions, ~530k keystroke events, ~450k valid
-  bigram samples across **8 distinct layouts** (colemak-dh, a recurva variant,
-  colemak, an mtgap variant, qwerty, and 3 unidentified customs), on three
-  physical geometries (rowStagger / ortholinear / angleMod).
+- **7 submitters**, ~3.1k deduped sessions (sessionID + prefix-stream dedup),
+  ~530k keystroke events, ~540k valid bigram samples across **9 distinct layout
+  strings** (colemak-dh, a recurva variant, colemak, an mtgap variant, qwerty, and
+  4 unidentified customs), on three physical geometries (rowStagger / ortholinear
+  / angleMod).
 - Source schema: per-event `{key, interval(ms, press-to-press), correct}`,
   session-level layout string + keyboardType. **No release timestamps** (hold=-1),
   no per-test text.
