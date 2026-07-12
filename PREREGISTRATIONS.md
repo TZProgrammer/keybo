@@ -3345,3 +3345,26 @@ volume control in COMM-RESID-2 — replicating the inversion); calibration trans
 mixed (D5-U2) and the seam is now REMOVED (CAL-REMOVE); typo channel not validation
 (COMM-ERR inverted); class-price divergence REAL and population-attributed
 (COMM-RESID/2/IV). Remaining value: collection-design lessons for Phase D.
+
+## COMM-ALTFINGER (registered 2026-07-12, BEFORE results): adjudicating the sfb
+## discount — alternate-fingering vs population selection
+The COMM-RESID-2 sfb flag (-21..-39ms, 6/6 labels) has two live explanations that THIS
+capture can partially separate: a true same-finger execution has a mechanical floor
+(the finger must release, travel, re-press — aalto sfb cells run ~150ms+ at typical
+wpm), while an ALTERNATE-FINGERED nominal-sfb is executed by two fingers and can
+overlap/roll at <100ms. If community typists alternate-finger their layouts' residual
+sfbs, community nominal-sfb cells should show a FAST SUB-POPULATION that aalto qwerty
+sfb cells lack.
+DESIGN: per source (community natural labels pooled | aalto qwerty), take all
+nominal-sfb bigram samples in wpm 60-100 with cell n >= 30. Per cell compute
+p10/median ratio and the share of samples < 0.6 x cell median ("fast-mode share").
+Compare distributions: community-vs-aalto fast-mode share via Mann-Whitney; and
+within community, correlate a cell's fast-mode share with its residual (obs - pred)
+— if alt-fingering drives the discount, cells with more fast-mode executions should
+show more negative residuals.
+RULE (informational — no deliverable consequence either way): alt-fingering is
+SUPPORTED iff community fast-mode share exceeds aalto's (p < 0.01) AND the
+within-community correlation is negative (p < 0.05). SUPPORTED => the sfb divergence
+is at least partly EXECUTION STRATEGY, not physics — documented in the layout docs
+sentence; NOT SUPPORTED => selection/practice explanations stand unresolved (as
+registered in COMM-RESID-2).
