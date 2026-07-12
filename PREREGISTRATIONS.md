@@ -3651,3 +3651,35 @@ was bucket-centered i.e. level-immune, so SOME population divergence survives
 harmonization; whether the residual damage clears +0.91% is genuinely open).
 DELIVERABLE EXPOSURE: none directly (the argmax never consumed community labels);
 this adjudicates validation claims + the integration door.
+
+### Outcome append (2026-07-12): WPM-HARM — mechanism REFUTED as the level/merge
+### driver; label semantics measured SMALL and harmonization makes things (slightly)
+### WORSE; the population attribution stands
+runs/wpm_harm.json.
+MEASURED LABEL BIAS (registered/harmonized wpm ratio, median per label): x1.00-x1.14 —
+far below the predicted 10-25% for most labels: recurva x1.000 (0%!), vg-custom
+x1.015, mtgap x1.022, alite x1.072, castro x1.090, GK colemak-dh x1.140. The two
+biggest community typists barely differ because their monkeytype error+correction
+time is a small share of elapsed (short bursts, ctrl-backspace ~1ms corrections),
+unlike aalto's sentence-typing pauses.
+HARM-LEVEL: harmonization does NOT fix levels — pooled |signed resid| WORSENS 0.030
+-> 0.077, wmape 0.221 -> 0.249, slopes scatter (1.24/1.17/0.94/0.80 vs 1.19/1.17/
+0.87/1.02 before). The before-arm's signed residuals were ALREADY near zero on 2 of
+4 labels (colemak-dh +0.017, castro -0.001) — i.e. the "level miss" is NOT a uniform
+population-slowness the label could explain; the slope>1 pattern is a RANGE
+compression (fast cells predicted too slow, slow cells too fast within a label), an
+ordering-adjacent shape issue, not a label-scale issue. Rule verdict: mechanism NOT
+confirmed (0 of 3 clauses fire).
+HARM-D3: aalto poison essentially UNCHANGED (qwerty +33.9%, qwertz +26.3%, azerty
++20.6%, dvorak +5.3% vs R-D3's +24.8/+16.5/+19.6/+1.3 — if anything worse) and the
+community-side gain SHRINKS (-3.7% vs -7.5%): the registered label was closer to
+what the model needs than the harmonized one. Label semantics is EXONERATED for the
+merge poison. adopt=False.
+CONSEQUENCE: the user's pace-label hypothesis is now measured-and-closed: the wpm
+semantics difference is real but x1.0-1.14 (not 10-25%), its removal does not
+improve any transfer metric, and the merge poisoning survives harmonization intact
+=> the population price-divergence attribution (COMM-RESID-IV) remains the standing
+explanation. The wmape~0.25 level miss decomposes as range-compression (slope>1
+within labels) + per-typist idiosyncrasy, neither label-fixable. Community wpm stays
+as registered (correct-interval semantics) — it is the better-behaved label on this
+capture (D3 community folds prefer it by 3.8pp).
