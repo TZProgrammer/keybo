@@ -3580,3 +3580,34 @@ ARM-F WEIGHT FRONTIER: merged single-surface training at community weight
 CONTEXT: R-D3B (ARM-P indicator + ARM-W x0.25, corrected data) is running under its
 own registration; D3C complements it. If BOTH ARM-P and ARM-R qualify, ARM-R ships
 (structural guarantee beats empirical clearance at equal gain).
+
+### Outcome append (2026-07-12): R-D3B + D3C — no single-surface arm qualifies at ANY
+### weight; the residual head delivers the community gain with aalto untouched but
+### fails its rho clause on one fold; integration verdict UNCHANGED, frontier mapped
+runs/rerun_d3b.json, runs/d3c_arms.json.
+R-D3B (corrected data): ARM-W (x0.25) adopt=False — aalto qwerty +9.99/azerty +6.92%
+  (dvorak actually IMPROVES -3.99%, echoing that community data helps the scarcest
+  aalto fold); community mean -3.35%. ARM-P (population indicator) adopt=False —
+  aalto qwerty +14.0/qwertz +9.07%; community mean -9.40% (the indicator amplifies
+  BOTH sides: bigger community gain, bigger aalto damage — the column lets the model
+  specialize but the shared trees still bend toward community pricing).
+D3C ARM-F WEIGHT FRONTIER: mult 1.0 aalto +17.0% / comm -7.2%; 0.25 +4.8%/-3.2%;
+  0.05 +0.0% mean BUT max fold +2.95% and guards FAIL / comm -1.3%; natural-weight
+  +5.5%/-3.4%. The frontier never crosses adoptability: by the time community weight
+  is low enough to spare the aalto MEAN, the worst fold and rare-cell guards still
+  breach and the community gain has shrunk to near the bar. CONFIRMS: no
+  single-shared-surface mix qualifies at any weight on this data.
+D3C ARM-R RESIDUAL HEAD: community folds improve mean -7.5% wmae (alite -1.5%,
+  mtgap -9.8%, ddn -17.9%, vg -0.8%) with rho UP on 3 of 4 folds and aalto folds
+  byte-identical to production BY CONSTRUCTION. Registered adopt clause fails on the
+  letter: alite's rho slips 0.657->0.654 (0.003, within seed noise but the clause
+  said "does not fall on any fold"). Recorded as REJECTED-BY-LETTER / mechanism
+  -proven. The design answer to "include the data so everything improves" EXISTS
+  (two-surface: frozen general-population model + community residual head for
+  community prediction), but per the registered rule it does not ship this round;
+  a re-registration with a noise-aware rho clause (fall > seed-noise floor) would
+  be a goalpost move if done after these results — parked for the next round with
+  the flag that the current result already shows the direction.
+NET for the user's question: "everything improves" is achievable ONLY by
+population-conditioned architecture (ARM-R shape), never by weight/indicator mixing
+on one surface — now measured at 4 points of the frontier plus 2 indicator designs.
