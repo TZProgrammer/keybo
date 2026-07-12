@@ -3032,3 +3032,33 @@ D5-U5 RARE-DECILE (+rareboost): frozen production model scores the +rareboost
 cell frame; report rho/own-ceiling on the rare-corpus-decile subset. >=0.5 PASS
 (informational; annotates dec3-guard interpretation, reopens nothing).
 Also: README count fix (9 layout strings/4 customs), OQ-6 "not reopened" note.
+
+### Outcome append (2026-07-12): COMM-D5 — tail challenge SURVIVES matched-n; pinky
+### transfer mixed/underpowered; +pseudo practice prediction FAILS (inverted); rare
+### decile weak
+runs/comm_d5.json.
+D5-CORR: aalto qwerty matched-n 0.752 vs community 0.777 — the gap persists =>
+D2a's challenge to the strong tail-practice story STANDS (upgraded back to 🟡).
+Community daily-drivers do not show the qwerty fast-tail signature at months-scale
+practice.
+D5-U2 (proper estimator): each label had matched pairs for only ONE class —
+colemak-dh: ring_first -31.0ms (SIGN FLIP vs aalto +20.7); recurva: pinky_first
++25.3ms (sign + magnitude consistent with aalto +43.1). 1-of-2 consistent, 1-of-2
+inverted, zero labels with both classes => registered verdict: population-transfer
+caveat goes into the layout docs; NOT a retrain trigger. The calibration keeps its
+aalto evidence; its transfer status is now measured-mixed rather than unmeasured.
+D5-U4: rank-corr(log-freq, natural-minus-pseudo speedup) = -0.191, CI [-0.288,
+-0.089] — the practice prediction FAILS, with the correlation significantly
+INVERTED: frequent bigrams show LESS natural-vs-pseudo advantage. Honest
+interpretations recorded, not adjudicable here: (a) ceiling effect — frequent
+bigrams are already at motor floor for a 250k-sample typist, leaving no headroom
+for a practice differential; (b) the pseudo corpus deliberately re-weights toward
+home-row/rare chars, so its frequent-bigram sample differs structurally; (c) the
+practice term as fitted (log-count on OUR frame) may proxy something other than
+lifetime familiarity. This does NOT invalidate the practice term's in-frame job
+(absorbing per-ngram repetition within aalto), but it removes the presumption
+that it measures transferable lifetime practice. Flagged for the next
+model-improvement round.
+D5-U5: +rareboost rare-decile rho 0.27 (< 0.5) — rare-cell ordering remains the
+model's weakest axis on new data too; consistent with every dec3 guard trip.
+Informational, annotates dec3 interpretation.
