@@ -2737,3 +2737,22 @@ model feature; roll-chain underpricing documented as a known residual structure
 FEATURE_VERSION bump. This closes the "any km metrics we should have?" question:
 representability audit (all 23 representable) + pricing audit (sft/sfs-redir priced;
 roll-chains flagged) + feature arm (null).
+
+### Outcome append (2026-07-11): GK-WEIGHT / P13 — pick = P10-w0.5; combined search
+### CONVERGES to P10-w0.5; genkey compliance costs ~0.1% predicted speed
+runs/p13_genkey.json + runs/p13_keymeow.json. Registered pick (min genkey Score s.t.
+T3c speed regret <=0.5%): P10-w0.5 (genkey 33.68 keybo-corpus, speed regret 0.099%).
+Structure of the frontier: pure genkey-weight arms are DOMINATED — w_g=2.0 gets
+genkey 37.4 at 0.12% speed, while the combined (oxey0.5+genkey0.5) member reaches
+33.83 at 0.094% AND lands on P10-w0.5's layout up to 3 rare corner keys
+(clgmk.,ouysrthdpnaeiqxwbvfjz;/ vs ...vfz/;j). I.e. oxey-style structure is HOW you
+get a good genkey score; genkey pressure alone anneals worse. Speed cost of full
+community compliance: g0.0 (unconstrained) -> P10-w0.5 is +0.099% predicted time for
+-23% genkey Score (43.8->33.7) — cheap. keymeow eval (kmrun, shai-iweb, 0 missing
+chars): P13-combined sfb 1.23 / sfs-dist 6.94 ~= P10-w0.5 (1.18/6.97); both beat
+graphite on sfs-dist and sit between graphite and semimak overall; P11-w0.5 (speed
+headline) stays sfb 1.70. Deliverable implication: P10-w0.5 is the "community-
+compliant near-speed-optimal" member — P11-w0.5 keeps the pure-speed headline
+(regret 0.06 vs 0.099 on T3c is within noise; both <<0.5% cap), P10-w0.5 is what to
+hand a community-metrics-minded user. kmrun layout set extended with the 5 P13
+members (gk-parity/kmrun main.rs, rebuilt).
