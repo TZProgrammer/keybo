@@ -3318,3 +3318,30 @@ general population, the deliverable optimizes for the general population BY DESI
 the divergence is documented in the layout docs as the community data's final lesson.
 INFORMATIONAL RIDER (no decision power): D1 zero-shot rho recomputed per wpm-bucket per
 primary label — does transfer fail uniformly or concentrate in a band?
+
+### Outcome append (2026-07-12): COMM-RESID-IV — (iv-a) FAILS decisively (+15 to +55%);
+### POPULATION DIVERGENCE conclusion fires; the community-mispricing question is CLOSED
+runs/comm_resid_iv.json. Offsets applied: sfb -29.7ms, outroll -22.1ms, alternate +9.0ms.
+(iv-a): applying community class prices to aalto predictions degrades EVERY fold
+catastrophically — qwerty +54.6%, azerty +42.1%, qwertz +41.1%, dvorak +15.0% wmae.
+The two populations' class prices are mutually exclusive: aalto's measured sfb penalty
+(+27-38ms) and the community's measured sfb discount (-30ms) cannot both serve one
+model. REGISTERED CONCLUSION (as pre-stated): population divergence, not model error —
+enthusiasts on self-chosen roll-optimized layouts pay different class prices than the
+general population; the deliverable optimizes for the general population BY DESIGN.
+(iv-b, informational): had the community prices been injected anyway, the argmax would
+move +0.303% (pick gdplk.rouyscthm,naieqzwbvfx/;j, 18/30 shared with P10) — i.e. the
+divergence is large enough to matter, which makes the honest documentation of WHO the
+deliverable serves the load-bearing sentence, not a footnote.
+Rider (per-bucket zero-shot rho): transfer is band-structured — colemak-dh/colemak hold
++0.28-0.37 in their home bands; recurva is ~0 through 40-100 but +0.28 at 120 (its
+typist's fastest band). Weak evidence that transfer improves toward each typist's
+comfort band; too thin to adjudicate anything.
+COMMUNITY CAMPAIGN FINAL LEDGER (all questions now closed): integration NO (D3/D3b/
+CLEAN-1 — structural); zero-shot per-person ordering NO (D1); alternation-preference
+population-generality YES (D2b, 7/7); tail-practice challenge STANDS (D2a/D5-CORR);
+practice term not lifetime-transferable (D5-U4, freq slope +5..+7 POSITIVE after
+volume control in COMM-RESID-2 — replicating the inversion); calibration transfer
+mixed (D5-U2) and the seam is now REMOVED (CAL-REMOVE); typo channel not validation
+(COMM-ERR inverted); class-price divergence REAL and population-attributed
+(COMM-RESID/2/IV). Remaining value: collection-design lessons for Phase D.
