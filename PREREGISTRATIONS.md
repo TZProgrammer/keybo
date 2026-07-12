@@ -2902,3 +2902,25 @@ with strengthened evidence. NOT ADOPTED => document why; deliverable unchanged.
 D4 SYNTHESIS: fold in the independent audit-community subagent's report; update
 docs/layout artifacts + this file's outcome appends; final deliverable = whatever
 survives, with the community-validation evidence attached either way.
+
+### Outcome append (2026-07-12): COMM-D D1 — zero-shot generalization FAILS the
+### registered gate (0/4 primary); harness validated by positive control
+runs/comm_d1.json. Positive control (same scoring path, aalto in-sample): dvorak
+rho/ceiling 0.81, azerty 0.86, slopes 0.94-0.98 — the harness is sound. Community
+labels: best = colemak-dh@ortho#gk frac 0.39 (slope 0.94), colemak@rowStagger#alite
+0.34 (slope 0.60); worst = ddn -0.11, mtgap-variant 0.14 (slopes 0.05-0.16 —
+predictions nearly uncorrelated with observed at the low end). PRIMARY PASS 0/4
+(<= 1/4) => per the registered rule: GENERALIZATION FAILURE is the headline; the
+deliverable carries an explicit external-validity caveat; D3 (training integration)
+is MANDATORY. Interpretation guardrails recorded WITH the result: (a) every
+community label = ONE typist, so the ceiling counts typist idiosyncrasy as
+learnable signal the model has never seen — frac penalizes person-transfer, not
+only layout-transfer; the aalto control folds pool 100s of typists (idiosyncrasy
+averages out). (b) wmape ~20-40% vs in-sample 22-23% — MAGNITUDE error is
+comparable; what fails is within-layout cell ORDERING. (c) the failure is
+graded by geometry+typist, not uniform (ortho colemak-dh 0.37-0.39 with clean
+slopes vs rowStagger customs ~0). Honest headline: the aalto-trained model does
+NOT rank a single community typist's cells well zero-shot; whether that is
+layout-space transfer failure or single-typist noise is exactly what D3's
+LODO-8 disentangles (a fold trained WITH other community typists tests transfer
+to a new typist rather than to a new population).
