@@ -2814,3 +2814,17 @@ fixed before results. Known confounds recorded now: mostly 1 typist/layout (layo
 x typist confounded within-source), ortho/angleMod geometry mismatch vs
 ROW_STAGGERED_30 features, tiny volume vs aalto, self-selected enthusiast
 population, monkeytype word-mode (no punctuation-heavy text).
+
+### Amendment (2026-07-12): KIAKL-INGEST — the gk_typingdata.zip files are NEW data
+### (earlier "duplicate" claim was WRONG; sessionID recheck: 0/136 overlap with the form zip)
+Correction on record: only the loose gk_typingdataColemkaDH_ortholinear.json
+duplicates in-zip content (181/181 sessions). gk_typingdata.zip holds 136 NEW
+sessions (~202k events): typingdata.json = GK on QWERTY rowStagger natural text
+(first within-typist layout pair in our data — de-confounds typist vs layout);
+typingdata0003.json = colemak-dh ortho PSEUDO-WORDS (random letters, forced
+home-row return); typingdata1278.json = colemak-dh ortho dictionary words with
+BOOSTED RARE CHARS (per the zip's Files info.md). Amended rules: (a) same pid for
+the same submitter across files; (b) non-natural-text sources get a corpus tag in
+the layout label (+pseudo, +rareboost) so frequency/practice analyses can exclude
+or study them explicitly — never silently pooled with natural text; (c) everything
+else per the original registration.
