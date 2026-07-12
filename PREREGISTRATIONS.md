@@ -3006,3 +3006,29 @@ single-typist labels teach typist idiosyncrasy, not population physics. The
 unlock is MORE TYPISTS PER LAYOUT, not cleverer weighting — quantified target
 for the Phase D outreach: multiple submitters on the SAME layout so a typist
 random effect is identifiable.
+
+## COMM-D5 — audit-adopted cheap tests (registered 2026-07-12, BEFORE results; from
+## the independent audit-community report §1 U2/U4/U5 + T9 correction)
+D5-CORRECTION to D2a: the community tail statistic used cells at n>=20 — the
+documented small-n quantile bias (tail_gap_boot caveat) inflates thin-cell
+q20/median toward 1. The D2a "community tails not fast" verdict is therefore
+DOWNGRADED to 🟠 pending matched-n subsampling: recompute with aalto cells
+subsampled to the community per-cell n distribution. Rule: if matched-n aalto
+qwerty ratio rises to within 0.01 of community (0.777), D2a's challenge verdict
+is VOID (artifact); if the gap persists (aalto stays <= 0.76), the challenge
+stands.
+D5-U2 PINKY TRANSFER, proper estimator: run fit_first_finger_deltas (the actual
+PINKY-FIT estimator, not the coarse outer-inner contrast) per community label
+with enough matched pairs (expect colemak-dh, recurva). PASS per label = both
+classes positive AND pinky >= ring. 2/2 => transfer note upgrades to 🟡; 0/2 or
+sign flip => population-transfer caveat in layout docs (not a retrain trigger).
+D5-U4 PRACTICE NATURAL EXPERIMENT (+pseudo): same typist/layout/board, natural
+242k vs pseudo 102k samples. Per-bigram delta = natural mean - pseudo mean at
+matched wpm buckets; practice proxy = our corpus freq (log). Rule: practice term
+VALIDATED iff rank-corr(log-freq, natural-minus-pseudo speedup) > 0 with
+bootstrap CI excluding 0 (frequent bigrams should benefit more from lifetime
+practice than rare ones, and pseudo-words ablate exactly that).
+D5-U5 RARE-DECILE (+rareboost): frozen production model scores the +rareboost
+cell frame; report rho/own-ceiling on the rare-corpus-decile subset. >=0.5 PASS
+(informational; annotates dec3-guard interpretation, reopens nothing).
+Also: README count fix (9 layout strings/4 customs), OQ-6 "not reopened" note.
