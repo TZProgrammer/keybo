@@ -2961,3 +2961,30 @@ D2d GEOMETRY: rho/ceiling ortho 0.34 (n=4 labels) > rowStagger 0.15 (n=4) >
 angleMod -0.01 (n=1). Surprising direction (features assume rowStagger) —
 confounded with typist volume (GK ortho has 3x the cells of any rowStagger
 label). Informational only, as registered.
+
+### Outcome append (2026-07-12): COMM-D D3 — naive merge REJECTED (adopt=False);
+### community-rho-doubling signal motivates D3b
+runs/comm_d3.json. Merged training degrades EVERY aalto fold far past the floor
+(qwerty +36.6%, qwertz +29.5%, azerty +27.2%, dvorak +17.2% wmae) while community
+folds improve modestly (mean -2.15% wmae). Registered rule => NOT ADOPTED,
+deliverable unchanged by this arm. THE SIGNAL: community-fold held-out rho
+roughly DOUBLES with other community typists in training (mtgap 0.131->0.320,
+ddn 0.029->0.241, vg 0.210->0.370, colemak 0.259->0.385) — transferable
+community structure EXISTS; the naive merge just lets 4 single-typist labels
+(layout-balanced to equal weight with aalto layouts) distort the aalto
+population fit. D1's failure is therefore at least partly POPULATION/TYPIST
+shift, not pure layout-transfer failure.
+
+## COMM-D3b — population-aware integration (registered 2026-07-12, BEFORE results)
+Two arms, same LODO-8 harness and adopt rule as D3 (aalto folds within noise
+floor 0.91%; community mean wmae improves >1% vs incumbent; rare guards):
+ARM-W: community sample weight scaled x0.25 within layout_balance_weights (a
+single-typist label should not weigh like a 100s-of-typists layout).
+ARM-P: +1 feature column is_community_population (1 for community rows) appended
+for training; at aalto serve (and layout search) the column is 0, so aalto-side
+predictions can be fully protected while shared structure transfers. Community
+folds served with 1. Feature-version bump NOT shipped unless adopted.
+Pick between qualifying arms: the one with better community mean wmae. If
+neither qualifies: integration CLOSED for this data volume; community data
+remains validation-only; deliverable stands with the D1 external-validity
+caveat + D2 assumption-audit evidence.
