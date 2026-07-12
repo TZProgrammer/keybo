@@ -40,8 +40,16 @@ def main() -> None:
     # KIAKL-INGEST amendment: the gk_typingdata.zip files carry no submitter in the
     # filename (they are Grzegorz Kulesza's — same pid as his form submissions), and
     # two of them are non-natural text (pseudo-words / rare-char-boosted words) that
-    # must stay distinguishable via a corpus tag on the label.
-    gk_stems = {"typingdata": None, "typingdata0003": "+pseudo", "typingdata1278": "+rareboost"}
+    # must stay distinguishable via a corpus tag on the label. The loose
+    # gk_typingdataColemkaDH_ortholinear.json is byte-identical to the form-response
+    # copy; pinning its stem here makes attribution deterministic regardless of which
+    # copy wins the sessionID-dedup race (file sort order).
+    gk_stems = {
+        "typingdata": None,
+        "typingdata0003": "+pseudo",
+        "typingdata1278": "+rareboost",
+        "gk_typingdataColemkaDH_ortholinear": None,
+    }
     for sess in sessions:
         if sess.source_stem in gk_stems:
             old = sess.submitter
