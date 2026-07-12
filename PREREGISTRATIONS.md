@@ -3533,3 +3533,50 @@ with the fix. RULES VERBATIM from D3b: per arm, LODO-8; adopt iff every aalto fo
 wmae within +0.91% of incumbent AND community-fold mean wmae improves >1% vs incumbent
 AND umae/dec3 guards <= +2% on aalto folds. Driver rerun_d3b.py = comm_d3b.py with
 corrected TSV (same path, regenerated) + rerun output name.
+
+## REG-LOLO (registered 2026-07-12, BEFORE results; user: "have we tried including
+## regularization parameters in our tuning?")
+GAP (honest): explicit regularization (reg_alpha/reg_lambda/gamma) was swept ONLY by
+the deprecated CV-MAE tuner (tune.py::tune_hyperparameters — rewards memorization,
+winners never shipped). The transfer-scored selectors that picked production params
+(tune_lolo + tune_lograt) swept architecture/sampling knobs only. Production
+regularizes implicitly (depth 3, subsample .7, colsample .7).
+ARM: 24 candidates = production params (anchor) + 23 random draws over
+reg_alpha ~ logU[0.01, 10], reg_lambda ~ logU[0.01, 10], gamma ~ U[0, 1.0],
+min_child_weight ~ randint[1, 12] (jointly, holding n_estimators=300/depth=3/
+lr=0.05/subsample=.7/colsample=.7 at production values — this isolates the
+regularization axis; a joint re-tune is a different, bigger registration).
+Scored by the tune_lolo standard: LOLO mean rho/ceiling, tau-gated at the best
+observed tau; wmae/umae/dec3 reported per candidate (guards informational here —
+selection is rho-based per tune_lolo precedent). 2 seeds x 4 folds.
+RULE: a challenger replaces production params iff gated-rho beats the anchor by
+> 0.005 (the tune_lolo adoption bar) AND its LOLO wmae is within +0.91% of anchor.
+Adoption => retrain production seeds + P10-family re-verify (argmax within 0.2%).
+Else: recorded as "explicit regularization adds nothing over the implicit recipe" —
+closing the axis with evidence instead of assumption.
+
+## D3C (registered 2026-07-12, BEFORE results; user: "there must be a way to include
+## the data in such a way that everything improves")
+PREMISE ADJUDICATED FIRST (honest): a single shared surface satisfying both
+populations is CONTRADICTED by measurement (COMM-RESID-IV corrected: even
+roll-direction offsets degrade aalto +1.6-8.5%). "Everything improves" is therefore
+pursued via population-conditioned designs where aalto predictions are protected
+structurally, not by luck:
+ARM-R RESIDUAL HEAD (the guarantee-by-construction design): train the production
+  aalto-only stack (frozen). For community folds, fit a residual XGB head (depth 2,
+  100 trees, lr 0.1 — small by design) on the OTHER community labels' residuals
+  (obs - frozen-prediction, LOGRAT space), applied only to community predictions.
+  Aalto folds are BYTE-IDENTICAL to production by construction (gate (a) passes as
+  a theorem). ADOPT iff held-out community-fold mean wmae improves > 1% vs frozen
+  zero-shot AND community rho/ceiling does not fall on any fold. Adoption = the
+  model gains a documented community-prediction mode; the layout-serving path
+  (population=general) is unchanged.
+ARM-F WEIGHT FRONTIER: merged single-surface training at community weight
+  multipliers {1.0, 0.25, 0.05, natural(=no balance upweight)} on the corrected
+  frame — maps the damage/gain frontier the single point ARM-W could not. Report
+  per-multiplier aalto-fold mean delta + community-fold mean delta. INFORMATIONAL
+  unless some multiplier achieves aalto within +0.91% AND community < -1% (the D3
+  adopt rule), in which case it adopts under the D3 rule verbatim.
+CONTEXT: R-D3B (ARM-P indicator + ARM-W x0.25, corrected data) is running under its
+own registration; D3C complements it. If BOTH ARM-P and ARM-R qualify, ARM-R ships
+(structural guarantee beats empirical clearance at equal gain).
