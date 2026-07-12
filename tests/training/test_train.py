@@ -9,8 +9,8 @@ import numpy as np
 import pytest
 
 from keybo.data.strokes import StrokeRow
-from keybo.geometry import ROW_STAGGERED_30
 from keybo.features.schema import BIGRAM_FEATURE_NAMES, FEATURE_VERSION
+from keybo.geometry import ROW_STAGGERED_30
 from keybo.models.xgboost_model import XGBoostTypingModel
 from keybo.training.train import build_training_matrix, train_bigram_model
 
