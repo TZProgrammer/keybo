@@ -2836,3 +2836,69 @@ else per the original registration.
 ### within-typist qwerty<->colemak-dh pair does NOT materialize. Final ingest:
 ### 3437 sessions, 684,507 events, 573,564 bigram samples, 12 labels (incl.
 ### +pseudo/+rareboost corpus-tagged colemak-dh).
+
+## COMM-D — leveraging the community dataset (registered 2026-07-12, BEFORE results;
+## user directive: 8h window, "final deliverable leveraging the new data as best it
+## can" + "revisit old experiments and assumptions")
+POWER BASELINE (from ingest): 4644 bigram cells survive production bucketing across
+9 usable labels; rowStagger natural-text labels (geometry-matched to features):
+colemak@alite 392, mtgap-variant@davison 233, custom@ddn 214, custom-aa426873@vg 455
+= 1294 cells / 4 layouts / 4 typists. Ortho/angleMod: recurva@vg 954, colemak-dh@gk
+879 (+pseudo 564, +rareboost 564), custom@castro 388.
+
+D1 HOLD-OUT VALIDATION (the aalto-trained model has never seen ANY of this):
+Score each label's cells with the PRODUCTION speed stack (bigram_cal + trigram cond
++ fitted calibration, untouched). Per-label: bucket-centered rho vs that label's
+split-half noise ceiling, wmae, wmape, calibration slope. PRIMARY = the 4 rowStagger
+natural labels (features match the physical geometry). SECONDARY (reported, not
+gating) = ortho/angleMod labels — a geometry-transfer probe, expected weaker.
+DECISION RULES (fixed now): per-label PASS = rho/ceiling >= 0.6 AND slope in
+[0.6, 1.4]. >=3/4 primary labels PASS => "the model GENERALIZES to community
+layouts" enters the deliverable's evidence section (the strongest external-validity
+claim this project has ever been able to make). <=1/4 PASS => generalization
+FAILURE is the headline finding; deliverable claims get an explicit external-
+validity caveat and D3 is MANDATORY (the data must then teach, not just test).
+NOISE CAVEAT recorded now: one typist per label => ceiling includes typist
+idiosyncrasy; rho/ceiling is the right normalization for exactly that reason.
+
+D2 ASSUMPTION REVISITS (each cheap, read-only on models):
+D2a TAIL-PRACTICE: compute the q=0.2 lower-tail gap (tail_gap_boot protocol) for
+community typists on their OWN daily-driver layouts vs aalto qwerty typists on
+qwerty. Prediction from the practice story: enthusiasts on their own layout show
+the SAME fast-tail signature qwerty typists show (it's lifetime-practice, not
+qwerty-specific). CONFIRMS => the quality-model cross-layout confound story stands
+and community data cannot serve as a clean quality ranking either (their layouts
+are their qwerty). REFUTES (community tails NOT fast) => tail practice was
+misattributed; reopen the quality-ranking question.
+D2b DVORAK/ALTERNATION: on community-observed times (per-cell obs, no model), fit
+the bigram-level alternation-vs-roll price per label (alt-class mean vs roll-class
+mean at matched wpm buckets, corpus-weighted). aalto measured alt ~127ms vs rolls
+~134-137. Community typists CHOSE roll-optimized layouts; if their observed roll
+price relative to alternation is materially lower (<= -5ms shift vs aalto's gap),
+the alternation preference is population/practice-bound => flag the dvorak-#2 and
+alternation-heavy optimizer preference as population-sensitive (informational for
+the deliverable; a full re-fit is future work). Small-n guard: report per-label n
+and skip labels with <30 cells in a class.
+D2c PINKY/RING TRANSFER: the fitted calibration says pinky-first +43ms/ring +21ms
+(aalto). Matched-cell contrast (same estimator as PINKY-CAL, no refit) on pooled
+community rowStagger natural cells. PASS = same SIGN both classes; magnitude
+informational. FAIL => calibration is population-specific => note on P11 family.
+D2d GEOMETRY: within-typist where possible (VG: angleMod recurva vs rowStagger
+custom; GK: ortho colemak-dh vs ortho qwerty 1-cell — underpowered, report
+honestly). Per-geometry wmae of the SAME model = how much accuracy the geometry
+mismatch costs. Informational only (no gate) — powers the "should we model
+geometry" future question.
+D3 TRAINING INTEGRATION (GATED on D1 outcome, runs regardless of pass/fail since
+either branch wants it — pass makes it optional-upside, fail makes it mandatory):
+Add the 4 rowStagger natural-text community labels to the bigram+trigram training
+frames (layout-balanced weights as usual; community pids distinct). Re-run LODO
+with community labels as additional folds (LODO-8). ADOPT the retrained stack iff:
+(a) every aalto fold non-degrading beyond the documented noise floor (wmae p95
+0.91%); (b) community-fold mean wmae improves >1% vs the D1 zero-shot number;
+(c) rare-ngram guards hold (umae/dec3 <= +2%). ADOPTED => re-run the P10-family
+search (same protocol, rng 880333) on the new stack and report argmax movement;
+argmax move > plateau (0.2%) => NEW DELIVERABLE CANDIDATE, else P10-w0.5 stands
+with strengthened evidence. NOT ADOPTED => document why; deliverable unchanged.
+D4 SYNTHESIS: fold in the independent audit-community subagent's report; update
+docs/layout artifacts + this file's outcome appends; final deliverable = whatever
+survives, with the community-validation evidence attached either way.
