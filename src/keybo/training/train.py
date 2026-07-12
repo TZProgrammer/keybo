@@ -198,7 +198,7 @@ def _train(
     practice_term=True,
     layout_weights=True,
     target_space="MS",
-    calibration=True,
+    calibration=False,
     **params,
 ) -> XGBoostTypingModel:
     from keybo.features.schema import BIGRAM_FEATURE_NAMES, TRIGRAM_FEATURE_NAMES
@@ -222,12 +222,12 @@ def _train(
     if len(y):
         wpm_col = np.maximum(X[:, names.index("wpm")], 1.0)
 
-    # First-finger calibration (PINKY-FIT): fit the per-class deltas from THESE rows
-    # (matched-cell estimator — the identifying restriction a free fit lacks), subtract
-    # the offset from calibrated classes' targets so g fits the class's inner-first
-    # level; serving reads the fitted deltas from the sidecar and adds them back per
-    # position pair. Bigram + LOGRAT only (the probe measured bigram intervals; the ms
-    # path predates the seam and no ms model is in production).
+    # First-finger calibration (PINKY-FIT): OFF by default since CAL-REMOVE (2026-07-12).
+    # The measured effect (PINKY-GAP +27ms qwerty matched pairs) stands as a finding, but
+    # the seam contributed ~0 speed (ARM-NOCAL +3.90% vs +3.95%, LOLO identical), its
+    # evidence is single-population, and the community ring_first estimate sign-flips
+    # (D5-U2). Serving still reads deltas from any older sidecar that carries them —
+    # backward compatible. Opt back in with calibration=True (bigram + LOGRAT only).
     fitted_deltas: dict[str, float] = {}
     if calibration and ngram == "bigram" and target_space == "LOGRAT" and len(y):
         from keybo.training.calibration import (
@@ -313,10 +313,15 @@ def train_bigram_model(
     practice_term: bool = True,
     layout_weights: bool = True,
     target_space: str = "LOGRAT",
-    calibration: bool = True,
+    calibration: bool = False,
     **params,
 ) -> XGBoostTypingModel:
-    """Fit a bigram typing-time model from bistroke rows (R1W + LOGRAT + PINKY-CAL recipe).
+    """Fit a bigram typing-time model from bistroke rows (R1W + LOGRAT recipe).
+
+    ``calibration`` defaults OFF per CAL-REMOVE (2026-07-12): the first-finger seam was
+    speed-neutral (+3.90% vs +3.95%, LOLO identical) with single-population evidence and
+    mixed community transfer. The estimator (``keybo.training.calibration``) remains
+    available as a measurement tool; older sidecars with deltas still serve correctly.
 
     ``progress`` is consumed here (feature-build bar), never forwarded into ``**params`` --
     XGBoost silently ignores unknown keyword params, so a leak would be invisible.
