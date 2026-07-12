@@ -3133,3 +3133,61 @@ per D3b. If ALL arms show no material change, the registered conclusion is: the
 community data's failure to integrate is NOT a cleanliness artifact at any filter
 level tested — it is structural (1 typist per layout), closing the filtering
 question with the same verdict as D3b.
+
+### Outcome append (2026-07-12): DATA-CLEAN — ALL arms negative; the integration failure
+### is STRUCTURAL, not a cleanliness artifact (registered conclusion fires)
+runs/clean_arms.json. Session error rates: median 8.5%, p90 19.1%.
+CLEAN-1 (error-rate caps 10%/20%, D3 LODO-8 protocol): adopt=False BOTH. The community-
+fold side actually clears its bar at cap 20% (mean d_wmae -2.42% < -1%) but the aalto
+folds still degrade catastrophically (+19 to +37%) and guards fail — filtering typo-heavy
+sessions does NOT remove the poison; it is not typo-borne.
+CLEAN-2 (post-error window exclusion): drops 3.3% of samples; rho/ceiling moves <= 0.015
+on all 4 primary labels => IMMATERIAL. Mechanism note: the base extractor was already
+correct — a window's first event contributes no interval, so the "interval measured from
+an error press" channel only exists for the event PRECEDING the window, and excluding it
+changes nothing measurable.
+CLEAN-3 (trigram cell floor {10,20,50}): colemak-dh rho peaks at floor 20 (0.461 vs 0.445
+@10, 0.403 @50 — thin-cell noise and data loss trade off); recurva ~0.01 at EVERY floor —
+that label's trigram structure simply does not correlate with the model, floor-independent.
+CLEAN-4 (wpm band 50-120): moves within +-0.03 => IMMATERIAL.
+REGISTERED CONCLUSION (per the DATA-CLEAN rule): the community data's failure to
+integrate is NOT a cleanliness artifact at any filter level tested — it is structural
+(1 typist per layout). The filtering question is CLOSED with the same verdict as D3b.
+
+### Outcome append (2026-07-12): CAL-REMOVE gates — (ii)+(iii) PASS decisively;
+### (i) FAILS by letter on the dvorak fold; seed adjudication registered below
+runs/cal_remove_verify.json (true LOLO through the production train fn, 2-seed arms):
+gate (ii): nocal re-search pick gdblk.,oyuscthrpnaiezvwmxfjq;/ has +0.002% regret under
+the calibrated surface; gate (iii): P10-w0.5 regret under the nocal surface +0.005% —
+BOTH orders of magnitude inside the 0.2% bar. The user's "calibration hurts layout
+generation" premise is REFUTED: the argmax is calibration-invariant.
+gate (i) by fold (nocal vs cal): qwerty -1.66%, qwertz +0.05%, azerty -1.57%, dvorak
++1.74% => FAIL by letter (dvorak > 0.91%). NOTE the sign pattern: removal IMPROVES two
+folds and degrades one — the seam's cross-fold value is inconsistent within aalto, the
+same mixed-transfer signature as D5-U2's community sign flip.
+
+## CAL-REMOVE-ADJ (registered 2026-07-12, BEFORE results): dvorak-fold seed adjudication
+## + the "better solution" arm the user asked for
+ADJ-1 SEED NOISE: the gate-(i) comparison used 2-seed means; the 0.91% bar is a
+single-pair p95. Re-measure the dvorak fold ONLY with 5 seed pairs per arm (same
+protocol otherwise). The gate-(i) dvorak verdict becomes the 5-seed mean delta vs the
+same 0.91% bar (a better estimate of the SAME registered quantity, not a new rule).
+If <= 0.91%: gate (i) passes on the better estimate and CAL-REMOVE ships as registered.
+If > 0.91%: the dvorak cost is real; the removal decision escalates to the user with
+the full trade documented (speed-neutral for generation, mixed prediction effect:
+2 folds improve, dvorak degrades).
+ADJ-2 PINKY-MONO (the constrained-learning route — "learn it properly" without the
+seam): add TWO indicator columns to the bigram features IN-DRIVER (no schema change
+yet): outer_first_pinky (1 iff finger_class=pinky_first), outer_first_ring (1 iff
+ring_first), trained with XGBoost monotone_constraints=+1 on both columns, calibration
+OFF. The monotone constraint makes the PINKYFIX sign inversion impossible by
+construction; the magnitude is learned from the data (cross-layout rows + whatever
+within-layout signal the practice term does not absorb). RULE: PINKY-MONO replaces the
+seam iff (a) LOLO all folds within +0.91% of the CALIBRATED incumbent (incl. dvorak —
+the fold the seam helps); (b) umae/dec3 guards <= +2%; (c) served-sign: the probe pairs
+(as/ds, po/io, we/re, oi/ui) priced outer-first slower at wpm 70 and 90 (>= 6/8);
+(d) E5-style sanity: re-search under the MONO surface, pick within 0.2% of P10-w0.5
+both ways. If (c) fails with near-zero learned magnitudes, the honest conclusion is
+that the collision physics cannot be learned without an explicit offset on THIS data —
+the seam (or its removal with the dvorak caveat) are the only options, and the user
+decides between them.
