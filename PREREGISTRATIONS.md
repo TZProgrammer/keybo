@@ -4339,3 +4339,36 @@ pick rule, ADD two published diagnostics per pool — the R7 random-preference w
 share (decision-theoretic robustness) and a copeland pairwise table — and REMOVE
 wfd as a pick axis (keep it as a report row) to kill the travel double-vote. No
 re-crowning: P16-balance stands (its R7 share is 29.6%, second).
+
+## P17 — direct min-max search on reformed axes (registered 2026-07-13, BEFORE results)
+MOTIVATION: we PICK by min-max regret but have only ever SEARCHED weighted sums,
+which reach only convex-supported Pareto points; the min-max optimum can sit
+between them. P17 searches the pick rule directly (augmented Chebyshev) at ~4x
+P16 density, under the SEL-1 reform.
+AXES (SEL-1 reform adopted): pick axes = {speed, genkey, oxey1, oxey2}; wfd is a
+REPORT row only. keymeow = post-hoc report gauge via kmrun (new JSON-input mode).
+OBJECTIVE (in-loop): n_g = (loss_g - BEST_g)/(QREF_g - BEST_g) with BEST_g = min
+over the full P16 board (runs/p16_coopt.json, stationary constants) and QREF_g =
+qwerty30M recomputed on the same surface; fit = max_g(w_g n_g) + 0.05 sum_g(w_g n_g)
+(rho=0.05 registered).
+ARMS (56 searches, SA 12x16k + 2-opt each, same per-search budget as P16):
+  CHEB x44: w ~ Dirichlet(1,1,1,1), rng seed 20260714 for the draws, search rngs
+    888501..888544;  MMX x6: equal weights, rngs 888401-6;  SPD x2 (pure speed
+    anchor), rngs 888407-8;  SEEDED x4: SA at T0/4 from P16-balance, E10-r888301,
+    OX1-r888303, P16-spd, equal weights, rngs 888409-12.
+POLISH: top-10 of the union pool by reformed min-max -> alternating exhaustive
+  2-opt + 3-cycle passes on PURE equal-weight min-max until no improvement
+  (cap 5 rounds); polished variants join the pool.
+POOL for the pick: all P17 searches + polished + the full P16 board (searched,
+  incumbents*, semimak, graphite) + qwerty30M reference.
+PICK RULE: R1' = min-max qwerty-gap regret over the 4 axes, mins = union-pool
+  mins, speed cap 0.5% vs pool-best. DIAGNOSTICS (published, non-binding): R7
+  random-preference win share (Dirichlet 20k, seed 20260713), Copeland table,
+  wfd + keymeow rows. SPEED-BUDGET CURVE: best reformed min-max at caps
+  {0.1, 0.25, 0.5, 1.0}% and fastest-with-all-community-axes<=T for T in
+  {5, 7.5, 10}%.
+SUPERSEDE BAR: P17 pick replaces P16-balance as the flagship C30M candidate iff
+  (a) reformed max-regret (same union pool) improves by >=0.5pp, OR (b) it is
+  better on >=3 of 4 pick axes. Ties/near-ties -> P16-balance stands (stability
+  preferred). Both documented regardless. VERIFICATION: winner + runner-up get
+  dof + o2/v1 repl runs and kmrun rows. Deliverable promotion remains user-gated.
