@@ -3830,3 +3830,27 @@ is FLAGGED for a user promotion decision (never auto-promoted). Expected (honest
 prior, from every prior rank-stability round): picks vary at the letter level within
 the ~0.2% plateau; the rule's job is to name the best-of-plateau, and P10-w0.5 has
 won that adjudication in three prior families.
+
+### Outcome append (2026-07-13): P13-STAB — 5 seeds -> 5 DISTINCT picks (plateau
+### degeneracy confirmed on the regularized surface); global rule names a
+### genkey-improved variant; NO promotion (rule's domination clause not met)
+runs/p13_stab.json.
+STABILITY: 5/5 per-seed picks distinct; 23/25 searched layouts distinct; pairwise
+shared positions among picks min 0 / median 7 / max 18. The answer to "do we always
+get the same model" is decisively NO at the letter level — the optimum is a wide
+degenerate plateau, as in every prior family. STRUCTURE is what repeats: consonant
+home-left (sthd/nt cores), naei-style vowel home-right, e-on-ring/i-on-pinky. One
+seed (888005) landed exactly P10-w0.5 up to a rare-corner shuffle (q<->z, /<->;,
+26/30 shared, <0.4% corpus mass) — P10-w0.5 is a recurring attractor.
+GLOBAL ADJUDICATION (P13 rule over all 23 + refs): winner s888001-g1.0
+  rcgkmq.ouylsthd,naeixwbfvpjz;/  — max regret 0.16%.
+Board: speed +3.71% reg / +3.78% old surface (P10-w0.5: +3.83/+3.91 — winner is
+0.12% SLOWER); genkey 31.0 (SEARCH-BEST EVER, vs P10-w0.5 33.7, approaching
+graphite 29.5); sfb 0.67% (< P10 0.74%); alternation 77.3%; max finger 16.7% (tie).
+The regularized surface lets the g1.0 arm buy 2.7 genkey points for 0.12% speed —
+a better community-gauge trade than any prior family member.
+CONSEQUENCE (rule fires as registered): promotion flag FALSE — the winner does NOT
+strictly dominate P10-w0.5 (it loses the speed axis), so P10-w0.5 REMAINS the
+deliverable. The winner is banked as the "community-leaning plateau member" —
+the best genkey score achievable within the 0.5% speed cap on the current model —
+available if the owner ever weighs the genkey axis higher than the rule does.
