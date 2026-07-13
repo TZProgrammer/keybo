@@ -4314,3 +4314,28 @@ robustness battery agree with R1's pick, min-max stands vindicated; if rank-base
 or random-preference rules disagree AND are more stable, we present the
 disagreement + recommend the more robust rule for P17+; the redundancy finding
 (c) informs whether wfd stays a pick axis.
+
+### SEL-1 OUTCOME (2026-07-13, runs/sel1_rules.json)
+PICKS (18 admissible layouts): the 8 rules split into exactly TWO camps.
+  Worst-axis camp (R1 qgap-minmax, R5 L2, R2/R3 minmax variants): E10-r888303
+    (the registered P16 pick; R2/R3 prefer its close sibling OX1-r888303).
+  Consensus camp (R4 mean, R6 borda, R7 random-preference 45.8% win share,
+    R8 copeland): E10-r888301 — profile regs [spd 6.3, gk 7.1, ox1 1.7, ox2 1.6,
+    wfd 0.4]: excellent on the 3 travel gauges, pays genkey.
+STABILITY: minmax family + L2 + copeland all 0.96 (single flip each, and R1's one
+flip is drop-GENKEY -> OX1-r888303, a same-arm sibling); mean/randpref 0.83,
+borda 0.78. The consensus camp is BOTH more gauge-sensitive and its champion
+E10-r888301 relies on the travel-cluster redundancy (oxey1/oxey2/wfd all price
+finger travel — 3 of 5 votes) — exactly the double-counting flagged in (c):
+under drop-wfd, R6 flips; under drop-oxey1 or drop-oxey2, R4/R6/R7 all flip to
+the R1 pick. keymeow (held-out from all rules) splits the camps on its axes:
+E10-r888301 better sfb (1.14 vs 1.29), E10-r888303 much better lsb (1.27 vs 2.03).
+READING (per the registered guidance): min-max qgap survives the battery best
+alongside L2 and copeland, and its pick does NOT depend on the redundant travel
+triple-vote. The consensus rules answer "what does the average preference-weighted
+community member like" and their answer is one sibling over (a travel-leaning
+E10). RECOMMENDATION for P17+: keep R1 min-max qgap as the primary registered
+pick rule, ADD two published diagnostics per pool — the R7 random-preference win
+share (decision-theoretic robustness) and a copeland pairwise table — and REMOVE
+wfd as a pick axis (keep it as a report row) to kill the travel double-vote. No
+re-crowning: P16-balance stands (its R7 share is 29.6%, second).
