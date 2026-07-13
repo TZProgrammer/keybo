@@ -3755,3 +3755,29 @@ contributions: the E/F leverage quantification, the axis-B/C/D nulls, the
 aalto-16ms-quantization disproof, and the H5 freq-column inconsistency (community
 freq = corpus count vs aalto v5 = occurrence count) — H5 is a real cross-dataset
 metric-weighting inconsistency to fix at the next ingest touch.
+
+### Outcome append (2026-07-13): P10.5 — the merged-model argmax is ONE MUTUAL SWAP
+### CLUSTER from P10-w0.5; cross-regret symmetric at ~0.10%; the community data does
+### not move the argmax even when trained in
+runs/p105_merged.json (models bigram_merged_seed{0,1,2} banked; rng 886777).
+FAMILY (merged surface, P13 recipe): g0 gvldkqfouyrsthc.naiexzbmpw,j/; | g0.5
+gdlmk.fouyrsthc,naiezjvwxpbq;/ | g1 cdgmk.fouyrsthl,naiezjvwxpbq;/ | g2
+hgckv.fouylrstd,naiezjwmxpbq;/ | combined clgmkqfouysrthd.naiezxbwvp,;/j.
+PICK (registered rule, axes {merged-speed, genkey}, cap 0.5%): P10.5 = the combined
+arm, clgmkqfouysrthd.naiezxbwvp,;/j (max regret 3.03% — the genkey axis dominates
+as in P13).
+THE USER'S CROSS-REGRET: P10.5 under the AALTO surface +0.106% vs P10-w0.5;
+P10-w0.5 under the MERGED surface +0.101% vs P10.5 — SYMMETRIC and both deep inside
+the ~0.2% plateau. 18/30 shared positions; identical home row core (srth|naie),
+identical alternation 76.0%, identical max finger 16.7%; P10.5 trades sfb 0.74->1.02%
+and genkey 33.7->34.7 for a marginally better merged-surface score. vs qwerty:
+P10.5 +3.90% (merged) / +3.81% (aalto); P10-w0.5 +3.81% (merged) / +3.91% (aalto) —
+each layout wins its home surface by ~0.1%, the definition of plateau-equivalent.
+CONSEQUENCE (registered interpretation rule, first branch fires): both cross-regrets
+< 0.2% => even TRAINING the community data in (all natural labels, 50% of balanced
+mass) does not move the argmax beyond the plateau. This completes the triangulation:
+COMM-RESID-IV (offsets: -0.018%), D3C (no mix qualifies), and now the full merged
+retrain (+0.10%) all land the same place — the community data changes predictions
+measurably but the OPTIMAL LAYOUT is invariant to it. P10-w0.5 stands; P10.5 is
+banked as the documented "if you trust the merge" sibling (it is NOT promoted —
+the merged model failed every validation gate).
