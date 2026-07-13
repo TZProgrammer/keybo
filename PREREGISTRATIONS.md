@@ -4086,3 +4086,10 @@ sfb-dist 1.19 -> 1.15) but the optimizer paid with a huge lateral-stretch block 
 in-loop proxies trade one keymeow axis for another; the exact-tool gate caught it.
 The interior max-regret improvement (3.61%) is a proxy-pool artifact, not a
 community-tool win.
+
+### FEAT-CT SECONDARY OUTCOME (trigram +STR, 2026-07-13, runs/feat_ct_tri.json):
+### no qualifier — trigram feature set stands too
+bg1/bg2 stretch-residual columns on the JOIN conditioned frame: wmae +0.76%,
+umae +0.75%, dec3 +0.15% (all WORSE than anchor), taus hold. Consistent with the
+bigram result: the o2 stretch geometry adds no predictive signal for typing time.
+FEAT-CT is fully closed — both registered arms negative, no schema change anywhere.
