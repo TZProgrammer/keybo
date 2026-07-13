@@ -37,8 +37,8 @@ def _placement_row_from_positions(geometry: Geometry, a: Position, b: Position) 
         "bottom": float(by == 1),
         "home": float(by == 2),
         "top": float(by == 3),
-        # second-key finger one-hot (index = columns 1 and 2)
-        "pinky": float(abs_bx == 5),
+        # second-key finger one-hot (index = columns 1 and 2; K31 pinky = 5 and 6)
+        "pinky": float(abs_bx in (5, 6)),
         "ring": float(abs_bx == 4),
         "middle": float(abs_bx == 3),
         "index": float(abs_bx in (1, 2)),

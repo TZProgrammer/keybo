@@ -39,6 +39,7 @@ class Finger(Enum):
 
 # Absolute column (1..5) -> finger, per hand. Columns 1 and 2 are both the index finger.
 _ABS_COLUMN_TO_FINGER = {
+    6: ("LP", "RP"),  # K31 quote-slot column: same pinky as column 5 (like index's 1&2)
     5: ("LP", "RP"),
     4: ("LR", "RR"),
     3: ("LM", "RM"),
@@ -119,3 +120,8 @@ def _row_staggered_30_slots() -> tuple[Position, ...]:
 
 
 ROW_STAGGERED_30 = Geometry(slots=_row_staggered_30_slots())
+
+#: K31 (2026-07-13): the 30-key block plus the ANSI quote slot — home row, one column
+#: right of ';', right pinky. The slot is APPENDED so every 30-char layout string
+#: extends to K31 by appending its quote-slot character; slots[:30] are unchanged.
+ROW_STAGGERED_31 = Geometry(slots=(*_row_staggered_30_slots(), (6, 2)))

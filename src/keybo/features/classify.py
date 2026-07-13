@@ -64,17 +64,26 @@ def is_adjacent(geometry: Geometry, a: Position, b: Position) -> bool:
     they differ by one in |x| they are NOT adjacent fingers -- a bigram on them is a
     single-finger reach, not a two-finger roll/scissor. Excluding the same-finger case keeps
     ``is_adjacent``/``is_scissor`` from contradicting ``same_finger``.
+
+    K31: the quote-slot column (|x| = 6) is the pinky, so {6, 4} is a pinky-ring pair --
+    adjacent fingers despite the column gap of 2 (registered in the K31 charter). This
+    branch cannot fire for 30-key positions (no |x| = 6 there).
     """
     if not same_hand(geometry, a, b):
         return False
     if same_finger(geometry, a, b):
         return False
+    if {abs(a[0]), abs(b[0])} == {6, 4}:
+        return True
     return abs(abs(a[0]) - abs(b[0])) == 1
 
 
 def is_lateral(x: int) -> bool:
-    """A key in the inner index column (|x| == 1), reached by a lateral stretch."""
-    return abs(x) == 1
+    """A key in a lateral-stretch column: inner index (|x| == 1) or, on K31, the outer
+    pinky quote slot (|x| == 6). Both are the finger's off-home extra column, so the flag
+    plays the same role it does for the index: it disambiguates the stretch column from
+    the finger's home column (which the finger one-hot alone cannot)."""
+    return abs(x) in (1, 6)
 
 
 def is_lsb(geometry: Geometry, a: Position, b: Position) -> bool:
