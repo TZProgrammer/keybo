@@ -4045,3 +4045,26 @@ missed — its worst community axis (5.2%) is better than P13win's (6.5%) and P1
 (10.2%). The cost is concentrated exactly where the oxey family and keymeow
 disagree: oxey rewards the roll-heavy short-travel left block (rst home), keymeow
 prices its sfb rise (1.07 -> 1.23). genkey is near-tied (30.92 vs 31.00).
+
+## P14b — deep co-opt sweep + the keymeow axis (registered 2026-07-13, BEFORE results)
+MOTIVATION: P14's pick beat P13STAB-win on genkey/oxey1/oxey2 but LOST keymeow
+(sfb 1.23 vs 1.07) — keymeow prices sfb mass/travel, which no in-loop term carried.
+Also the P14 search was shallow (15 shots) on a known-degenerate plateau.
+NEW IN-LOOP TERM: sfbdist = sum over same-finger position pairs (index cols 1+2 one
+finger; space excluded) of corpus bigram freq x euclidean key distance — our-corpus
+proxy for keymeow sfb-dist (kmrun stays the exact post-hoc judge). UNIT as P14.
+ARMS (weights over genkey/oxey1/oxey2/wfd/sfbdist):
+  OX1r  = (0.25, 1, 1, 0.5, 0)    x rngs {888104..888109}  (P14 winner arm, 6 more rngs)
+  SFB05 = (0.25, 1, 1, 0.5, 0.5)  x rngs {888104..888109}
+  SFB10 = (0.25, 1, 1, 0.5, 1.0)  x rngs {888104..888109}
+  SFB20 = (0.25, 1, 1, 0.5, 2.0)  x rngs {888104..888106}
+SA 12 restarts x 16k iters + exhaustive 2-opt (deeper than P14's 10x12k).
+PICK RULE: pool = all P14b searched + P14's 15 + {P10-w0.5, P13STAB-win, P14-coopt,
+P11-w0.5, P10.5}. Speed gate 0.5% as before. Min max qwerty-gap regret over SIX
+gauges: speed-gap, genkey, oxey1, oxey2, wfd, sfbdist.
+CONSEQUENCES: pick verified on all four exact tools (genkey port, kmrun, o2 repl,
+v1 repl). If it beats P13STAB-win on ALL FOUR (incl keymeow sfb AND lsb) at <= 0.5%
+speed regret => it SUPERSEDES P14-coopt in docs/layout-p14-coopt.md (doc updated,
+old pick kept as provenance) and is flagged for user decision. If it beats 3/4 with
+a lower max-regret than P14-coopt => doc updated with it as the new balance point,
+noted which axis it concedes. Else negative result recorded, P14-coopt stands.
