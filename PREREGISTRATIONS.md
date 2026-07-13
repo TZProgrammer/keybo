@@ -3804,3 +3804,29 @@ min_child_weight (commit alongside this outcome); bigram_reg_seed{0,1,2} banked 
 keybo-e2e/models/. P10-w0.5 numbers unchanged (+3.83% under the regularized surface
 vs +3.91% under the old — same plateau). NOTE the challenger's rho edge is a
 VALIDATION-instrument improvement; the deliverable claims do not change.
+
+## P13-STAB (registered 2026-07-13, BEFORE results; user: "if you rerun P13 with the
+## new model a few times, do we always get this same model? If not, which of the
+## variants is the best?")
+PROTOCOL: 5 independent full P13-recipe reruns (rng 888001..888005) on the REGULARIZED
+surface (bigram_reg_seed{0,1,2} + production join trigram, wpm 90). Arms per rerun:
+w_g in {0, 0.5, 1, 2} with the exact-genkey port in-loop, + combined (w_g 0.5, oxey
+0.5). Registered deviation for tractability: the combined arm's IN-LOOP oxey term uses
+the fast position-table approximation (exact oxey at ~61ms/eval would cost ~8h for 5
+reruns); ALL pick scoring and the final board use the exact scorers. SA 10x12k +
+exhaustive 2-opt, verbatim otherwise.
+PER-SEED PICK (P13 rule verbatim): candidate pool = the seed's 5 arms + P10-w0.5 +
+P11-w0.5; min max normalized regret over {speed(reg surface), genkey(exact)} subject
+to speed regret <= 0.5%.
+STABILITY REPORT: number of distinct per-seed picks; number of distinct searched
+layouts; per-arm objective spread; pairwise shared-position counts.
+GLOBAL ADJUDICATION ("which variant is best"): pool ALL distinct searched layouts
+from all 5 reruns + P10-w0.5 + P11-w0.5 + P10.5; apply the same rule once; report the
+winner with the full gauge board (speed on regularized AND pre-regularization
+surfaces, exact genkey, exact oxey, sfb/alternation/rolls/max-finger/home shares).
+CONSEQUENCE RULE: informational. P10-w0.5 remains the deliverable unless the global
+winner strictly dominates it on BOTH pick axes AND by > 0.2% speed — in which case it
+is FLAGGED for a user promotion decision (never auto-promoted). Expected (honest
+prior, from every prior rank-stability round): picks vary at the letter level within
+the ~0.2% plateau; the rule's job is to name the best-of-plateau, and P10-w0.5 has
+won that adjudication in three prior families.
