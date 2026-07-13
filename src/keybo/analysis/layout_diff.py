@@ -56,6 +56,9 @@ class LayoutDiff:
     #: total_b - total_a in corpus-mass ms (negative = B faster overall)
     total_delta: float
     impacts: list[NgramImpact]
+    #: share of total corpus mass covered by n-grams typeable on BOTH layouts.
+    #: 1.0 when the charsets match; less when they differ (common-subset diff).
+    corpus_coverage: float = 1.0
 
     def top(self, k: int = 20) -> list[NgramImpact]:
         return sorted(self.impacts, key=lambda x: -abs(x.impact))[:k]
@@ -65,6 +68,7 @@ class LayoutDiff:
             "layout_a": self.layout_a,
             "layout_b": self.layout_b,
             "ngram_len": self.ngram_len,
+            "corpus_coverage": self.corpus_coverage,
             "total_a": self.total_a,
             "total_b": self.total_b,
             "total_delta": self.total_delta,
@@ -122,10 +126,14 @@ def diff_layouts(
     length of its keys decides). Trigram diffs additionally need ``trigram_models``
     (the conditioned increment) and ``bigram_freqs`` (to build T2); the trigram time is
     T3c = T2[bg1] + Tcond, matching the production objective.
+
+    Charsets may differ (e.g. semimak carries an apostrophe where qwerty has a
+    semicolon): the diff runs on the COMMON-subset corpus — n-grams typeable on both
+    layouts — exactly the convention the campaign's cross-layout scoreboards use.
+    ``corpus_coverage`` reports what share of corpus mass that subset keeps; totals
+    are comparable to each other but not to a full-corpus objective when it is < 1.
     """
     chars = "".join(layout_a.chars)
-    if set(layout_b.chars) != set(layout_a.chars):
-        raise ValueError("layouts must share a charset for a meaningful diff")
 
     sample = next(iter(freqs))
     n = len(sample)
@@ -172,11 +180,14 @@ def diff_layouts(
 
     impacts: list[NgramImpact] = []
     total_a = total_b = 0.0
+    mass_all = mass_common = 0.0
     for ngram, f in freqs.items():
+        mass_all += f
         ta = time_of(ngram, pa)
         tb = time_of(ngram, pb)
         if ta is None or tb is None:
             continue
+        mass_common += f
         total_a += f * ta
         total_b += f * tb
         moved = "".join(
@@ -197,6 +208,7 @@ def diff_layouts(
         total_b=total_b,
         total_delta=total_b - total_a,
         impacts=impacts,
+        corpus_coverage=mass_common / mass_all if mass_all else 1.0,
     )
 
 

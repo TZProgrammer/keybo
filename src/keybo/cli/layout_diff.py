@@ -91,6 +91,9 @@ def run(args: argparse.Namespace) -> int:
         pct = 100.0 * diff.total_delta / diff.total_a if diff.total_a else 0.0
         print(f"\n=== wpm {int(wpm)} ===")
         print(f"A: {args.layout_a}\nB: {args.layout_b}")
+        if diff.corpus_coverage < 0.9999:
+            print(f"charsets differ: diff runs on the common subset "
+                  f"({100 * diff.corpus_coverage:.1f}% of corpus mass)")
         print(f"total {args.ngrams} objective: A {diff.total_a:.4g}  B {diff.total_b:.4g}  "
               f"delta {diff.total_delta:+.4g} ({pct:+.3f}%; negative = B faster)")
         print(f"\ntop {args.top} impacts (impact = freq × Δms; %A = impact as % of A's total):")
