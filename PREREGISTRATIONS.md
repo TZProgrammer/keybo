@@ -3854,3 +3854,27 @@ strictly dominate P10-w0.5 (it loses the speed axis), so P10-w0.5 REMAINS the
 deliverable. The winner is banked as the "community-leaning plateau member" —
 the best genkey score achievable within the 0.5% speed cap on the current model —
 available if the owner ever weighs the genkey axis higher than the rule does.
+
+## OXL2-GAUGE (registered 2026-07-13, BEFORE results; user: "we should include
+## oxeylyzer-2 into our project and considerations" — discharges the registered
+## "oxeylyzer parity pass" follow-up)
+TOOL: github.com/o-x-e-y/oxeylyzer-2 (Rust workspace; cloned to
+~/gk-parity/oxeylyzer-2 alongside the genkey/keymeow harnesses). Our in-repo
+OxeyStyleScorer is a DOCUMENTED APPROXIMATION of oxeylyzer-1 heuristics; this adds
+the real successor tool as an exact external gauge, same standing as the exact
+genkey port and the kmrun keymeow harness.
+MECHANICS: our layouts exported as .dof files (ansi board, traditional fingering,
+apostrophe passthrough at the untouched 11th home slot — same convention as the
+tool's own Colemak.dof); scored via the shipped repl's `analyze` on the tool's OWN
+default corpus (data/english.json) and default analyzer-config weights — i.e. the
+numbers a community member would get running the tool unmodified. Candidates:
+P10-w0.5, P13STAB-winner, P11-w0.5, P10.5 + the tool's own reference layouts.
+REPORT: score + sfbs/sfs/stretches + trigram categories per layout; a parity table
+vs our OxeyStyleScorer approximation and keymeow (where metrics overlap
+definitionally); deviations noted per metric.
+CONSEQUENCE RULE: informational gauge addition — joins the multi-gauge board used
+by pick rules in FUTURE registrations; no existing verdict, objective term, or the
+deliverable changes from this registration. If the exact tool ORDERS our finalists
+differently than our approximation does, that discrepancy gets its own follow-up
+entry (the approximation's weights/classes would need recalibration before any
+future pick rule leans on the oxey axis).
