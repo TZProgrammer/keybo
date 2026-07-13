@@ -4225,3 +4225,34 @@ CONSEQUENCE (per charter): E10-r888203 is the K31 flagship CANDIDATE, documented
    presented to the user (one-way door: changes the published keyset). The
    speed-only K31 result (P11-family + ' swap) is documented alongside as the
    K31 speed pick.
+
+## K30M — matched 30-key charset (registered 2026-07-13, BEFORE results; USER
+## DIRECTIVE: "make our 30 keys match graphite and semimak, apples to apples")
+SUPERSEDES the K31 exile structure as the deliverable frame (user: a letter pushed
+to the quote slot is still a letter typed worse; K31's finding that the exile
+convention is speed-optimal stays RECORDED but is not a product we ship). NOTE for
+the record: K31 removed nothing from OUR objective (all 31 keys priced); the
+removal artifact was in the 3x10 gauge tools' view. K30M fixes comparability at
+the root instead: identical charset to the community entries.
+CHARSET C30M = 26 letters + {' , . -} on the standard 30 slots; ; and / leave the
+layout (exactly the kmrun/genkey semimak+graphite charset, where both agree; their
+dof encodings disagree with each other — Semimak.dof keeps /, graphite.dof drops
+, — recorded, kmrun convention chosen). Corpus mass: IN ' 0.434% + - 0.391%, OUT
+; 0.038% + / 0.037% => objective coverage RISES ~0.75pp vs the old charset.
+MODELS: the K31-trained surfaces are position-based and strictly-more-data — used
+as-is (no retrain; registered). PRACTICE-TERM note: '/- ngrams have thin/absent
+b-values; b is layout-independent and drops out of optimization (recorded).
+P16 SEARCH: five-gauge co-opt on C30M, arms SPD/E10/OX1/O2H2/GK1 x rngs
+{888301-3}, SA 12x16k + 2-opt. Gauges: genkey + keymeow DIRECT (same charset as
+their semimak/graphite rows — true apples-to-apples, nothing invisible); oxey1/
+oxey2/wfd via the parity-gated ports on a 31-key dof with ';' PINNED at the quote
+slot (Semimak.dof's own convention). POOL: searched + semimak + graphite (kmrun
+strings — now first-class rows on ALL gauges incl our speed surface) + incumbents
+embedded by substitution (; -> ', / -> -; noted as embeddings, not the originals)
++ qwerty30M = qwerty with the same substitution as the regret reference.
+PICK RULE: five-gauge min-max qwerty30M-gap regret, speed cap 0.5% (unchanged).
+CONSEQUENCES: the pick is the K30M flagship candidate; boards vs semimak/graphite
+are now exact same-charset comparisons. If the pick beats BOTH semimak AND
+graphite on >= 3 of the 4 community tools while winning speed => flag for the
+user as the first true apples-to-apples community claim. Deliverable promotion
+remains user-gated.
