@@ -91,7 +91,10 @@ convention for cross-charset comparisons. Our-corpus pattern metrics exclude the
 | rolls % | 17.2 | 6.9 | 10.2 | 7.7 | 8.5 | 8.2 | 8.8 |
 | hand imbalance | 12.1 | 8.1 | 7.5 | 2.6 | 5.3 | **1.9** | 2.2 |
 | home-row usage % | 26.7 | **57.0** | 52.6 | 53.4 | 55.0 | 52.5 | 55.0 |
-| max finger load % | 18.2 | 13.5 | 13.8 | 13.9 | **13.2** | 13.2 | 13.2 |
+
+(Max finger load is deliberately not a gauge: lower is not better — fingers should
+be loaded in proportion to their speed, which genkey's fspeed and the oxeylyzer
+finger weights already price.)
 
 Reading: on predicted typing speed the keybo family leads everything (semimak and
 graphite give up ~1.2–1.3pp vs P10-w0.5; dvorak ~0.5pp); on the community tools our
@@ -99,3 +102,27 @@ layouts now sit between graphite/semimak and dvorak — P14-coopt is second over
 on oxeylyzer-1 (above semimak), within ~3 genkey points of semimak, and about a
 third of the P10→semimak gap on oxeylyzer-2 is closed. semimak keeps the sfb
 crown, P13STAB-win the lsb crown, dvorak alternation, graphite redirects.
+
+## P14c-o2f — the oxeylyzer-2 frontier candidate (2026-07-13)
+
+```
+h r f m k   , y u o j
+l n s t d   g c i a e
+z x b v q   p w . ; /
+```
+
+String form: `hrfmk,yuojlnstdgciaezxbvqpw.;/`. From the P14c o2-forward weight
+sweep (arm O2H2: genkey 0.25 / oxey1 0.5 / oxey2 3.0 / wfd 0.5; PREREGISTRATIONS
+d30af30 → c8edffe). Answers "how close can we get on oxeylyzer-2 without leaving
+the speed plateau": **o2 repl −194.6B — ahead of graphite (−199.1B), second only
+to semimak (−190.4B)**, closing 79% of the P10-w0.5 → semimak o2 gap, at +0.35%
+speed regret. Its keymeow sfb (0.945/1.116) beats both P13STAB-win and graphite.
+It pays with oxeylyzer-1 (0.387, below P14-coopt's 0.400) and the most speed any
+documented sibling concedes (+0.35%, still in-plateau). Right-hand vowel block
+`ciae` with `y/u/o` above is the o2-pleasing structure; note it is a *different*
+vowel arrangement than the `naei` invariant of the P10 family — the o2 weighting
+is strong enough to reorganize the vowel block.
+
+P14-coopt remains the documented balance point (P14c's five-gauge pick was the
+P14b layout already rejected on exact tools). The three siblings now span the
+frontier: P13STAB-win (keymeow/lsb pole), P14-coopt (balance), P14c-o2f (oxey pole).
