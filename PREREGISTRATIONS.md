@@ -4194,3 +4194,34 @@ B (runs/k31_extract.log): BUF2-BOTH re-extraction with 31-char maps (qwerty+',
   bistrokes31_v1.tsv + tristrokes31_cond_v1.tsv.
 C (97e7588): 1-skip31 derived from trigrams; non-quote spearman 0.9993 vs existing.
 Stage D (LOLO gate + retrain) running.
+
+### K31 stages D-F OUTCOMES (2026-07-13, runs/k31_train.log, runs/p15_coopt.json)
+D: bigram LOLO gate PASS — taus [1.0, 1.0], rho/ceiling 1.0135 (>= 0.97x baseline
+   1.0236; the small dip is the new quote-slot rows entering the folds). Trigram
+   sanity 0.9892 vs 0.9928 direct baseline, taus 1.0. Models saved:
+   bigram_reg31_seed{0,1,2}, trigram_cond31_seed{0,1,2} (CAND4, BUF2 cond frame —
+   frame deviation from the old JOIN frame recorded in k31_train.py docstring).
+E/F: 15 K31 searches (SPD/E10/OX1/O2H2/GK1 x 3 rngs). K31 objective covers 22788
+   trigrams (+apostrophe mass). PICK (five-gauge min-max qwerty31-gap regret,
+   speed cap 0.5%): E10-r888203 = fyu,.vdpnlhieaocstrmk/;'qgwbxzj
+     f y u , .   v d p n l
+     h i e a o   c s t r m      + j on the quote slot
+     k / ; ' q   g w b x z
+   max regret 3.37% vs P14-coopt+' 7.83%, P13win+' 9.02%, P10+' 12.22%. Speed
+   +0.09% off the K31-best. repl-verified: o2 -213.3B, v1 0.420. genkey 33.61
+   (worse than P14-coopt 30.92 — regret is qwerty-gap-normalized, and its worst
+   axis is still only 3.4%). keymeow: sfb 1.33, lsb 1.93 (adjudicates against).
+KEY STRUCTURAL FINDING (the point of K31): every arm, including SPEED-ONLY,
+   voluntarily exiles a rare letter to the quote slot and pulls ' into the block —
+   SPD-r888202 = gcdlk.,yousrthmpnieaqxwbvf'j;/ + z, which is P11-w0.5 (modulo a
+   top-left gc swap) with ' in z's old slot and z on the quote key, and it is
+   FASTER than P10-w0.5+' on the K31 surface (P10+' regret +0.10%). The
+   semimak/graphite convention (' in the block, rare letter exiled) is
+   speed-optimal on our surface too, not just a community-tool trick.
+   Also notable: the balance pick is a LEFT-vowel mirror (hieao home-left) — first
+   time a pick breaks the naei-right invariant.
+CONSEQUENCE (per charter): E10-r888203 is the K31 flagship CANDIDATE, documented
+   with full boards. PROMOTION of K31 over 30-key P10-w0.5 as THE deliverable is
+   presented to the user (one-way door: changes the published keyset). The
+   speed-only K31 result (P11-family + ' swap) is documented alongside as the
+   K31 speed pick.
