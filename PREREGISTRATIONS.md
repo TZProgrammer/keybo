@@ -4015,3 +4015,33 @@ rho +0.002..+0.003) but inside the noise floor and far from the -1% bar; x_overl
 nothing. The o2 stretch geometry carries little predictive signal for typing time
 beyond dx/dy/distance/lsb/scissor on the aalto LOLO folds. Registered consequence
 taken: no schema change; the stretch axis remains objective-side only (P14).
+
+### P14 OUTCOME (2026-07-13, runs/p14_coopt.json, runs/p14_parity.json)
+PARITY GATES: both ports PASSED on 10 layouts (4 finalists + qwerty/colemak-in-our-
+shape + 4 seeded shuffles): o2 Spearman 1.0, spread 0.00% (exact integer match x100);
+v1 Spearman 1.0, spread 0.04% (full-trigram fix: the repl's displayed Score is
+score_with_precision(usize::MAX), not top-1000 — found when the top-1000 port FAILED
+at 17.4% spread/rho .988; both attempts recorded).
+SEARCH: 15 searches (5 arms x 3 rngs) on the 0.45ms five-term fit.
+PICK (registered min-max qwerty-gap regret, speed gate 0.5%):
+  OX1-r888103 = lcgkvx.ou,rsthdynaeizwmpbfjq/;  (max regret 5.23%)
+   l c g k v   x . o u ,
+   r s t h d   y n a e i
+   z w m p b   f j q / ;
+  speed +0.19% vs P10-w0.5 (in-plateau); genkey 30.92 (new best; P13win 31.0);
+  oxey1 repl 0.400 (P13win 0.367, P10 0.333); oxey2 repl -238.5B (P13win -245.1B,
+  P10 -260.8B) — repl-verified, not just port numbers. Beats BOTH incumbents on
+  max-regret (P13win 6.45%, P10 10.16%).
+KEYMEOW (kmrun, added post-pick): sfb 1.231 / lsb 0.530 / alt 38.2 / roll 46.0 /
+redir 4.68. vs P13STAB-win: WORSE sfb/lsb/alt, better roll/redir/sfs => keymeow
+adjudicates AGAINST the pick.
+REGISTERED CONSEQUENCE: beats P13STAB-win on 3 of 4 exact tools (genkey, oxey1,
+oxey2; loses keymeow) at speed regret +0.19% <= 0.5% => EARNS SIBLING DOC
+(docs/layout-p14-coopt.md). Promotion flag: NOT fired (speed not within 0.1% of
+P10-w0.5). Both incumbents stand; P14-pick documented as the max-regret-balanced
+community layout.
+READING: the five-gauge objective found the balance point the post-hoc picks
+missed — its worst community axis (5.2%) is better than P13win's (6.5%) and P10's
+(10.2%). The cost is concentrated exactly where the oxey family and keymeow
+disagree: oxey rewards the roll-heavy short-travel left block (rst home), keymeow
+prices its sfb rise (1.07 -> 1.23). genkey is near-tied (30.92 vs 31.00).
