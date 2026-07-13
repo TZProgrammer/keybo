@@ -4132,3 +4132,53 @@ our o2 score is the pinned-apostrophe convention (structural; semimak/graphite
 place ' on a good key and drop ;or/ instead — a charset decision, user-gated).
 DOC CONSEQUENCE (per rule): P14-coopt remains the balance point; the o2-frontier
 candidate is documented alongside it in docs/layout-p14-coopt.md.
+
+## K31 — the apostrophe joins the optimization keyset (registered 2026-07-13, BEFORE
+## results; USER DIRECTIVE: "optimize on the same keyset, add the apostrophe")
+DELIVERABLE CHANGE: the search space becomes 31 movable keys = the 30-key block +
+the ANSI quote slot (x=+6, home row; right pinky). This levels the one structural
+disadvantage vs semimak/graphite (they place ' on a good key; we pinned it) — ~6-8%
+of our oxeylyzer-2 score and every apostrophe contraction in every community corpus.
+Charsets still differ at the margin (graphite/semimak keep '-', drop ';'); the
+common-subset convention continues to handle that; the ' (0.43% bigram mass, 5x
+bigger than ; or /) is what levels.
+PLAN (all steps registered; each with its own gate):
+ A. Geometry/feature extension: ROW_STAGGERED_31 (30 slots + (6,2) APPENDED — every
+    existing 30-char layout string extends by 1 char), column-6 finger = pinky,
+    pinky one-hot extended to |x| in {5,6}, is_adjacent extended with the {6,4}
+    pinky-ring pair. FEATURE_VERSION is NOT bumped: the extension is domain-only —
+    GATE: a regression test proves every feature value on every 30-key position
+    pair is bit-identical to the current pipeline (new branches cannot fire on
+    |x|<=5). If that test cannot be made to pass, STOP and bump the version instead.
+ B. Data: re-run the locked BUF2-BOTH extraction (p8_final stage 1 verbatim) with
+    31-char maps — qwerty +' , dvorak +'-', azerty +'ù', qwertz +'ä' (each national
+    layout's actual ANSI quote-slot char; off-charset chars still break windows as
+    today) -> bistrokes31_v1.tsv / tristrokes31_cond_v1.tsv. GATE: restricting the
+    new bigram table to non-quote-slot rows must reproduce v5's row count within
+    0.5% (the extension may only ADD windows previously broken by ' interruptions
+    — wait, ' rows previously did NOT break windows on qwerty since ' was
+    off-layout=window dropped; the restriction check is: v5 rows are a subset,
+    count delta explained by newly-valid windows CONTAINING '). Report the delta.
+ C. Corpus: 1-skip31 derived from trigrams.txt (skipgram(a,c) = sum_b trigram(abc));
+    GATE: on non-apostrophe pairs the derived table must rank-correlate >= 0.99
+    with the existing 1-skip.txt. bigrams/trigrams already carry ' — used as-is.
+ D. Models: retrain the production recipe on K31 tables -> bigram_reg31_seed{0,1,2},
+    trigram_cond31_seed{0,1,2} (LOGRAT + practice k=100 x2 + layout weights +
+    adopted REG-LOLO params). GATE: LOLO on the K31 bigram table (4 folds x 2
+    seeds) must hold tau = 1.0 and rho/ceiling within 3% of the v5 baseline
+    (1.0236); a tau break stops the migration (report, ask user).
+ E. Search: P15 = the P14 five-gauge co-opt re-run on the K31 space (31! perms,
+    same SA budget 12x16k, arms E10/OX1/O2H2/GK1 x 3 rngs {888201-3}) + a
+    speed-only arm. All five gauges see the full 31 keys except genkey and keymeow
+    (their models are 3x10 — the quote-slot char is invisible to them; convention
+    NOTED on every board; oxey1/oxey2/wfd see all 31).
+ F. Pick rule: identical five-gauge min-max qwerty-gap regret, qwerty31 =
+    qwerty+' pinned reference, speed cap 0.5% (now on the K31 surface). Incumbent
+    references enter the pool as <layout>+' (their K31 embedding).
+CONSEQUENCES: the P15 pick becomes the project's K31 flagship candidate, documented
+with full boards vs P10-w0.5+', P13STAB-win+', P14-coopt+', semimak, graphite.
+PROMOTION of K31 over the 30-key P10-w0.5 as THE deliverable is a user decision
+(one-way door: changes the published keyset); we present the evidence. Quality
+(F5M-LR) surface retrain is DEFERRED (gauge reported as n/a on K31 boards until
+retrained). All existing 30-key results remain valid history; K30 models keep
+loading (no version bump, per gate A).
