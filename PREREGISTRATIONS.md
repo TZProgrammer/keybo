@@ -4402,3 +4402,40 @@ Structure: the pick is the E10-r888301 basin (fyu,. top, hieao home-left,
 cstrm home-right) — the SEL-1 consensus champion's family, now polished to
 dominate on the min-max criterion too. MMX raw arms did NOT find it; the
 polish stage (exhaustive 2-opt+3-cycle on pure min-max) was decisive.
+
+## KAN-1 — the keybo analyzer (registered 2026-07-13, BEFORE build; user directive:
+## "combine their work and go even further beyond… create the best keyboard analyzer")
+GOAL: `keybo analyze` — a single analyzer that (1) reports what NO community tool
+can: PREDICTED TYPING TIME from the LOLO-gated measured-keystroke surfaces
+(ms/char + % time saved vs qwerty), with per-bigram/per-key/per-finger TIME
+attribution; (2) natively computes the community metrics people already trust —
+genkey Score, oxeylyzer-1, oxeylyzer-2 (+wfd), keymeow-class sfb/sfb-dist/lsb/
+lsb-dist/alt/roll/redir — each EXACT-PARITY-GATED against the real tool; (3)
+computes everything on ONE shared corpus (configurable), eliminating the
+corpus-artifact differences that make cross-tool numbers incomparable today.
+ARCHITECTURE: src/keybo/analysis/community.py (vendored exact ports, adapted
+from the parity-gated keybo-e2e/oxey_ports.py + genkey_port.py; tool data
+vendored under data/community/vendored/); src/keybo/analysis/kmstats.py (native
+keymeow-class stats); src/keybo/analysis/timecard.py (surface eval +
+attribution); src/keybo/cli/analyze.py (the command). Production K31 models
+vendored gzipped under models/ (bigram_reg31 + trigram_cond31, seeds 0-2).
+PARITY GATES (all must pass as pytest tests before the analyzer is documented):
+  G1 genkey: exact port vs binary goldens (existing gk-parity rank corr 1.0,
+     ratio spread <=2%) on the 24-layout board, baked as fixtures.
+  G2 oxey1/oxey2: exact ports vs repl goldens (rank corr 1.0, spread <=5%;
+     o2 exact x100 scale) on >=8 layouts incl P17 pair — fixtures from runs/.
+  G3 keymeow-class: native stats vs kmrun on the IDENTICAL corpus (kmrun JSON
+     mode, keybo corpus): per-stat abs diff <=0.02pp on all 24 layouts.
+  G4 time: `keybo analyze` speed numbers must reproduce runs/p17_coopt.json
+     board values bit-close (rel err <=1e-6) for 5 spot layouts.
+CONVENTIONS: 30-char row-major strings on ROW_STAGGERED_30; oxey dof pins the
+31st char (';' for C30M layouts, "'" for classic) — auto-detected; time surface
+= C30M-charset K31 models @ wpm 90; corpus default = keybo monkeytype-derived
+(data/corpus/), --corpus swappable. Time numbers for charsets outside C30M
+coverage are reported with an explicit coverage% line.
+DELIVERABLES: the command + tests + docs/analyzer.md + the flagship board
+regenerated through `keybo analyze` (one command, one corpus). NON-GOALS (this
+charter): GUI, optimizer integration changes, non-ANSI geometries, retraining.
+CONSEQUENCES: if any gate FAILS, the failing gauge ships DISABLED with the
+failure documented (no silently-wrong numbers). Publishing/promoting the
+analyzer externally remains user-gated.
