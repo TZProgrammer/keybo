@@ -28,6 +28,15 @@ _DEFAULT_PARAMS = {
     "learning_rate": 0.05,
     "subsample": 0.7,
     "colsample_bytree": 0.7,
+    # Explicit regularization (REG-LOLO, 2026-07-13): swept under the transfer-scored
+    # (LOLO rho/ceiling, tau-gated) standard for the first time — every top-8 candidate
+    # carried high gamma, i.e. split pruning is the lever the implicit recipe was
+    # missing. Adopted: gated rho 1.0174 -> 1.0236, mean wmae +0.89% (inside the 0.91%
+    # noise floor, dvorak fold IMPROVES), argmax plateau-stable (P10 regret -0.009%).
+    "gamma": 0.957,
+    "reg_alpha": 0.141,
+    "reg_lambda": 0.011,
+    "min_child_weight": 4,
     "verbosity": 0,
 }
 

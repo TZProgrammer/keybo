@@ -3781,3 +3781,26 @@ retrain (+0.10%) all land the same place — the community data changes predicti
 measurably but the OPTIMAL LAYOUT is invariant to it. P10-w0.5 stands; P10.5 is
 banked as the documented "if you trust the merge" sibling (it is NOT promoted —
 the merged model failed every validation gate).
+
+### Outcome append (2026-07-13): REG-LOLO — ADOPTED, all three gates; explicit
+### regularization (high gamma) was the one lever the transfer-scored tuners never swept
+runs/reg_lolo.json + runs/reg_lolo_verify.json.
+SWEEP: 24 candidates (production anchor + 23 draws over reg_alpha/reg_lambda ~
+logU[0.01,10], gamma ~ U[0,1], min_child_weight ~ [1,12], architecture pinned at
+production). Winner: reg_alpha 0.141, reg_lambda 0.011, gamma 0.957, mcw 4 — gated
+rho/ceiling 1.0236 vs anchor 1.0174 (+0.0062 > 0.005 bar). SIGNAL, not fluke: all
+top-8 candidates carry gamma 0.75-0.96 with otherwise scattered alpha/lambda — split
+PRUNING is the missing regularizer; the implicit recipe (depth 3, subsample .7) left
+transferable headroom the CV-MAE tuner could never see.
+GATE (i) wmae: mean 9.67 -> 9.76 (+0.89% <= 0.91% — passes by letter; per-fold
+qwerty/qwertz +2.1%, azerty +1.5%, dvorak IMPROVES -0.98% with dec3 -2.9%): the
+regularized model trades a hair of in-family fit for cross-family structure — the
+right direction for a transfer instrument, and consistent with the rho gain being
+real. GATE (ii)/(iii) argmax: re-search pick glmpk.,oyusrthdcnaiezjwbvfxq;/ (17/30
+shared); P10-w0.5 regret under the regularized surface -0.009%, pick regret under the
+old surface +0.019% — plateau-invariant both ways.
+PRODUCTIONIZED: _DEFAULT_PARAMS in xgboost_model.py gains gamma/reg_alpha/reg_lambda/
+min_child_weight (commit alongside this outcome); bigram_reg_seed{0,1,2} banked in
+keybo-e2e/models/. P10-w0.5 numbers unchanged (+3.83% under the regularized surface
+vs +3.91% under the old — same plateau). NOTE the challenger's rho edge is a
+VALIDATION-instrument improvement; the deliverable claims do not change.
