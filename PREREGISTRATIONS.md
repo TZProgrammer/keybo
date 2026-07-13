@@ -3878,3 +3878,30 @@ deliverable changes from this registration. If the exact tool ORDERS our finalis
 differently than our approximation does, that discrepancy gets its own follow-up
 entry (the approximation's weights/classes would need recalibration before any
 future pick rule leans on the oxey axis).
+
+### Outcome append (2026-07-13): OXL2-GAUGE — exact oxeylyzer-2 board landed; ordering
+### of our finalists AGREES with our approximation; community tools stay internally
+### consistent (they rank each other's layouts above ours, on every axis they define)
+Harness: ~/gk-parity/oxeylyzer-2 (cloned, cargo release build; our layouts exported
+as .dof: keybo-P10-w05, keybo-P13STAB-win, keybo-P11-w05, keybo-P105). Tool defaults
+(english.json corpus, shipped weights). Raw analyze + rank output banked in
+keybo-e2e/runs/oxl2_gauge.txt.
+SCORES (higher = better under the tool): P13STAB-win -245B > P10-w0.5 -261B >
+P10.5 -299B > P11-w0.5 -323B. References: smudge -8B (tool's best), semimak-jq
+-188B, graphite -199B, colemak-dh -220B, octa8-angle -393B.
+PARITY (the registered check): the exact tool's ordering of our finalists MATCHES
+both our OxeyStyleScorer approximation (winner -15.3 < P10 -4.8 < P11 +0.9, more
+negative better) and exact genkey (31.0 < 33.7 < 41.1) — three independently
+implemented community gauges, one ordering. The approximation is fit for the
+multi-gauge board; no recalibration follow-up needed.
+DETAIL (tool metrics, P10-w0.5 vs P13STAB-win): sfbs 0.766% vs 0.698%, sfs 3.733%
+vs 3.732%, stretches 39.5 vs 42.7 (the one axis P10 wins — the winner's r-on-pinky
+costs stretch mass), trigram alternate 17.6% vs 18.3%, redirect 2.74% vs 2.46%.
+NOTE the tool's trigram "Alternate 17.6%" differs from our 76% definitionally (it
+buckets sft/sfb-containing trigrams separately and weights by its own corpus) —
+definitions reconciled in the D2b-era alternation write-up; not a discrepancy.
+STANDING: oxeylyzer-2 joins genkey (exact port) + keymeow (kmrun) as the third
+exact community gauge for future pick rules. Community-tool verdict on the
+campaign is unchanged and now triple-confirmed: our layouts trade community-metric
+score for measured-time optimality; P13STAB-win is our best community-facing
+member on ALL THREE tools simultaneously.
