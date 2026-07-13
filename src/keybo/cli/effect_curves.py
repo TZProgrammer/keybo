@@ -37,6 +37,10 @@ def add_arguments(parser: argparse.ArgumentParser) -> None:
         "--bigrams", help="Corpus bigram table (required with --layout)", default=None
     )
     parser.add_argument("--out-prefix", default="runs/effect_curves")
+    parser.add_argument(
+        "--out-dir",
+        help="Artifact directory: writes curves.json + PNGs inside (overrides --out-prefix)",
+    )
 
 
 def _load_freqs(path: str) -> dict[str, int]:
@@ -50,6 +54,8 @@ def _load_freqs(path: str) -> dict[str, int]:
 
 
 def run(args: argparse.Namespace) -> int:
+    import os
+
     models = [XGBoostTypingModel.load(p) for p in args.model]
 
     layout = None
@@ -65,10 +71,18 @@ def run(args: argparse.Namespace) -> int:
         models, wpms=list(args.wpms), layout=layout, bigram_freqs=freqs
     )
 
-    ensure_writable_output(f"{args.out_prefix}.json")
-    with open(f"{args.out_prefix}.json", "w") as f:
+    if args.out_dir:
+        os.makedirs(args.out_dir, exist_ok=True)
+        prefix = os.path.join(args.out_dir, "curves")
+        json_path = os.path.join(args.out_dir, "curves.json")
+    else:
+        prefix = args.out_prefix
+        json_path = f"{args.out_prefix}.json"
+    ensure_writable_output(json_path)
+    with open(json_path, "w") as f:
         json.dump(curves.to_dict(), f, indent=1)
-    written = render_effect_curves(curves, args.out_prefix)
+    written = render_effect_curves(curves, prefix)
+    written.append(json_path)
 
     print(f"wpms: {curves.wpms}")
     print(f"pair weighting: {curves.weighted_by}")
@@ -78,7 +92,15 @@ def run(args: argparse.Namespace) -> int:
         if cls == "alternate":
             continue
         print(f"{cls:<16}" + "".join(f"{y:>8.1f}" for y in ys))
+    pct = curves.contrast_pct()
+    print(f"\ncontrast vs alternate (% of alternate mean):\n{header}")
+    for cls, ys in pct.items():
+        if cls == "alternate":
+            continue
+        print(f"{cls:<16}" + "".join(f"{y:>7.1f}%" for y in ys))
     for note in curves.notes:
         print(f"note: {note}")
-    print(f"\nwrote {args.out_prefix}.json + " + " + ".join(written))
+    print()
+    for p in written:
+        print(f"wrote {p}")
     return 0

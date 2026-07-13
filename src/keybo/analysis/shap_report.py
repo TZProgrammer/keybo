@@ -71,11 +71,30 @@ class ShapReport:
             for i in order
         ]
 
+    def importance_share(self) -> dict[str, float]:
+        """Each feature's share of total mean |SHAP|, in percent (sums to 100)."""
+        total = float(self.mean_abs.sum())
+        if total <= 0:
+            return {n: 0.0 for n in self.feature_names}
+        return {
+            n: 100.0 * float(self.mean_abs[self.feature_names.index(n)]) / total
+            for n in self.feature_names
+        }
+
     def to_dict(self) -> dict:
+        share = self.importance_share()
         return {
             "base_value_ms": self.base_value,
             "ranking": [
-                {"feature": n, "mean_abs_shap_ms": a, "mean_signed_shap_ms": s}
+                {
+                    "feature": n,
+                    "mean_abs_shap_ms": a,
+                    "mean_signed_shap_ms": s,
+                    "importance_share_pct": share[n],
+                    "mean_abs_shap_pct_of_base": (
+                        100.0 * a / self.base_value if self.base_value else None
+                    ),
+                }
                 for n, a, s in self.ranking()
             ],
             "interaction_pairs": [
@@ -159,17 +178,21 @@ def render_report(report: ShapReport, out_prefix: str, top_k: int = 12) -> list[
     ranking = report.ranking()
     written: list[str] = []
 
-    # --- 1. global ranking bar (mean |SHAP|, annotated with signed direction) ----------
+    # --- 1. global ranking bar (mean |SHAP|, annotated with signed direction + share) ---
     names = [r[0] for r in ranking]
     abs_vals = [r[1] for r in ranking]
     signed = [r[2] for r in ranking]
+    share = report.importance_share()
     fig, ax = plt.subplots(figsize=(8, 0.34 * len(names) + 1.2))
     ypos = np.arange(len(names))[::-1]
     ax.barh(ypos, abs_vals, height=0.62, color=_BLUE, edgecolor="none")
-    for y, a, s in zip(ypos, abs_vals, signed, strict=True):
-        ax.text(a, y, f"  {a:.2f} (mean {s:+.2f})", va="center", fontsize=8, color="#40403e")
+    for y, name, a, s in zip(ypos, names, abs_vals, signed, strict=True):
+        ax.text(
+            a, y, f"  {a:.2f} ({share[name]:.1f}%, mean {s:+.2f})",
+            va="center", fontsize=8, color="#40403e",
+        )
     ax.set_yticks(ypos, names, fontsize=9)
-    ax.set_xlabel("mean |SHAP| (ms of predicted time)")
+    ax.set_xlabel("mean |SHAP| (ms of predicted time; % = share of total importance)")
     ax.set_title(f"Global feature importance — base value {report.base_value:.1f} ms")
     ax.spines[["top", "right"]].set_visible(False)
     ax.grid(axis="x", color="#e7e6e3", linewidth=0.8)

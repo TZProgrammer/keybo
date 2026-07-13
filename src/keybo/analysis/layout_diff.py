@@ -40,6 +40,11 @@ class NgramImpact:
     #: which keys moved: the n-gram's chars whose position differs between layouts
     moved_chars: str
 
+    @property
+    def delta_pct(self) -> float:
+        """(t_B - t_A) / t_A, in percent — the n-gram's own relative change."""
+        return 100.0 * (self.t_b_ms - self.t_a_ms) / self.t_a_ms if self.t_a_ms else 0.0
+
 
 @dataclass
 class LayoutDiff:
@@ -71,7 +76,11 @@ class LayoutDiff:
                     "t_a_ms": i.t_a_ms,
                     "t_b_ms": i.t_b_ms,
                     "delta_ms": i.t_b_ms - i.t_a_ms,
+                    "delta_pct": i.delta_pct,
                     "impact": i.impact,
+                    "impact_pct_of_total_a": (
+                        100.0 * i.impact / self.total_a if self.total_a else None
+                    ),
                     "share_of_total_delta_pct": (
                         100.0 * i.impact / self.total_delta if self.total_delta else None
                     ),
@@ -200,12 +209,15 @@ def render_diff(diff: LayoutDiff, out_path: str, k: int = 20) -> str:
 
     top = diff.top(k)
     labels = [
-        f"{i.ngram.replace(' ', '␣')}  (f={i.freq:,}, {i.t_a_ms:.0f}→{i.t_b_ms:.0f}ms"
+        f"{i.ngram.replace(' ', '␣')}  (f={i.freq:,}, {i.t_a_ms:.0f}→{i.t_b_ms:.0f}ms "
+        f"{i.delta_pct:+.0f}%"
         + (f", moved: {i.moved_chars}" if i.moved_chars else "")
         + ")"
         for i in top
     ]
-    vals = [i.impact for i in top]
+    vals = [
+        100.0 * i.impact / diff.total_a if diff.total_a else i.impact for i in top
+    ]
     colors = ["#3987e5" if v < 0 else "#e34948" for v in vals]
 
     fig, ax = plt.subplots(figsize=(10, 0.4 * len(top) + 1.6))
@@ -213,7 +225,9 @@ def render_diff(diff: LayoutDiff, out_path: str, k: int = 20) -> str:
     ax.barh(ypos, vals, height=0.62, color=colors, edgecolor="none")
     ax.axvline(0, color="#8a8988", linewidth=1)
     ax.set_yticks(ypos, labels, fontsize=8)
-    ax.set_xlabel("impact = freq × Δms  (blue = B faster, red = B slower)")
+    ax.set_xlabel(
+        "impact = freq × Δms, as % of A's total objective  (blue = B faster, red = B slower)"
+    )
     pct = 100.0 * diff.total_delta / diff.total_a if diff.total_a else 0.0
     ax.set_title(
         f"Top {len(top)} {['', '', 'bigram', 'trigram'][diff.ngram_len]} impacts, "

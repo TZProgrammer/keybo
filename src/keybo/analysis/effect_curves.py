@@ -78,11 +78,23 @@ class EffectCurves:
     weighted_by: str = "uniform"
     notes: list[str] = field(default_factory=list)
 
+    def contrast_pct(self) -> dict[str, list[float]]:
+        """Contrast as a percentage of the reference class's mean time per WPM."""
+        ref = self.class_mean_ms[REFERENCE_CLASS]
+        return {
+            cls: [
+                100.0 * c / r if r else float("nan")
+                for c, r in zip(ys, ref, strict=True)
+            ]
+            for cls, ys in self.contrast_ms.items()
+        }
+
     def to_dict(self) -> dict:
         return {
             "wpms": self.wpms,
             "class_mean_ms": self.class_mean_ms,
             "contrast_vs_alternate_ms": self.contrast_ms,
+            "contrast_vs_alternate_pct": self.contrast_pct(),
             "shap_of_defining_feature_ms": self.shap_ms,
             "n_pairs": self.n_pairs,
             "weighted_by": self.weighted_by,
@@ -227,7 +239,7 @@ def compute_effect_curves(
 
 
 def render_effect_curves(curves: EffectCurves, out_prefix: str) -> list[str]:
-    """Two figures: class-contrast-vs-wpm and SHAP-attribution-vs-wpm."""
+    """Three figures: contrast-vs-wpm (ms), contrast-vs-wpm (%), SHAP-attribution-vs-wpm."""
     import matplotlib
 
     matplotlib.use("Agg")
@@ -244,29 +256,41 @@ def render_effect_curves(curves: EffectCurves, out_prefix: str) -> list[str]:
     }
     written = []
 
-    fig, ax = plt.subplots(figsize=(9, 5.5))
-    for cls, ys in curves.contrast_ms.items():
-        if cls == REFERENCE_CLASS:
-            continue
-        ax.plot(curves.wpms, ys, marker="o", markersize=4, linewidth=2,
-                label=f"{cls} (n={curves.n_pairs[cls]})",
-                color=palette.get(cls, "#40403e"))
-    ax.axhline(0, color="#8a8988", linewidth=1)
-    ax.set_xlabel("WPM")
-    ax.set_ylabel(f"predicted ms vs {REFERENCE_CLASS}")
-    ax.set_title(
-        f"Pattern-class price vs WPM (contrast against {REFERENCE_CLASS}; "
-        f"{curves.weighted_by} pair weights)"
+    def contrast_fig(values: dict[str, list[float]], ylabel: str, tag: str) -> str:
+        fig, ax = plt.subplots(figsize=(9, 5.5))
+        for cls, ys in values.items():
+            if cls == REFERENCE_CLASS:
+                continue
+            ax.plot(curves.wpms, ys, marker="o", markersize=4, linewidth=2,
+                    label=f"{cls} (n={curves.n_pairs[cls]})",
+                    color=palette.get(cls, "#40403e"))
+        ax.axhline(0, color="#8a8988", linewidth=1)
+        ax.set_xlabel("WPM")
+        ax.set_ylabel(ylabel)
+        ax.set_title(
+            f"Pattern-class price vs WPM (contrast against {REFERENCE_CLASS}; "
+            f"{curves.weighted_by} pair weights)"
+        )
+        ax.legend(fontsize=9, frameon=False)
+        ax.spines[["top", "right"]].set_visible(False)
+        ax.grid(color="#e7e6e3", linewidth=0.8)
+        ax.set_axisbelow(True)
+        fig.tight_layout()
+        path = f"{out_prefix}_{tag}.png"
+        fig.savefig(path, dpi=150)
+        plt.close(fig)
+        return path
+
+    written.append(
+        contrast_fig(curves.contrast_ms, f"predicted ms vs {REFERENCE_CLASS}", "contrast")
     )
-    ax.legend(fontsize=9, frameon=False)
-    ax.spines[["top", "right"]].set_visible(False)
-    ax.grid(color="#e7e6e3", linewidth=0.8)
-    ax.set_axisbelow(True)
-    fig.tight_layout()
-    path = f"{out_prefix}_contrast.png"
-    fig.savefig(path, dpi=150)
-    plt.close(fig)
-    written.append(path)
+    written.append(
+        contrast_fig(
+            curves.contrast_pct(),
+            f"% of {REFERENCE_CLASS} mean time",
+            "contrast_pct",
+        )
+    )
 
     fig, ax = plt.subplots(figsize=(9, 5.5))
     for cls, ys in curves.shap_ms.items():

@@ -39,6 +39,11 @@ def add_arguments(parser: argparse.ArgumentParser) -> None:
         help="Path prefix for outputs: <prefix>_{ranking,beeswarm,dependence,interactions}.png "
         "+ <prefix>.json",
     )
+    parser.add_argument(
+        "--out-dir",
+        help="Artifact directory: writes ranking.png, beeswarm.png, dependence.png, "
+        "interactions.png, and report.json inside it (overrides --out-prefix)",
+    )
 
 
 def _grid_matrix(model: XGBoostTypingModel, target_wpm: float, max_rows: int) -> np.ndarray:
@@ -78,7 +83,16 @@ def _data_matrix(model: XGBoostTypingModel, strokes_path: str, max_rows: int) ->
 
 
 def run(args: argparse.Namespace) -> int:
-    ensure_writable_output(f"{args.out_prefix}.json", "--out-prefix")
+    import os
+
+    if args.out_dir:
+        os.makedirs(args.out_dir, exist_ok=True)
+        prefix = os.path.join(args.out_dir, "report")
+        json_path = os.path.join(args.out_dir, "report.json")
+    else:
+        prefix = args.out_prefix
+        json_path = f"{args.out_prefix}.json"
+    ensure_writable_output(json_path, "--out-dir" if args.out_dir else "--out-prefix")
     if args.on == "data" and not args.strokes:
         print("--on data requires --strokes <bistrokes/tristrokes tsv>")
         return 1
@@ -91,15 +105,16 @@ def run(args: argparse.Namespace) -> int:
     print(f"explaining {X.shape[0]} rows x {X.shape[1]} features ({args.on} matrix)")
 
     report = compute_shap(model, X)
-    paths = render_report(report, args.out_prefix, top_k=args.top_k)
-    with open(f"{args.out_prefix}.json", "w") as f:
+    paths = render_report(report, prefix, top_k=args.top_k)
+    with open(json_path, "w") as f:
         json.dump(report.to_dict(), f, indent=2)
-    paths.append(f"{args.out_prefix}.json")
+    paths.append(json_path)
 
+    share = report.importance_share()
     print(f"base value: {report.base_value:.1f} ms")
-    print("top features (mean |SHAP| ms, signed mean):")
+    print("top features (mean |SHAP| ms, share of importance, signed mean):")
     for name, mean_abs, mean_signed in report.ranking()[: args.top_k]:
-        print(f"  {name:24s} {mean_abs:8.2f}  {mean_signed:+8.2f}")
+        print(f"  {name:24s} {mean_abs:8.2f}  {share[name]:5.1f}%  {mean_signed:+8.2f}")
     if report.interaction_pairs:
         print("top interactions (mean |interaction| ms):")
         for a, b, v in report.interaction_pairs[:5]:
