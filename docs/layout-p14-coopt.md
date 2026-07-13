@@ -68,3 +68,34 @@ home with `l`/`c` above), keymeow prices the sfb mass that block creates
   `runs/p14_coopt.json`; parity gate `runs/p14_parity.json`).
 - Pick rule: registered min max qwerty-gap-normalized regret over {speed, genkey,
   oxey1, oxey2, wfd}, speed cap 0.5% (PREREGISTRATIONS.md 01546c8).
+
+## Reference board (qwerty / dvorak / semimak / graphite added)
+
+Same gauges with the community anchors. Exact tools use each tool's canonical
+layout files; "speed" for the apostrophe-bearing references (dvorak/semimak/
+graphite) is computed on the common-subset corpus (91.4% mass) — the shared
+convention for cross-charset comparisons. Our-corpus pattern metrics exclude the
+~5–6% of corpus mass not typeable on a given 30-key layout.
+
+| gauge | qwerty | dvorak | semimak | graphite | P10-w0.5 | P13STAB-win | P14-coopt |
+|---|---|---|---|---|---|---|---|
+| speed vs qwerty, wpm 90 | 0 | +3.30% | +2.60% | +2.51% | **+3.83%** | +3.71% | +3.64% |
+| genkey Score (↓) | 110.8 | 48.2 | **27.7** | 29.5 | 33.7 | 31.0 | 30.9 |
+| oxeylyzer-1 Score (↑) | −0.437 | 0.211 | 0.365 | **0.460** | 0.333 | 0.367 | 0.400 |
+| oxeylyzer-2 score (↑) | −721.9B | −391.0B | **−190.4B** | −199.1B | −260.8B | −245.1B | −238.5B |
+| keymeow sfb / sfb-dist | 6.70/9.59 | 2.80/3.31 | **0.89/1.05** | 1.23/1.45 | 1.18/1.44 | 1.07/1.19 | 1.23/1.36 |
+| keymeow lsb / lsb-dist | 2.99/6.66 | 0.93/2.01 | 1.27/2.57 | 0.57/1.24 | 0.60/1.23 | **0.09/0.18** | 0.53/1.09 |
+| keymeow alt / roll / redir | 26.8/37.7/13.4 | 44.9/38.8/3.4 | 40.6/42.7/6.6 | 42.2/44.2/**3.0** | 38.0/45.6/5.9 | 39.4/44.9/5.2 | 38.2/**46.0**/4.7 |
+| sfb % (our corpus) | 4.43 | 1.86 | **0.55** | 0.77 | 0.74 | 0.67 | 0.78 |
+| alternation % | 68.2 | **80.2** | 77.4 | 78.9 | 76.0 | 77.3 | 76.3 |
+| rolls % | 17.2 | 6.9 | 10.2 | 7.7 | 8.5 | 8.2 | 8.8 |
+| hand imbalance | 12.1 | 8.1 | 7.5 | 2.6 | 5.3 | **1.9** | 2.2 |
+| home-row usage % | 26.7 | **57.0** | 52.6 | 53.4 | 55.0 | 52.5 | 55.0 |
+| max finger load % | 18.2 | 13.5 | 13.8 | 13.9 | **13.2** | 13.2 | 13.2 |
+
+Reading: on predicted typing speed the keybo family leads everything (semimak and
+graphite give up ~1.2–1.3pp vs P10-w0.5; dvorak ~0.5pp); on the community tools our
+layouts now sit between graphite/semimak and dvorak — P14-coopt is second overall
+on oxeylyzer-1 (above semimak), within ~3 genkey points of semimak, and about a
+third of the P10→semimak gap on oxeylyzer-2 is closed. semimak keeps the sfb
+crown, P13STAB-win the lsb crown, dvorak alternation, graphite redirects.
