@@ -4002,3 +4002,16 @@ binary-parity port, keymeow kmrun, oxeylyzer-1 repl, oxeylyzer-2 repl) at speed
 regret <= 0.5%; it is flagged for possible PROMOTION discussion (user-gated, never
 autonomous) iff it additionally matches or beats P10-w0.5's speed within 0.1%.
 Otherwise: negative result, both incumbents stand.
+
+### FEAT-CT OUTCOME (2026-07-13, runs/feat_ct.json): NO qualifier — feature set stands
+ANCHOR reproduced the production baseline exactly (rho/ceiling 1.0236 = the REG-LOLO
+adopted number; wmae 9.76). Arms vs the registered gates (need wmae < -1%):
+  +STR   wmae -0.31%  umae -0.40%  dec3 -0.37%  rho/ceil 1.0256  taus 1.0 — no
+  +PR    wmae -0.31%  umae -0.42%  dec3 -0.28%  rho/ceil 1.0269  taus 1.0 — no
+  +XO    wmae +0.11%  umae +0.02%  dec3 +0.24%  rho/ceil 1.0223  taus 1.0 — no
+  +ALL4  wmae +0.07%  umae -0.17%  dec3 -0.32%  rho/ceil 1.0240  taus 1.0 — no
+READING: stretch_resid and pinky_ring are DIRECTIONALLY positive (wmae -0.3%, gated
+rho +0.002..+0.003) but inside the noise floor and far from the -1% bar; x_overlap adds
+nothing. The o2 stretch geometry carries little predictive signal for typing time
+beyond dx/dy/distance/lsb/scissor on the aalto LOLO folds. Registered consequence
+taken: no schema change; the stretch axis remains objective-side only (P14).
