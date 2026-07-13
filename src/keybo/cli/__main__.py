@@ -7,8 +7,10 @@ import sys
 from collections.abc import Sequence
 
 from keybo.cli import (
+    effect_curves,
     fetch_data,
     inspect,
+    layout_diff,
     optimize,
     process_data,
     score,
@@ -20,7 +22,7 @@ from keybo.cli import (
 
 # subcommand name -> module exposing add_arguments(parser) and run(args).
 # Ordered along the pipeline: fetch-data -> process-data -> train -> (tune) ->
-# validate -> optimize / score.
+# validate -> optimize / score, then the analysis tools.
 _COMMANDS = {
     "fetch-data": fetch_data,
     "process-data": process_data,
@@ -31,6 +33,8 @@ _COMMANDS = {
     "score": score,
     "inspect": inspect,
     "shap-report": shap_report,
+    "effect-curves": effect_curves,
+    "layout-diff": layout_diff,
 }
 
 
