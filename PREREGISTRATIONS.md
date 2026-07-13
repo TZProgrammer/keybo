@@ -4112,3 +4112,23 @@ CONSEQUENCES: same as P14b — a candidate supersedes P14-coopt in the doc iff i
 beats P13STAB-win on >= 3/4 exact tools AND has lower max-regret than P14-coopt's
 5.23%; the o2-frontier candidate is documented (not promoted) with its exact-tool
 board either way. Else negative result; P14-coopt stands.
+
+### P14c OUTCOME (2026-07-13, runs/p14c_coopt.json)
+FIVE-GAUGE PICK over the union pool (48 searched + incumbents): p14b:SFB20-r888104
+(max regret 5.21% — marginally under P14-coopt's 5.23% on the five-gauge form, but
+it is the SAME layout P14b already rejected on the exact-tool bar: genkey 31.7,
+keymeow-lsb 1.82, v1 0.397). Supersede bar NOT met => P14-coopt STANDS.
+O2-FRONTIER (registered secondary): O2H2-r888111 = hrfmk,yuojlnstdgciaezxbvqpw.;/
+  o2 repl -194.6B — BEATS graphite (-199.1B), 2nd only to semimak (-190.4B);
+  closes 79% of the P10->semimak o2 gap. genkey 31.4; v1 repl 0.387;
+  keymeow sfb 0.945/sfb-dist 1.116 (beats P13win AND graphite; only semimak
+  better), lsb 0.67 ~ graphite 0.57; alt 41.5. Speed +0.35% (in-plateau).
+  Regret profile: o2 0.0 / genkey 0.9 / wfd 1.3 / oxey1 6.0 / speed 8.7.
+READING (user's question answered empirically): raising the o2 weight (O2H2 arm:
+genkey .25 / oxey1 .5 / oxey2 3 / wfd .5) DID move us to the o2 frontier — the
+distance on o2 was a weighting choice, not a capability limit; the price is
+concentrated in oxey1 (trigram flow) and speed inside the plateau. Also ~6-8% of
+our o2 score is the pinned-apostrophe convention (structural; semimak/graphite
+place ' on a good key and drop ;or/ instead — a charset decision, user-gated).
+DOC CONSEQUENCE (per rule): P14-coopt remains the balance point; the o2-frontier
+candidate is documented alongside it in docs/layout-p14-coopt.md.
