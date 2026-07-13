@@ -4068,3 +4068,21 @@ speed regret => it SUPERSEDES P14-coopt in docs/layout-p14-coopt.md (doc updated
 old pick kept as provenance) and is flagged for user decision. If it beats 3/4 with
 a lower max-regret than P14-coopt => doc updated with it as the new balance point,
 noted which axis it concedes. Else negative result recorded, P14-coopt stands.
+
+### P14b OUTCOME (2026-07-13, runs/p14b_coopt.json): pick wins the six-gauge rule but
+### FAILS the exact-tool supersede bar — P14-coopt STANDS
+Six-gauge pick: SFB20-r888104 = pyu,.vgdnmhieaocstrlkj/q;fwbxz (max regret 3.61% vs
+P14-coopt 5.23%, P13win 6.45%). Exact-tool verification:
+  genkey 31.71 (WORSE than P13win 31.00 and P14-coopt 30.92)
+  keymeow sfb 1.056/sfb-dist 1.146 (best of all four) BUT lsb 1.82/lsb-dist 3.96
+    (catastrophic vs P13win 0.09/0.18 — keymeow adjudicates AGAINST on lsb)
+  oxey2 repl -223.8B (best); v1 repl 0.397 (below P14-coopt 0.400)
+Registered bar was: beat P13STAB-win on ALL FOUR exact tools (incl keymeow sfb AND
+lsb) => supersede. It loses genkey, v1, and keymeow-lsb => NO supersede. Second bar
+(3/4 + lower max-regret than P14-coopt) also fails on exact tools (only oxey2 +
+keymeow-sfb won). REGISTERED CONSEQUENCE: negative result recorded; P14-coopt stands
+as the documented balance point. READING: the sfbdist term worked as aimed (keymeow
+sfb-dist 1.19 -> 1.15) but the optimizer paid with a huge lateral-stretch block —
+in-loop proxies trade one keymeow axis for another; the exact-tool gate caught it.
+The interior max-regret improvement (3.61%) is a proxy-pool artifact, not a
+community-tool win.
