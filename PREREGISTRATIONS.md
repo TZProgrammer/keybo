@@ -4093,3 +4093,22 @@ bg1/bg2 stretch-residual columns on the JOIN conditioned frame: wmae +0.76%,
 umae +0.75%, dec3 +0.15% (all WORSE than anchor), taus hold. Consistent with the
 bigram result: the o2 stretch geometry adds no predictive signal for typing time.
 FEAT-CT is fully closed — both registered arms negative, no schema change anywhere.
+
+## P14c — o2-forward weight sweep (registered 2026-07-13, BEFORE results; user direction)
+MOTIVATION (user): oxey2 is our furthest community axis (qwerty-gap 9.0% vs genkey
+3.9%, oxey1 6.7%); test lowering oxey1 weight / raising oxey2. Also NOTED: max
+finger load is DROPPED from all gauge boards (user: lower is not better; speed-
+proportional usage is already priced in genkey fspeed + o2 finger weights). Known
+context: E10 arm already reached o2 -210e11 (+0.31% spd) but pays oxey1 (v1 trigram
+flow); ~6-8% of our o2 score is the PINNED APOSTROPHE (structural convention vs
+semimak/graphite — NOT addressable by weights; separate user decision).
+ARMS (weights genkey/oxey1/oxey2/wfd): O2H1=(0.25,0.25,2,0.5) [user's direction],
+O2H2=(0.25,0.5,3,0.5), O2H3=(0.5,0.25,2,1), E10r=(1,1,1,1). x rngs {888110..888112}
+= 12 searches, SA 12x16k + 2-opt.
+PICK RULE: identical five-gauge min-max qwerty-gap regret as P14 (comparability),
+pool = these + P14 + P14b searches + all incumbents. SECONDARY registered pick:
+min oxey2 s.t. speed regret <= 0.5% ("o2-frontier candidate"), reported alongside.
+CONSEQUENCES: same as P14b — a candidate supersedes P14-coopt in the doc iff it
+beats P13STAB-win on >= 3/4 exact tools AND has lower max-regret than P14-coopt's
+5.23%; the o2-frontier candidate is documented (not promoted) with its exact-tool
+board either way. Else negative result; P14-coopt stands.
