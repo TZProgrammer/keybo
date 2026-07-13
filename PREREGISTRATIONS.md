@@ -4439,3 +4439,15 @@ charter): GUI, optimizer integration changes, non-ANSI geometries, retraining.
 CONSEQUENCES: if any gate FAILS, the failing gauge ships DISABLED with the
 failure documented (no silently-wrong numbers). Publishing/promoting the
 analyzer externally remains user-gated.
+
+### KAN-1 DEVIATION (2026-07-13, recorded before build): vendored models go under
+data/models/k31/ (gzipped), NOT models/ as chartered — the audit subagent
+(keybo-audit-evaluation D1) verified /models/ is gitignored at the repo root, so
+the chartered path would have silently excluded the vendored surfaces from git
+(the exact provenance hole the audit flagged: every flagship number currently
+lives in un-versioned external workspaces). Same content, versioned path.
+Community tool data (o2/v1 english corpora, genkey keybo corpus, keymeow-format
+keybo corpus) vendored gzipped under data/community/vendored/ with provenance
+notes. KAN-1 upgraded per the audits: acceptance now includes "fresh clone +
+`keybo analyze` reproduces the P17 flagship board" (closes audit finding D1 for
+the flagship numbers; the search scripts remain external until a later charter).
