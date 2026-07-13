@@ -4182,3 +4182,15 @@ PROMOTION of K31 over the 30-key P10-w0.5 as THE deliverable is a user decision
 (F5M-LR) surface retrain is DEFERRED (gauge reported as n/a on K31 boards until
 retrained). All existing 30-key results remain valid history; K30 models keep
 loading (no version bump, per gate A).
+
+### K31 gates A-C PASSED (2026-07-13)
+A (3cb1009): golden regression — all 30-key feature values bit-identical after the
+  ROW_STAGGERED_31 extension (quote slot (6,2) appended; pinky|x|in{5,6}, lateral
+  |x|in{1,6}, adjacent += {6,4}); full suite green; no FEATURE_VERSION bump needed.
+B (runs/k31_extract.log): BUF2-BOTH re-extraction with 31-char maps (qwerty+',
+  dvorak+-, azerty+ù, qwertz+ä): v5 EXACTLY reproduced on the non-quote domain
+  (2111 rows, 29.31M occ, 0 delta — quote chars were off-layout window-DROPS before,
+  so plain windows are untouched) + 91 quote-slot rows / 220k occurrences added.
+  bistrokes31_v1.tsv + tristrokes31_cond_v1.tsv.
+C (97e7588): 1-skip31 derived from trigrams; non-quote spearman 0.9993 vs existing.
+Stage D (LOLO gate + retrain) running.
