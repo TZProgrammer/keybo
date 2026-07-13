@@ -13,20 +13,22 @@ data; no retrain needed). Objective coverage *rises* ~0.75pp vs the classic char
 
 With the charset finally matched, the claim the project can make is:
 
-**Our layouts hold a ~1.0–1.4pp measured-typing-speed advantage over semimak and
+**Our layouts hold a ~0.9–1.3pp measured-typing-speed advantage over semimak and
 graphite, at community scores between dvorak and the community frontier — but
 semimak and graphite remain the better pure community-metric layouts.**
 
 | gauge | semimak | graphite | **P16-balance** | **P16-speed** |
 |---|---|---|---|---|
-| speed vs qwerty30M (wpm 90) | +2.79% | +2.61% | +3.75% | **+3.97%** |
+| speed: typing time saved vs qwerty30M (wpm 90) | +2.55% | +2.38% | +3.48% | **+3.69%** |
 | genkey Score (↓) | **27.7** | 29.5 | 30.8 | 43.3* |
 | oxeylyzer-1 (repl, ↑) | 0.365 | **0.460** | 0.415 | 0.294 |
 | oxeylyzer-2 (repl, ↑) | **−190.4B** | −199.1B | −234.1B | −312.9B |
 | keymeow sfb / lsb | **0.89** / 1.27 | 1.23 / 0.57 | 1.29 / 1.27 | 2.44 / 0.89 |
 
-*speed numbers restated from the pick's regret table (speed_regret over the pool
-best, qwerty30M reference). P16-speed's community numbers are unconstrained.
+*P16-speed's community numbers are unconstrained. (Erratum 2026-07-13: this
+column originally showed values ~0.2pp higher that do not reproduce from
+runs/p16_coopt.json; corrected to the canonical convention, 100×(t_qwerty −
+t_layout)/t_qwerty on the C30M surface. Orderings and gaps unaffected.)
 
 The earlier K31 result that appeared to beat semimak on oxeylyzer-2 came from a
 dof-convention difference (what sits pinned on the quote slot), which this frame
