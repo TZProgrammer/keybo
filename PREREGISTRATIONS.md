@@ -3905,3 +3905,38 @@ exact community gauge for future pick rules. Community-tool verdict on the
 campaign is unchanged and now triple-confirmed: our layouts trade community-metric
 score for measured-time optimality; P13STAB-win is our best community-facing
 member on ALL THREE tools simultaneously.
+
+### OXL2-GAUGE addendum (2026-07-13): the LSB-vs-stretches question adjudicated from
+### source + oxeylyzer v1 run; v1 gauge added; winner CONFIRMED better on both versions
+Q (user): oxeylyzer web shows Lsb 2.674% (P10-w0.5) vs 1.251% (winner), yet the
+stretches number favors P10 (39.5 vs 42.7) — contradiction?
+A: NO — three different metrics, all now verified from source:
+(1) "Lsb" (the web UI stat / v1 "Lsbs") = a COUNT metric: corpus share of
+    middle<->index same-hand pairs with |dx| >= 1.5u (v1 fast_layout.rs:650-660).
+    The winner IS better: our keymeow lsb 0.60 vs 0.09, v1 Lsbs 1.325% vs 0.708%.
+    (The user's web numbers come from a different corpus/board config; same
+    ordering.)
+(2) o2 "stretches" = a WEIGHTED-DISTANCE metric over ALL same-hand diff-finger
+    pairs: sum of corpus-weighted stretch = dist + x_overlap - 1.35*finger_gap
+    over pairs where that exceeds 0 (o2 cached_layout.rs:160-181). It counts
+    pinky/ring geometry that the LSB count ignores. The winner's r-on-top-pinky
+    (ey/ye/rs/cl pairs; repl `stretches` listing banked) costs stretch-distance
+    while carrying near-zero classic-LSB mass. Both statements are true:
+    winner has FEWER lateral index stretches, MORE total stretch-distance.
+(3) v1 "Stretches" is yet another formula (score-space, sign-flipped display:
+    -15.97% P10 vs -12.97% winner — LESS negative = better, so v1 says the
+    WINNER is better on ITS stretches too; the o2 disagreement on this one axis
+    is an o2-specific weighting).
+V1 vs O2 (differences, from source + configs): v1 = richer metric set (scissors,
+LSBs, pinky-ring, alternates-sfs, bad-redirects split, finger speed) with weights
+incl lateral_penalty/pinky_ring; o2 = early-development rewrite — collapsed metric
+set (sfbs/sfs/stretches + trigram categories), trigram weights parsed but UNUSED
+in scoring (README admits), the stretch formula above replacing scissors+LSB+
+pinky-ring as one blended distance term, libdof board geometry, new corpus format.
+V1 VERDICT ON THE FINALISTS (shai corpus, tool defaults; raw output banked in
+runs/oxl2_gauge.txt): winner beats P10-w0.5 on v1 Score 0.367 vs 0.333 and on
+sfb (1.051 vs 1.153), finger speed (-2.60 vs -2.88), stretches, LSBs (0.708 vs
+1.325), pinky-ring, total redirects (4.84 vs 5.43), bad sfbs, total alternates;
+P10-w0.5 keeps rolls (42.2 vs 41.6) and scissors (0.140 vs 0.164). FOUR community
+tools (genkey, keymeow, oxeylyzer-1, oxeylyzer-2) now agree: the P13STAB-winner
+is our best community-facing layout; P10-w0.5 remains the measured-speed pick.
