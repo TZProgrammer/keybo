@@ -3940,3 +3940,65 @@ sfb (1.051 vs 1.153), finger speed (-2.60 vs -2.88), stretches, LSBs (0.708 vs
 P10-w0.5 keeps rolls (42.2 vs 41.6) and scissors (0.140 vs 0.164). FOUR community
 tools (genkey, keymeow, oxeylyzer-1, oxeylyzer-2) now agree: the P13STAB-winner
 is our best community-facing layout; P10-w0.5 remains the measured-speed pick.
+
+## FEAT-CT — community-tool geometry as model features (registered 2026-07-13, BEFORE results)
+Audit of genkey/keymeow/oxeylyzer-1/oxeylyzer-2 vs our 20-feature schema found four
+per-bigram signals the model CANNOT currently express (all others are present, tree-
+derivable, or layout-level aggregates that belong in the objective, not the model):
+  1. stretch  — o2's continuous stretch residual max(0, dist + x_overlap - 1.35*finger_gap)
+     (cached_layout.rs:160-181 port; box-collapse to key centers, flen y-adjust,
+     signed-dx crossing rule) — the user's direct ask.
+  2. x_overlap — the splay/crossing term alone (max(0, xo(f1,f2) - 1.3*sdx + dy/3)).
+  3. finger_gap — |finger_index1 - finger_index2| in {0..3}; today only gap==1
+     (adjacent) is visible; gap 2 vs 3 indistinguishable.
+  4. pinky_ring — same-hand pinky<->ring flag (v1 metric; not exactly derivable since
+     the first key's finger is not a feature).
+ARMS (bigram, bistrokes_v5, production recipe: LOGRAT + practice k=100 x2 + layout
+weights + current _DEFAULT_PARAMS incl REG-LOLO): ANCHOR / +STR / +XO(x_overlap,
+finger_gap) / +PR / +ALL4. 4 LOLO folds x 2 seeds.
+DECISION RULE (same standard as FEAT-LR a524792): an arm QUALIFIES iff wmae_rel
+< -1% AND umae_rel <= +2% AND dec3_rel <= +2% AND min decisive-pair tau AND min
+all-pair tau not below ANCHOR's. Winner = qualified arm with lowest wmae.
+CONSEQUENCES: no qualifier => feature set stands, negative result recorded. A
+qualifier => adoption chain: schema edit + FEATURE_VERSION bump + production
+retrain (3 seeds) + argmax stability check (P10-family regret within 0.2% on the
+new surface); argmax break => surface the tension to the user, no silent pivot.
+Secondary (registered as exploratory): same +STR columns on the trigram bg1_/bg2_
+blocks (trifeat harness conventions), same rule — reported, adoption only with the
+bigram result's consistency.
+
+## P14 — five-gauge co-optimization: speed + genkey + oxey1 + oxey2 + WFD
+## (registered 2026-07-13, BEFORE results)
+GOAL (user): search for a layout better than BOTH P10-w0.5 and P13STAB-win when the
+community tools are IN the objective rather than post-hoc gauges.
+IN-LOOP TERMS (all frequency x position-table, built once):
+  speed = T3c on the regularized surface (bigram_reg_seed* + trigram_cond_lograt_join*,
+  wpm 90) — weight 1 always. genkey = exact GenkeyScorer port. oxey2 = port of o2
+  score_cache = weighted_bigrams + stretch_bigrams (analyzer-config.toml weights:
+  sfbs -7 sfs -1 stretches -3, finger weights 77/32/24/21; o2 english.json corpus
+  restricted to our charset + pinned apostrophe). oxey1 = port of v1
+  score_with_precision (trigram top-1000 term + fspeed + pinky_ring + stretch;
+  live config.toml weights; v1 english.json; usage term inert at penalty=0).
+  wfd = o2 weighted_bigrams total alone (pure finger-weighted same-finger travel).
+PARITY GATES (must pass BEFORE any search uses a port; else that gauge drops to
+post-hoc-exact-only, recorded): oxey2 port vs repl `rank`/`analyze` on >= 8 layouts
+(incl qwerty, dvorak, colemak, semimak, graphite, our finalists): Spearman rank
+corr = 1.0 on the set and per-layout ratio spread <= 5% after one global scale.
+oxey1 port vs repl analyze Score on the same set, same gate. wfd is implied by
+oxey2 score + stretches parity (score - stretches = wfd), recorded not re-gated.
+SEARCH: SA 10x12k + exhaustive 2-opt (p13 recipe), fit = speed + sum_g w_g * UNIT_g
+* loss_g with UNIT_g = (speed_q/100)/|loss_g(qwerty)|; loss form: genkey=fitness,
+oxey1=-score, oxey2=-score, wfd=-total. ARMS (w over genkey/oxey1/oxey2/wfd):
+E025=all 0.25, E05=all 0.5, E10=all 1.0, GK1=(1,0.25,0.25,0.25), OX1=(0.25,1,1,0.5).
+RNGs {888101, 888102, 888103} => 15 searches.
+PICK RULE: pool = all searched + {P10-w0.5, P13STAB-win, P11-w0.5, P10.5} + qwerty
+ref. Speed gate: 100*(fit/best_fit - 1) <= 0.5 (as P13). Community regrets are
+qwerty-gap-normalized (sign-safe): r_g = 100*(loss_g - min_loss_g)/
+(loss_g(qwerty) - min_loss_g). Pick = min over gated pool of max(r_genkey, r_oxey1,
+r_oxey2, r_wfd, r_speedgap) where r_speedgap uses the same qwerty-gap form.
+CONSEQUENCES (registered): the pick is documented as a P14 candidate; it earns a
+sibling doc iff it beats P13STAB-win on >= 3 of the 4 exact community tools (genkey
+binary-parity port, keymeow kmrun, oxeylyzer-1 repl, oxeylyzer-2 repl) at speed
+regret <= 0.5%; it is flagged for possible PROMOTION discussion (user-gated, never
+autonomous) iff it additionally matches or beats P10-w0.5's speed within 0.1%.
+Otherwise: negative result, both incumbents stand.
