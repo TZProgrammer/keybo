@@ -4256,3 +4256,31 @@ are now exact same-charset comparisons. If the pick beats BOTH semimak AND
 graphite on >= 3 of the 4 community tools while winning speed => flag for the
 user as the first true apples-to-apples community claim. Deliverable promotion
 remains user-gated.
+
+### P16/K30M OUTCOME (2026-07-13, runs/p16_coopt.json)
+FIRST TRUE APPLES-TO-APPLES: semimak + graphite as first-class rows on every gauge
+including our speed surface. Headline rows (C30M charset, K31-trained models):
+  semimak:  speed +1.18% BEHIND the frontier; genkey 27.7 (still king), o2-gap 0
+  graphite: speed +1.36% behind; balanced community profile
+  P10-w0.5* (;->' embedding): speed +0.07% (frontier), maxreg 12.9%
+PICK (five-gauge rule): E10-r888303 = frlwg'uyoksntdc.ieahvxmpb,-jqz (maxreg 6.38%)
+   f r l w g   ' u y o k
+   s n t d c   . i e a h
+   v x m p b   , - j q z
+  vs semimak EXACT tools: genkey 30.8 vs 27.7 (semimak), v1 0.415 vs 0.365 (PICK),
+  o2 -234.1B vs -190.4B (semimak), keymeow sfb 1.29 vs 0.89 (semimak), lsb 1.27 ~
+  1.27 (tie-ish) => pick wins oxey1 + speed (+0.96pp!), semimak wins genkey/o2/
+  keymeow. The registered "beats BOTH on >=3/4 tools" flag does NOT fire.
+  vs graphite: pick wins v1 (0.415 vs 0.460 — NO, graphite wins v1), wins o2? NO
+  (-234.1 vs -199.1 graphite). Graphite beats the pick on v1+o2+keymeow; pick wins
+  genkey narrowly + speed +1.14pp.
+READING: with the charset finally matched, the honest statement is: our layouts
+hold a ~1.0-1.4pp measured-speed advantage over semimak/graphite at community
+scores that sit BETWEEN dvorak and the community frontier — but semimak/graphite
+remain better pure community-metric layouts. The K31/P15 apparent "beat semimak"
+on o2 came from the pinned-';' dof convention difference, now eliminated.
+SPD arm: koyu,vdmnlheiapcstrfqj-.'gwbxz — speed frontier on C30M (+0.07pp over
+P10*), naei-family right-hand vowels RESTORED (heia home-right): the K31 left-
+vowel flip was an artifact of the extra key, not a stable optimum.
+CONSEQUENCE: no community-claim flag. C30M candidates documented; deliverable
+decision (stay K30-classic vs adopt C30M charset) presented to the user.
