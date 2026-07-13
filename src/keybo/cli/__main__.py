@@ -7,6 +7,7 @@ import sys
 from collections.abc import Sequence
 
 from keybo.cli import (
+    analyze,
     effect_curves,
     fetch_data,
     inspect,
@@ -31,6 +32,7 @@ _COMMANDS = {
     "validate": validate,
     "optimize": optimize,
     "score": score,
+    "analyze": analyze,
     "inspect": inspect,
     "shap-report": shap_report,
     "effect-curves": effect_curves,

@@ -4451,3 +4451,25 @@ keybo corpus) vendored gzipped under data/community/vendored/ with provenance
 notes. KAN-1 upgraded per the audits: acceptance now includes "fresh clone +
 `keybo analyze` reproduces the P17 flagship board" (closes audit finding D1 for
 the flagship numbers; the search scripts remain external until a later charter).
+
+### KAN-1 OUTCOME (2026-07-13)
+BUILT AND ALL GATES PASS. `keybo analyze <layouts...> [--ref R] [--target-wpm W]
+[--attribution] [--json]` ships in the package (src/keybo/analysis/{community,
+kmstats,timecard}.py + cli/analyze.py).
+GATES: G1 genkey EXACT (8 golden layouts, float-identical to the binary-gated
+campaign values). G2 oxey1/oxey2/wfd INTEGER-EXACT (same 8). G3 native
+keymeow-class stats vs kmrun on the identical corpus: worst |diff| 0.0004pp
+(bar 0.02pp) across 5 layouts x 11 stats — required using the vendored keymeow
+corpus on both sides; the first attempt compared against kmrun-on-shai-iweb and
+failed at 0.38pp, which is the CORPUS DELTA, not a port error (recorded: the
+corpus is a first-class input, exactly KAN-1's thesis). G4 time surface
+reproduces the P17 board at rel err <=7e-15 (bar 1e-6); `saved%` matches the
+flagship doc (+3.53/+3.51/+2.55/+2.38 for c30m/lsb/semimak/graphite vs
+qwerty30M). Fast test suite: 231 passed, 0 failed (analyzer adds 26).
+Goldens frozen in tests/analysis/golden_kan1.json from runs/p17_coopt.json +
+kmrun-on-vendored-corpus. Vendored: data/models/k31/*.json.gz (+.meta.json.gz,
+6 surfaces) and data/community/vendored/*.json.gz (4 tool corpora) — a fresh
+clone reproduces the flagship board with one command (audit finding D1 closed
+for flagship numbers). docs/analyzer.md documents scope + honest limits (model
+predictions, no human confirmation yet; 30-key ANSI only; tool scores live on
+native corpora by design).
