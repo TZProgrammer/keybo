@@ -4372,3 +4372,33 @@ SUPERSEDE BAR: P17 pick replaces P16-balance as the flagship C30M candidate iff
   better on >=3 of 4 pick axes. Ties/near-ties -> P16-balance stands (stability
   preferred). Both documented regardless. VERIFICATION: winner + runner-up get
   dof + o2/v1 repl runs and kmrun rows. Deliverable promotion remains user-gated.
+
+### P17 OUTCOME (2026-07-13, runs/p17_coopt.json)
+The direct-min-max campaign WORKED — the hypothesis (weighted-sum search reaches
+only convex-supported points; the min-max optimum sits between them) is confirmed
+on this pool. 56 searches + top-10 polish, 376s total.
+PICK: POL-MMX-r888404 = fyu,.vgdnlhieaocstrmkj'q-bwpxz (polished equal-weight
+   f y u , .   v g d n l
+   h i e a o   c s t r m
+   k j ' q -   b w p x z
+Chebyshev arm). Reformed max-regret 5.42% vs P16-balance 9.20% on the SAME union
+pool (P16-balance's 6.38% was against the smaller P16 pool; the P17 pool's better
+mins raise everyone's regrets — the honest comparison is same-pool).
+SUPERSEDE BAR: (a) d_maxreg 3.79pp >= 0.5pp PASS; (b) 3/4 axis wins (speed,
+oxey1, oxey2; concedes genkey 31.27 vs 30.77) PASS => P17-pick REPLACES
+P16-balance as the flagship C30M candidate (registered consequence).
+repl: o2 -212.2B (was -234.1B), v1 0.428 (was 0.415) — best keybo values ever,
+and the o2 gap to graphite (-199.1B) narrows to 6.6%. wfd 1515.9B (report row)
+also better than P16-balance's 1531.0B — dropping wfd as a pick axis did not
+sacrifice it. keymeow: sfb 1.19 (better than graphite 1.23), lsb 1.84 (worse; the
+one axis it concedes to the field). RUNNER-UP POL-CHEB-r888514 =
+pyuo,vgdnlhiea.cstrmkj-z'fwbxq (5.70%) is the keymeow-friendly sibling (lsb 0.77)
+— documented as alternate.
+DIAGNOSTICS: R7 win share 32.8% (pick is ALSO the random-preference winner —
+worst-axis and consensus camps AGREE for the first time); Copeland 67.0 (top).
+Speed-budget curve: tightening the cap to 0.1% costs 2.8pp of balance
+(OX1-r888303 8.25%); loosening to 1.0% buys nothing (5.42% already optimal).
+Structure: the pick is the E10-r888301 basin (fyu,. top, hieao home-left,
+cstrm home-right) — the SEL-1 consensus champion's family, now polished to
+dominate on the min-max criterion too. MMX raw arms did NOT find it; the
+polish stage (exhaustive 2-opt+3-cycle on pure min-max) was decisive.
