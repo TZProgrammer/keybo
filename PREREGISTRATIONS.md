@@ -4284,3 +4284,33 @@ P10*), naei-family right-hand vowels RESTORED (heia home-right): the K31 left-
 vowel flip was an artifact of the extra key, not a stable optimum.
 CONSEQUENCE: no community-claim flag. C30M candidates documented; deliverable
 decision (stay K30-classic vs adopt C30M charset) presented to the user.
+
+## SEL-1 — selection-rule methodology study (registered 2026-07-13, BEFORE results)
+QUESTION (user): is min-max worst-axis the right way to pick "the balanced one"?
+SCOPE: pure post-hoc ANALYSIS of the existing P16/C30M pool (no new searches). The
+REGISTERED P16 pick stands regardless; output = a recommendation + robustness
+evidence for FUTURE pick rules; any rule change applies from the next search
+onward (no re-crowning without user decision — goalpost discipline).
+RULES COMPARED (all under the identity speed cap <= 0.5%):
+  R1 min-max, qwerty-gap normalization (current registered rule)
+  R2 min-max, pool-range normalization
+  R3 min-max, rank normalization (normalization-free)
+  R4 mean regret (L1 scalarization)
+  R5 L2 distance-to-ideal (compromise programming; R1 is the L-inf member)
+  R6 Borda (mean per-gauge rank)
+  R7 random-preference win rate: 20k Dirichlet weight draws over the 5 gauges,
+     weighted-sum winner counted per draw — "probability a community member with
+     unknown tool preference prefers this layout" (the most decision-theoretic
+     reading of 'admissible to the community')
+  R8 Copeland pairwise majority (A beats B if better on >=3 of 5 gauges)
+  R9 fastest-admissible: maximize speed s.t. worst COMMUNITY axis <= T,
+     T in {5, 7.5, 10, 15}% — the speed-first dual of min-max
+ROBUSTNESS BATTERY (per rule): (a) leave-one-gauge-out x5, (b) jackknife each pool
+row, (c) drop-wfd variant (wfd is a component of oxey2 — known redundancy that
+gives the travel cluster extra votes), (d) normalization swaps where applicable.
+Stability score = fraction of perturbations preserving the pick.
+DECISION GUIDANCE (registered before seeing results): if multiple rules + the
+robustness battery agree with R1's pick, min-max stands vindicated; if rank-based
+or random-preference rules disagree AND are more stable, we present the
+disagreement + recommend the more robust rule for P17+; the redundancy finding
+(c) informs whether wfd stays a pick axis.
