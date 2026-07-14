@@ -4560,3 +4560,46 @@ gain most (-31%) while qwerty is where the affine gains most — fold-heterogene
 CONSEQUENCE: banded-specialist arm NOT registered as a candidate (rules b+c).
 The per-band affine finding is handed to the calibration phase owner. wpm stays
 a model feature. No 3-seed confirmation spend (nothing qualified to confirm).
+
+## BAND-2 — WPM-conditioned calibration: confirm, choose the family, find the
+## mechanism, measure the product impact (registered 2026-07-14, BEFORE results)
+FOLLOW-ON from BAND-1 (user: "take this further — investigate thoroughly").
+MOTIVATION: BAND-1's diagnostic (per-band affine on the global model) beat every
+specialist scheme (-10.5% wlogmae, slopes -> ~1.0, tau up) at seed 0. And the
+TRIGRAM baseline is miscalibrated AT THE SERVE BAND (80-100 slopes 1.12 qwerty /
+1.28 dvorak folds) — the flagship time-saved%% is computed on a compressed scale,
+so calibration has direct product stakes, not just hygiene.
+STAGES + DECISION RULES (registered):
+ A-CONFIRM: 3 seeds x 4 LOLO folds x BOTH campaign surfaces (bigram bistrokes_v5
+   d6cb4c81…, conditioned-trigram tristrokes_cond_v3 1b5d7abd…, production
+   train_params from the baseline artifact). C-BAND(ms) must beat G pooled
+   wlogmae beyond G's 3-seed p95 spread on each surface, else record "BAND-1 was
+   seed noise" for that surface and stop there.
+ A-FAMILY (same runs): cross-fitted correction families, fit per seed on
+   train-fold cells, applied to held-out cells, ensembled as mean-of-calibrated
+   (matching the calibration-phase adjudication):
+     C-BAND   per-20-band affine, ms (BAND-1 winner; 10 params)
+     C-SPLINE per-band (a,b) linearly interpolated in wpm (continuous; 10)
+     C-LIN    a(w)=a0+a1 w, b(w)=b0+b1 w, single WLS (smooth; 4)
+     C-LOG    per-band affine in log-ms (multiplicative/power; 10)
+     C-ISO    per-band isotonic pred->obs (nonparametric; cross-fit polices)
+   WINNER = best pooled wlogmae (seed-ensembled) subject to GUARDS: tau_heldout
+   not degraded vs G; post-correction per-band slopes all in [0.90, 1.15];
+   bottom-3 freq-decile MAE not worse than G by >2% (rarity guard). Ties inside
+   G's seed spread -> FEWEST PARAMETERS wins.
+ A-MECHANISM (bigram): per (band x class) slopes of G, classes = same-finger /
+   same-hand-diff-finger / cross-hand. If within the serve band the max
+   between-class slope gap > 0.15, register "class-structured — explicit
+   wpm x class features (pace-matrix H2) indicated beyond affine"; else
+   "amplitude-only — affine suffices."
+ B-IMPACT (winner family only): replicate on the K31 production frame
+   (bistrokes31_v1 + tristrokes31_cond_v1, ROW_STAGGERED_31 geometry-trained
+   models as in k31_train.py) and recompute the flagship board's time-saved%%
+   with serve-band-calibrated T2/Tcond tables (keybo.analysis.timecard).
+   Reported as the CALIBRATED headline estimate with cross-fit spread;
+   messaging/docs changes from it remain USER-GATED. (Rank order at fixed serve
+   wpm is provably affine-invariant per band — the argmax layout cannot change;
+   only magnitudes can.)
+ROUTING: results + winning coefficients hand to the Task-8/codex calibration
+phase (which owns productionizing); this campaign edits no frozen files; driver
+agent-artifacts/experiments/band2_calibration.py; niced, n_jobs 24.
