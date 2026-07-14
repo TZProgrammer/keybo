@@ -56,7 +56,8 @@ class ShapReport:
     """All arrays a report consumer needs, JSON-serializable via :meth:`to_dict`."""
 
     feature_names: list[str]
-    base_value: float  # expected model output (bias term)
+    base_value: float  # expected model output (bias term), in `unit`
+    unit: str  # "ms" for MS-space models; "log(ms*wpm/12000)" for LOGRAT (raw output)
     mean_abs: np.ndarray  # (F,) global importance
     mean_signed: np.ndarray  # (F,) direction: + pushes predicted time up
     shap_values: np.ndarray  # (N, F) per-row contributions (bias column stripped)
@@ -84,21 +85,26 @@ class ShapReport:
     def to_dict(self) -> dict:
         share = self.importance_share()
         return {
-            "base_value_ms": self.base_value,
+            "unit": self.unit,
+            "base_value": self.base_value,
             "ranking": [
                 {
                     "feature": n,
-                    "mean_abs_shap_ms": a,
-                    "mean_signed_shap_ms": s,
+                    "mean_abs_shap": a,
+                    "mean_signed_shap": s,
                     "importance_share_pct": share[n],
+                    # a ratio to the bias is only meaningful in an affine unit (ms); in
+                    # LOGRAT the bias is a log near 0 and the ratio would be noise.
                     "mean_abs_shap_pct_of_base": (
-                        100.0 * a / self.base_value if self.base_value else None
+                        100.0 * a / self.base_value
+                        if self.unit == "ms" and self.base_value
+                        else None
                     ),
                 }
                 for n, a, s in self.ranking()
             ],
             "interaction_pairs": [
-                {"a": a, "b": b, "mean_abs_interaction_ms": v} for a, b, v in self.interaction_pairs
+                {"a": a, "b": b, "mean_abs_interaction": v} for a, b, v in self.interaction_pairs
             ],
         }
 
@@ -116,6 +122,9 @@ def compute_shap(
     """
     booster = model._regressor.get_booster()
     names = list(model.metadata.feature_names)
+    # SHAP explains the RAW model output: milliseconds for MS-space models, the log-ratio
+    # target for LOGRAT (labelling those "ms" was audit finding F2 — a 0.04 "ms" base).
+    unit = "ms" if model.target_space == "MS" else "log(ms*wpm/12000)"
     dmat = xgb.DMatrix(X)
 
     contribs = booster.predict(dmat, pred_contribs=True)
@@ -147,6 +156,7 @@ def compute_shap(
     return ShapReport(
         feature_names=names,
         base_value=base_value,
+        unit=unit,
         mean_abs=np.abs(shap_values).mean(axis=0),
         mean_signed=shap_values.mean(axis=0),
         shap_values=shap_values,
@@ -196,8 +206,8 @@ def render_report(report: ShapReport, out_prefix: str, top_k: int = 12) -> list[
             color="#40403e",
         )
     ax.set_yticks(ypos, names, fontsize=9)
-    ax.set_xlabel("mean |SHAP| (ms of predicted time; % = share of total importance)")
-    ax.set_title(f"Global feature importance — base value {report.base_value:.1f} ms")
+    ax.set_xlabel(f"mean |SHAP| ({report.unit}; % = share of total importance)")
+    ax.set_title(f"Global feature importance — base value {report.base_value:.3g} {report.unit}")
     ax.spines[["top", "right"]].set_visible(False)
     ax.grid(axis="x", color="#e7e6e3", linewidth=0.8)
     ax.set_axisbelow(True)
@@ -221,7 +231,7 @@ def render_report(report: ShapReport, out_prefix: str, top_k: int = 12) -> list[
         ax.scatter(sv, y, s=5, c=_diverging_colors(fv), linewidths=0, alpha=0.8, rasterized=True)
     ax.axvline(0, color=_GRAY, linewidth=1)
     ax.set_yticks(np.arange(k)[::-1], names[:k], fontsize=9)
-    ax.set_xlabel("SHAP value (ms; color = feature value, blue low → red high)")
+    ax.set_xlabel(f"SHAP value ({report.unit}; color = feature value, blue low → red high)")
     ax.set_title("SHAP distribution per feature")
     ax.spines[["top", "right", "left"]].set_visible(False)
     fig.tight_layout()
@@ -269,7 +279,7 @@ def render_report(report: ShapReport, out_prefix: str, top_k: int = 12) -> list[
     for j in range(k, nrows * ncols):
         axes[j // ncols][j % ncols].axis("off")
     fig.suptitle("SHAP dependence (red = binned median response)", y=1.0)
-    fig.supylabel("SHAP value (ms)")
+    fig.supylabel(f"SHAP value ({report.unit})")
     fig.tight_layout()
     path = f"{out_prefix}_dependence.png"
     fig.savefig(path, dpi=150)
@@ -285,7 +295,7 @@ def render_report(report: ShapReport, out_prefix: str, top_k: int = 12) -> list[
         ypos = np.arange(len(pairs))[::-1]
         ax.barh(ypos, vals, height=0.62, color=_BLUE, edgecolor="none")
         ax.set_yticks(ypos, labels, fontsize=9)
-        ax.set_xlabel("mean |SHAP interaction| (ms)")
+        ax.set_xlabel(f"mean |SHAP interaction| ({report.unit})")
         ax.set_title("Top feature interactions")
         ax.spines[["top", "right"]].set_visible(False)
         ax.grid(axis="x", color="#e7e6e3", linewidth=0.8)

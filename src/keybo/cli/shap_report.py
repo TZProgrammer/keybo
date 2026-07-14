@@ -111,12 +111,12 @@ def run(args: argparse.Namespace) -> int:
     paths.append(json_path)
 
     share = report.importance_share()
-    print(f"base value: {report.base_value:.1f} ms")
-    print("top features (mean |SHAP| ms, share of importance, signed mean):")
+    print(f"base value: {report.base_value:.3g} {report.unit}")
+    print(f"top features (mean |SHAP| in {report.unit}, share of importance, signed mean):")
     for name, mean_abs, mean_signed in report.ranking()[: args.top_k]:
         print(f"  {name:24s} {mean_abs:8.2f}  {share[name]:5.1f}%  {mean_signed:+8.2f}")
     if report.interaction_pairs:
-        print("top interactions (mean |interaction| ms):")
+        print(f"top interactions (mean |interaction| in {report.unit}):")
         for a, b, v in report.interaction_pairs[:5]:
             print(f"  {a} x {b}: {v:.2f}")
     for p in paths:

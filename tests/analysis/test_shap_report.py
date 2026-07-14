@@ -17,7 +17,7 @@ from keybo.models.base import ModelMetadata
 from keybo.models.xgboost_model import XGBoostTypingModel
 
 
-def _make_model(rng_seed=0, n=400):
+def _make_model(rng_seed=0, n=400, target_space="MS"):
     """Train a tiny model where `distance` (plus noise) is the only real signal."""
     rng = np.random.default_rng(rng_seed)
     names = BIGRAM_FEATURE_NAMES
@@ -29,6 +29,7 @@ def _make_model(rng_seed=0, n=400):
         feature_names=list(names),
         wpm_range=(0, 300),
         ngram="bigram",
+        extra={"training": {"target_space": target_space}},
     )
     model = XGBoostTypingModel(meta, n_estimators=50, max_depth=3)
     model.fit(X, y)
@@ -94,3 +95,27 @@ def test_cli_grid_end_to_end(tmp_path):
     assert (tmp_path / "shap_ranking.png").exists()
     assert (tmp_path / "shap_beeswarm.png").exists()
     assert (tmp_path / "shap_dependence.png").exists()
+
+
+def test_lograt_model_reports_log_unit():
+    """LOGRAT models must NOT label SHAP values as ms (audit F2: 0.039 'ms' base value).
+
+    The raw model output SHAP explains is the log-ratio target; the unit string and the
+    to_dict keys must say so, and the pct-of-base ratio (meaningless off an ms scale)
+    must be suppressed.
+    """
+    model, X = _make_model(target_space="LOGRAT")
+    report = compute_shap(model, X)
+    assert report.unit == "log(ms*wpm/12000)"
+    d = report.to_dict()
+    assert d["unit"] == report.unit
+    assert "base_value" in d and "base_value_ms" not in d
+    assert all(r["mean_abs_shap_pct_of_base"] is None for r in d["ranking"])
+
+
+def test_ms_model_reports_ms_unit():
+    model, X = _make_model(target_space="MS")
+    report = compute_shap(model, X)
+    assert report.unit == "ms"
+    d = report.to_dict()
+    assert any(r["mean_abs_shap_pct_of_base"] is not None for r in d["ranking"])
