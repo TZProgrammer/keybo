@@ -11,9 +11,17 @@ The report ranks n-grams by |impact| and decomposes the total objective delta in
 top movers, so "why is B faster than A?" gets a concrete, per-n-gram answer.
 
 Times come from the production tables: T2 (bigram position-pair table, calibration
-applied from the model sidecar when present) for bigrams, and T3c = T2 + Tcond
-(conditioned-trigram increment) for trigrams — the same construction the optimizer
-scores with, so the reported total matches the objective's A/B delta exactly.
+applied from the model sidecar when present) for bigrams. Trigram time depends on what
+the supplied trigram model predicts — its FRAME — and nothing in the model artifact
+records that, so the caller must say (``trigram_frame``):
+
+* ``"conditioned"`` — the model predicts the trigram INCREMENT t3 - t2 (the campaign's
+  ``trigram_cond*`` models, trained on conditioned tristroke tables): t = T2 + Tcond,
+  the production-objective construction.
+* ``"absolute"`` — the model predicts the full trigram time (what ``keybo train
+  --ngram trigram`` fits on raw tristroke TSVs): t = T3 alone. Adding T2 on top of an
+  absolute model double-counts the first transition (measured 1.48x on the shipped
+  models — audit finding F3), which is why the frame is explicit and unguessed.
 """
 
 from __future__ import annotations
@@ -121,13 +129,14 @@ def diff_layouts(
     bigram_freqs: dict[str, int] | None = None,
     target_wpm: float = 90.0,
     geometry: Geometry = ROW_STAGGERED_30,
+    trigram_frame: str | None = None,
 ) -> LayoutDiff:
     """Per-n-gram impact of switching layout A -> B.
 
     ``freqs`` is the corpus table of the n-grams to diff (bigrams or trigrams — the
-    length of its keys decides). Trigram diffs additionally need ``trigram_models``
-    (the conditioned increment) and ``bigram_freqs`` (to build T2); the trigram time is
-    T3c = T2[bg1] + Tcond, matching the production objective.
+    length of its keys decides). Trigram diffs additionally need ``trigram_models``,
+    ``bigram_freqs`` (to build T2) and an explicit ``trigram_frame`` — see the module
+    docstring; a wrong frame mis-times every trigram, so there is no default.
 
     Charsets may differ (e.g. semimak carries an apostrophe where qwerty has a
     semicolon): the diff runs on the COMMON-subset corpus — n-grams typeable on both
@@ -150,6 +159,12 @@ def diff_layouts(
     if n == 3:
         if not trigram_models:
             raise ValueError("trigram diff needs trigram_models")
+        if trigram_frame not in ("conditioned", "absolute"):
+            raise ValueError(
+                f"trigram_frame must be 'conditioned' or 'absolute', got {trigram_frame!r} "
+                "(conditioned: model predicts t3-t2, time = T2 + model; absolute: model "
+                "predicts full t3, time = model alone)"
+            )
         vec = np.vstack(
             [
                 trigram_features_from_positions(geometry, (a, b, c), wpm=target_wpm)
@@ -174,7 +189,10 @@ def diff_layouts(
         ps = [pos_map[c] for c in ngram]
         if n == 2:
             return float(T2[pidx[ps[0]], pidx[ps[1]]])
-        return float(T2[pidx[ps[0]], pidx[ps[1]]] + Tcond[pidx[ps[0]], pidx[ps[1]], pidx[ps[2]]])
+        t3 = float(Tcond[pidx[ps[0]], pidx[ps[1]], pidx[ps[2]]])
+        if trigram_frame == "conditioned":
+            t3 += float(T2[pidx[ps[0]], pidx[ps[1]]])
+        return t3
 
     impacts: list[NgramImpact] = []
     total_a = total_b = 0.0

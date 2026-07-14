@@ -38,6 +38,14 @@ def add_arguments(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--bigrams", required=True, help="Corpus bigram table (freq join + T2)")
     parser.add_argument("--trigrams", help="Corpus trigram table (for --ngrams trigram)")
     parser.add_argument(
+        "--trigram-frame",
+        choices=["conditioned", "absolute"],
+        help="What the trigram model predicts: 'conditioned' = the t3-t2 increment "
+        "(campaign trigram_cond* models; time = T2 + model), 'absolute' = full trigram "
+        "time (keybo train on raw tristrokes; time = model alone). Required for "
+        "--ngrams trigram — the wrong frame double-counts or omits the first transition.",
+    )
+    parser.add_argument(
         "--wpms",
         type=float,
         nargs="+",
@@ -77,6 +85,11 @@ def run(args: argparse.Namespace) -> int:
     if args.ngrams == "trigram":
         if not args.trigram_model or not args.trigrams:
             raise SystemExit("--ngrams trigram needs --trigram-model and --trigrams")
+        if not args.trigram_frame:
+            raise SystemExit(
+                "--ngrams trigram needs --trigram-frame {conditioned,absolute} "
+                "(conditioned: model = t3-t2 increment; absolute: model = full t3)"
+            )
         tri_models = [XGBoostTypingModel.load(p) for p in args.trigram_model]
         freqs = _load_freqs(args.trigrams)
     else:
@@ -95,6 +108,7 @@ def run(args: argparse.Namespace) -> int:
             trigram_models=tri_models,
             bigram_freqs=bigram_freqs,
             target_wpm=wpm,
+            trigram_frame=args.trigram_frame,
         )
         stem = os.path.join(args.out_dir, f"diff_wpm{int(wpm)}")
         with open(f"{stem}.json", "w") as f:
