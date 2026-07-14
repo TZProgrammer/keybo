@@ -7,9 +7,9 @@ import json
 
 from keybo.analysis.effect_curves import compute_effect_curves, render_effect_curves
 from keybo.cli._paths import ensure_writable_output
+from keybo.geometry import ROW_STAGGERED_30
 from keybo.layout import Layout
 from keybo.layouts import NAMED_LAYOUTS
-from keybo.geometry import ROW_STAGGERED_30
 from keybo.models.xgboost_model import XGBoostTypingModel
 
 
@@ -67,9 +67,7 @@ def run(args: argparse.Namespace) -> int:
         layout = Layout(s, ROW_STAGGERED_30)
         freqs = _load_freqs(args.bigrams)
 
-    curves = compute_effect_curves(
-        models, wpms=list(args.wpms), layout=layout, bigram_freqs=freqs
-    )
+    curves = compute_effect_curves(models, wpms=list(args.wpms), layout=layout, bigram_freqs=freqs)
 
     if args.out_dir:
         os.makedirs(args.out_dir, exist_ok=True)

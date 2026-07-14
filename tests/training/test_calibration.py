@@ -144,7 +144,10 @@ def test_train_bigram_model_fits_and_records_calibration():
     from keybo.training.train import train_bigram_model
 
     model = train_bigram_model(
-        _matched_world(gap_ms=40.0), target_wpm=90, n_estimators=5, max_depth=2,
+        _matched_world(gap_ms=40.0),
+        target_wpm=90,
+        n_estimators=5,
+        max_depth=2,
         calibration=True,
     )
     cal = model.metadata.extra["training"]["calibration"]
@@ -156,9 +159,7 @@ def test_calibration_off_by_default():
     """CAL-REMOVE (2026-07-12): the seam is opt-in; the default recipe records None."""
     from keybo.training.train import train_bigram_model
 
-    model = train_bigram_model(
-        _matched_world(), target_wpm=90, n_estimators=5, max_depth=2
-    )
+    model = train_bigram_model(_matched_world(), target_wpm=90, n_estimators=5, max_depth=2)
     assert model.metadata.extra["training"]["calibration"] is None
 
 
@@ -216,7 +217,10 @@ def test_table_scorer_applies_calibration_per_position_pair():
     from keybo.training.train import train_bigram_model
 
     model = train_bigram_model(
-        _matched_world(gap_ms=40.0), target_wpm=90, n_estimators=10, max_depth=2,
+        _matched_world(gap_ms=40.0),
+        target_wpm=90,
+        n_estimators=10,
+        max_depth=2,
         calibration=True,
     )
     sc = TableBigramScorer(model, {"th": 10}, target_wpm=90.0, chars=NAMED_LAYOUTS["qwerty"])

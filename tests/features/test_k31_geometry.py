@@ -22,8 +22,10 @@ def test_k30_features_bit_identical_to_golden():
         [[bigram_features_from_positions(geom, (a, b), wpm=87.0) for b in pos] for a in pos]
     )
     tri = np.array(
-        [[trigram_features_from_positions(geom, (a, b, pos[7]), wpm=87.0) for b in pos]
-         for a in pos]
+        [
+            [trigram_features_from_positions(geom, (a, b, pos[7]), wpm=87.0) for b in pos]
+            for a in pos
+        ]
     )
     assert np.array_equal(bi, g["bigram"])
     assert np.array_equal(tri, g["trigram_slice"])
@@ -59,11 +61,29 @@ def test_k31_quote_slot_feature_row():
     row = dict(
         zip(
             [
-                "bottom", "home", "top", "pinky", "ring", "middle", "index", "lateral",
-                "same_hand", "same_finger", "adjacent", "scissor", "lsb", "dx", "dy",
-                "distance", "angle", "inwards", "outwards", "wpm",
+                "bottom",
+                "home",
+                "top",
+                "pinky",
+                "ring",
+                "middle",
+                "index",
+                "lateral",
+                "same_hand",
+                "same_finger",
+                "adjacent",
+                "scissor",
+                "lsb",
+                "dx",
+                "dy",
+                "distance",
+                "angle",
+                "inwards",
+                "outwards",
+                "wpm",
             ],
             bigram_features_from_positions(ROW_STAGGERED_31, ((5, 2), (6, 2)), wpm=90.0),
+            strict=False,
         )
     )
     assert row["pinky"] == 1.0

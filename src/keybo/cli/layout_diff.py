@@ -18,27 +18,37 @@ def add_arguments(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("layout_a", help="Baseline layout (named like 'qwerty' or 30 chars)")
     parser.add_argument("layout_b", help="Comparison layout (named or 30 chars)")
     parser.add_argument(
-        "--bigram-model", required=True, nargs="+",
+        "--bigram-model",
+        required=True,
+        nargs="+",
         help="Bigram model artifact(s), ensemble-averaged",
     )
     parser.add_argument(
-        "--trigram-model", nargs="+", default=None,
+        "--trigram-model",
+        nargs="+",
+        default=None,
         help="Conditioned-trigram model artifact(s); required for --ngrams trigram",
     )
     parser.add_argument(
-        "--ngrams", choices=["bigram", "trigram"], default="trigram",
+        "--ngrams",
+        choices=["bigram", "trigram"],
+        default="trigram",
         help="Which n-gram level to diff",
     )
     parser.add_argument("--bigrams", required=True, help="Corpus bigram table (freq join + T2)")
     parser.add_argument("--trigrams", help="Corpus trigram table (for --ngrams trigram)")
     parser.add_argument(
-        "--wpms", type=float, nargs="+", default=[90.0],
+        "--wpms",
+        type=float,
+        nargs="+",
+        default=[90.0],
         help="Scoring WPM(s); the diff is computed and rendered at each (the class "
         "prices are WPM-dependent, so the impact ranking can change with pace)",
     )
     parser.add_argument("--top", type=int, default=20, help="How many impacts to report")
     parser.add_argument(
-        "--out-dir", default="runs/layout_diff",
+        "--out-dir",
+        default="runs/layout_diff",
         help="Artifact directory: diff_wpm<w>.json + diff_wpm<w>.png per WPM",
     )
 
@@ -78,8 +88,12 @@ def run(args: argparse.Namespace) -> int:
     written = []
     for wpm in args.wpms:
         diff = diff_layouts(
-            layout_a, layout_b, bi_models, freqs,
-            trigram_models=tri_models, bigram_freqs=bigram_freqs,
+            layout_a,
+            layout_b,
+            bi_models,
+            freqs,
+            trigram_models=tri_models,
+            bigram_freqs=bigram_freqs,
             target_wpm=wpm,
         )
         stem = os.path.join(args.out_dir, f"diff_wpm{int(wpm)}")
@@ -92,18 +106,26 @@ def run(args: argparse.Namespace) -> int:
         print(f"\n=== wpm {int(wpm)} ===")
         print(f"A: {args.layout_a}\nB: {args.layout_b}")
         if diff.corpus_coverage < 0.9999:
-            print(f"charsets differ: diff runs on the common subset "
-                  f"({100 * diff.corpus_coverage:.1f}% of corpus mass)")
-        print(f"total {args.ngrams} objective: A {diff.total_a:.4g}  B {diff.total_b:.4g}  "
-              f"delta {diff.total_delta:+.4g} ({pct:+.3f}%; negative = B faster)")
+            print(
+                f"charsets differ: diff runs on the common subset "
+                f"({100 * diff.corpus_coverage:.1f}% of corpus mass)"
+            )
+        print(
+            f"total {args.ngrams} objective: A {diff.total_a:.4g}  B {diff.total_b:.4g}  "
+            f"delta {diff.total_delta:+.4g} ({pct:+.3f}%; negative = B faster)"
+        )
         print(f"\ntop {args.top} impacts (impact = freq × Δms; %A = impact as % of A's total):")
-        print(f"{'ngram':<8}{'freq':>12}{'t_A ms':>9}{'t_B ms':>9}{'Δms':>8}{'Δ%':>7}"
-              f"{'impact':>12}{'%A':>8}  moved")
+        print(
+            f"{'ngram':<8}{'freq':>12}{'t_A ms':>9}{'t_B ms':>9}{'Δms':>8}{'Δ%':>7}"
+            f"{'impact':>12}{'%A':>8}  moved"
+        )
         for i in diff.top(args.top):
             impact_pct = 100.0 * i.impact / diff.total_a if diff.total_a else 0.0
-            print(f"{i.ngram.replace(' ', '␣'):<8}{i.freq:>12,}{i.t_a_ms:>9.1f}"
-                  f"{i.t_b_ms:>9.1f}{i.t_b_ms - i.t_a_ms:>8.1f}{i.delta_pct:>+7.1f}"
-                  f"{i.impact:>12.3g}{impact_pct:>+8.3f}  {i.moved_chars}")
+            print(
+                f"{i.ngram.replace(' ', '␣'):<8}{i.freq:>12,}{i.t_a_ms:>9.1f}"
+                f"{i.t_b_ms:>9.1f}{i.t_b_ms - i.t_a_ms:>8.1f}{i.delta_pct:>+7.1f}"
+                f"{i.impact:>12.3g}{impact_pct:>+8.3f}  {i.moved_chars}"
+            )
 
     print()
     for p in written:

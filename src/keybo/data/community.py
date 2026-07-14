@@ -76,7 +76,7 @@ def decode_event_key(key: str, main30: str) -> str:
     return main30[idx] if idx is not None else key
 
 
-def dedup_prefix_streams(sessions: list["SessionRecord"]) -> list["SessionRecord"]:
+def dedup_prefix_streams(sessions: list[SessionRecord]) -> list[SessionRecord]:
     """Drop re-exported sessions (Amendment 4b): sessionID is an export timestamp, so a
     double-export gets a fresh id and survives the id dedup. A re-export's event stream
     is a strict prefix of the later export's (same keys, same intervals, same flags —
@@ -88,7 +88,7 @@ def dedup_prefix_streams(sessions: list["SessionRecord"]) -> list["SessionRecord
     streams = [tuple(s.events) for s in sessions]
     order = sorted(range(len(sessions)), key=lambda i: streams[i])
     drop: set[int] = set()
-    for a, b in zip(order, order[1:]):
+    for a, b in zip(order, order[1:], strict=False):
         sa, sb = streams[a], streams[b]
         if len(sa) < len(sb) and sb[: len(sa)] == sa:
             drop.add(a)
@@ -114,7 +114,7 @@ def main30_from_monkeytype(layout_str: str) -> str | None:
 def identify_layout(main30: str) -> str:
     best_name, best_n = None, -1
     for name, ref in KNOWN_LAYOUTS.items():
-        n = sum(1 for a, b in zip(main30, ref) if a == b)
+        n = sum(1 for a, b in zip(main30, ref, strict=False) if a == b)
         if n > best_n:
             best_name, best_n = name, n
     if best_n == 30:
@@ -217,7 +217,7 @@ def load_sessions(json_paths: list[Path], report: IngestReport) -> list[SessionR
 
 
 def _char_positions(main30: str) -> dict[str, tuple[int, int]]:
-    pos = {c: p for c, p in zip(main30, ROW_STAGGERED_30.slots)}
+    pos = {c: p for c, p in zip(main30, ROW_STAGGERED_30.slots, strict=False)}
     pos[" "] = ROW_STAGGERED_30.space_position
     return pos
 

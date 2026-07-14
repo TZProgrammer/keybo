@@ -82,10 +82,7 @@ class EffectCurves:
         """Contrast as a percentage of the reference class's mean time per WPM."""
         ref = self.class_mean_ms[REFERENCE_CLASS]
         return {
-            cls: [
-                100.0 * c / r if r else float("nan")
-                for c, r in zip(ys, ref, strict=True)
-            ]
+            cls: [100.0 * c / r if r else float("nan") for c, r in zip(ys, ref, strict=True)]
             for cls, ys in self.contrast_ms.items()
         }
 
@@ -218,12 +215,7 @@ def compute_effect_curves(
         for cls in masks:
             contrast[cls].append(class_mean[cls][-1] - ref)
 
-    missing = [
-        f
-        for cls, (_p, feats) in PATTERN_CLASSES.items()
-        for f in feats
-        if f not in names
-    ]
+    missing = [f for cls, (_p, feats) in PATTERN_CLASSES.items() for f in feats if f not in names]
     if missing:
         notes.append(f"features absent from schema (SHAP curves skipped): {sorted(set(missing))}")
 
@@ -261,9 +253,15 @@ def render_effect_curves(curves: EffectCurves, out_prefix: str) -> list[str]:
         for cls, ys in values.items():
             if cls == REFERENCE_CLASS:
                 continue
-            ax.plot(curves.wpms, ys, marker="o", markersize=4, linewidth=2,
-                    label=f"{cls} (n={curves.n_pairs[cls]})",
-                    color=palette.get(cls, "#40403e"))
+            ax.plot(
+                curves.wpms,
+                ys,
+                marker="o",
+                markersize=4,
+                linewidth=2,
+                label=f"{cls} (n={curves.n_pairs[cls]})",
+                color=palette.get(cls, "#40403e"),
+            )
         ax.axhline(0, color="#8a8988", linewidth=1)
         ax.set_xlabel("WPM")
         ax.set_ylabel(ylabel)
@@ -296,8 +294,15 @@ def render_effect_curves(curves: EffectCurves, out_prefix: str) -> list[str]:
     for cls, ys in curves.shap_ms.items():
         if all(np.isnan(ys)):
             continue
-        ax.plot(curves.wpms, ys, marker="o", markersize=4, linewidth=2,
-                label=cls, color=palette.get(cls, "#40403e"))
+        ax.plot(
+            curves.wpms,
+            ys,
+            marker="o",
+            markersize=4,
+            linewidth=2,
+            label=cls,
+            color=palette.get(cls, "#40403e"),
+        )
     ax.axhline(0, color="#8a8988", linewidth=1)
     ax.set_xlabel("WPM")
     ax.set_ylabel("mean SHAP of defining feature (ms)")

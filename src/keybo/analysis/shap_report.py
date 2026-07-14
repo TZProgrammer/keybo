@@ -188,8 +188,12 @@ def render_report(report: ShapReport, out_prefix: str, top_k: int = 12) -> list[
     ax.barh(ypos, abs_vals, height=0.62, color=_BLUE, edgecolor="none")
     for y, name, a, s in zip(ypos, names, abs_vals, signed, strict=True):
         ax.text(
-            a, y, f"  {a:.2f} ({share[name]:.1f}%, mean {s:+.2f})",
-            va="center", fontsize=8, color="#40403e",
+            a,
+            y,
+            f"  {a:.2f} ({share[name]:.1f}%, mean {s:+.2f})",
+            va="center",
+            fontsize=8,
+            color="#40403e",
         )
     ax.set_yticks(ypos, names, fontsize=9)
     ax.set_xlabel("mean |SHAP| (ms of predicted time; % = share of total importance)")

@@ -72,7 +72,9 @@ class LayoutDiff:
             "total_a": self.total_a,
             "total_b": self.total_b,
             "total_delta": self.total_delta,
-            "total_delta_pct_of_a": 100.0 * self.total_delta / self.total_a if self.total_a else None,
+            "total_delta_pct_of_a": 100.0 * self.total_delta / self.total_a
+            if self.total_a
+            else None,
             "top_impacts": [
                 {
                     "ngram": i.ngram,
@@ -157,9 +159,7 @@ def diff_layouts(
             ]
         )
         n31 = len(positions)
-        Tcond = np.mean(
-            [m.predict_ms(vec).reshape(n31, n31, n31) for m in trigram_models], axis=0
-        )
+        Tcond = np.mean([m.predict_ms(vec).reshape(n31, n31, n31) for m in trigram_models], axis=0)
 
     def pos_of(layout: Layout) -> dict[str, tuple]:
         d = {c: layout.pos(c) for c in layout.chars}
@@ -174,9 +174,7 @@ def diff_layouts(
         ps = [pos_map[c] for c in ngram]
         if n == 2:
             return float(T2[pidx[ps[0]], pidx[ps[1]]])
-        return float(
-            T2[pidx[ps[0]], pidx[ps[1]]] + Tcond[pidx[ps[0]], pidx[ps[1]], pidx[ps[2]]]
-        )
+        return float(T2[pidx[ps[0]], pidx[ps[1]]] + Tcond[pidx[ps[0]], pidx[ps[1]], pidx[ps[2]]])
 
     impacts: list[NgramImpact] = []
     total_a = total_b = 0.0
@@ -190,13 +188,15 @@ def diff_layouts(
         mass_common += f
         total_a += f * ta
         total_b += f * tb
-        moved = "".join(
-            c for c in dict.fromkeys(ngram) if c != " " and pa.get(c) != pb.get(c)
-        )
+        moved = "".join(c for c in dict.fromkeys(ngram) if c != " " and pa.get(c) != pb.get(c))
         impacts.append(
             NgramImpact(
-                ngram=ngram, freq=f, t_a_ms=ta, t_b_ms=tb,
-                impact=f * (tb - ta), moved_chars=moved,
+                ngram=ngram,
+                freq=f,
+                t_a_ms=ta,
+                t_b_ms=tb,
+                impact=f * (tb - ta),
+                moved_chars=moved,
             )
         )
 
@@ -222,14 +222,10 @@ def render_diff(diff: LayoutDiff, out_path: str, k: int = 20) -> str:
     top = diff.top(k)
     labels = [
         f"{i.ngram.replace(' ', '␣')}  (f={i.freq:,}, {i.t_a_ms:.0f}→{i.t_b_ms:.0f}ms "
-        f"{i.delta_pct:+.0f}%"
-        + (f", moved: {i.moved_chars}" if i.moved_chars else "")
-        + ")"
+        f"{i.delta_pct:+.0f}%" + (f", moved: {i.moved_chars}" if i.moved_chars else "") + ")"
         for i in top
     ]
-    vals = [
-        100.0 * i.impact / diff.total_a if diff.total_a else i.impact for i in top
-    ]
+    vals = [100.0 * i.impact / diff.total_a if diff.total_a else i.impact for i in top]
     colors = ["#3987e5" if v < 0 else "#e34948" for v in vals]
 
     fig, ax = plt.subplots(figsize=(10, 0.4 * len(top) + 1.6))
