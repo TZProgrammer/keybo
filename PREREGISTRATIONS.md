@@ -4529,3 +4529,34 @@ the frozen 6-arm matrix.
 CONSEQUENCES: qualify -> register a banded/blended arm (or a serve-band model at
 wpm 90) as a Task-5-style candidate with its own prereg; no-qualify -> negative
 result recorded, wpm stays a feature.
+
+### BAND-1 OUTCOME (2026-07-14, artifacts/band1_scout.json, 16 min, seed 0, 4 folds)
+THE BAND STRUCTURE IS REAL; SPECIALIST MODELS ARE THE WRONG FIX; THE DIAGNOSTIC WON.
+Pooled wlogmae vs G (mean of 4 LOLO folds): HARD-20 -7.5%, HARD-40 -6.8%,
+EQMASS-5 -9.0%, OVL-40/20 -8.2% — every banded scheme beats the global model.
+BUT the registered rules fired against them: (b) FAIL — best scheme EQMASS-5 wins
+only 3/5 evaluation bands (specialists LOSE the dense middle bands 60-100, where
+cross-band pooling is worth more than specialization: classic variance cost);
+(c) FAIL for EQMASS-5 — tau_heldout degrades 0.333 -> 0.0. CAP-G control: +2.1%
+WORSE than G — capacity is not the mechanism, structure is.
+DIAGNOSTIC VERDICT (registered >=70% rule -> fires at 117%): G+BANDAFFINE — the
+global model plus train-fold-fit PER-BAND affine recalibration — captures MORE
+gain than the best specialist scheme (-10.5% pooled wlogmae), wins where
+specialists win AND where they lose, repairs per-band slopes 1.20/1.06/1.02/1.00/
+0.88 -> 0.99/0.98/1.00/1.03/1.01, and IMPROVES tau_heldout to 0.667 (best of all
+arms). Registered consequence applies: "mostly recalibration — route to the
+calibration phase instead."
+ROUTING NOTE for the calibration phase (Task-8/codex thread): its current design
+fits ONE affine over the full 40-140 band. BAND-1 shows the bigram surface's
+slope VARIES by band (1.20 at 40-60 down to 0.88 at 120-140) — one global line
+cannot fix both ends; the affine should be WPM-BAND-CONDITIONED (per-band (a,b)
+or a smooth wpm-dependent slope), cross-fitted exactly as designed. Also: at the
+SERVE band (80-100, wpm 90) the bigram G slope is already 1.02 — the bigram
+optimizer gains little; the trigram surface (README slopes >1.1 at 100-140 at
+serve-relevant bands) is where calibration pays.
+CAVEATS: single seed (cross-fold consistent, magnitude ~10x campaign seed noise,
+but unconfirmed); tau on 4 layouts is ~1-bit; qwertz fold is where specialists
+gain most (-31%) while qwerty is where the affine gains most — fold-heterogeneous.
+CONSEQUENCE: banded-specialist arm NOT registered as a candidate (rules b+c).
+The per-band affine finding is handed to the calibration phase owner. wpm stays
+a model feature. No 3-seed confirmation spend (nothing qualified to confirm).
