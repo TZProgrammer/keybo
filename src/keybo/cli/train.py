@@ -10,10 +10,12 @@ from keybo.cli._paths import ensure_writable_output
 from keybo.data.strokes import load_strokes
 from keybo.training.train import train_bigram_model, train_trigram_model
 
-# Fallback estimator params when neither a --hyperparams file nor an explicit flag supplies
-# them. These mirror the historical CLI defaults (and XGBoostTypingModel's own defaults).
-_DEFAULT_N_ESTIMATORS = 300
-_DEFAULT_MAX_DEPTH = 5
+# When neither a --hyperparams file nor an explicit flag supplies an estimator param, the
+# CLI passes NOTHING and XGBoostTypingModel._DEFAULT_PARAMS applies — the validated recipe
+# (n_estimators 300, max_depth 3 per the LOLO feature-arm matrix; depth 5 memorizes
+# training-family idiosyncrasies). A CLI-side copy of those numbers drifted once (this
+# module pinned depth 5 for a week after the model default moved to 3, so plain
+# `keybo train` shipped a model the harness never validated) — hence no copy.
 
 
 def add_arguments(parser: argparse.ArgumentParser) -> None:
@@ -56,15 +58,12 @@ def _resolve_params(args: argparse.Namespace) -> dict:
         with open(args.hyperparams) as f:
             params.update(json.load(f))
 
-    # Explicit flags win over the file; otherwise keep the file's value, else the default.
+    # Explicit flags win over the file; otherwise keep the file's value; otherwise pass
+    # nothing so the model's own validated defaults apply (see module comment).
     if args.n_estimators is not None:
         params["n_estimators"] = args.n_estimators
-    else:
-        params.setdefault("n_estimators", _DEFAULT_N_ESTIMATORS)
     if args.max_depth is not None:
         params["max_depth"] = args.max_depth
-    else:
-        params.setdefault("max_depth", _DEFAULT_MAX_DEPTH)
 
     return params
 

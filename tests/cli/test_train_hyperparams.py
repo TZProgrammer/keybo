@@ -121,3 +121,29 @@ def test_train_hyperparams_unknown_key_is_silently_ignored(tmp_path, recwarn):
     assert _num_rounds(str(out_model)) == 4
     # No warning surfaces through the CLI (verbosity=0 mutes xgboost's "not used" notice).
     assert not [w for w in recwarn.list if issubclass(w.category, UserWarning)]
+
+
+def test_train_bare_defaults_match_validated_model_params(tmp_path):
+    """Plain `keybo train` (no --hyperparams, no flags) trains the VALIDATED config.
+
+    Regression for the depth-5 drift: the CLI once pinned its own max_depth=5 while the
+    model's validated default (and everything `keybo validate` measures) is depth 3, so
+    the README's own recipe shipped a model the harness never certified. The CLI must
+    pass nothing and inherit XGBoostTypingModel._DEFAULT_PARAMS.
+    """
+    from keybo.models.xgboost_model import _DEFAULT_PARAMS
+
+    strokes = _write_bistrokes(tmp_path / "bistrokes.tsv")
+    out_model = tmp_path / "bg.json"
+    argv = [a for a in _train_argv(strokes, out_model, None) if a is not None]
+    argv = argv[: argv.index("--hyperparams")] + argv[argv.index("--hyperparams") + 2 :]
+
+    rc = main(argv)
+    assert rc == 0
+    meta = json.loads((tmp_path / "bg.meta.json").read_text())
+    trained = meta["extra"]["hyperparams"]
+    assert trained.get("max_depth", _DEFAULT_PARAMS["max_depth"]) == _DEFAULT_PARAMS["max_depth"]
+    assert (
+        trained.get("n_estimators", _DEFAULT_PARAMS["n_estimators"])
+        == _DEFAULT_PARAMS["n_estimators"]
+    )
