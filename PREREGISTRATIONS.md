@@ -4473,3 +4473,59 @@ clone reproduces the flagship board with one command (audit finding D1 closed
 for flagship numbers). docs/analyzer.md documents scope + honest limits (model
 predictions, no human confirmation yet; 30-key ANSI only; tool scores live on
 native corpora by design).
+
+## BAND-1 — WPM-banded specialist models vs the global surface (registered 2026-07-14,
+## BEFORE results; user hypothesis)
+MOTIVATION (user): "instead of one model to which we inject all WPM, multiple models,
+each taking a WPM range — test per-range whether it beats the single all-WPM model."
+Analogy cited: quality injection lost to a model trained on the quantile directly —
+feature-injection can lose to direct specialization. Evidence banding has something
+to work with (fresh baseline artifact, ensemble bigram, qwerty fold): per-band
+calibration slopes 1.52/1.27/1.30/1.30/1.33 for 40-60/../120-140 — the global model
+compresses within EVERY band and the compression VARIES by band (1.27 vs 1.52), which
+one global affine cannot fix. Support census: 8.3M/9.9M/6.2M/2.7M/0.9M samples per
+20-band (thinnest 120-140: 873k samples, 459 qwerty-fold cells — viable).
+USER REFINEMENT (registered verbatim intent): 20 WPM was arbitrary — treat banding
+scheme as the experimental variable: bigger/smaller widths, variable (equal-mass)
+widths, and OVERLAPPING bands whose covering models' predictions are COMBINED.
+FIXED ACROSS ALL ARMS: campaign-pinned sources (bistrokes_v5 d6cb4c81…, band 40-140),
+the production bigram recipe byte-identical to the baseline artifact's train_params
+(depth3 lr.05 n300 gamma.957 alpha.141 lambda.011 mcw4 subsample.7 colsample.7),
+practice_term+layout_weights on, participant-pure leave-one-layout-out folds
+(azerty/dvorak/qwerty/qwertz; census overlap=0), and the UNCHANGED 20-wpm EVALUATION
+frame (build_cells, min_cell_samples=10) — training banding varies, the evaluation
+frame does NOT (MED-audit refinement #2 discipline: frame key != model structure).
+ARMS (bigram surface; each must predict every evaluation cell in 40-140):
+  G       global control, retrained in-driver (NOT copied from the baseline JSON —
+          same code path as specialists for byte-fairness).
+  HARD-20 specialists on [40,60)…[120,140); cell -> its band's model.
+  HARD-40 specialists on [40,80),[80,120),[120,140).
+  EQMASS-5 five bands, edges = train-fold sample-wpm quintiles (recorded per fold).
+  OVL-40/20 overlapping width-40 stride-20 bands [40,80),[60,100),[80,120),[100,140);
+          cell at midpoint m -> triangular-weight blend of covering bands' predictions
+          (weights by distance to band centers, normalized; the user's multi-bucket
+          combine).
+  CAP-G   capacity control: global with n_estimators x5 (1500) — separates "more
+          total capacity" from "banded structure".
+DIAGNOSTIC (no training): per-band affine recalibration of G (WLS in ms, fit on
+train-fold cells in-band, applied to test fold) — the "is it just scale?" control.
+METRICS: standard 13-field per-band rows + pooled + fixed-wpm-90 layout ranking
+(tau_heldout, layout_mae_ms). PRIMARY: weighted_log_mae (per the model-metrics audit
+recommendation), pooled + per-band vs G.
+DECISION RULES (registered): a scheme QUALIFIES iff (a) pooled weighted_log_mae
+improves vs G, (b) it improves in >=4 of 5 evaluation bands, (c) tau_heldout does not
+degrade (pooled, any fold), AND (d) it also beats CAP-G on pooled weighted_log_mae —
+else the verdict is "capacity, not structure". If the per-band-affine diagnostic
+captures >=70% of the best scheme's pooled gain, the verdict records "mostly
+recalibration — route to the calibration phase instead". Seed-noise gate: final
+comparisons at 3 seeds; a win inside the 3-seed p95 spread of G is a TIE.
+SEQUENCING: scout all arms at 1 seed (seed 0), 4 folds; then G + top-2 schemes at
+seeds {0,1,2}. Trigram surface: winner-only confirmation run (separately registered
+outcome line). Runs niced (codex candidate matrix may share the host).
+ISOLATION: new driver agent-artifacts/experiments/wpm_banding.py in THIS checkout;
+does NOT touch the Task-5 byte-frozen drivers or validate.py; reuses keybo.training
+machinery as a library. Informs a FUTURE candidate arm — a BAND-1 win does NOT edit
+the frozen 6-arm matrix.
+CONSEQUENCES: qualify -> register a banded/blended arm (or a serve-band model at
+wpm 90) as a Task-5-style candidate with its own prereg; no-qualify -> negative
+result recorded, wpm stays a feature.
