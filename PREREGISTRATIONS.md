@@ -4639,3 +4639,37 @@ qwerty-HELD-OUT fold — a model that never saw qwerty. Production models train
 WITH qwerty (98.7% of data); the production-like folds show mild over-dispersion
 at high bands instead. Stage B's cross-fit impact estimate must report per-fold
 spread for exactly this reason.
+
+### BAND-2 STAGE-B OUTCOME (2026-07-14, artifacts/band2_impact.json)
+K31-frame serve-band OOF calibration (geometry-only preds vs raw obs, fit on
+held-out-layout cells, seed 0): bigram pooled affine (a=-79.6, b=1.531),
+trigram pooled (a=-3.6, b=0.993). PER-FOLD b: bigram 0.48 (dvorak) / 0.97
+(azerty) / 1.20 (qwertz) / 1.54 (qwerty); trigram 0.54-1.00. THE SERVE-BAND
+CORRECTION IS POPULATION-DEPENDENT — there is no single "true" scale.
+FLAGSHIP IMPACT (saved%% vs qwerty30m; uncorrected keybo-c30m +3.53):
+  pooled affine +4.74, pooled isotonic +5.02, per-fold range +2.16 (dvorak
+  correction) to +4.76 (qwerty correction). READING: the pooled OOF calibrations
+  say the advertised headline UNDERSTATES the gap; the honest calibrated
+  statement is a population-conditioned RANGE [≈2.2%%, ≈5.0%%] that brackets the
+  current +3.5%%. The COMPARATIVE claim is robust: keybo-c30m's lead over
+  semimak is 0.6-1.2pp under EVERY correction (0.98pp uncorrected) — calibration
+  moves magnitudes, not the community-facing comparison.
+ORDER CHECK — CORRECTION TO A REGISTERED CLAIM: the prereg asserted per-band
+affine rank-invariance at fixed serve wpm; that holds PER SURFACE, but the
+board total mixes TWO surfaces with different corrections, so order CAN move —
+and did: keybo-c30m and keybo-lsb SWAP under 5/7 correction frames (lsb ahead by
+<=0.08pp; statistical tie leaning lsb). Strengthens the standing recommendation
+of keybo-lsb as the public flagship. semimak/graphite never reorder vs ours.
+FRAME NUANCE: the campaign-frame trigram compression (v5 slopes 1.12-1.28 at
+serve band) does NOT reproduce on the K31 production trigram frame (OOF qwerty
+fold b=0.997) — the production Tcond is nearly calibrated for qwerty-like
+typists; the bigram table carries more of the K31-frame miscalibration.
+METHODOLOGICAL CONCLUSION (routed to the calibration phase): leave-one-LAYOUT-
+out is the WRONG cross-fit axis for production calibration — the production
+model serves the layouts it trained on; the unseen axis is the TYPIST. The
+calibration phase should cross-fit by held-out PARTICIPANTS (within-layout),
+which removes the population-shift confound that produced the [0.48, 1.54]
+slope spread here. C-ISO evidence + C-LIN rank-safe fallback + this
+participant-axis spec handed to Task-8/codex.
+CONSEQUENCES: no flagship messaging change without user decision (numbers above
+are 🟡 model-internal, population-conditioned). BAND-2 CLOSED.
