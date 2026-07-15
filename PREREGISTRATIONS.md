@@ -4603,3 +4603,39 @@ STAGES + DECISION RULES (registered):
 ROUTING: results + winning coefficients hand to the Task-8/codex calibration
 phase (which owns productionizing); this campaign edits no frozen files; driver
 agent-artifacts/experiments/band2_calibration.py; niced, n_jobs 24.
+
+### BAND-2 STAGE-A OUTCOME (2026-07-14, artifacts/band2_calibration.json, 26 min)
+A-CONFIRM: PASS on both surfaces — C-BAND beats G pooled wlogmae by -10.7%
+(bigram) / -9.4% (trigram), vs mean per-fold 3-seed G spread of 0.0006-0.0007
+(the gain is ~15x seed noise). BAND-1 was not noise. Effect is FOLD-CONCENTRATED:
+qwerty-held-out folds -23..-28%, azerty/dvorak folds -0.4..-8.7%.
+A-FAMILY: wlogmae order (both surfaces): C-ISO best (-15.5% bi / -11.0% tri) >
+C-LOG > C-BAND = C-SPLINE > C-LIN. tau: every family 0.67 vs G 0.33 (bigram);
+trigram all 1.0 (the trigram defect is MAGNITUDE, not order — exactly the
+product framing). Rarity guard: PASS all (ratios 0.99-1.02).
+SLOPE GUARD — REGISTERED WORDING FAILS FOR ALL ARMS *AND FOR G ITSELF*
+(G violates [0.90,1.15] in 11/20 fold-band cells; a cross-fitted correction
+cannot guarantee absolute slope bounds under population shift when the base
+model starts outside them). DEVIATION (recorded, not silent): guard re-read as
+its intent — mean |slope-1| must improve or hold, few cells made worse. Under
+that reading: bigram — all families improve, C-ISO by far most (0.157 -> 0.110);
+trigram — C-BAND/C-SPLINE (0.108 -> 0.133) and C-LOG (0.148) WORSEN calibration
+and FAIL; C-LIN improves (0.088); C-ISO holds (0.105). The strict guard did its
+job: it exposed that per-band AFFINES over-correct trigram scale in transfer.
+WINNER: C-ISO (per-band isotonic) — only family that improves-or-holds slopes on
+BOTH surfaces, best wlogmae on BOTH, tau tied-best, rarity clean. CAVEAT: C-ISO
+is NONLINEAR, so the affine rank-invariance argument does NOT apply — stage B
+must verify flagship ORDER preservation explicitly. C-LIN recorded as the best
+rank-safe affine alternative for the calibration phase if monotone-nonlinear is
+rejected there.
+A-MECHANISM (registered rule): serve-band (80-100) class slopes ALT 1.03 /
+SAME_HAND 1.04 / SAME_FINGER 1.02 — max gap 0.02 < 0.15 => "amplitude-only —
+affine/monotone correction suffices" AT THE SERVE BAND. Observation (non-binding,
+routed to pace-matrix H2): at 120-140 the classes DIVERGE hard (ALT 0.73 vs
+SAME_FINGER 1.21, gap 0.48) — high-WPM honesty needs wpm x class features, but
+the serve-wpm product does not.
+PRODUCTION-REGIME NOTE: the compressed (slope 1.2-1.5) regime is the
+qwerty-HELD-OUT fold — a model that never saw qwerty. Production models train
+WITH qwerty (98.7% of data); the production-like folds show mild over-dispersion
+at high bands instead. Stage B's cross-fit impact estimate must report per-fold
+spread for exactly this reason.
