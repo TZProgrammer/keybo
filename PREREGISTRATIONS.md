@@ -4716,3 +4716,33 @@ order-swap).
 (4) dvorak30m: Aalto +3.18 but community +5.26 (lowest non-colemak) — the two
 surfaces disagree most where typist populations differ most, as predicted.
 STATUS: descriptive gauge; recorded; NOT an objective and NOT adoption evidence.
+
+## COMM-OPT-1 — what does the community model DO as an objective? (registered
+## 2026-07-17, BEFORE results; user directive: pure / swapped / both)
+Three arms, all on the C30M charset with the EXACT P17 machinery (rule 40cf881:
+augmented Chebyshev rho=0.05, SA 12x16k + exhaustive 2-opt, 44 Dirichlet + 6
+equal-weight + 2 speed-corner + 4 warm-started searches, top-8 pure-min-max
+2-opt+3-cycle polish, stationary normalization, pick = min-max qwerty-gap regret
+with 0.5%% speed cap) — only the SPEED AXIS varies:
+  COMM-PURE: maximize community-model speed ONLY (the community speed frontier;
+    3 rngs, no pick rule — report the argmax).
+  COMM-SWAP: keybo-lsb's pipeline with the COMMUNITY surface REPLACING Aalto —
+    axes {comm-speed, genkey, oxey1, oxey2}, cap on comm-speed.
+  COMM-BOTH: keybo-lsb's pipeline with BOTH surfaces as axes —
+    {aalto-speed, comm-speed, genkey, oxey1, oxey2}, cap on AALTO speed
+    (production semantics preserved; community joins as a 5th regret axis).
+COMMUNITY SURFACE: byte-identical to COMM-SPD (rule a70ee32): 4 rowStagger
+labels, production recipe, 3-seed mean T2+Tcond @ wpm 90. Stationary norms:
+aalto/genkey/oxey BEST from the P16 board as in P17; community BEST = graphite's
+COMM-SPD total, QREF = qwerty30m.
+EVALUATION: winners + runners-up on the FULL board (both speed gauges, genkey,
+oxey1, oxey2, wfd, keymeow via kmrun) vs keybo-c30m/keybo-lsb/semimak/graphite.
+REGISTERED INTERPRETATION BOUNDS: the community surface is typist-confounded
+(4 audits) — COMM-PURE/SWAP winners are DIAGNOSTIC objects (what the confounded
+objective wants), NOT candidates. COMM-BOTH probes the robustness frontier; the
+registered observation rule: if its pick holds within 0.1pp of keybo-lsb's
+AALTO saved%% while gaining >=1.0pp COMMUNITY saved%%, record "two-population
+robust frontier is non-degenerate" (still not an adoption — user-gated as ever).
+EXPECTATIONS (falsifiable, registered): COMM-PURE drifts toward roll-heavy
+graphite-space; COMM-SWAP lands nearer graphite than keybo-lsb; COMM-BOTH pays
+<=0.3pp Aalto for >=1pp community.
