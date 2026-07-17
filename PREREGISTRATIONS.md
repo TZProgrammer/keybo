@@ -4848,3 +4848,28 @@ under the common-anchor guardrail; n=4 conformal ceiling (0.8) stated wherever
 community numbers appear. Zero prior outcomes existed at resumption (verified
 at pause). The confirmatory adversarial workflow continues in parallel; a
 material contradiction from it re-pauses this experiment (registered stop rule).
+
+### COMM-OPT-1 RE-HELD UNDER THE REGISTERED STOP RULE (2026-07-17, minutes after
+### 34016ba, BEFORE any launch — zero searches have ever run)
+The confirmatory adversarial workflow delivered two verdict refinements that
+materially bear on the experiment design (both re-verified on its anchor data):
+(1) H6 UPGRADED: on a COMMON (Aalto-qwerty) anchor the community median saved%%
+does not shrink toward Aalto — it INVERTS BELOW it (community 2.70%% vs Aalto
+3.18%%). The entire +6-8%% community headline is carried by the single
+un-estimable qwerty point (~1.8x dispersion is the mechanism that pushes it
+out). CONSEQUENCE: the registered BOTH-arm observation rule ("gains >=1.0pp
+COMMUNITY saved%%") is defined on a self-anchored quantity now known to be
+artifact-dominated — the arm's metric is compromised as registered.
+(2) RANK FLIP CORRECTED from noise-adjacent to STABLE ~15-sigma signal:
+graphite-minus-keybo-c30m = +1.58pp, SD 0.10, 12/12 seeds positive (sign-
+reversed vs Aalto). The style confound is robust — more data/seeds will not
+wash it out. The workflow's own disposition: strengthens keep-paused.
+DISPOSITION: launch HELD per the registered stop rule. The resumption logic
+(gate satisfied) was sound on the information available; the gate's own final
+component then contradicted the design premise before compute was spent.
+OPTIONS FOR THE USER: (a) run as-registered purely as confound-diagnostics
+(all three arms, headline metrics known-artifact-dominated); (b) amend the
+BOTH arm's community axis to a common-anchor or plateau-internal contrast
+(prereg amendment) and run; (c) keep paused — Phase-D (9/19 contributors for
+90/95%%) remains the identified real unlock. No-bug/circularity/population
+verdicts UNCHANGED; reconcile+synthesis phases still running.
