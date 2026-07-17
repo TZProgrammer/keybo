@@ -4697,3 +4697,22 @@ HONEST BOUNDS (registered with the gauge): n=4 typists, contributor≡layout
   ~5.4k bigram rows (vs 29M Aalto samples) — expect NOISY magnitudes; the gauge
   is reported for CONVERGENCE/DIVERGENCE vs the Aalto column, never for adoption
   decisions. Seed-averaged over 3 seeds to damp the small-data variance.
+
+### COMM-SPD OUTCOME (2026-07-17, runs/comm_spd_board.json + _full.json)
+Gauge built as registered (4 rowStagger labels, 1775 bi + 8931 tri rows, 3-seed
+mean, production-timecard construction). Board rows recorded. READINGS:
+(1) CONVERGENT SIGN: every alternative beats qwerty on BOTH surfaces; the two
+models agree qwerty is worst by a wide margin.
+(2) MAGNITUDES ~2x on community (e.g. keybo-c30m +3.53 Aalto vs +6.15 comm) —
+expected: 4 enthusiast typists on optimized boards vs population Aalto.
+(3) ORDERING DIVERGES (the registered caution in action): community model's top
+= graphite +7.74 / P10-w0.5* +7.68, with keybo-lsb +6.90 > keybo-c30m +6.15;
+Aalto's top = P10* +3.63 / c30m +3.53. Spearman across 9 non-ref rows ~0.32 —
+weak. Consistent with the audits: the community surface encodes ITS typists'
+styles (roll-heavy optimized-board typing), not a transferable geometry law.
+Notable: community model ranks keybo-lsb ABOVE keybo-c30m (+0.75pp) — the third
+independent signal favoring lsb as flagship (after keymeow lsb and the BAND-2
+order-swap).
+(4) dvorak30m: Aalto +3.18 but community +5.26 (lowest non-colemak) — the two
+surfaces disagree most where typist populations differ most, as predicted.
+STATUS: descriptive gauge; recorded; NOT an objective and NOT adoption evidence.
