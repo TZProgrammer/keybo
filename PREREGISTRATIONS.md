@@ -4835,3 +4835,16 @@ sub-point; label-set remains a contributor, recipe is dominant. Neither board
 is wrong; they are different registered recipes — the boards must be named,
 never averaged. (Community-vs-AALTO divergence verdicts are UNAFFECTED — that
 is the separate population/selection phenomenon, b50983d/08c7cac.)
+
+### COMM-OPT-1 RESUMPTION (2026-07-17): the user's gate is satisfied
+The pause directive conditioned resumption on the divergence RCA ("treat
+discrepancy RCA as the gate"). The RCA is banked (b50983d + 08c7cac + 093b0b2):
+no bug; mechanisms identified and adversarially reproduced. Resuming the three
+registered arms with the RCA's interpretation frame WELDED ON: PURE/SWAP
+winners are DIAGNOSTIC exhibits of a typist-confounded, partially CIRCULAR
+objective (they show what 4 enthusiasts' style wants, never candidates);
+BOTH is the robustness probe (Aalto cap intact); community saved%% reported
+under the common-anchor guardrail; n=4 conformal ceiling (0.8) stated wherever
+community numbers appear. Zero prior outcomes existed at resumption (verified
+at pause). The confirmatory adversarial workflow continues in parallel; a
+material contradiction from it re-pauses this experiment (registered stop rule).
