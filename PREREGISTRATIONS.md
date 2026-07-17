@@ -4746,3 +4746,15 @@ robust frontier is non-degenerate" (still not an adoption — user-gated as ever
 EXPECTATIONS (falsifiable, registered): COMM-PURE drifts toward roll-heavy
 graphite-space; COMM-SWAP lands nearer graphite than keybo-lsb; COMM-BOTH pays
 <=0.3pp Aalto for >=1pp community.
+
+### COMM-OPT-1 ADDENDUM (2026-07-17, before launch): COMM-G2 handoff consumed.
+The codex thread's COMM-G2 board (its checkout, commit c46c44c, board sha
+fe38a466…) independently built a FULL-community descriptive model; its ordering
+(keybo-p10 > graphite > keybo-lsb > semimak > E10 > SPD > keybo-c30m > qwerty)
+CONVERGES with COMM-SPD's 4-label gauge on every headline: graphite+P10 top,
+lsb > c30m (the FOURTH independent lsb signal), qwerty last, weak Aalto rank
+correlation (its Spearman 0.43 vs my 0.32). Its COMM-G1 verdict
+search_qualified=false stands: COMM-OPT-1's PURE/SWAP arms remain DIAGNOSTIC
+objects and BOTH remains a robustness probe — nothing here can promote a
+community-fit objective into adoption. No design change; launching as
+registered (COMM-SPD 4-label surface, exact P17 machinery).
