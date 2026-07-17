@@ -4799,3 +4799,26 @@ model). GATE DISPOSITION: COMM-OPT-1 stays PAUSED; resumption is a user
 decision with the RCA's finding that PURE/SWAP optimize a typist-confounded,
 partially circular objective (diagnostic value only) and the real unlock
 remains Phase-D collection.
+
+### DIVERGENCE RCA — STAT-CRITIC ADDENDUM (2026-07-17, report at
+### state/keybo-divergence-stat-critic/report.md; all 5 parent claims reproduced
+### exactly from immutable artifacts, anchors <2.6e-12)
+Refinements to the RCA outcome (b50983d), none overturning it:
+(1) "graphite/P10 community-best" is UNSUPPORTED as an ordering: margin 0.0077pp
+vs contributor-fold SD 0.405pp (52x); LOCO splits 2/2; SIGN-FLIPS by trigram
+recipe (cand4 => graphite 4/4, reg => P10 4/4 — the board's P10 edge is a
+defensible-recipe artifact). The registered "seed noise" wording is CORRECTED:
+seed SD (0.043pp) is negligible vs contributor SD — the binding limit is n=4
+CONTRIBUTORS, not seeds.
+(2) Community-qwerty-slowest is direction-robust (4/4 folds, >=12.4ms) but
+n=4 caps one-sided sign p at 0.0625 — significance UNREACHABLE with this data;
+amplitude thinly grounded (support gauge fails for qwerty).
+(3) The 18/28 Aalto-community pairwise agreement headline is essentially "both
+rank qwerty worst": non-qwerty Spearman = 0.143 (~uncorrelated). Campaign-wide
+cross-surface: Spearman 0.953 but TOP-1%% OVERLAP ONLY 0.387 — the surfaces
+agree coarsely and diverge exactly in the elite tail where selection happens.
+(4) Conformal bound: max finite confidence at n=4 is 0.8; 90%% needs 9
+contributors, 95%% needs 19 — THE Phase-D sizing numbers (model-paths audit #4
+now has its answer: collect >=9 contributors for decision-grade community
+evidence).
+Formal go/no-go stays NO (search_qualified=false, can_qualify_model=false).
