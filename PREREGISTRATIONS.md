@@ -4873,3 +4873,28 @@ BOTH arm's community axis to a common-anchor or plateau-internal contrast
 (prereg amendment) and run; (c) keep paused — Phase-D (9/19 contributors for
 90/95%%) remains the identified real unlock. No-bug/circularity/population
 verdicts UNCHANGED; reconcile+synthesis phases still running.
+
+### RCA FINAL (2026-07-17): confirmatory workflow complete (11/11 agents); one
+### published statistic corrected; two-surface attribution finalized
+(A) COMM-SPD <-> COMM-G2 decomposition FINAL: interchangeable FOR RANKING
+(Spearman 0.94, top-3 3/3); the ~15%% level gap = trigram HYPERPARAMETERS 55%%
+(COMM-SPD's CAND4 depth-5 learns larger optimized-vs-qwerty separation than
+REG depth-3 — modeling choice, not bug) + schema/engine 28%% + wpm filter 17%%.
+HASH-REFUTED premises: serve corpus byte-identical (ffa77f3a both), contributor
+labels IDENTICAL (the "G2 uses ortho/angleMod/full-community" claim in my COMM-
+OPT-1 addendum + memory relays was BRIEF-DECAY — WRONG; both surfaces train on
+the same 4 rowStagger labels). Supersedes addendum-2's recipe-vs-label framing:
+label-set was never a differing axis at all.
+(B) PUBLISHED-STATISTIC CORRECTION (the only one): the cross-model rank
+correlation "Spearman ~0.32-0.43" (COMM-SPD outcome 2b5c834; RCA outcome
+b50983d) is ANCHOR-INFLATED — both surfaces force the qwerty point to 0 by
+construction. Free-layout Spearman = 0.217 (9 layouts) and NEGATIVE -0.21 over
+the 7 core optimized layouts. All saved%% VALUES reproduce exactly; only the
+correlation digit is restated. Rank disagreement among the layouts that matter
+is STRONGER than headlined.
+(C) Consensus verdict HELD at CIRCULAR after adversarial pushback ("mixed")
+was itself verified and rejected: the community model beats distance+WPM
+held-out (WMAE +14.1%%, rho 0.475) so it learns SOMETHING — but it is not
+better than Aalto and search_qualified=false, so agreement-with-consensus
+remains non-evidence for a geometry law Aalto misses.
+RCA CLOSED. COMM-OPT-1 disposition unchanged (held; options with user).
