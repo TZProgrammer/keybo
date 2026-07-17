@@ -4822,3 +4822,16 @@ contributors, 95%% needs 19 — THE Phase-D sizing numbers (model-paths audit #4
 now has its answer: collect >=9 contributors for decision-grade community
 evidence).
 Formal go/no-go stays NO (search_qualified=false, can_qualify_model=false).
+
+### RCA ADDENDUM 2 — two-surface attribution CORRECTED (2026-07-17, via the
+### doc-audit + codex's divergence-recipe-factorial artifact)
+The COMM-SPD <-> COMM-G2 level delta (0.71-1.32 saved-pp, anchors <=2.6e-12) is
+a DELIBERATE 3-AXIS PROVENANCE change with the TRIGRAM RECIPE Shapley-DOMINANT
+(COMM-SPD trained trigram on CAND4 — the old adopted recipe, as registered in
+a70ee32 — while COMM-G2 uses REG; plus unordered->temporal rolls fix and a
+[40,140) WPM filter). The earlier RCA outcome line attributing the delta
+dominantly to "training-fit population (label set)" is superseded on that
+sub-point; label-set remains a contributor, recipe is dominant. Neither board
+is wrong; they are different registered recipes — the boards must be named,
+never averaged. (Community-vs-AALTO divergence verdicts are UNAFFECTED — that
+is the separate population/selection phenomenon, b50983d/08c7cac.)
