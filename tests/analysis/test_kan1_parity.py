@@ -76,3 +76,25 @@ def test_g4_time_surface_reproduces_p17_board():
     # coverage: every golden layout is full-charset for the C30M corpus subset
     card = surf.card(GOLD["layouts"]["semimak"])
     assert card.coverage_pct > 90.0
+
+
+def test_time_surface_refuses_calibrated_trigram_models(monkeypatch):
+    """Latent-defect guard (divergence RCA 2026-07-17): the trigram table is built via
+    predict_ms, which drops per-position calibration deltas — must fail loud, not
+    silently mis-time, if a calibrated trigram model ever appears."""
+    import keybo.analysis.timecard as tc
+
+    class _FakeModel:
+        class metadata:
+            extra = {"training": {"calibration": {"deltas_ms": {"pinky": 1.0}}}}
+
+    real = tc._load_gz_model
+
+    def fake_load(stem):
+        if stem.startswith("trigram"):
+            return _FakeModel()
+        return real(stem)
+
+    monkeypatch.setattr(tc, "_load_gz_model", fake_load)
+    with pytest.raises(NotImplementedError, match="calibration"):
+        tc.TimeSurface({"the": 1})
