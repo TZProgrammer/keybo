@@ -4898,3 +4898,21 @@ held-out (WMAE +14.1%%, rho 0.475) so it learns SOMETHING — but it is not
 better than Aalto and search_qualified=false, so agreement-with-consensus
 remains non-evidence for a geometry law Aalto misses.
 RCA CLOSED. COMM-OPT-1 disposition unchanged (held; options with user).
+
+### COMM-OPT-1 AMENDED + RESUMED AS DIAGNOSTICS (2026-07-17, resolves the
+### 43465bf fork; reversible-fork resolution taken by the agent per standing rules)
+RATIONALE: the user's request was exploratory ("I want to see what happens");
+their RCA gate is closed (e7af268); the held fork (metric design) is reversible.
+AMENDMENT (fixes the compromised metric, changes NO search machinery): the
+BOTH-arm observation rule is RESTATED qwerty-free — the self-anchored
+"community saved%" is retired from all decision/observation roles (RCA: carried
+by the un-estimable qwerty point). Replacement: PLATEAU-INTERNAL contrast =
+each layout's community total time vs keybo-lsb's community total (layout-vs-
+layout, no reference extrapolation). Search objectives are UNCHANGED from
+registration (PURE minimizes community total — anchor-free sum; SWAP/BOTH
+Chebyshev axes as registered; the qwerty-gap normalization affects axis
+weighting only, disclosed). REPORTING: boards show BOTH the self-anchored
+saved% (labeled artifact-dominated, RCA guardrail) and the plateau-internal
+contrast. ALL THREE ARMS ARE DIAGNOSTIC EXHIBITS — the RCA's stable-confound
+finding means no winner here is a candidate under any outcome; the experiment
+answers "what does this objective WANT", which is what was asked.
