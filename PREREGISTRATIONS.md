@@ -4673,3 +4673,27 @@ slope spread here. C-ISO evidence + C-LIN rank-safe fallback + this
 participant-axis spec handed to Task-8/codex.
 CONSEQUENCES: no flagship messaging change without user decision (numbers above
 are 🟡 model-internal, population-conditioned). BAND-2 CLOSED.
+
+## COMM-SPD board (registered 2026-07-17, BEFORE results; user: "compare all top
+## layouts across all gauges, including a community-only-trained speed gauge")
+GAUGE DEFINITION (descriptive, NOT an objective — per the four community audits,
+a community-fit score is typist-confounded; this gauge answers "what does a model
+trained ONLY on the 4 community typists predict?", nothing more):
+  Train bigram + conditioned-trigram surfaces on the 4 natural rowStagger
+  community labels ONLY (colemak@alite, mtgap-variant@richarddavison,
+  custom-d42a1f92@ddn, custom-aa426873@vg — the COMM-D primary set; ortho/
+  angleMod labels excluded as geometry-mismatched, octahedron excluded per
+  registered exclusion), production recipe (REG-LOLO bigram params; CAND4
+  trigram params; practice_term+layout_weights on, LOGRAT), ROW_STAGGERED_30,
+  wpm 90. Serve geometry-only T2+Tcond tables over the C30M trigram corpus —
+  the exact production-timecard construction, so "community saved% vs qwerty30m"
+  is apples-to-apples with the Aalto saved% column.
+BOARD: layouts = keybo-c30m, keybo-lsb (P17 pair), p16-balance, P13STAB-win*,
+  P10-w0.5* (C30M embeds), semimak, graphite, colemak30m (embed), dvorak30m
+  (embed), ref qwerty30m. Gauges = Aalto saved% (production timecard), COMMUNITY
+  saved% (this gauge), genkey, oxey1, oxey2, wfd, keymeow sfb/lsb/alt/roll/redir.
+HONEST BOUNDS (registered with the gauge): n=4 typists, contributor≡layout
+  confound, zero-shot structure-transfer ceiling rho 0.51-0.65 (COMM-D corrected),
+  ~5.4k bigram rows (vs 29M Aalto samples) — expect NOISY magnitudes; the gauge
+  is reported for CONVERGENCE/DIVERGENCE vs the Aalto column, never for adoption
+  decisions. Seed-averaged over 3 seeds to damp the small-data variance.
