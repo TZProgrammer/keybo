@@ -4758,3 +4758,44 @@ search_qualified=false stands: COMM-OPT-1's PURE/SWAP arms remain DIAGNOSTIC
 objects and BOTH remains a robustness probe — nothing here can promote a
 community-fit objective into adoption. No design change; launching as
 registered (COMM-SPD 4-label surface, exact P17 machinery).
+
+### DIVERGENCE RCA OUTCOME (2026-07-17, user-gated investigation; four independent
+### lines: codex census, code-path, data/target, numeric + ultracode synthesis)
+QUESTION (user): Aalto vs community models diverge 2x in magnitude, weakly in
+rank, and the community model agrees with community consensus — "something is
+deeply wrong somewhere." VERDICT: NO BUG ANYWHERE. Decisive anchor: BOTH
+datasets pushed through a BYTE-IDENTICAL fresh-train code path reproduce the
+divergence exactly (2.00x, Spearman 0.183) => 100%% data, 0%% code/frame/serve.
+tristrokes_last==conditioned-increment verified; boards reproduced bit-exact
+from model bytes; COMM-SPD board estimand verified consistent (TimeSurface,
+published 7.738 reproduced exactly).
+FACT VERDICTS: (1) MAGNITUDE = population dispersion (community surface learns
+~1.8-2x larger per-transition contrast; enthusiasts differentiate geometry more)
+AMPLIFIED by opposite-direction extrapolation at the qwerty point (community
+qwerty trigram support 50.7%% / 0.3%% at >=100 samples vs Aalto 97.8%% / 95.3%%)
+— the +7.7%% digit is the least trustworthy on the board; sign robust. H6-as-
+denominator REFUTED (community qwerty TOTAL is 1.04x Aalto's; renorm moves the
+wrong way). Consistent with BAND-2's preregistered population-conditioned range
+[2.2, 5.0] bracketing +3.5. (2) RANKING = n=4 selection/style-as-geometry
+confound: affine/reference-invariant surface shape; community prices lsb +12.5%%
+and space transitions +13.9%% relative (graphite up, keybo-c30m down);
+disagreement PEAKS in the best-supported cells => real learned style, not
+noise; graphite<->P10 top swap is seed noise. UNIDENTIFIABLE from geometry with
+this data (the four community audits' wall, now quantified). (3) CONSENSUS
+AGREEMENT = CIRCULAR: the 4 training layouts embody genkey/oxey design
+principles; a model fit to their adopters re-expresses the design (Spearman-to-
+heuristics 0.43-0.62 vs Aalto ~0). Not independent validation.
+TWO-SURFACE LENS (user): COMM-SPD vs COMM-G2 agree on every headline, differ
+~1.3pp in level; dominant driver = training-fit population (4 labels vs full
+community + wpm filter); wpm-filter -0.17pp, seed -0.06pp, serve corpus
+IDENTICAL. NOT interchangeable at pp precision; both are n=4-grade estimates.
+PUBLISHED NUMBERS: none wrong. FRAMING OBLIGATIONS (standing): (a) never
+cross-compare the two models' saved%% without a common anchor/affine; (b) never
+mix Joint vs TimeSurface estimands in one comparison; (c) community numbers are
+population-conditioned n=4 estimates, descriptive only (search_qualified=false
+stands). Latent-inert defect (not a divergence cause) filed: timecard trigram
+table bypasses position-calibration deltas (fix before any calibrated trigram
+model). GATE DISPOSITION: COMM-OPT-1 stays PAUSED; resumption is a user
+decision with the RCA's finding that PURE/SWAP optimize a typist-confounded,
+partially circular objective (diagnostic value only) and the real unlock
+remains Phase-D collection.
