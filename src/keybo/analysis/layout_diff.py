@@ -159,6 +159,10 @@ def diff_layouts(
     if n == 3:
         if not trigram_models:
             raise ValueError("trigram diff needs trigram_models")
+        from keybo.models.base import reject_calibrated_trigram_model
+
+        for _tm in trigram_models:
+            reject_calibrated_trigram_model(_tm, "diff_layouts")
         if trigram_frame not in ("conditioned", "absolute"):
             raise ValueError(
                 f"trigram_frame must be 'conditioned' or 'absolute', got {trigram_frame!r} "

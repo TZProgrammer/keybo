@@ -70,20 +70,10 @@ class TimeSurface:
         self.geometry = geometry
         bi_models = [_load_gz_model(f"bigram_reg31_seed{s}") for s in _SEEDS]
         tri_models = [_load_gz_model(f"trigram_cond31_seed{s}") for s in _SEEDS]
-        # The trigram table below is built with predict_ms (feature-path only), which
-        # cannot apply per-position first-finger calibration deltas; the bigram path
-        # (TableBigramScorer) does apply them. Silently dropping a calibrated trigram
-        # model's deltas would mis-time every trigram, so refuse loudly instead — no
-        # production trigram model carries deltas today (divergence-RCA latent-defect
-        # finding, 2026-07-17).
+        from keybo.models.base import reject_calibrated_trigram_model
+
         for m in tri_models:
-            cal = (m.metadata.extra.get("training") or {}).get("calibration")
-            if cal and cal.get("deltas_ms"):
-                raise NotImplementedError(
-                    "TimeSurface trigram path cannot apply first-finger calibration "
-                    "deltas; wire predict_ms_at (per-position) before serving a "
-                    "calibrated trigram model"
-                )
+            reject_calibrated_trigram_model(m, "TimeSurface")
         positions = [*geometry.slots, geometry.space_position]
         self._n = len(positions)
         # 30-key boards use a 31x31 table (30 slots + space); qwerty charset is a

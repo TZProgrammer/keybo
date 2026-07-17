@@ -23,7 +23,11 @@ That estimator lives here, IN the pipeline (PINKY-FIT, a735b70 — nothing hardc
   class's inner-first level), and records the fitted deltas in the model sidecar,
 - serving adds the SIDECAR's deltas back per position pair
   (``TypingModel.predict_ms_at``, ``TableBigramScorer``) — position-aware paths only,
-  because the colliding pairs are inseparable by feature vector.
+  because the colliding pairs are inseparable by feature vector. BIGRAMS ONLY:
+  every trigram serving site uses the plain feature path and REJECTS a trigram
+  model carrying deltas (``reject_calibrated_trigram_model``) — the single-pair
+  delta API cannot express a trigram's increment/full-span pairs, and the trainer
+  gates delta fitting on ``ngram == "bigram"`` so none exist to restore.
 
 Scope: the two classes the estimator can match cleanly (pinky->ring, ring->middle;
 same row, adjacent fingers). middle->index has no matched inner control (columns 1-2

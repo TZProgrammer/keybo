@@ -180,3 +180,24 @@ class TypingModel(ABC):
                 f"but the current pipeline is {expected_feature_version!r}; retrain the model"
             )
         return cls._load_artifact(path, metadata)
+
+
+def reject_calibrated_trigram_model(model, site: str) -> None:
+    """Fail loud if a TRIGRAM model carries first-finger calibration deltas.
+
+    Trigram serving uses the plain feature path (predict_ms) at every site; the
+    per-position delta API is bigram-only BY DESIGN (a final-increment trigram's
+    delta would attach to the (b,c) pair and a full-span one needs two pairs —
+    the single-pair predict_ms_at cannot express either, and no trigram delta
+    estimator exists). The trainer never fits trigram deltas, so this guard is
+    inert today; it exists so a hand-built or future calibrated trigram model is
+    rejected instead of silently mis-served (trigram-serving audit, 2026-07-17).
+    """
+    meta = getattr(model, "metadata", None)
+    extra = getattr(meta, "extra", None) or {}
+    cal = (extra.get("training") or {}).get("calibration")
+    if cal and cal.get("deltas_ms"):
+        raise NotImplementedError(
+            f"{site}: trigram serving cannot apply first-finger calibration deltas "
+            "(bigram-only mechanism); retrain the trigram model without calibration"
+        )

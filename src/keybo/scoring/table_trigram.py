@@ -40,6 +40,9 @@ class TableTrigramScorer(IScorer):
     ) -> None:
         if chars is None:
             raise ValueError("TableTrigramScorer requires the fixed charset (chars=...)")
+        from keybo.models.base import reject_calibrated_trigram_model
+
+        reject_calibrated_trigram_model(model, "TableTrigramScorer")
         self._chars = tuple(chars)
         self._geometry = geometry
         positions = [*geometry.slots, geometry.space_position]

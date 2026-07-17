@@ -98,3 +98,22 @@ def test_time_surface_refuses_calibrated_trigram_models(monkeypatch):
     monkeypatch.setattr(tc, "_load_gz_model", fake_load)
     with pytest.raises(NotImplementedError, match="calibration"):
         tc.TimeSurface({"the": 1})
+
+
+def test_all_trigram_scorer_sites_reject_calibrated_models():
+    """Every trigram serving site fails loud on a delta-carrying trigram model
+    (trigram-serving audit 2026-07-17): the delta API is bigram-only by design."""
+    from keybo.models.base import reject_calibrated_trigram_model
+    from keybo.scoring.model_scorer import TrigramModelScorer
+    from keybo.scoring.table_trigram import TableTrigramScorer
+
+    class _Fake:
+        class metadata:
+            extra = {"training": {"calibration": {"deltas_ms": {"pr": 1.0}}}}
+
+    with pytest.raises(NotImplementedError, match="bigram-only"):
+        reject_calibrated_trigram_model(_Fake(), "unit")
+    with pytest.raises(NotImplementedError, match="bigram-only"):
+        TrigramModelScorer(_Fake(), {"the": 1})
+    with pytest.raises(NotImplementedError, match="bigram-only"):
+        TableTrigramScorer(_Fake(), {"the": 1}, chars="qwertyuiopasdfghjkl;zxcvbnm,./")

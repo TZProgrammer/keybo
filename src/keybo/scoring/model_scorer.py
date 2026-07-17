@@ -78,6 +78,9 @@ class TrigramModelScorer(_ModelScorerBase):
         trigram_freqs: Mapping[str, int],
         target_wpm: float = 0.0,
     ) -> None:
+        from keybo.models.base import reject_calibrated_trigram_model
+
+        reject_calibrated_trigram_model(model, "TrigramModelScorer")
         super().__init__(model, target_wpm)
         self._trigrams = list(trigram_freqs.keys())
         self._freqs = np.array([trigram_freqs[t] for t in self._trigrams], dtype=np.float64)
