@@ -4966,3 +4966,18 @@ If gains move <15%%, M1 REFUTED — flatness is a data fact, divergence stays
 population-only. INTERPRETATION BOUND: on qwerty-collinear data the g/b split
 is UNIDENTIFIED — this experiment measures attribution SENSITIVITY, not which
 attribution is "true"; no headline change without the user.
+
+### PRAC-DISC-1 OUTCOME (2026-07-17, runs/prac_disc1.json; identical frame,
+### seed 0, practice_term True vs False)
+M1 REFUTED at the scale level. Bigram-only saved%% vs qwerty30m:
+  practice_on : lsb +3.51  c30m +3.38  p16 +3.15  P10* +3.18  semimak +2.69  graphite +2.75
+  practice_off: lsb +3.47  c30m +3.28  p16 +3.49  P10* +3.70  semimak +2.73  graphite +2.90
+No jump toward the community magnitude (registered bar >=1.5x; observed max
+relative move +16%% on ONE layout, flagship pair moves ~0/slightly DOWN). The
+Aalto surface's ~3%% scale is a DATA fact, not a practice-residualization
+artifact — the RCA's population attribution STANDS unchanged.
+SECONDARY (bounds the standing F1 concern): the unidentifiable g-vs-b split
+moves individual layout gains by <=0.52pp (P10* 3.18->3.70; p16 +0.34) and can
+reorder WITHIN the plateau (P10* becomes bigram-top under practice-off) — the
+first direct quantification of F1's "practice term can flip near-ties":
+real, bounded at ~half a point, flagship pair insensitive (<=0.10pp).
