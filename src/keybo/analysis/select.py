@@ -106,10 +106,12 @@ class RawSupport:
             rows = load_strokes(str(path), ngram_len=n, wpm_threshold=0, min_samples=1)
             cells = build_cells(rows, wpm_lo, wpm_hi, w, 1)
             sets[f"{tag}_any"] = {_norm_pos(c.positions) for c in cells}
+            # Cell.frequency is the CORPUS occurrence count; the registered
+            # >=min_cell convention counts raw SAMPLES in the bucket (Cell.n).
             sets[f"{tag}_serve"] = {
                 _norm_pos(c.positions)
                 for c in cells
-                if c.bucket == serve_bucket and c.frequency >= min_cell
+                if c.bucket == serve_bucket and c.n >= min_cell
             }
         return cls(
             sets["bi_serve"],
