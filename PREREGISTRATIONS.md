@@ -4981,3 +4981,32 @@ moves individual layout gains by <=0.52pp (P10* 3.18->3.70; p16 +0.34) and can
 reorder WITHIN the plateau (P10* becomes bigram-top under practice-off) — the
 first direct quantification of F1's "practice term can flip near-ties":
 real, bounded at ~half a point, flagship pair insensitive (<=0.10pp).
+
+### DIVERGENCE RCA — RAW-CELL ADDENDUM (2026-07-17, report at
+### state/keybo-divergence-raw-support/report.md; fitted boards reproduced
+### byte-exact, support densities reproduced exactly)
+Raw matched-cell decomposition (BEFORE any estimator) sharpens the closed RCA:
+(1) The 1.79x amplitude is a RAW-DATA property (raw SD ratio 1.781 vs fitted
+1.7916; robust to support floors and pace strata). XGBoost shrinks both
+populations' dispersion equally (~0.51 fit/raw both) — the estimator PRESERVES,
+mildly moderates, never creates the gap. Codex's dispersion-vs-amplification
+question is hereby answered from the raw side: DISPERSION.
+(2) NEW QUANTIFIED EPISTEMIC FACT about the flagship headline: on the jointly-
+observed common cell subset, Aalto RAW shows optimized layouts -1.88%% (slower
+than qwerty); the fitted +1.96%% is created by the model generalizing over the
+30-35%% of each optimized layout's corpus mass that Aalto typists NEVER
+produced. FRAMING (registered): this is NOT fabrication — raw rare-position
+cells carry the OPPOSITE confound (practice deficits of qwerty's rare keys sit
+exactly where optimized layouts put frequent letters), and the model's
+position-generalization is the LOLO-validated mechanism; PRAC-DISC-1 already
+showed the sign-flip is NOT the practice term (gains move <=0.5pp with b off).
+But the claim's epistemic status is now precise: "+3.5%% saved" is a
+MODEL-MEDIATED inference with NO raw within-population observational support —
+the quantified, definitive argument for Phase-D / n=1 human validation.
+(3) Fine rank order is LARGELY ESTIMATOR-GENERATED and typist-idiosyncratic:
+raw-vs-fitted rank Spearman 0.07-0.11; the 4 community typists disagree among
+THEMSELVES (per-typist board Spearman swings +0.88 to -0.17) — the raw-data
+proof of unidentifiability at n=4.
+Two recipe asymmetries noted (Aalto all-WPM+CAND4-d5 vs community [40,140)+
+REG-d3) — compose with, do not cause, the population signal. NO published
+number wrong; no bug. Feeds codex's mechanism-contract matrix (its 0c0b029).
