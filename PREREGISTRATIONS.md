@@ -4943,3 +4943,26 @@ VERDICT: keybo-lsb remains the deliverable recommendation. The BOTH-arm
 exhibits are recorded as the robust-frontier existence proof (the Phase-D
 version of this experiment — with >=9 contributors — is the one that could
 change a decision). No candidate registered from any arm, as preregistered.
+
+## PRAC-DISC-1 — practice-term x qwerty-collinearity discriminator (registered
+## 2026-07-17, BEFORE results; from the target-semantics audit's M1 mechanism)
+HYPOTHESIS M1: Aalto's served surface is artificially FLAT — with 98.7%% qwerty
+data, geometry is collinear with ngram identity, so the practice backfit
+b(ngram) absorbs between-ngram variance and the served geometry-only g
+understates layout gaps (~3%%); the community surface (99%% non-qwerty, same
+bigrams at many positions) deconfounds geometry and serves a steep g (6-7%%).
+Falsified pace story (verified by the audit): serve-wpm sweep 60->120 moves
+gains <=0.4pp — WPM definitions CANNOT explain the doubling.
+DISCRIMINATOR (audit's protocol): retrain the Aalto BIGRAM surface on the
+identical frame (bistrokes_v5, REG-LOLO params, seed 0) with practice_term
+FALSE vs TRUE; build T2 @ wpm 90; compare bigram-only saved%% vs qwerty30m for
+the fixed board (keybo-lsb, keybo-c30m, p16-balance, P10-w0.5*, semimak,
+graphite). REGISTERED READINGS: if practice-off gains jump toward the
+community magnitude (>=1.5x), M1 CONFIRMED — the flatness is an attribution
+artifact of the practice-residualization design, and the +3.5%% headline's
+SCALE rides on an unidentifiable g-vs-b split (links to standing finding F1;
+ranking expected stable since the scale effect is near-monotone — check).
+If gains move <15%%, M1 REFUTED — flatness is a data fact, divergence stays
+population-only. INTERPRETATION BOUND: on qwerty-collinear data the g/b split
+is UNIDENTIFIED — this experiment measures attribution SENSITIVITY, not which
+attribution is "true"; no headline change without the user.
