@@ -5081,3 +5081,31 @@ DECISION FRAMEWORK (ADVISORY): gate on the plateau, then argue from primes +
 support + adoption + robustness + dominance. The dossier produces a
 RECOMMENDATION; flagship promotion remains USER-GATED. The COMM-SPD caveats
 (extrapolated qwerty anchor; n=4 style fit) remain in force for comm_saved.
+
+### SELECT-1 OUTCOME (2026-07-18; dossier runs/select1_dossier.json sha 7452656c328820f6...)
+PLATEAU (0.10pp Aalto gate, best +3.58): BOTH-CHEB1, keybo-c30m, BOTH-CHEB0,
+keybo-lsb, BOTH-CHEB8, BOTH-SEED-keybo-lsb. All six Pareto-survive; pairwise
+wins on the 10 registered axes: keybo-lsb 4 = BOTH-SEED-keybo-lsb 4 >
+BOTH-CHEB0 3 > keybo-c30m 1 = BOTH-CHEB8 1 > BOTH-CHEB1 0. The speed-column
+king (BOTH-CHEB1, +3.58, seed-SD 0.031) takes ZERO wins — its in-gate speed
+edge (registered as noise) is bought with the worst strain profile.
+BIAS QUANTIFICATION (registered instrument): across the six survivors, 50.0%
+of oxeylyzer-1's full-score spread comes from the flow-taste trigram table and
+42.4% from the fspeed time-proxy double-count — 92% taste-or-double-counted,
+8% strain content. The stripped tools are not a nicety; they change the answer.
+KEY READINGS: keybo-lsb takes the best strain residuals among survivors
+(genkey' 1.32, oxey1' -0.48e9, oxey2' -5.01e12 tied) AND the highest raw
+support on the board (tri-serve 13.9% / bi-serve 72.4% — the least
+model-mediated claim of any candidate). +R SENSITIVITY (disclosed per
+registration): keeping redirect penalties flips the oxey1' top to
+BOTH-SEED-keybo-lsb (redirect 2.04%, board best); the dominance tie (4-4) is
+between keybo-lsb and this its own joint-pipeline sibling (13 slots differ,
+same skeleton).
+RECOMMENDATION (ADVISORY; promotion user-gated): keybo-lsb stays THE flagship.
+Tiebreak vs its sibling: (i) highest raw support = most measurement-backed
+claim; (ii) native-weight strain sweep; (iii) sfb 1.14 vs 1.69; the sibling's
+case rests on comm_saved (+7.57 vs +6.90; caveated n=4 style-fit gauge) and
+the redirect-as-discomfort reading. IF the user weights redirect comfort
+heavily, BOTH-SEED-keybo-lsb is the named runner-up and is itself a keybo-lsb
+variant — the flagship FAMILY is settled either way. Adoption axes do not
+discriminate (all survivors are full remaps, zxcv lost, hand balance 46-51%).
