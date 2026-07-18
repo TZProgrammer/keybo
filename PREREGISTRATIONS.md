@@ -5010,3 +5010,31 @@ proof of unidentifiability at n=4.
 Two recipe asymmetries noted (Aalto all-WPM+CAND4-d5 vs community [40,140)+
 REG-d3) — compose with, do not cause, the population signal. NO published
 number wrong; no bug. Feeds codex's mechanism-contract matrix (its 0c0b029).
+
+### DIVERGENCE RCA — FINITE-SAMPLE ADDENDUM + REGISTERED WORDING CORRECTION
+### (2026-07-17, report at state/keybo-divergence-finite-sample/report.md;
+### community board reproduced bit-exact; 500+ draws/arm controls)
+The control the RCA never ran (Aalto downsampled to community structure,
+identical recipe, distributional): VERDICTS —
+finite-n DEFLATES dispersion (community std 5.358 sits at ~P98 of the Aalto
+n=4 confound-matched null, median 2.36; n-sweep 4->16 tightens toward Aalto's
+2.9) — small n is NOT the magnitude mechanism; its real damage is rank
+identifiability. LAYOUT<->TYPIST CONFOUND = PRIMARY magnitude driver: at
+matched per-person volume community still std 4.52 vs Aalto nulls 1.71-2.36 —
+it is WHICH 4 people (localized to ddn/alite), not count or volume; the Aalto
+analog arm (4 people on 1 distinctive layout) reaches P95=7.1 — same mechanism
+expressible inside Aalto. REGULARIZATION refuted (less-reg gives MORE spread).
+EXTRAPOLATION = level-only (drop qwerty: ratio 1.826->1.635).
+WORDING CORRECTION (supersedes "real population dispersion x amplifier" in
+b50983d/57a1729): the defensible statement is — "~1.8x larger layout
+differentiation AMONG THESE 4 PRACTICED TYPISTS, tight given them (bootstrap
+CI [5.35,6.07]) but NOT population-identified (between-person variance is
+unmeasured at 1 typist/layout and the Aalto analog shows it is huge);
+the graphite-vs-P10 community top spot is n=4 noise (57/43 within-person
+bootstrap, flips under LOCO and recipe); the 6-7%-vs-qwerty LEVEL is partly
+extrapolated (qwerty support 0.50)." NOISE LAYERING reconciled: seed SD (0.04)
+<< within-person bootstrap << between-person (unmeasured) — the confirmatory
+workflow's "stable 15-sigma graphite>c30m" is stability GIVEN these data;
+the finite-sample coin-flip is about WHICH data you were dealt. No number
+miscomputed anywhere; the community dispersion/max-saved is OVER-INTERPRETED
+if read as population fact or graphite endorsement. RCA remains: NO BUG.
