@@ -5038,3 +5038,46 @@ workflow's "stable 15-sigma graphite>c30m" is stability GIVEN these data;
 the finite-sample coin-flip is about WHICH data you were dealt. No number
 miscomputed anywhere; the community dispersion/max-saved is OVER-INTERPRETED
 if read as population fact or graphite endorsement. RCA remains: NO BUG.
+
+### KAN-PRIME-1 + SELECT-1 — de-biased community gauges and the flagship-selection
+### toolkit (2026-07-18; registered BEFORE any candidate was scored on them)
+MOTIVATION (user directive): the community tools mix (T) hand-tuned time-proxy
+terms — superseded by, and double-counting, the measured speed surfaces when
+the tools sit beside them in a scalarization — with (S) flow-taste tables
+(oxeylyzer-1 pays inrolls +250 vs alternates +40, redirects -340..-550: a
+style axis with no registered evidential basis), and (C) mechanical-strain
+terms claiming harm beyond time. Build primes = each tool restricted to C at
+its NATIVE weights, plus the instruments to select THE flagship among
+plateau-equivalent candidates.
+CLASSIFICATION (from the parity-pinned ports, community.py):
+genkey = 3.0*fspeed(T) + 1.0*LSB%(C) + 0.3*|index-balance|(C) — no S in stock
+config; oxey1 = fspeed(T) + stretches(C) + pinky_ring(C) + trigram-table(S);
+oxey2 = wfd(T) + stretch(C).
+PRIMES: genkey' = 1.0*LSB% + 0.3*|index-balance| (lower better);
+oxey1' = stretches + pinky_ring; oxey2' = stretch (both higher=better,
+negative penalties). SENSITIVITY (registered): oxey1'+R additionally keeps the
+redirect-only part of S (redirect-as-discomfort reading); selection arguments
+must be robust to the +R swap or say so. EXACTNESS GATE: score() is now
+defined as the sum of components(); the frozen binary goldens (G1/G2) plus
+prime identity tests gate losslessness.
+SELECT-1 INSTRUMENTS: (i) plateau gate — Aalto saved% (G4 convention, wpm 90,
+seed-mean) within 0.10pp of the candidate-set max; fine speed differences
+inside the gate carry NO selection weight (RCA: estimator-generated);
+(ii) estimator stability — per-seed saved% spread; (iii) pace robustness —
+saved% at wpm 70/110; (iv) RawSupport — % of corpus mass on raw-observed K31
+position-ngram cells (serve = bucket 80 with >=10 samples, production cell
+convention 40-140/20; any = >=1 sample, any bucket): high = the candidate's
+claim rides on measurement, low = on extrapolation (operationalizes the RCA
+raw-cell finding at candidate level); (v) adoption — unchanged/same-finger/
+same-hand/zxcv counts vs qwerty30m + left-hand corpus mass; (vi) dominance —
+pairwise wins + Pareto among plateau survivors on the axes [comm_saved,
+genkey', oxey1', oxey2', sfb, sfs, lsb, redir, tri-serve-support,
+unchanged-keys] (equal-weight axis count, no scalarization).
+CANDIDATE SET (pinned before scoring): the 34 board rows of
+runs/comm_opt1.json (sha256 0afd7e4103690372...) + qwerty30m. Raw cell TSVs:
+bistrokes31_v1 0f2663ad6ed42aa5... / tristrokes31_cond_v1 46c6c3b1cc8919ad....
+Driver: keybo-e2e/select1_board.py -> runs/select1_dossier.json.
+DECISION FRAMEWORK (ADVISORY): gate on the plateau, then argue from primes +
+support + adoption + robustness + dominance. The dossier produces a
+RECOMMENDATION; flagship promotion remains USER-GATED. The COMM-SPD caveats
+(extrapolated qwerty anchor; n=4 style fit) remain in force for comm_saved.
