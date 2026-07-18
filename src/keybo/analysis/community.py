@@ -18,6 +18,14 @@ All three run on the tools' OWN corpora (vendored under
 their native corpus convention; the analyzer's shared-corpus stats live in
 :mod:`keybo.analysis.kmstats`.
 
+Each scorer also exposes an exact term decomposition (``components``) and a
+"primed" score (``score_primed``, KAN-PRIME-1): the tool restricted to its
+mechanical-strain terms, with the tool's native weights — dropping (T) the
+hand-tuned same-finger/time-proxy terms that the measured speed surfaces
+supersede, and (S) the trigram flow-preference table (rolls/alternation/
+redirect taste weights). ``score()`` is defined as the sum of components, so
+the golden parity tests gate the decomposition's exactness.
+
 Layouts are our canonical 30-char row-major strings. The oxeylyzer boards are
 31-key (they see a pinned character on the home-row quote slot): C30M-charset
 layouts pin ``;`` there and classic-charset layouts pin ``'`` — chosen
@@ -164,18 +172,27 @@ class Oxeylyzer2:
         self.ST_J = np.array([j for _, j, _ in st])
         self.ST_D = np.array([dint for _, _, dint in st], dtype=np.int64)
 
-    def score(self, lay30: str) -> int:
+    def components(self, lay30: str) -> dict[str, int]:
+        """Exact term split: ``score == wfd + stretch``. wfd is the same-finger
+        time proxy (T); stretch is the mechanical-strain term (C)."""
         cad, _ = _dof_arrays(lay30, self.chars)
         a, b = cad[self.SF_I], cad[self.SF_J]
         wb = int(((self.SFW[a, b] + self.SFW[b, a]) * self.SF_D).sum())
         a, b = cad[self.ST_I], cad[self.ST_J]
-        return wb + int(((self.STW[a, b] + self.STW[b, a]) * self.ST_D).sum())
+        return {"wfd": wb, "stretch": int(((self.STW[a, b] + self.STW[b, a]) * self.ST_D).sum())}
+
+    def score(self, lay30: str) -> int:
+        c = self.components(lay30)
+        return c["wfd"] + c["stretch"]
 
     def wfd(self, lay30: str) -> int:
         """The weighted-(same-)finger-distance component alone."""
-        cad, _ = _dof_arrays(lay30, self.chars)
-        a, b = cad[self.SF_I], cad[self.SF_J]
-        return int(((self.SFW[a, b] + self.SFW[b, a]) * self.SF_D).sum())
+        return self.components(lay30)["wfd"]
+
+    def score_primed(self, lay30: str) -> int:
+        """oxey2' (KAN-PRIME-1): strain residual — the stretch term only, native
+        weights; the wfd time proxy is superseded by the measured surfaces."""
+        return self.components(lay30)["stretch"]
 
 
 _BAD = {0, 1, 2, 7, 8, 9}  # v1: non-index, non-thumb fingers
@@ -269,26 +286,52 @@ class Oxeylyzer1:
         self.T_C = np.array([[idx[t[0]], idx[t[1]], idx[t[2]]] for t, _ in keep])
         self.T_F = np.array([int(f * cf * d["trigram_total"]) for _, f in keep], dtype=np.int64)
         PW = np.zeros((N31, N31, N31), dtype=np.int64)
+        PW_RED = np.zeros((N31, N31, N31), dtype=np.int64)
+        _red = {"redirects", "redirects_sfs", "bad_redirects", "bad_redirects_sfs"}
         for i in range(N31):
             for j in range(N31):
                 for k in range(N31):
                     pat = _v1_pattern(FINGERS[i], FINGERS[j], FINGERS[k])
                     if pat:
                         PW[i, j, k] = self.WT[pat]
+                        if pat in _red:
+                            PW_RED[i, j, k] = self.WT[pat]
         self.PW = PW
+        self.PW_RED = PW_RED
 
-    def score(self, lay30: str) -> int:
+    def components(self, lay30: str) -> dict[str, int]:
+        """Exact term split: ``score == fspeed + stretch + pinky_ring + trigrams``.
+        fspeed is the same-finger time proxy (T); trigrams is the flow-preference
+        table (S; its redirect-only part reported for the +R sensitivity);
+        stretch and pinky_ring are the mechanical-strain terms (C)."""
         cad, dof = _dof_arrays(lay30, self.chars)
         a, b = cad[self.SF_I], cad[self.SF_J]
-        fspeed = (self.SFW[a, b] * self.SF_D).sum()
+        fspeed = int((self.SFW[a, b] * self.SF_D).sum())
         a, b = cad[self.ST_I], cad[self.ST_J]
-        stretch = (self.STW[a, b] * self.ST_D).sum()
+        stretch = int((self.STW[a, b] * self.ST_D).sum())
         a, b = cad[self.PR_I], cad[self.PR_J]
         pinky_ring = int(self.B[a, b].sum()) * self.WT["pinky_ring_bigrams"]
-        tri = (
-            self.T_F * self.PW[dof[self.T_C[:, 0]], dof[self.T_C[:, 1]], dof[self.T_C[:, 2]]]
-        ).sum()
-        return int(fspeed + stretch + pinky_ring + tri)
+        t0, t1, t2 = dof[self.T_C[:, 0]], dof[self.T_C[:, 1]], dof[self.T_C[:, 2]]
+        return {
+            "fspeed": fspeed,
+            "stretch": stretch,
+            "pinky_ring": pinky_ring,
+            "trigrams": int((self.T_F * self.PW[t0, t1, t2]).sum()),
+            "trigrams_redirect_part": int((self.T_F * self.PW_RED[t0, t1, t2]).sum()),
+        }
+
+    def score(self, lay30: str) -> int:
+        c = self.components(lay30)
+        return c["fspeed"] + c["stretch"] + c["pinky_ring"] + c["trigrams"]
+
+    def score_primed(self, lay30: str, keep_redirects: bool = False) -> int:
+        """oxey1' (KAN-PRIME-1): strain residual — stretch + pinky_ring, native
+        weights. ``keep_redirects`` is the registered +R sensitivity variant
+        (redirect penalties read as discomfort rather than taste)."""
+        c = self.components(lay30)
+        return (
+            c["stretch"] + c["pinky_ring"] + (c["trigrams_redirect_part"] if keep_redirects else 0)
+        )
 
 
 class Genkey:
@@ -305,11 +348,16 @@ class Genkey:
         self.S = {k: float(v) for k, v in d["skipgrams"].items() if len(k) == 2}
         self.L = {k: float(v) for k, v in d["letters"].items()}
 
-    def score(self, lay30: str) -> float:
+    def components(self, lay30: str) -> dict[str, float]:
+        """Exact term split: ``score == 3.0*fspeed + 1.0*lsb_pct + 0.3*index_imbalance_pct``.
+        fspeed is the same-finger time proxy (T); lsb_pct and index_imbalance_pct
+        are the mechanical-strain/balance terms (C). Stock config has no trigram
+        (flow) term."""
         g = [list(lay30[0:10]), list(lay30[10:20]), list(lay30[20:30])]
         total = sum(self.L.get(g[r][c], 0.0) for r in range(3) for c in range(10))
         if total <= 0:
-            return float("inf")
+            inf = float("inf")
+            return {"fspeed": inf, "lsb_pct": inf, "index_imbalance_pct": inf}
         fmap: dict[int, list[tuple[int, int]]] = {f: [] for f in range(8)}
         for c in range(10):
             for r in range(3):
@@ -341,11 +389,26 @@ class Genkey:
                         lsb += self.B.get(k1 + k2, 0.0) + self.B.get(k2 + k1, 0.0)
         left = sum(self.L.get(g[r][c], 0.0) for r, c in fmap[3])
         right = sum(self.L.get(g[r][c], 0.0) for r, c in fmap[4])
+        return {
+            "fspeed": fs_total,
+            "lsb_pct": 100.0 * lsb / total,
+            "index_imbalance_pct": abs(100.0 * (right - left) / total),
+        }
+
+    def score(self, lay30: str) -> float:
+        c = self.components(lay30)
         return (
-            self.FSPEED_W * fs_total
-            + self.LSB_W * 100.0 * lsb / total
-            + self.IDX_W * abs(100.0 * (right - left) / total)
+            self.FSPEED_W * c["fspeed"]
+            + self.LSB_W * c["lsb_pct"]
+            + self.IDX_W * c["index_imbalance_pct"]
         )
+
+    def score_primed(self, lay30: str) -> float:
+        """genkey' (KAN-PRIME-1): strain/balance residual — LSB% + index-balance,
+        native weights; the 3x fspeed time proxy is superseded by the measured
+        surfaces."""
+        c = self.components(lay30)
+        return self.LSB_W * c["lsb_pct"] + self.IDX_W * c["index_imbalance_pct"]
 
 
 @lru_cache(maxsize=4)

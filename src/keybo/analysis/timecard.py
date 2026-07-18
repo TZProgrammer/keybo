@@ -65,7 +65,11 @@ class TimeSurface:
     """The K31 production time surface over one trigram corpus."""
 
     def __init__(
-        self, trigram_freqs: dict[str, int], target_wpm: float = 90.0, geometry=ROW_STAGGERED_30
+        self,
+        trigram_freqs: dict[str, int],
+        target_wpm: float = 90.0,
+        geometry=ROW_STAGGERED_30,
+        keep_seed_tables: bool = False,
     ):
         self.geometry = geometry
         bi_models = [_load_gz_model(f"bigram_reg31_seed{s}") for s in _SEEDS]
@@ -79,15 +83,11 @@ class TimeSurface:
         # 30-key boards use a 31x31 table (30 slots + space); qwerty charset is a
         # placeholder — the table is position-indexed, chars only key the corpus filter.
         placeholder = "qwertyuiopasdfghjkl;zxcvbnm,./"
-        self._T2 = np.mean(
-            [
-                TableBigramScorer(
-                    m, {}, target_wpm=target_wpm, chars=placeholder, geometry=geometry
-                )._T
-                for m in bi_models
-            ],
-            axis=0,
-        )
+        T2s = [
+            TableBigramScorer(m, {}, target_wpm=target_wpm, chars=placeholder, geometry=geometry)._T
+            for m in bi_models
+        ]
+        self._T2 = np.mean(T2s, axis=0)
         vecs = np.vstack(
             [
                 trigram_features_from_positions(geometry, (a, b, c), wpm=target_wpm)
@@ -96,12 +96,31 @@ class TimeSurface:
                 for c in positions
             ]
         )
-        self._Tc = np.mean(
-            [m.predict_ms(vecs).reshape(self._n, self._n, self._n) for m in tri_models],
-            axis=0,
-        )
+        Tcs = [m.predict_ms(vecs).reshape(self._n, self._n, self._n) for m in tri_models]
+        self._Tc = np.mean(Tcs, axis=0)
+        # per-seed tables back the SELECT-1 estimator-stability instrument
+        self._T2s, self._Tcs = (T2s, Tcs) if keep_seed_tables else (None, None)
         self.tri = {k: v for k, v in trigram_freqs.items() if len(k) == 3}
         self.total_mass = sum(self.tri.values())
+
+    def seed_totals(self, lay30: str) -> list[float]:
+        """Per-seed corpus totals (ms) — the estimator spread behind ``card().total_ms``
+        (which uses the seed-MEAN tables). Requires ``keep_seed_tables=True``."""
+        if self._T2s is None:
+            raise ValueError("TimeSurface built without keep_seed_tables=True")
+        slot_of = {ch: i for i, ch in enumerate(lay30)}
+        slot_of[" "] = self._n - 1
+        totals = []
+        for T2, Tc in zip(self._T2s, self._Tcs, strict=False):
+            total = 0.0
+            for ng, f in self.tri.items():
+                try:
+                    a, b, c = slot_of[ng[0]], slot_of[ng[1]], slot_of[ng[2]]
+                except KeyError:
+                    continue
+                total += (T2[a, b] + Tc[a, b, c]) * f
+            totals.append(float(total))
+        return totals
 
     def card(self, lay30: str, ref_total_ms: float | None = None) -> TimeCard:
         slot_of = {ch: i for i, ch in enumerate(lay30)}
