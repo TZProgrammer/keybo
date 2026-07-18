@@ -4916,3 +4916,30 @@ saved% (labeled artifact-dominated, RCA guardrail) and the plateau-internal
 contrast. ALL THREE ARMS ARE DIAGNOSTIC EXHIBITS — the RCA's stable-confound
 finding means no winner here is a candidate under any outcome; the experiment
 answers "what does this objective WANT", which is what was asked.
+
+### COMM-OPT-1 OUTCOME (2026-07-17, runs/comm_opt1.json; 33 searches, 5.4 min;
+### diagnostics per 6ce86b8 — no arm produces a candidate)
+PURE (community objective alone): degenerate, as predicted — winner PURE-r2
+reaches comm +9.51%% (self-anchored) but genkey 56.0 (worse than colemak),
+oxey1 10.0, Aalto +1.68%%: the confounded objective, unconstrained, walks off
+every other gauge. Exhibit of style-fit, not a layout.
+SWAP (community replaces Aalto in the keybo-lsb pipeline): winner SWAP-CHEB3
+comm +8.67%%, plateau-contrast +1.78pp over keybo-lsb — but pays 1.3-1.6pp of
+AALTO speed (+2.17%%) to get it. The heuristic axes keep it sane (genkey 27.7 —
+semimak-class); the surface it optimizes simply disagrees with Aalto about
+what fast IS. Registered expectation ("lands nearer graphite") CONFIRMED in
+character: roll-heavy, low-lsb structure.
+BOTH (both surfaces as axes, Aalto cap): the interesting one. 8 searches land
+within 0.10pp of keybo-lsb's Aalto speed while gaining +0.11..+0.67pp
+plateau-contrast on the community surface; top by contrast BOTH-SEED-keybo-lsb
+(aalto +3.48, comm +7.57) and BOTH-CHEB1 (aalto +3.58 — ABOVE keybo-lsb —
+comm +7.56, but 22/30 slots = P10-family, i.e. the joint objective rediscovers
+the P10 basin the community surface loves). REGISTERED OBSERVATION RULE FIRES:
+the two-population robust frontier is NON-DEGENERATE — you can hold the Aalto
+optimum and buy community-model preference. Caveat welded on: the "community
+preference" being bought is the RCA's 15-sigma style confound, so this is
+robustness to A PARTICULAR 4-typist style, not to typists in general.
+VERDICT: keybo-lsb remains the deliverable recommendation. The BOTH-arm
+exhibits are recorded as the robust-frontier existence proof (the Phase-D
+version of this experiment — with >=9 contributors — is the one that could
+change a decision). No candidate registered from any arm, as preregistered.
