@@ -5151,3 +5151,32 @@ QREF = qwerty30m pooled total. Same BEATS verdict reported on its board.
 CAVEATS (registered): pooling does NOT resolve the RCA population
 non-identifiability — POOL is an evidence-weighted compromise gauge, not a
 truth upgrade; its community component inherits all COMM-SPD caveats.
+
+### OCT-OPT-1 OUTCOME (2026-07-18; runs/oct_opt1.json sha a49be5bed23926e2...)
+FOUR candidates pass the registered BEATS-KEYBO-LSB criterion (plateau +
+h2h majority + robust under +R): OCT-PRI-SEED-lsb-sib (+3.52 aalto, 7-3, R7-3,
+layout pyuo,vdfnmhiea.cstlrj'-kzgwbqx), OCT-PRI-SEED-keybo-c30m (+3.50, 7-2,
+R7-2, pyuo,vdmnlhiea.wstrcj'-kzgfbqx), OCT-PRI-SEED-keybo-lsb (+3.49, 6-3),
+OCT-PRI-r1 (+3.43, 6-4). The +R gate did real work: two 6-4 rows (PRI-r0,
+PRI-SEED-BOTH-CHEB0) failed it (5-5 under redirect-as-discomfort) and are NOT
+candidates. All four winners carry the keybo-lsb skeleton (top two differ from
+keybo-lsb in 12-14 slots; the lsb-sib-seeded run drifted BACK toward the
+keybo-lsb basin — 12 vs its seed's 20 slots away).
+WHAT THE WIN IS MADE OF (registered honesty): the candidates hold the Aalto
+plateau and win on primes (gk' 0.87-0.89 vs 1.32; o1' -0.35..-0.42 vs -0.48;
+o2' -4.5..-4.7 vs -5.01), redirect, lsb%, comm, (c30m-seed) tri-support —
+while paying SFB 1.82-2.08 vs 1.14 and SFS ~7.7-8.0 vs 7.13. This is the
+registered T/C design operating as intended: the primes deliberately do not
+price same-finger content (the measured surface does), and the surface says
+the SFB increase costs nothing measurable at wpm 90 (aalto holds). CAVEATS:
+(1) criterion-relative — the search optimized axes that overlap the judgment
+axes (registered design, disclosed); (2) the full tools disagree STRONGLY
+(genkey 42-51 vs keybo-lsb's 31.7): community optics would read these as
+worse layouts; the de-biased reading says that objection is 92% taste/
+double-count, but the SFB trade is exactly where community intuition and our
+model-mediated pricing diverge — an empirical question only Phase-D-style
+data can settle; (3) plateau speed differences (+3.52 vs +3.51) remain noise.
+DISPOSITION: candidates named; NO promotion recommendation change without
+user decision on the crux: accept measured-surface SFB pricing (take
+OCT-PRI-SEED-keybo-c30m, the best record 7-2/R7-2 with a raw-support WIN) or
+keep community-legible SFB conservatism (keep keybo-lsb). USER-GATED.
