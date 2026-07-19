@@ -5202,3 +5202,13 @@ never in the registered SELECT-1 candidate set and loses the h2h 4-6 vs
 keybo-lsb (its speed edge is in-plateau noise by the registered rule; its
 gauge profile is why SEL-1 passed it over). No candidate change. Flagship
 recommendation unchanged: keybo-lsb, runner-up lsb-sib. USER-GATED.
+
+### POOL-1 STAGE C — PURE-POOL diagnostic (2026-07-19; registered before run)
+User request: the "just pool" layout. Mirror of COMM-OPT-1's PURE arm: argmax
+pooled speed only (no other objective), 3 cold SA restarts (12x16k + 2-opt,
+seeds 999600-2), DIAGNOSTIC frontier only — same status as PURE-community
+(a985170): reveals what the pooled surface alone wants; no candidate
+implications (the registered beats-criterion and flagship recommendation are
+untouched). Output runs/pool_pure.json; full standard gauge rows reported for
+PURE-POOL best and the canonical POOL+tools arm (PSWAP-MMX, the equal-weight
+attractor that two starts converged to; PSWAP-CHEB9 noted as pool-max draw).
