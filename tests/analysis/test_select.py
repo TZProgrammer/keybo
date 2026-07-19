@@ -55,3 +55,32 @@ def test_raw_support_math():
     # ngrams with off-layout chars are excluded from the denominator
     sup2 = rs.support(lay, {"qw": 1.0, "q#": 9.0}, {"qwe": 1.0})
     assert sup2["bi_serve_pct"] == pytest.approx(100.0)
+
+
+def test_usage_stats_qwerty_corner():
+    from keybo.analysis.select import usage_stats
+
+    u = usage_stats(QWERTY30M, {"a": 3.0, "p": 1.0})  # a: home-row LP; p: top-row RP
+    assert u["left_pct"] == pytest.approx(75.0)
+    assert u["home_row_pct"] == pytest.approx(75.0)
+    assert u["pinky_pct"] == pytest.approx(100.0)
+    assert u["fingers"]["LP"] == pytest.approx(75.0)
+    assert u["fingers"]["RP"] == pytest.approx(25.0)
+
+
+def test_behavior_stats_structure():
+    from keybo.analysis.community import community_suite
+    from keybo.analysis.select import behavior_stats
+
+    _, v1, _ = community_suite(";")
+    q = behavior_stats(QWERTY30M, v1)
+    s = behavior_stats("flhvz'wuoysrntkcdeaixjbmqpg,.-", v1)  # semimak
+    for r in (q, s):
+        for k, v in r.items():
+            assert 0.0 <= v <= 100.0, (k, v)
+    # same-char reuse is layout-invariant (same char -> same key everywhere)
+    for k in ("sk1_samekey_pct", "sk2_samekey_pct", "sk3_samekey_pct"):
+        assert q[k] == pytest.approx(s[k])
+    # qwerty's same-finger skip-travel dwarfs semimak's (sfs 11.35 vs 5.83)
+    assert q["sk1_sftravel_pct"] > s["sk1_sftravel_pct"] * 1.5
+    assert q["bad_redirect_pct"] > s["bad_redirect_pct"]

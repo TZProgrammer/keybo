@@ -60,6 +60,94 @@ def hand_balance_pct(lay30: str, letter_freqs: dict[str, float]) -> float:
     return 100.0 * left / total if total else float("nan")
 
 
+_FINGER_OF_COL = ("LP", "LR", "LM", "LI", "LI", "RI", "RI", "RM", "RR", "RP")
+
+
+def usage_stats(lay30: str, letter_freqs: dict[str, float]) -> dict:
+    """Corpus-mass usage: hand split, home-row share, per-finger utilization."""
+    fingers = dict.fromkeys(("LP", "LR", "LM", "LI", "RI", "RM", "RR", "RP"), 0.0)
+    left = home = total = 0.0
+    for slot, ch in enumerate(lay30):
+        f = letter_freqs.get(ch, 0.0)
+        total += f
+        fingers[_FINGER_OF_COL[slot % 10]] += f
+        if slot % 10 < 5:
+            left += f
+        if 10 <= slot < 20:
+            home += f
+    if total <= 0:
+        return {"left_pct": float("nan")}
+    out = {
+        "left_pct": 100.0 * left / total,
+        "home_row_pct": 100.0 * home / total,
+        "pinky_pct": 100.0 * (fingers["LP"] + fingers["RP"]) / total,
+    }
+    out["fingers"] = {k: 100.0 * v / total for k, v in fingers.items()}
+    return out
+
+
+def _bad_redirect_tensor():
+    """oxeylyzer-1 bad-redirect indicator over dof-position triples (cached)."""
+    import numpy as np
+
+    from keybo.analysis.community import FINGERS, N31, _v1_pattern
+
+    bad = np.zeros((N31, N31, N31), dtype=bool)
+    for i in range(N31):
+        for j in range(N31):
+            for k in range(N31):
+                pat = _v1_pattern(FINGERS[i], FINGERS[j], FINGERS[k])
+                if pat in ("bad_redirects", "bad_redirects_sfs"):
+                    bad[i, j, k] = True
+    return bad
+
+
+_BADRED_CACHE: list = []
+
+
+def behavior_stats(lay30: str, v1) -> dict:
+    """Typing-behavior gauges on the oxeylyzer-1 vendored corpus + fingering.
+
+    * ``bad_redirect_pct`` — trigram mass classified bad-redirect (oxey semantics);
+    * same-finger reuse at skip 1-3, split ``samekey`` (finger already on the
+      key: zero repositioning) vs ``travel`` (same finger, different key:
+      serial repositioning) — the return-to-home fiction quantified.
+    """
+    import numpy as np
+
+    from keybo.analysis.community import FINGERS, _dof_arrays, _load_vendored
+
+    cad, dof = _dof_arrays(lay30, v1.chars)
+    if not _BADRED_CACHE:
+        _BADRED_CACHE.append(_bad_redirect_tensor())
+    bad = _BADRED_CACHE[0]
+    t = v1.T_C
+    mass = v1.T_F.sum()
+    badm = v1.T_F[bad[dof[t[:, 0]], dof[t[:, 1]], dof[t[:, 2]]]].sum()
+    out = {"bad_redirect_pct": 100.0 * float(badm) / float(mass)}
+    d = _load_vendored("oxeylyzer1-english.json.gz")
+    idx = {c: k for k, c in enumerate(v1.chars)}
+    fing = np.array(FINGERS)
+    for k, key, tot_key in (
+        (1, "skipgrams", "skipgram_total"),
+        (2, "skipgrams2", "skipgram2_total"),
+        (3, "skipgrams3", "skipgram3_total"),
+    ):
+        tot = samekey = travel = 0.0
+        for pair, f in d[key].items():
+            if len(pair) != 2 or pair[0] not in idx or pair[1] not in idx:
+                continue
+            w = f * d[tot_key]
+            tot += w
+            if pair[0] == pair[1]:
+                samekey += w
+            elif fing[dof[idx[pair[0]]]] == fing[dof[idx[pair[1]]]]:
+                travel += w
+        out[f"sk{k}_samekey_pct"] = 100.0 * samekey / tot if tot else float("nan")
+        out[f"sk{k}_sftravel_pct"] = 100.0 * travel / tot if tot else float("nan")
+    return out
+
+
 def _norm_pos(seq) -> tuple:
     return tuple(tuple(int(v) for v in p) for p in seq)
 
