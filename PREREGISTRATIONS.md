@@ -5109,3 +5109,45 @@ the redirect-as-discomfort reading. IF the user weights redirect comfort
 heavily, BOTH-SEED-keybo-lsb is the named runner-up and is itself a keybo-lsb
 variant — the flagship FAMILY is settled either way. Adoption axes do not
 discriminate (all survivors are full remaps, zxcv lost, hand balance 46-51%).
+
+### OCT-OPT-1 + POOL-1 — eight-gauge "beat keybo-lsb" search + all-data pooled
+### model as gauge + POOL-SWAP (2026-07-18; registered BEFORE launch)
+OCT-OPT-1 (user: optimize for everything — aalto, comm, genkey, genkey',
+oxey1, oxey1', oxey2, oxey2' — priorities as make sense; goal = beat
+keybo-lsb): 8-axis augmented Chebyshev (rho 0.05) through the exact
+P17/COMM-OPT-1 machinery (SA 12x16k + 2-opt), stationary norms
+(v-BEST)/(QREF-BEST) with prime anchors from the SELECT-1 dossier.
+REGISTERED WEIGHTS: aalto 1.00 (the measured primary — only LOLO-validated
+surface); comm 0.50 (real for its 4 typists; extrapolated-anchor + n=4
+style-fit caveats); primes gk'/o1'/o2' 0.70 each (SELECT-1's plateau
+discriminators — the de-biased strain content); full gk/o1/o2 0.25 each
+(community-acceptance pressure, down-weighted per the SELECT-1 finding that
+92% of their finalist spread is taste/double-count). 18 searches: 3 cold PRI
++ 5 warm PRI (keybo-lsb, lsb-sib=BOTH-SEED-keybo-lsb, BOTH-CHEB0, keybo-c30m,
+P10-w0.5*) + MMX cold/warm + 8 Dirichlet draws; seeds 9994xx. Prime hot-loop
+array evaluators are asserted EXACTLY equal to the KAN-PRIME-1 golden-gated
+primes on 3 reference layouts before any search runs.
+BEATS-KEYBO-LSB (registered criterion, computed in-driver): (a) Aalto
+plateau — within 0.10pp of keybo-lsb's saved%; (b) SELECT-1 10-axis
+head-to-head vs keybo-lsb — strictly-better > strictly-worse; (c) robust —
+(b) also holds under the oxey1'+R swap. BEATS=true rows are promotion
+candidates; promotion stays USER-GATED.
+POOL-1 (user: model trained with ALL data, added as a gauge; repeat the swap
+experiments with it): pooled surface = NATURAL pooling (each sample counts
+once — Aalto-dominated by mass; composition logged in-driver) of Aalto v5
+bigram (sha d6cb4c81...) + community bigram, and Aalto cond-v3 trigram (sha
+1b5d7abd...) + community last-trigram (conditioned increments, compatible
+semantics). Production recipe (REG_LOLO bigram / CAND4 trigram), 3 seeds,
+T3P = T2+Tcond @ wpm 90, ROW_STAGGERED_30, geometry-only serving. Seed-mean
+tables persisted to runs/pool_T3.npz — POOL becomes a STANDING gauge
+(pool_saved% vs qwerty30m). POOL is NOT added as a 9th OCT axis (registered
+rationale: it is a fixed mixture of the aalto and comm axes already present —
+redundant as an optimization direction, informative as a gauge).
+POOL-SWAP repeats the COMM-OPT-1 SWAP protocol exactly with POOL on the speed
+axis (10 Dirichlet + MMX + 4 warm starts, seeds 9995xx; genkey/oxey1/oxey2
+full tools as the other axes). Speed-axis anchors: BEST = min pooled total
+over the comm_opt1 board + reference layouts (computed pre-search),
+QREF = qwerty30m pooled total. Same BEATS verdict reported on its board.
+CAVEATS (registered): pooling does NOT resolve the RCA population
+non-identifiability — POOL is an evidence-weighted compromise gauge, not a
+truth upgrade; its community component inherits all COMM-SPD caveats.
