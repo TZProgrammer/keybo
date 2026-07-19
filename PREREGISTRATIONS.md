@@ -5180,3 +5180,25 @@ DISPOSITION: candidates named; NO promotion recommendation change without
 user decision on the crux: accept measured-surface SFB pricing (take
 OCT-PRI-SEED-keybo-c30m, the best record 7-2/R7-2 with a raw-support WIN) or
 keep community-legible SFB conservatism (keep keybo-lsb). USER-GATED.
+
+### POOL-1 STAGE B OUTCOME — POOL-SWAP (2026-07-19; runs/pool_swap.json sha 8d8bbe95764c859e...)
+BEATS-KEYBO-LSB: NONE. All 15 pool-optimized arms fail the Aalto plateau gate
+(aalto +1.56..+2.39 vs required >=+3.41) while reaching pool +3.50..+4.24 —
+the pooled surface's optimum is a DIFFERENT BASIN (top arm PSWAP-CHEB9 differs
+from keybo-lsb in 28/30 slots), not a perturbation of the Aalto optimum.
+Quantified tradeoff at the frontier: roughly 1 pool pp costs ~1.5-1.7 Aalto pp.
+The community component, despite minority mass, relocates the optimum — the
+RCA's 1.8x community amplitude operating at the margin. Notable: PSWAP-MMX and
+PSWAP-SEED-graphite converged to the IDENTICAL layout (strong attractor);
+pool-optimal layouts are respectable community-style boards (sfb 0.87-1.19,
+gk 29-38), not degenerate exploits — the pooled surface is better-behaved as
+an objective than PURE community was (gk 56), but still leaves the measured-
+Aalto plateau. CONCLUSION (mirrors COMM-OPT-1): POOL earns its place as an
+EVALUATION gauge (where it ranks lsb-sib +3.42 > keybo-lsb +3.14 > all OCT
+winners +2.99..+3.09 — the standing contrary evidence on the OCT SFB trade)
+but NOT as a search objective replacing Aalto. FOOTNOTE: reference row
+P10-w0.5* shows aalto +3.63, the highest Aalto number yet printed — it was
+never in the registered SELECT-1 candidate set and loses the h2h 4-6 vs
+keybo-lsb (its speed edge is in-plateau noise by the registered rule; its
+gauge profile is why SEL-1 passed it over). No candidate change. Flagship
+recommendation unchanged: keybo-lsb, runner-up lsb-sib. USER-GATED.
