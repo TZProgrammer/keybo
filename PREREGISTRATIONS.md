@@ -5290,3 +5290,22 @@ on the corrected conjunction but only by giving up comfort/SFB and on a support-
 (~0.02pp Aalto, -25% scissor residual) a user could adopt for feel; it is not a speed upgrade.
 NEXT LEVER (if pursued): a genuine successor needs NEW search territory with BALANCED axis gains,
 not reweighting or local l<->m repair. Promotion + comfort-variant adoption remain USER-GATED.
+
+### SWEEP-1 reflection addendum + registered policy gap (2026-07-20)
+Sweep reflection (reviewer-verified) confirms the HONEST NULL is robust and W4-plateau-5 is
+excluded on TWO independent grounds: (1) comfort strictly worse than keybo-lsb in all 1296 cells
+(0/1296 wins; +0.183..+0.342 higher comfort loss) — the >=80% comfort bar excludes it by itself;
+(2) its corrected SELECT-1 edge is driven SOLELY by tri_support flipping native h2h 5/5 -> 6/4.
+REGISTERED POLICY GAP (does NOT affect this null; register before it can bite): the SWEEP-1 charter
+did not explicitly choose support semantics or forbid support_verdict_disagreement. A future
+candidate that clears the comfort bar AND beats SELECT-1 only under corrected (not historical)
+support must remain USER-GATED pending an explicit preregistered support-semantics policy —
+corrected is the bug-fixed truth, but a semantics-flip win is not self-approving. TODO before any
+future promotion that hinges on it: register whether corrected support is the sole registered axis
+(recommended, since historical embeds the space-index bug) or whether disagreement blocks promotion.
+NEAR-MISS on record: W2-plateau-5 (boy,.gdmnlheiaupctrskqj-'fwvxz) comfort 1033/1296 (79.71%, 4
+cells short of 80%) + corrected SELECT-1 1296/1296, but FAILS pinky guards (total 17.46% > 17%,
+right 10.66% > 9%) and historical SELECT-1 0/1296 — correctly excluded, logged for completeness.
+STRONGEST NEXT EVIDENCE (sweep's own conclusion, converging with every prior thread): a
+preregistered blinded held-out HUMAN comfort/speed evaluation (Phase-D), NOT more weight cells or
+more search. Durable artifact: state/keybo-optimization/artifacts/sweep1_result.json (sha ad1441db).
