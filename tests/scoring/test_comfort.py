@@ -33,7 +33,18 @@ def test_comfort_penalizes_off_home_and_sfb(freqs):
     qwerty = scorer.fitness(Layout(QWERTY, ROW_STAGGERED_30))
     # colemak moves common letters home and kills most SFBs -> must be more comfortable.
     colemak = scorer.fitness(Layout(NAMED_LAYOUTS["colemak"], ROW_STAGGERED_30))
-    assert colemak < qwerty
+    assert qwerty == pytest.approx(2300.0)
+    assert colemak == pytest.approx(1260.0)
+
+
+def test_lag2_reuse_weight_scores_same_finger_skipgrams():
+    lay = Layout(QWERTY, ROW_STAGGERED_30)
+    # qwerty d/e are different keys on the left middle finger.
+    scorer = ComfortBigramScorer({}, skipgram_freqs={"de": 10})
+    assert scorer.fitness(lay) == pytest.approx(50.0)
+    assert ComfortBigramScorer({}, skipgram_freqs={"de": 10}, weights={"lag2_reuse": 0.0}).fitness(
+        lay
+    ) == pytest.approx(0.0)
 
 
 def test_comfort_breaks_the_home_top_tie(freqs):
@@ -78,7 +89,8 @@ def test_finger_load_scorer_penalizes_concentration():
     concentrated = {"ju": 50, "um": 50}  # all weight on right index
     spread = {"as": 50, "dk": 50}  # pinky+ring / middle+middle
     scorer = FingerLoadScorer()
-    assert scorer.penalty(lay, concentrated) > scorer.penalty(lay, spread)
+    assert scorer.penalty(lay, concentrated) == pytest.approx(1000.0)
+    assert scorer.penalty(lay, spread) == pytest.approx(302.6960784313726)
 
 
 def test_finger_load_pinky_costs_more_than_index():
@@ -88,7 +100,8 @@ def test_finger_load_pinky_costs_more_than_index():
     on_pinky = {"aq": 100}  # both L-pinky keys
     on_index = {"ju": 100}  # both R-index keys
     scorer = FingerLoadScorer()
-    assert scorer.penalty(lay, on_pinky) > scorer.penalty(lay, on_index)
+    assert scorer.penalty(lay, on_pinky) == pytest.approx(1666.6666666666667)
+    assert scorer.penalty(lay, on_index) == pytest.approx(1000.0)
 
 
 def test_finger_load_composes_via_composite():

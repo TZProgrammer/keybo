@@ -7,7 +7,7 @@ owner's travel-x-slowness form; FingerSpeedScorer approximates genkey's fingersp
 
 import pytest
 
-from keybo.geometry import ROW_STAGGERED_30
+from keybo.geometry import ROW_STAGGERED_30, ROW_STAGGERED_31
 from keybo.layout import Layout
 from keybo.layouts import NAMED_LAYOUTS
 from keybo.scoring.utilization import DislocationScorer, FingerSpeedScorer
@@ -63,9 +63,18 @@ def test_fingerspeed_penalizes_load_distance_product():
     spread = Layout(base, geom)  # a=L-pinky-home, b=bottom index-ish
     stacked = Layout(base, geom)
     stacked.swap("b", "w")  # move b onto the left ring top => two heavy left letters
-    # not a strict theorem for arbitrary swaps; assert the scorer is finite + ordered
-    # for the constructed concentration case
-    assert sc.fitness(stacked) != sc.fitness(spread)
+    assert sc.fitness(spread) == pytest.approx(384.4213562373095)
+    assert sc.fitness(stacked) == pytest.approx(385.0)
+
+
+def test_k31_quote_slot_uses_right_pinky_costs():
+    layout31 = Layout(NAMED_LAYOUTS["qwerty"] + "'", ROW_STAGGERED_31)
+    assert DislocationScorer({"''": 1}, geometry=ROW_STAGGERED_31).fitness(
+        layout31
+    ) == pytest.approx(2.86)
+    assert FingerSpeedScorer({"''": 1}, geometry=ROW_STAGGERED_31).fitness(
+        layout31
+    ) == pytest.approx(5.72)
 
 
 def test_scorers_compose_with_composite():

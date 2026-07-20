@@ -7,6 +7,9 @@ structural profile (home-row share, SFB share, max finger load) so every search 
 the Goodhart gate's numbers in view.
 """
 
+from pathlib import Path
+from types import SimpleNamespace
+
 import numpy as np
 import pytest
 
@@ -119,6 +122,69 @@ def test_comfort_weight_changes_the_objective(model_path, corpus_path, capsys):
     _, fit_comfort = _run([*common, "--comfort-weight", "5.0"], capsys)
     # A nonzero comfort weight adds penalty mass -> reported fitness must differ.
     assert fit_speed != fit_comfort
+
+
+def test_comfort_weight_loads_the_adjacent_skipgram_corpus(
+    tmp_path,
+    monkeypatch,
+):
+    from keybo.cli import optimize
+    from keybo.geometry import ROW_STAGGERED_30
+    from keybo.layout import Layout
+    from keybo.layouts import NAMED_LAYOUTS
+    from keybo.scoring import comfort as comfort_module
+
+    corpus_path = tmp_path / "bigrams.txt"
+    corpus_path.write_text("")
+    Path(corpus_path).with_name("1-skip.txt").write_text("de\t7\n")
+    captured = {}
+    real_scorer = comfort_module.ComfortBigramScorer
+
+    class CapturingComfortScorer(real_scorer):
+        def __init__(self, *args, skipgram_freqs=None, **kwargs):
+            captured.update(skipgram_freqs or {})
+            super().__init__(*args, skipgram_freqs=skipgram_freqs, **kwargs)
+
+    class ZeroScorer:
+        @staticmethod
+        def fitness(_layout):
+            return 0.0
+
+    monkeypatch.setattr(comfort_module, "ComfortBigramScorer", CapturingComfortScorer)
+    monkeypatch.setattr(optimize, "build_scorer", lambda _args: ZeroScorer())
+    monkeypatch.setattr(optimize, "load_freqs", lambda _args: {})
+    monkeypatch.setattr(
+        optimize,
+        "_one_attempt",
+        lambda _args, _scorer, seed: Layout(NAMED_LAYOUTS["qwerty"], ROW_STAGGERED_30),
+    )
+    monkeypatch.setattr(
+        optimize,
+        "layout_diagnostics",
+        lambda _layout, _freqs: {
+            "row_share": {"home": 0.0},
+            "sfb_share": 0.0,
+            "finger_load": {},
+        },
+    )
+    args = SimpleNamespace(
+        attempts=1,
+        out=None,
+        comfort_weight=1.0,
+        finger_load_weight=0.0,
+        oxey_weight=0.0,
+        ngram="bigram",
+        comfort_config=None,
+        bigram_freqs=str(corpus_path),
+        no_table=False,
+        seed=0,
+        target_wpm=90.0,
+        model="unused",
+    )
+
+    assert optimize.run(args) == 0
+
+    assert captured == {"de": 7}
 
 
 def test_finger_load_weight_changes_the_objective(model_path, corpus_path, capsys):

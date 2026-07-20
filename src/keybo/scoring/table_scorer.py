@@ -46,6 +46,11 @@ class TableBigramScorer(IScorer):
             raise ValueError("TableBigramScorer requires the fixed charset (chars=...)")
         self._chars = tuple(chars)
         self._geometry = geometry
+        if len(self._chars) != len(geometry.slots):
+            raise ValueError(
+                f"charset has {len(self._chars)} characters but geometry has "
+                f"{len(geometry.slots)} slots"
+            )
         positions = [*geometry.slots, geometry.space_position]
         n_pos = len(positions)
 

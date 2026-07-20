@@ -164,7 +164,7 @@ class LogratStubModel:
     """A stub in the LOGRAT space: raw predict() returns log(ms*wpm/12000) for a fixed
     ms, carrying the sidecar shape a real saved LOGRAT model has."""
 
-    def __init__(self, ms=100.0):
+    def __init__(self, ms=100.0, calibration=None):
         from keybo.features.schema import BIGRAM_FEATURE_NAMES, FEATURE_VERSION
         from keybo.models.base import ModelMetadata
 
@@ -174,7 +174,12 @@ class LogratStubModel:
             feature_names=list(BIGRAM_FEATURE_NAMES),
             wpm_range=(40, 140),
             ngram="bigram",
-            extra={"training": {"target_space": "LOGRAT"}},
+            extra={
+                "training": {
+                    "target_space": "LOGRAT",
+                    "calibration": calibration,
+                }
+            },
         )
 
     def predict(self, X):
@@ -189,6 +194,7 @@ class LogratStubModel:
     target_space = TypingModel.target_space
     to_ms = TypingModel.to_ms
     predict_ms = TypingModel.predict_ms
+    predict_ms_at = TypingModel.predict_ms_at
 
 
 def test_lograt_model_scorer_sums_ms_not_log_values():
@@ -199,3 +205,17 @@ def test_lograt_model_scorer_sums_ms_not_log_values():
         LogratStubModel(ms=100.0), bigram_freqs={"th": 3, "he": 5}, target_wpm=90.0
     )
     assert scorer.fitness(lay) == pytest.approx(800.0, rel=1e-9)
+
+
+def test_model_scorer_applies_first_finger_calibration_by_position():
+    lay = Layout(LAYOUT, ROW_STAGGERED_30)
+    model = LogratStubModel(
+        ms=138.0,
+        calibration={"deltas_ms": {"pinky_first": 62.0}},
+    )
+
+    scorer = BigramModelScorer(model, bigram_freqs={"qw": 3}, target_wpm=100.0)
+
+    # q->w is same-row pinky-first. At 100 WPM the calibration reference is
+    # 138 ms, so the 62 ms sidecar delta makes each occurrence exactly 200 ms.
+    assert scorer.fitness(lay) == pytest.approx(600.0)

@@ -9,6 +9,7 @@ and the physical slot is the label's qwerty slot.
 from keybo.data.community import (
     QWERTY30,
     SessionRecord,
+    _session_wpm,
     decode_event_key,
     dedup_prefix_streams,
     extract_windows,
@@ -20,6 +21,10 @@ COLEMAK_DH = "qwfpbjluy;arstgmneiozxcdvkh,./"
 
 
 # --- decode_event_key -----------------------------------------------------------------------
+
+
+def test_qwerty_physical_labels_are_literal_and_complete():
+    assert QWERTY30 == "qwertyuiopasdfghjkl;zxcvbnm,./"
 
 
 def test_decode_identity_on_qwerty():
@@ -55,6 +60,11 @@ def test_decode_passes_through_control_keys_and_space():
     assert decode_event_key(" ", COLEMAK_DH) == " "
     # a char outside the 30-key core (e.g. quote) passes through unchanged
     assert decode_event_key("'", COLEMAK_DH) == "'"
+
+
+def test_session_wpm_uses_milliseconds_and_all_correct_events():
+    events = [("q", 0.0, True)] + [("q", 120.0, True)] * 10
+    assert _session_wpm(events) == 110
 
 
 # --- extract_windows uses PHYSICAL slots ------------------------------------------------------

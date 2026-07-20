@@ -45,6 +45,11 @@ class TableTrigramScorer(IScorer):
         reject_calibrated_trigram_model(model, "TableTrigramScorer")
         self._chars = tuple(chars)
         self._geometry = geometry
+        if len(self._chars) != len(geometry.slots):
+            raise ValueError(
+                f"charset has {len(self._chars)} characters but geometry has "
+                f"{len(geometry.slots)} slots"
+            )
         positions = [*geometry.slots, geometry.space_position]
         n = len(positions)
 

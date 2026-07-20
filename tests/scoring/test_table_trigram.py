@@ -11,7 +11,7 @@ import numpy as np
 import pytest
 
 from keybo.data.strokes import StrokeRow
-from keybo.geometry import ROW_STAGGERED_30
+from keybo.geometry import ROW_STAGGERED_30, ROW_STAGGERED_31
 from keybo.layout import Layout
 from keybo.layouts import NAMED_LAYOUTS
 from keybo.scoring.model_scorer import TrigramModelScorer
@@ -19,6 +19,11 @@ from keybo.scoring.table_trigram import TableTrigramScorer
 from keybo.training.train import train_trigram_model
 
 QWERTY = NAMED_LAYOUTS["qwerty"]
+
+
+class ConstantModel:
+    def predict(self, X):
+        return np.ones(len(X))
 
 
 @pytest.fixture(scope="module")
@@ -66,6 +71,18 @@ def test_charset_mismatch_rejected(model, freqs):
     table = TableTrigramScorer(model, freqs, target_wpm=90.0, chars=QWERTY)
     with pytest.raises(ValueError, match="charset"):
         table.fitness(Layout(NAMED_LAYOUTS["dvorak"], ROW_STAGGERED_30))
+
+
+def test_charset_length_must_match_geometry_slots():
+    with pytest.raises(ValueError, match="geometry"):
+        TableTrigramScorer(ConstantModel(), {}, chars=QWERTY, geometry=ROW_STAGGERED_31)
+
+
+def test_k31_identity_permutation_keeps_quote_before_space():
+    chars31 = QWERTY + "'"
+    table = TableTrigramScorer(ConstantModel(), {}, chars=chars31, geometry=ROW_STAGGERED_31)
+    layout = Layout(chars31, ROW_STAGGERED_31)
+    np.testing.assert_array_equal(table.permutation(layout), np.arange(32))
 
 
 def test_fitness_of_permutation_fast_path_matches(model, freqs):

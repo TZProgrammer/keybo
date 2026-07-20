@@ -112,7 +112,17 @@ def run(args: argparse.Namespace) -> int:
                 overrides = json.load(f)
         freqs = load_freqs(args)
         if args.comfort_weight:
-            comfort = ComfortBigramScorer(freqs, weights=overrides)
+            from pathlib import Path
+
+            from keybo.data.corpus import load_frequencies
+
+            skipgram_path = Path(args.bigram_freqs).with_name("1-skip.txt")
+            skipgrams = load_frequencies(str(skipgram_path)) if skipgram_path.exists() else {}
+            comfort = ComfortBigramScorer(
+                freqs,
+                weights=overrides,
+                skipgram_freqs=skipgrams,
+            )
             scorer = CompositeScorer(scorer, comfort, comfort_weight=args.comfort_weight)
         if args.finger_load_weight:
             fl = FingerLoadScorer(bigram_freqs=freqs)

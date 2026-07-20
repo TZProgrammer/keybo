@@ -70,6 +70,30 @@ def test_sfb_and_roll_terms_move_the_score(corpora):
     assert no_sfb < base
 
 
+def test_pattern_shares_and_weighted_fitness_are_value_pinned(corpora):
+    bigrams, skipgrams, trigrams = corpora
+    lay = Layout(NAMED_LAYOUTS["qwerty"], ROW_STAGGERED_30)
+    scorer = OxeyStyleScorer(bigrams, skipgrams, trigrams)
+
+    assert scorer.pattern_shares(lay) == pytest.approx(
+        {
+            "sfb": 35.294117647058826,
+            "dsfb": 18.181818181818183,
+            "lsb": 0.0,
+            "scissor": 0.0,
+            "inroll": 8.823529411764707,
+            "outroll": 0.0,
+            "onehand": 0.0,
+            "redirect": 14.285714285714286,
+            "bad_redirect": 14.285714285714286,
+            "alternate": 55.88235294117647,
+            "imbalance": 29.41176470588235,
+        },
+        abs=1e-12,
+    )
+    assert scorer.fitness(lay) == pytest.approx(598.6822001527885, abs=1e-12)
+
+
 def test_rolls_are_rewarded_not_penalized(corpora):
     bigrams, skipgrams, trigrams = corpora
     lay = Layout(NAMED_LAYOUTS["qwerty"], ROW_STAGGERED_30)

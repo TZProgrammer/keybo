@@ -76,7 +76,13 @@ def usage_stats(lay30: str, letter_freqs: dict[str, float]) -> dict:
         if 10 <= slot < 20:
             home += f
     if total <= 0:
-        return {"left_pct": float("nan")}
+        nan = float("nan")
+        return {
+            "left_pct": nan,
+            "home_row_pct": nan,
+            "pinky_pct": nan,
+            "fingers": dict.fromkeys(fingers, nan),
+        }
     out = {
         "left_pct": 100.0 * left / total,
         "home_row_pct": 100.0 * home / total,

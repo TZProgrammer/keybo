@@ -138,6 +138,14 @@ def pinned_char(lay30: str) -> str:
 
 def _dof_arrays(lay30: str, chars31: list[str]) -> tuple[np.ndarray, np.ndarray]:
     """(char_at_dof, dof_of_char) index arrays for a 30-char layout + pinned char."""
+    if (
+        len(lay30) != len(SLOT2DOF)
+        or len(chars31) != N31
+        or len(set(lay30)) != len(SLOT2DOF)
+        or len(set(chars31)) != N31
+        or set(lay30) != set(chars31[:-1])
+    ):
+        raise ValueError("layout and pinned character must form a 31-character permutation")
     idx = {c: k for k, c in enumerate(chars31)}
     dof_of_char = np.empty(N31, dtype=np.int64)
     for slot, ch in enumerate(lay30):

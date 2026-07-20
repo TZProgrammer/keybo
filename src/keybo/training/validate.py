@@ -369,6 +369,20 @@ def _predict_cells(model, cells: list[Cell], geometry: Geometry) -> np.ndarray:
     if practice:
         values = practice.get("values", {})
         pred = pred + np.array([values.get(c.ngram, 0.0) for c in cells])
+    calibration = (model.metadata.extra.get("training") or {}).get("calibration")
+    if calibration and calibration.get("deltas_ms") and len(cells[0].positions) == 2:
+        from keybo.training.calibration import delta_log, finger_class
+
+        pred = pred + np.array(
+            [
+                delta_log(
+                    finger_class(geometry, *c.positions),
+                    c.wpm,
+                    calibration["deltas_ms"],
+                )
+                for c in cells
+            ]
+        )
     return model.to_ms(pred, X)
 
 

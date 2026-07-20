@@ -12,7 +12,7 @@ import numpy as np
 import pytest
 
 from keybo.data.strokes import StrokeRow
-from keybo.geometry import ROW_STAGGERED_30
+from keybo.geometry import ROW_STAGGERED_30, ROW_STAGGERED_31
 from keybo.layout import Layout
 from keybo.layouts import NAMED_LAYOUTS
 from keybo.scoring.model_scorer import BigramModelScorer
@@ -20,6 +20,11 @@ from keybo.scoring.table_scorer import TableBigramScorer
 from keybo.training.train import train_bigram_model
 
 QWERTY = NAMED_LAYOUTS["qwerty"]
+
+
+class ConstantModel:
+    def predict(self, X):
+        return np.ones(len(X))
 
 
 @pytest.fixture(scope="module")
@@ -83,6 +88,18 @@ def test_charset_mismatch_is_rejected(model, freqs):
     dvorak = Layout(NAMED_LAYOUTS["dvorak"], ROW_STAGGERED_30)  # has ' — not in the table
     with pytest.raises(ValueError, match="charset"):
         table.fitness(dvorak)
+
+
+def test_charset_length_must_match_geometry_slots():
+    with pytest.raises(ValueError, match="geometry"):
+        TableBigramScorer(ConstantModel(), {}, chars=QWERTY, geometry=ROW_STAGGERED_31)
+
+
+def test_k31_identity_permutation_keeps_quote_before_space():
+    chars31 = QWERTY + "'"
+    table = TableBigramScorer(ConstantModel(), {}, chars=chars31, geometry=ROW_STAGGERED_31)
+    layout = Layout(chars31, ROW_STAGGERED_31)
+    np.testing.assert_array_equal(table.permutation(layout), np.arange(32))
 
 
 def test_table_is_much_faster_than_model_scorer(model, freqs):

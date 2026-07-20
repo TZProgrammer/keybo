@@ -145,6 +145,7 @@ def compute_effect_curves(
 
     positions = [*geometry.slots, geometry.space_position]
     n = len(positions)
+    pairs = [(a, b) for a in positions for b in positions]
     names = list(models[0].metadata.feature_names)
 
     # class membership masks over the ordered-pair grid (wpm-invariant)
@@ -169,14 +170,29 @@ def compute_effect_curves(
     shap_curves: dict[str, list[float]] = {c: [] for c in masks}
 
     for wpm in wpms:
-        X = np.vstack(
-            [
-                bigram_features_from_positions(geometry, (a, b), wpm=wpm)
-                for a in positions
-                for b in positions
-            ]
-        )
-        pred_ms = np.mean([m.predict_ms(X) for m in models], axis=0)
+        X = np.vstack([bigram_features_from_positions(geometry, (a, b), wpm=wpm) for a, b in pairs])
+        served_predictions = []
+        for model in models:
+            training = (getattr(model.metadata, "extra", None) or {}).get("training") or {}
+            calibration = training.get("calibration")
+            if calibration and calibration.get("deltas_ms"):
+                from keybo.training.calibration import delta_log, finger_class
+
+                pred = model.predict(X)
+                pred += np.array(
+                    [
+                        delta_log(
+                            finger_class(geometry, *pair),
+                            wpm,
+                            calibration["deltas_ms"],
+                        )
+                        for pair in pairs
+                    ]
+                )
+                served_predictions.append(model.to_ms(pred, X))
+            else:
+                served_predictions.append(model.predict_ms(X))
+        pred_ms = np.mean(served_predictions, axis=0)
 
         # mean SHAP of each class's defining columns, averaged over models
         shap_by_model = []

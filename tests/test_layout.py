@@ -50,6 +50,11 @@ def test_rejects_duplicate_characters():
         Layout(dup, ROW_STAGGERED_30)
 
 
+def test_rejects_fixed_space_in_assignable_slots():
+    with pytest.raises(ValueError, match="space"):
+        Layout(" " + LAYOUT30[1:], ROW_STAGGERED_30)
+
+
 def test_render_round_trips_to_three_rows():
     lay = Layout(QWERTY, ROW_STAGGERED_30)
     rendered = lay.render()

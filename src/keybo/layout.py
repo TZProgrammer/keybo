@@ -22,6 +22,8 @@ class Layout:
             raise ValueError(
                 f"layout has {len(chars)} characters but geometry has {len(geometry.slots)} slots"
             )
+        if " " in chars:
+            raise ValueError("space is fixed at the thumb position, not an assignable slot")
         if len(set(chars)) != len(chars):
             raise ValueError("layout characters must be unique")
 

@@ -25,7 +25,7 @@ from pathlib import Path
 import numpy as np
 
 from keybo.features import trigram_features_from_positions
-from keybo.geometry import ROW_STAGGERED_30
+from keybo.geometry import ROW_STAGGERED_30, Finger
 from keybo.models.xgboost_model import XGBoostTypingModel
 from keybo.scoring.table_scorer import TableBigramScorer
 
@@ -58,9 +58,6 @@ class TimeCard:
     top_bigrams: list[tuple[str, float]]  # (bigram, ms) costliest first
 
 
-_FINGER_NAMES = ("LP", "LR", "LM", "LI", "LI", "RI", "RI", "RM", "RR", "RP")
-
-
 class TimeSurface:
     """The K31 production time surface over one trigram corpus."""
 
@@ -80,9 +77,9 @@ class TimeSurface:
             reject_calibrated_trigram_model(m, "TimeSurface")
         positions = [*geometry.slots, geometry.space_position]
         self._n = len(positions)
-        # 30-key boards use a 31x31 table (30 slots + space); qwerty charset is a
-        # placeholder — the table is position-indexed, chars only key the corpus filter.
-        placeholder = "qwertyuiopasdfghjkl;zxcvbnm,./"
+        # The charset is a placeholder: this path reads only the position table and
+        # supplies no corpus rows. Keep its size aligned for both K30 and K31 geometry.
+        placeholder = "qwertyuiopasdfghjkl;zxcvbnm,./'"[: len(geometry.slots)]
         T2s = [
             TableBigramScorer(m, {}, target_wpm=target_wpm, chars=placeholder, geometry=geometry)._T
             for m in bi_models
@@ -125,11 +122,11 @@ class TimeSurface:
     def card(self, lay30: str, ref_total_ms: float | None = None) -> TimeCard:
         slot_of = {ch: i for i, ch in enumerate(lay30)}
         slot_of[" "] = self._n - 1
-        n_keys = len(lay30)
+        positions = (*self.geometry.slots, self.geometry.space_position)
         total = 0.0
         covered = 0
-        per_key = dict.fromkeys(lay30, 0.0)
-        per_finger = dict.fromkeys(_FINGER_NAMES, 0.0)
+        per_key = dict.fromkeys((*lay30, " "), 0.0)
+        per_finger = dict.fromkeys((finger.name for finger in Finger), 0.0)
         big: dict[str, float] = {}
         T2, Tc = self._T2, self._Tc
         for ng, f in self.tri.items():
@@ -142,18 +139,11 @@ class TimeSurface:
             t3 = Tc[a, b, c] * f
             total += t2 + t3
             # attribute: the a->b transition to key b, the trigram increment to key c
-            if ng[1] != " ":
-                per_key[ng[1]] += t2
-                per_finger[_FINGER_NAMES[slot_of[ng[1]] % 10]] += (
-                    t2 if slot_of[ng[1]] < n_keys else 0.0
-                )
-            if ng[2] != " ":
-                per_key[ng[2]] += t3
-                per_finger[_FINGER_NAMES[slot_of[ng[2]] % 10]] += (
-                    t3 if slot_of[ng[2]] < n_keys else 0.0
-                )
-            if ng[1] != " " and ng[0] != " ":
-                big[ng[:2]] = big.get(ng[:2], 0.0) + t2
+            per_key[ng[1]] += t2
+            per_finger[self.geometry.finger(positions[b][0]).name] += t2
+            per_key[ng[2]] += t3
+            per_finger[self.geometry.finger(positions[c][0]).name] += t3
+            big[ng[:2]] = big.get(ng[:2], 0.0) + t2
         chars = max(covered, 1)
         saved = None
         if ref_total_ms is not None and ref_total_ms > 0:

@@ -59,13 +59,30 @@ class BigramModelScorer(_ModelScorerBase):
         # than mapped to a phantom position as the original code did.
         vectors = []
         freqs = []
+        positions = []
         for bg, freq in zip(self._bigrams, self._freqs, strict=True):
             if all(layout.has_key(c) for c in bg):
                 vectors.append(bigram_features(layout, bg, wpm=self.target_wpm))
                 freqs.append(freq)
+                positions.append((layout.pos(bg[0]), layout.pos(bg[1])))
         if not vectors:
             return 0.0
-        predicted = predict_ms(self.model, np.vstack(vectors))
+        X = np.vstack(vectors)
+        metadata = getattr(self.model, "metadata", None)
+        training = (getattr(metadata, "extra", None) or {}).get("training") or {}
+        calibration = training.get("calibration")
+        if calibration and calibration.get("deltas_ms"):
+            predict_at = getattr(self.model, "predict_ms_at", None)
+            if predict_at is None:
+                raise TypeError("calibrated bigram model must provide predict_ms_at")
+            predicted = np.array(
+                [
+                    predict_at(row.reshape(1, -1), pair)[0]
+                    for row, pair in zip(X, positions, strict=True)
+                ]
+            )
+        else:
+            predicted = predict_ms(self.model, X)
         return float(np.sum(predicted * np.array(freqs)))
 
 

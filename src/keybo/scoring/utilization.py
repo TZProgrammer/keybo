@@ -58,7 +58,7 @@ _FINGER_HOME: dict[tuple[int, str], Position] = {
 
 
 def finger_name(p: Position) -> str:
-    return {5: "pinky", 4: "ring", 3: "middle", 2: "index", 1: "index"}[abs(p[0])]
+    return {6: "pinky", 5: "pinky", 4: "ring", 3: "middle", 2: "index", 1: "index"}[abs(p[0])]
 
 
 def finger_key(p: Position) -> tuple[int, str]:

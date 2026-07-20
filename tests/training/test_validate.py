@@ -17,11 +17,14 @@ import pytest
 
 from keybo.data.strokes import StrokeRow
 from keybo.training.validate import (
+    Cell,
+    _predict_cells,
     aggregate_layout_table,
     build_cells,
     leave_one_layout_out,
     split_half_ceiling,
     validate,
+    weighted_mape,
 )
 
 # Four fake "layouts": the same six ngrams live at different positions, so a
@@ -125,6 +128,92 @@ def test_build_cells_obs_matches_known_mean():
     assert cells[0].obs == pytest.approx(150.0)
     assert cells[0].layout == "layA"
     assert cells[0].ngram == "ab"
+
+
+def test_build_cells_pins_half_open_band_edges_and_bucket_midpoints():
+    row = StrokeRow(
+        layout="layA",
+        positions=((-1, 2), (1, 2)),
+        ngram="ab",
+        frequency=10,
+        samples=[
+            (39, 139, 1, 0),
+            (40, 140, 2, 0),
+            (59, 159, 3, 0),
+            (60, 160, 4, 0),
+            (139, 239, 5, 0),
+            (140, 240, 6, 0),
+        ],
+    )
+    cells = build_cells(
+        [row],
+        wpm_lo=40,
+        wpm_hi=140,
+        bucket_width=20,
+        min_cell_samples=1,
+    )
+    assert [(c.bucket, c.wpm, c.n) for c in cells] == [
+        (40, 50.0, 2),
+        (60, 70.0, 1),
+        (120, 130.0, 1),
+    ]
+
+
+def test_weighted_mape_pins_fraction_units_and_frequency_weights():
+    cells = [
+        Cell("", "", (), 3, 0, 0.0, 0.0, 0, []),
+        Cell("", "", (), 1, 0, 0.0, 0.0, 0, []),
+    ]
+    assert weighted_mape(cells, np.array([110.0, 100.0]), np.array([100.0, 200.0])) == (
+        pytest.approx(0.2)
+    )
+
+
+def test_predict_cells_applies_calibration_after_practice_in_target_space():
+    from keybo.features.schema import BIGRAM_FEATURE_NAMES, FEATURE_VERSION
+    from keybo.geometry import ROW_STAGGERED_30
+    from keybo.models.base import ModelMetadata, TypingModel
+
+    class CalibratedLogratModel:
+        metadata = ModelMetadata(
+            feature_version=FEATURE_VERSION,
+            feature_names=list(BIGRAM_FEATURE_NAMES),
+            wpm_range=(40, 140),
+            ngram="bigram",
+            extra={
+                "training": {
+                    "target_space": "LOGRAT",
+                    "calibration": {"deltas_ms": {"pinky_first": 62.0}},
+                    "practice_term": {"values": {"qw": float(np.log(1.1))}},
+                }
+            },
+        )
+        target_space = TypingModel.target_space
+        to_ms = TypingModel.to_ms
+
+        @staticmethod
+        def predict(X):
+            wpm = X[:, BIGRAM_FEATURE_NAMES.index("wpm")]
+            return np.log(138.0 * wpm / 12000.0)
+
+    cells = [
+        Cell(
+            layout="qwerty",
+            ngram="qw",
+            positions=((-5, 3), (-4, 3)),
+            frequency=3,
+            bucket=90,
+            wpm=100.0,
+            obs=0.0,
+            n=1,
+            samples=[],
+        )
+    ]
+
+    # Base 138 ms * practice 1.1 * calibration (138 + 62) / 138 = 220 ms.
+    assert _predict_cells(CalibratedLogratModel(), cells, ROW_STAGGERED_30) == pytest.approx(
+        [220.0]
+    )
 
 
 # --- noise ceiling ----------------------------------------------------------------------

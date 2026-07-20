@@ -60,8 +60,10 @@ class ComfortBigramScorer(IScorer):
         self,
         bigram_freqs: Mapping[str, int],
         weights: Mapping[str, float] | None = None,
+        skipgram_freqs: Mapping[str, int] | None = None,
     ) -> None:
         self._freqs = dict(bigram_freqs)
+        self._skip_freqs = dict(skipgram_freqs or {})
         self._w = {name: w for name, (w, _why) in DEFAULT_COMFORT.items()}
         if weights:
             unknown = set(weights) - set(self._w)
@@ -90,6 +92,12 @@ class ComfortBigramScorer(IScorer):
             if C.is_lsb(g, a, b):
                 pen += self._w["lsb"]
             total += freq * pen
+        for sg, freq in self._skip_freqs.items():
+            if len(sg) != 2 or not all(layout.has_key(c) for c in sg):
+                continue
+            a, b = layout.pos(sg[0]), layout.pos(sg[1])
+            if a != b and g.same_finger(a[0], b[0]):
+                total += freq * self._w["lag2_reuse"]
         return total
 
 
