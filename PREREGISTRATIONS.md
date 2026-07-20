@@ -5263,3 +5263,30 @@ DECISION RULE (registered before results):
   (<80% of cells) -> incumbent holds; report the exact cells where it wins.
 - HONEST NULL: no non-incumbent dominates across the grid -> keybo-lsb vindicated as robust.
 Outcome is a PROPOSAL; promotion + registered weight profile remain USER-GATED.
+
+### SWEEP-1 OUTCOME (2026-07-20; runs/sweep.json sha ad1441db, reviewer-APPROVED, 14x1296=18144 records)
+VERDICT: HONEST NULL — no robust winner; keybo-lsb HOLDS. Not a high-corner artifact
+(decision_summary confirms incumbent_holds=true, qualifying_layouts=[]). The registered
+robust-winner bar (comfort-beat >=80% AND SELECT-1-corrected-beat >=50% of the 1296 weight cells)
+is met by NO non-incumbent. Per-candidate across the grid:
+- keybo-lsb+lm (pyuo,vgdnmhiea.cstrlkj-z'fwbxq): comfort-beats in 1296/1296 cells, hard-guards pass
+  all, but SELECT-1-corrected 0/1296 -> comfort-only epsilon win, never clears the registered
+  conjunction. The l<->m comfort tweak is REAL + robust-as-comfort but NOT a registered winner.
+- cand1 (pyuo,vgdnmhiea.fstrlkj-z'cwbxq): comfort 924/1296, SELECT-1 0/1296.
+- W4-plateau-5 (fyou,vgdnmheaikpstrlzj'.-cwbxq): the notable one — SELECT-1-CORRECTED 1296/1296
+  (beats keybo-lsb 6-4 on the corrected conjunction in EVERY cell: better on comm/lsb/redir/sfs/
+  tri-support/unchanged, worse on genkey'/oxey1'/oxey2'/sfb) BUT comfort 0/1296, and crucially
+  beats_select1_HISTORICAL = FALSE (5-5 tie) with support_verdict_disagreement=TRUE. Its entire
+  registered edge rides on the RAW-SUPPORT axis (corrected 38.9% vs 38.51%) — the very axis whose
+  space-index bug was fixed in cd345e4. Under historical support it does not beat keybo-lsb. So it
+  is NOT a robust winner: it is support-semantics-dependent AND comfort-inferior (higher sfb 1.69
+  vs 1.14, worse strain primes), winning only by trading strain for comm/redir on a corrected-
+  support tiebreak that flips under historical.
+CONCLUSION: keybo-lsb is VINDICATED as robust against the full decomposed-objective + weight-
+sensitivity search. No promotable successor found. W4's thesis confirmed: reweighting cannot
+promote the epsilon-only l<->m candidates; W4-plateau-5 shows a candidate CAN out-point keybo-lsb
+on the corrected conjunction but only by giving up comfort/SFB and on a support-semantics knife-edge
+— not a clean win. OPTIONAL user-facing note: keybo-lsb+lm is a defensible comfort micro-variant
+(~0.02pp Aalto, -25% scissor residual) a user could adopt for feel; it is not a speed upgrade.
+NEXT LEVER (if pursued): a genuine successor needs NEW search territory with BALANCED axis gains,
+not reweighting or local l<->m repair. Promotion + comfort-variant adoption remain USER-GATED.
