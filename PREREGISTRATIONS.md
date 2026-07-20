@@ -5238,3 +5238,28 @@ CONSEQUENCES FOR PRIOR CLAIMS (correcting the record):
   corrected values separately. Re-scoring the flagship decision on corrected
   support is a manager TODO before any promotion; does NOT change that Aalto-
   plateau + primes still don't crown a single winner over keybo-lsb/lsb-sib.
+
+### SWEEP-1 CHARTER — objective-weight sensitivity sweep (2026-07-20; registered BEFORE running)
+Motivation: the true-best-layout campaign found 2 comfort-improved plateau candidates (direct
+l<->m around keybo-lsb / lsb-sib) that hold the Aalto plateau (+3.492/+3.418pp) and cut the
+scissor residual ~25%, but BOTH fail the registered SELECT-1 conjunction on G1 (cand1 LSB 61%,
+cand2 scissor 81% of comfort attribution) under tb_objective's CURRENT weights. W1's reflection
+established those comfort weights are OPEN (evidence-preserving default = ZERO; nonzero = sensitivity
+arms), and W2 showed G1 verdicts FLIP under defensible reweighting (LSB 1->1/3: 73.5%->48%). So a
+single-weight verdict cannot decide promotion. SWEEP-1 tests robustness.
+CANDIDATE SET (pinned): keybo-lsb (ref), lsb-sib, keybo-lsb+lm (pyuo,vgdnmhiea.cstrlkj-z'fwbxq),
+cand1 (pyuo,vgdnmhiea.fstrlkj-z'cwbxq), lsb-sib+lm, W4's 7 non-incumbent plateau layouts, W2's 5
+plateau layouts (dedup by string). Inputs: tb_objective sha 03cb072e, tb_verify sha e610b2e @ 0f1cb99.
+GRID (W1 arms): LSB weight {0,1/3,2/3,1} x hinge {1.75,2.00,2.25}u; scissor weight {0,1/3,2/3,1} x
+non-adj {0.25,0.50,1.00}; SFS rho*weight {0,0.075,0.15}; row_jump {0,0.05,0.10}. HARD feasibility
+(always on, never swept): Aalto plateau 0.10pp; pinky total<=17%, L<=9%, R<=9%.
+PER CELL: comfort-rank the set; record plateau-feasibility, comfort-argmin, and tb_verify SELECT-1
+conjunction (historical + corrected) per candidate.
+DECISION RULE (registered before results):
+- ROBUST WINNER: a single non-incumbent layout that is plateau+guard-feasible AND comfort-beats
+  keybo-lsb in >=80% of grid cells AND beats it on the SELECT-1 conjunction in >=50% of cells ->
+  a genuine successor PROPOSAL (weight profile to register = user choice).
+- WEIGHT ARTIFACT: l<->m/candidates comfort-win only in the high-LSB or high-scissor corner
+  (<80% of cells) -> incumbent holds; report the exact cells where it wins.
+- HONEST NULL: no non-incumbent dominates across the grid -> keybo-lsb vindicated as robust.
+Outcome is a PROPOSAL; promotion + registered weight profile remain USER-GATED.
