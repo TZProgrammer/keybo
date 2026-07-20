@@ -5309,3 +5309,29 @@ right 10.66% > 9%) and historical SELECT-1 0/1296 — correctly excluded, logged
 STRONGEST NEXT EVIDENCE (sweep's own conclusion, converging with every prior thread): a
 preregistered blinded held-out HUMAN comfort/speed evaluation (Phase-D), NOT more weight cells or
 more search. Durable artifact: state/keybo-optimization/artifacts/sweep1_result.json (sha ad1441db).
+
+### FRESH-1 CHARTER — fresh-territory balanced-gain successor search (2026-07-20; before running)
+Motivation: SWEEP-1 proved keybo-lsb robust; the exhausted levers were reweighting + local l<->m
+repair. W4's thesis: a genuine successor must come from NEW search territory with BALANCED axis
+gains (not 61%-on-one-axis like the rejected candidates), clearing the registered SELECT-1
+conjunction AND robust under oxey1'+R. FRESH-1 searches for exactly that.
+OBJECTIVE: search [Aalto-speed x tb_objective-comfort] (frozen tb_objective sha 03cb072e) but with
+TWO differences from OCT/W2/W4: (1) run at MULTIPLE registered weight profiles from the SWEEP-1 grid
+(default-zero + a few defensible mid arms), NOT one; (2) require BALANCED attribution as a search
+constraint — reject any optimum where a single comfort axis supplies >50% of the comfort gain
+(the G1 guard, applied DURING search not just after). Diversity: many cold restarts from RANDOM
+permutations + basin-hopping / large-kick restarts to ESCAPE the keybo-lsb basin (report positional
+Hamming from keybo-lsb; target genuinely distinct optima, Hamming >= 15).
+HARD FEASIBILITY (always on): Aalto plateau within 0.10pp of keybo-lsb (3.4129 floor); pinky
+total<=17%, L<=9%, R<=9%.
+CANDIDATE OUTPUT: every distinct plateau+guard-feasible optimum with full tb_objective decomposition,
+per-axis attribution (prove balance), corrected+historical raw support, pinky L/R, and the grid-cell
+robustness (does it comfort-beat AND SELECT-1-beat keybo-lsb across the profiles it was found under).
+DECISION RULE (registered): a FRESH candidate is a promotion PROPOSAL iff it is plateau+guard-
+feasible, balanced (no axis >50% of comfort gain), beats keybo-lsb on the registered SELECT-1
+conjunction under CORRECTED support in >=50% of the SWEEP-1 grid cells, AND does not lose under
+historical support (no support_verdict_disagreement) — closing the SWEEP-1 policy gap. Otherwise
+report HONEST NULL (keybo-lsb final). Promotion + support-policy remain USER-GATED.
+Driver keybo-e2e/fresh_search.py -> runs/fresh_search.json; manager runs the final verify() gate +
+registers outcome. Gate note: tb_verify pins repo 0f1cb99; run its gate from that pinned state or
+bump the pin (doc commits since are scoring-invariant).
