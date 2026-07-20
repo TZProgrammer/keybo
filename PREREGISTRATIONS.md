@@ -5212,3 +5212,29 @@ implications (the registered beats-criterion and flagship recommendation are
 untouched). Output runs/pool_pure.json; full standard gauge rows reported for
 PURE-POOL best and the canonical POOL+tools arm (PSWAP-MMX, the equal-weight
 attractor that two starts converged to; PSWAP-CHEB9 noted as pool-max draw).
+
+### RAWSUPPORT SPACE-INDEX BUG — correction + consequences (2026-07-20; fix 2f4cd82)
+Found by the tb-verify red-team harness during the true-best-layout campaign.
+RawSupport.support() hardcoded slot_of[' ']=30; but positions = [*slots(31),
+space], so index 30 = the pinned quote-slot coord (6,2) and space is index 31
+(0,0). Every space-adjacent n-gram (~34% bigram / ~50% trigram corpus mass) was
+matched at the wrong coordinate and almost never counted as observed. CORRECTED
+(space -> len(positions)-1): tri_serve keybo-lsb 13.86->38.51, lsb-sib
+12.17->38.50, keybo-c30m 12.49->36.41, graphite 11.57->37.39, semimak 38.02,
+OCT-c30m-seed 38.92; bi_serve all ~85-89%.
+CONSEQUENCES FOR PRIOR CLAIMS (correcting the record):
+- The SELECT-1 dossier + all-gauge boards used the BUGGY tri-support column. The
+  headline "keybo-lsb has the HIGHEST raw support on the board" is RETRACTED: on
+  corrected numbers keybo-lsb (38.51) and lsb-sib (38.50) are ~tied, and
+  OCT-c30m-seed (38.92) is actually highest. Raw support no longer discriminates
+  the flagship pair.
+- Direction of the RCA's core epistemic finding is UNCHANGED and if anything
+  strengthened: even at 38-39% observed trigram mass, ~61% remains model-
+  extrapolated -> the "+3.5% is model-mediated, Phase-D is the only new truth"
+  conclusion stands. (The buggy 12-14% overstated the extrapolation share but
+  same direction.)
+- SELECT-1's registered h2h semantics used the historical (buggy) support axis;
+  tb-verify preserves those historical semantics for reproducibility AND reports
+  corrected values separately. Re-scoring the flagship decision on corrected
+  support is a manager TODO before any promotion; does NOT change that Aalto-
+  plateau + primes still don't crown a single winner over keybo-lsb/lsb-sib.
