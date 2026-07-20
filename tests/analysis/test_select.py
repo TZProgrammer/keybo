@@ -36,8 +36,9 @@ def test_hand_balance():
 
 
 def test_raw_support_math():
-    # positions31: 31 distinct fake coordinates; observed sets built by hand
-    positions = [(i, 0) for i in range(31)]
+    # positions: 30 slot coords + a distinct space coord at the LAST index (32 total,
+    # mirroring [*geometry.slots, space_position]); index 30 must NOT be treated as space.
+    positions = [(i, 0) for i in range(30)] + [(99, 99), (0, 0)]  # [30]=quote-slot, [31]=space
     lay = QWERTY30M
     q, w, e = (0, 0), (1, 0), (2, 0)
     rs = RawSupport(
@@ -55,6 +56,24 @@ def test_raw_support_math():
     # ngrams with off-layout chars are excluded from the denominator
     sup2 = rs.support(lay, {"qw": 1.0, "q#": 9.0}, {"qwe": 1.0})
     assert sup2["bi_serve_pct"] == pytest.approx(100.0)
+
+
+def test_raw_support_space_maps_to_last_index():
+    """Regression (space-index bug, 2026-07-20): ' ' must resolve to the appended
+    space_position (last index), not a hardcoded 30 (the 31-slot quote-slot coord)."""
+    positions = [(i, 0) for i in range(30)] + [(99, 99), (0, 0)]  # [31] == space (0,0)
+    q = (0, 0)  # equals the space coord; 'q' sits at layout slot 0 -> positions[0]=(0,0)
+    # observe the bigram "q<space>": q at slot0 (0,0), space at last index (0,0)
+    rs = RawSupport(
+        bi_serve={(positions[0], positions[31])},
+        bi_any=set(),
+        tri_serve=set(),
+        tri_any=set(),
+        positions31=positions,
+    )
+    sup = rs.support(QWERTY30M, {"q ": 5.0}, {})
+    assert sup["bi_serve_pct"] == pytest.approx(100.0)  # space resolved to index 31, matched
+    del q
 
 
 def test_usage_stats_qwerty_corner():

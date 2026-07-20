@@ -216,7 +216,11 @@ class RawSupport:
         trigram_freqs: dict[str, float],
     ) -> dict[str, float]:
         slot_of = {ch: i for i, ch in enumerate(lay30)}
-        slot_of[" "] = 30
+        # space lives at the LAST position (space_position is appended after the
+        # slots). Hardcoding 30 mismatched the 31-slot geometry, whose index 30 is
+        # the pinned quote-slot coordinate — silently dropping every space-adjacent
+        # n-gram (34% of bigram / 50% of trigram corpus mass) from coverage.
+        slot_of[" "] = len(self.positions) - 1
         out = {}
         for tag, freqs, serve, anyset in (
             ("bi", bigram_freqs, self.bi_serve, self.bi_any),
