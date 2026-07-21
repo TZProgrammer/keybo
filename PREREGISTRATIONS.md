@@ -5421,3 +5421,25 @@ keybo-lsb+lm under the CENTER profile with epsilon at BOTH 0.10 and 0.15 (robust
 open param). Else HONEST NULL — in which case keybo-lsb+lm (comfort-scalar winner) stands as the
 best available and the choice reverts to the registered user value call. Promotion USER-GATED.
 Driver keybo-e2e/fresh2_search.py -> runs/fresh2_search.json; manager runs final gate + registers.
+
+### FRESH-2 OUTCOME (2026-07-21; artifact state/keybo-optimization/artifacts/fresh2_search_result.json sha 4d0badf9)
+VERDICT: HONEST NULL — no dominator. 37 distinct feasible optima (345 distinct layouts searched;
+condition intersections: aalto_plateau 112, pinky_limits 243, strict_scissor_improvement 351,
+mechanical_no_regression 123, all_scissor_bins 136, composite_feasible 42). ALL 37 successfully
+AVOID the adverse-posture regression that held keybo-lsb+lm at HOLD (worst sub-bin share <=0.0992
+vs keybo-lsb+lm 0.1212) — so the no-sub-bin-regression guard is satisfiable — but NONE achieve
+select1_v2 = PROMOTE against BOTH keybo-lsb AND keybo-lsb+lm at BOTH epsilon 0.10 and 0.15. So a
+layout can fix the posture bin, but only by conceding elsewhere (no candidate dominates both
+incumbents across the epsilon-robust conjunction).
+CONSEQUENCE (registered): keybo-lsb+lm remains the comfort-SCALAR best-available; the registered
+user value call stands. TWO independent scissor-aware searches (FRESH-1 balanced, FRESH-2 scissor-
+priority) now both return null -> no promotable successor to the keybo-lsb family exists under the
+v2 objective. The flagship question is CLOSED on the modeling side.
+FINAL CAMPAIGN STANDING: keybo-lsb (registered pick, robust) and keybo-lsb+lm (comfort-scalar
+winner: -27.7% total scissor / -56% middle-pinky leaf, ~0.02pp Aalto = noise) are a Pareto pair;
+neither dominates. keybo-lsb+lm's only debit is one adverse-posture sub-bin whose harm is unproven
+(v2impl reflection: "too fine-grained to prove ergonomic harm") and whose veto flips on the OPEN
+scissor_bin_epsilon (0.10 HOLD / 0.15 PROMOTE). NO further search or reweighting can resolve which
+is truly better -> the deciding evidence is Phase-D human validation (converges with every prior
+campaign thread). USER-GATED: flagship promotion (keybo-lsb vs keybo-lsb+lm), scissor_bin_epsilon
+policy, and Phase-D go/no-go.
