@@ -5443,3 +5443,34 @@ scissor_bin_epsilon (0.10 HOLD / 0.15 PROMOTE). NO further search or reweighting
 is truly better -> the deciding evidence is Phase-D human validation (converges with every prior
 campaign thread). USER-GATED: flagship promotion (keybo-lsb vs keybo-lsb+lm), scissor_bin_epsilon
 policy, and Phase-D go/no-go.
+
+### RANK-1 CHARTER — frontier RANKING beyond epsilon-Pareto (2026-07-21; before running)
+Motivation (user): epsilon-Pareto only reaches the FRONTIER (removes dominated layouts); it does
+NOT rank points ON it, so it returns HOLD/ties instead of THE best. The frontier is a high-dim
+tradeoff surface, but better/worse points still exist on it. Reaching the best requires a
+PRINCIPLED preference structure over tradeoffs — NOT arbitrary weights (the KAN-PRIME artifact
+trap) and NOT refusal-to-weight (indecision). RANK-1 builds robust frontier ranking.
+CANDIDATE SET: the epsilon-Pareto frontier from the campaign — keybo-lsb, keybo-lsb+lm, lsb-sib,
+lsb-sib+lm, keybo-c30m, the 37 FRESH-2 feasible optima (artifacts/fresh2_search_result.json), the
+FRESH-1 near-miss, + community refs graphite/semimak-jq for calibration. Dedup by string; keep only
+non-dominated (compute the frontier explicitly first).
+METHOD (robust MCDA, not a single scalar):
+1. Characterize the frontier: which layouts are actually non-dominated on the v2 axes (aalto,
+   6 scissor leaves, dislocation, capacity, sfb, sfs, lsb; comm as clipped gauge). Report the
+   true frontier set + each layout's tradeoff signature.
+2. Rank the frontier by ROBUST preference, not one weighting: for each frontier layout compute
+   (a) the SHARE of the defensible weight-simplex under which it is the argmin (a layout best over
+   a larger volume of reasonable preferences is more defensible), (b) worst-case REGRET vs the best
+   at each weight (minimax-regret pick), (c) how the ranking moves under the OPEN scissor_bin_epsilon
+   and severity tiers. Constrain the weight family by whatever ERGONOMIC THEORY / literature bounds
+   it (e.g. scissor>speed-proxy priority the user asserts; pinky severity ordering) — state every
+   constraint and mark unjustified ranges OPEN.
+3. Deliver THE best layout under the robust framework + a full ranked frontier, with an HONEST
+   sensitivity statement: is the top pick preference-robust (wins across most of the family) or
+   preference-dependent (and if so, on which axis's weight does it hinge)?
+DECISION RULE: RANK-1 produces a RANKED RECOMMENDATION, not an auto-promotion. If a layout is
+robustly best (wins the plurality of the defensible simplex AND minimax-regret), it is the
+recommended flagship PROPOSAL. If the top depends on an unresolved preference (e.g. exactly how
+much scissors outweigh SFB), name that preference as the decision the human/Phase-D must settle.
+Promotion + the pivotal preference weight remain USER-GATED. Driver keybo-e2e/rank1.py ->
+runs/rank1.json; read-only on repo; manager reviews. Honest partial-order result is valid.
