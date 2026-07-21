@@ -5335,3 +5335,39 @@ report HONEST NULL (keybo-lsb final). Promotion + support-policy remain USER-GAT
 Driver keybo-e2e/fresh_search.py -> runs/fresh_search.json; manager runs the final verify() gate +
 registers outcome. Gate note: tb_verify pins repo 0f1cb99; run its gate from that pinned state or
 bump the pin (doc commits since are scoring-invariant).
+
+### AXIS-2 CHARTER — objective redesign from the completeness audit (2026-07-20; design @ report sha 118374432)
+Motivation: user found (a) SELECT-1 blind to real scissor reductions (keybo-lsb+lm undervalued),
+(b) community model judged but never optimized. Audit (keybo-axis-audit) delivered a full redesign
+honoring the anti-double-count + RCA-caveat discipline. Registered design (implementation = manager,
+promotion = user-gated):
+FIRST-CLASS AXIS CHANGES to tb_objective:
+1. SCISSOR -> a first-class FAMILY of 6 pair-specific leaves (index-middle ... ring-pinky,
+   middle-pinky = the demonstrated blind spot keybo-lsb+lm cuts ~55%) under ONE shared bounded
+   budget lambda_SC in {0,.05,.10} center .05 (NOT 6 additive votes). Fitted pair/direction ms
+   REMOVED from the neutral comfort arm (Aalto owns timing) — kept only as diagnostic sensitivity.
+2. row_jump (generic vertical, w=.10) -> REPLACED by bounded STATIC DISLOCATION/reach
+   D=sum_c p(c)*(d_stagger/Dmax_f)^r, r in {1,2}, lambda_D in {0,.05,.10,.20} center .10. Do NOT
+   also keep off-home/bottom-row/vertical/WFD scalars (double-count).
+3. pinky_load -> REPLACED by bounded ALL-FINGER capacity L=sum_f w_f z_f^2/(1+z_f^2),
+   z_f=[load_f/c_f-1]_+, c_f=kappa*m_f/sum(m), m=(.6,.85,1,1,1,1,.85,.6), kappa in {1,1.10,1.25}
+   center 1, lambda_L in {0,.10,.25,.50} center .10. Keep hard pinky guards.
+4. LSB retained residual-only, lambda_LSB in {0,.05,.10} center .05, hinge h ~1.5u.
+5. ZERO-weight DIAGNOSTICS (kept out of the objective to avoid re-charging Aalto timing/taste):
+   rolls, redirects, alternation, generic row/adjacency/travel, bottom-row curl, hand-balance,
+   higher-order flow. (Answers "what other axis are we missing" — these were considered and
+   deliberately excluded as double-counts, not oversights.)
+COMMUNITY IN SEARCH (user directive "we should"): enters ONLY as an anchor-free CLIPPED finite
+reward behind the FIXED 0.10pp Aalto plateau guard: F1 = min J0 - lambda_C*z_community,
+lambda_C=0.014650 == max 0.05 Aalto-pp reward, beta in {0,.25,.50}. Never co-equal, never
+lexicographic, CANNOT pay for mechanics or leave the plateau (0.05pp << POOL-SWAP's 1.6pp basin
+gap — so it cannot reproduce basin escape). Breaks only mechanically-equivalent ties.
+SELECT-1 REDESIGN: ten equal votes -> grouped epsilon-Pareto, NO-compensation: scissor counts ONCE
+with pair/bin vetoes (fixes the blindness); mixed-mechanics = HOLD; raw-support = epistemic (not a
+comfort vote); adoption separate; robust n=4 community improvement breaks only mech-equivalent ties.
+OPEN arms (all preregistered sensitivity, default-defensible): comfort-family weights/curves,
+scissor epsilon/mass + neutral severity, dislocation r/lambda, capacity kappa/lambda, community
+saturation/materiality/LOCO robustness. NEXT: manager implements tb_objective v2 + SELECT-1 v2
+(TDD, golden-gated), re-scores keybo-lsb / keybo-lsb+lm / lsb-sib+lm / FRESH-1 near-miss under it,
+THEN a preregistered scissor-priority FRESH-2 (gross-positive attribution + direct pinky-scissor +
+no-regression guards on sfs/dislocation/capacity). Promotion + weight-profile choice USER-GATED.
