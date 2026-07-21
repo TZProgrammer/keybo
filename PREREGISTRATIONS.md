@@ -5397,3 +5397,27 @@ posture bin); (c) set scissor_bin_epsilon policy (0.10 vs 0.15) which mechanical
 PROMOTE; or (d) run the preregistered scissor-priority FRESH-2 first to see if a layout cuts
 middle-pinky WITHOUT the adverse-posture side effect (would dominate both). Implementation committed
 by manager; promotion + epsilon policy = user.
+
+### FRESH-2 CHARTER — scissor-priority successor search on the v2 objective (2026-07-20; before running)
+Motivation: AXIS-2 v2 re-score left keybo-lsb+lm a comfort-scalar winner but SELECT-1 HOLD, blocked
+ONLY by a fine adverse-posture bin (middle_pinky|top_to_bottom|adverse|nonadjacent +537%) — i.e.
+the l<->m swap cuts middle-pinky scissors but shifts a sliver into a worse-oriented posture. FRESH-2
+searches for a layout that captures the scissor reduction WITHOUT that side effect, which would
+DOMINATE both keybo-lsb and keybo-lsb+lm and dissolve the value-call ambiguity.
+OBJECTIVE: search [Aalto x tb_objective_v2 comfort] using the frozen v2 objective (tb_objective_v2
+sha 55a55105) + select1_v2 gate — NOT the v1 objective. Multi-profile over the AXIS-2 grid arms
+(center + defensible mid arms). SCISSOR-PRIORITY acceptance rule (the FRESH-1-reflection fix,
+registered here): (1) attribution by GROSS-POSITIVE (not signed-net); (2) a DIRECT pinky-scissor
+objective term is active; (3) NO-REGRESSION guards vs keybo-lsb on sfs, dislocation, capacity, AND
+on every scissor SUB-BIN (no bin may regress beyond epsilon — this is the guard that would have
+caught the keybo-lsb+lm adverse-posture shift). HARD feasibility: Aalto plateau 0.10pp; pinky
+total<=17/L<=9/R<=9.
+DIVERSITY: cold random + large-kick basin-escape restarts; report Hamming from keybo-lsb AND from
+keybo-lsb+lm. Target genuinely distinct optima.
+DECISION RULE (registered): a FRESH-2 candidate is a promotion PROPOSAL iff plateau+guard-feasible,
+scissor-total strictly better than keybo-lsb, NO scissor sub-bin regresses beyond epsilon, no
+regression on sfs/dislocation/capacity, AND select1_v2 = PROMOTE (not HOLD) vs BOTH keybo-lsb and
+keybo-lsb+lm under the CENTER profile with epsilon at BOTH 0.10 and 0.15 (robust to the pivotal
+open param). Else HONEST NULL — in which case keybo-lsb+lm (comfort-scalar winner) stands as the
+best available and the choice reverts to the registered user value call. Promotion USER-GATED.
+Driver keybo-e2e/fresh2_search.py -> runs/fresh2_search.json; manager runs final gate + registers.
