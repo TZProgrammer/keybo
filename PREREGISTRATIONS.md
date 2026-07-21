@@ -5474,3 +5474,21 @@ recommended flagship PROPOSAL. If the top depends on an unresolved preference (e
 much scissors outweigh SFB), name that preference as the decision the human/Phase-D must settle.
 Promotion + the pivotal preference weight remain USER-GATED. Driver keybo-e2e/rank1.py ->
 runs/rank1.json; read-only on repo; manager reviews. Honest partial-order result is valid.
+
+### RANK-1 FAN-OUT (2026-07-21) — decompose "reach the best layout" into 4 parallel --codex workstreams
+User: break the problem down further, more agents. RANK-1 (robust MCDA on current frontier) keeps
+running; 4 orthogonal sub-problems added, all read-only/own-scratch/commit-nothing, manager integrates:
+- keybo-frontier-map: is the 37-point frontier COMPLETE? dense NSGA-II/Pareto-archive map of the
+  scissor-vs-SFB tradeoff region; find knee-points + any new non-dominated layouts between incumbents.
+- keybo-weights: derive the DEFENSIBLE weight family (ratio bounds per axis-pair) from community doc +
+  biomechanics + our measured surface + user priors — constrains RANK-1's simplex; names the pivotal
+  unresolved ratio.
+- keybo-voi: value-of-information — which weight-uncertainty FLIPS which pairwise winner at what
+  threshold; design the MINIMAL Phase-D experiment resolving exactly the pivotal flip (tie to 9/19
+  conformal sizing).
+- keybo-rank-adversary: red-team the emergent best — reproduce every axis, sweep OPEN constants
+  (scissor_bin_epsilon/severity/non-adj/kappa) for winner-flips, re-check double-count/hidden-regress.
+Integration: manager folds frontier-map (is the frontier complete) + weights (constrained simplex)
+into RANK-1's robust ranking, uses voi to name the decision + minimal Phase-D, and gates on
+rank-adversary before any recommendation. Output = THE best layout + robustness statement + the one
+Phase-D question. Promotion USER-GATED.
