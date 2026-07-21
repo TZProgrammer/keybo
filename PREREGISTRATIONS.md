@@ -5492,3 +5492,33 @@ Integration: manager folds frontier-map (is the frontier complete) + weights (co
 into RANK-1's robust ranking, uses voi to name the decision + minimal Phase-D, and gates on
 rank-adversary before any recommendation. Output = THE best layout + robustness statement + the one
 Phase-D question. Promotion USER-GATED.
+
+### FREQ-FEAT-1 CHARTER — frequency-as-FEATURE permutation sweep, 3 models (2026-07-21; before running)
+User: explore adding frequency as a predictive FEATURE (does knowing an n-gram is common change
+its keystroke time — practice/familiarity signal?) at the 1gram/bigram/trigram/skipgram levels,
+in every on/off permutation, across the Aalto, community, and pool models; let the agent DISCOVER
+which levels help vs harm.
+PRIOR ART THE AGENT MUST BUILD ON (not re-run naively): OQ-1 (2026-07-04, ledger + schema.py:8 +
+agent-artifacts/OQ1-frequency-feature.md) ALREADY tested freq-as-one-lump-feature on AALTO and
+REJECTED it: with 98.7%-qwerty data the freq feature becomes a per-POSITION MEMORIZATION KEY that
+improves held-out MAE/rho but CORRUPTS cross-layout ranking (layout-level Kendall tau collapsed
++0.667 -> +0.333). Frequency was therefore confined to (a) objective WEIGHT and (b) the additive
+PRACTICE TERM (train.py residualizes a bigram-keyed practice offset out of the target). FREQ-FEAT-1
+is a legitimate EXTENSION because: (i) OQ-1 lumped frequency; the per-level 1/2/3/skip permutation
+is finer; (ii) OQ-1 was Aalto-only — the COMMUNITY (4 typists x 4 distinct layouts) and POOL data
+regimes are NOT 98.7%-qwerty, so the memorization mechanism may not bind there.
+DECISION METRIC (non-negotiable, the OQ-1 lesson): the decisive metric is LEAVE-ONE-LAYOUT-OUT
+layout-ranking Kendall tau (cross-layout generalization), NOT held-out MAE/rho — MAE REWARDS the
+memorization that ranking exposes. A permutation is ADOPTED for a model only if it strictly beats
+the current geometry-only baseline on LOLO tau (>= baseline, tie-break beats-baseline count),
+across >=3 seeds, AND does not regress the layout-search null-space check. Any arm that wins MAE
+but loses/ties tau is REJECTED (the registered OQ-1 drop branch).
+SWEEP: for each model in {Aalto, community, pool}: the 2^4 = 16 on/off permutations of frequency
+injected at {1gram, bigram, trigram, skipgram} level (as log-freq or normalized-freq features,
+agent picks the encoding + justifies). Report per-model per-permutation LOLO tau + MAE + the
+memorization diagnostic (does the freq feature's SHAP/gain concentrate on position-identity?).
+Frequency source = the independent English corpus (data/corpus/, NOT the Aalto stimulus).
+OUTPUT: which (model, level-set) permutations HELP tau, which HARM, the winning config per model,
+and whether ANY beats the current freq-NOT-a-feature production. If all lose tau (OQ-1 replicates
+at finer grain), that clean negative is the valid result. Read-only repo + own scratch; commit
+nothing; manager reviews + integrates; any schema/model change is user-gated (FEATURE_VERSION bump).
