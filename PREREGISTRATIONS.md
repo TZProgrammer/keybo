@@ -5371,3 +5371,29 @@ saturation/materiality/LOCO robustness. NEXT: manager implements tb_objective v2
 (TDD, golden-gated), re-scores keybo-lsb / keybo-lsb+lm / lsb-sib+lm / FRESH-1 near-miss under it,
 THEN a preregistered scissor-priority FRESH-2 (gross-positive attribution + direct pinky-scissor +
 no-regression guards on sfs/dislocation/capacity). Promotion + weight-profile choice USER-GATED.
+
+### AXIS-2 v2 RE-SCORE OUTCOME (2026-07-20; artifacts state/keybo-optimization/artifacts/v2/, tb_objective_v2 sha 55a55105, 27 TDD tests, v1 frozen 03cb072e untouched)
+Implemented tb_objective_v2 + select1_v2 (AXIS-2 charter be7e3e4) via TDD; re-scored the flagship
+set under the scissor-aware, comm-aware objective (AXIS-2 CENTER profile). Manager-verified results:
+- keybo-lsb+lm is the COMFORT SCALAR WINNER: scissor total -27.7% (0.6195->0.4480), middle-pinky
+  leaf -56% (0.167->0.073), SFB/SFS tie-or-better, LSB tie. On the aggregate it IS more comfortable.
+- BUT SELECT-1 v2 verdict = HOLD (not promotable), REFUTING the manager's clean-improvement
+  prediction. Root cause (verified at sub-bin): l<->m does not only remove middle-pinky scissors, it
+  MOVES some into a worse-oriented bin — middle_pinky|top_to_bottom|adverse|nonadjacent regresses
+  +537% (0.0054->0.0342, mass 0.057). No-compensation gate vetoes on it.
+- CRITICAL (from v2impl reflection): that veto is DECISION-CRITICAL on ONE open parameter,
+  scissor_bin_epsilon: at 0.10 -> HOLD, at 0.15 -> PROMOTE. And the regressing bin uses the 0.60-of-
+  neutral OPEN factor; its 7.765% neutral regression only becomes the 12.122% veto against the
+  smaller open-arm denominator. The v2impl reflection judges this bin "too fine-grained to prove
+  ergonomic harm" -> HOLD is preregistered UNCERTAINTY, NOT evidence keybo-lsb+lm is worse.
+- near-miss cnfgk'...: HOLD confirmed (ring-pinky neutral regression 11.44%) — genuine, coarser-bin.
+INTERPRETATION (honest): under a scissor-aware objective the old "keybo-lsb is better" verdict is
+GONE. keybo-lsb+lm is a Pareto-frontier PEER — comfort-scalar-better, blocked from outright
+promotion only by a fine-grained posture bin whose harm is unproven and whose veto flips on one OPEN
+epsilon. This is a HUMAN VALUE CALL, not a pipeline verdict.
+USER-GATED DECISION (surfaced, not taken): (a) adopt keybo-lsb+lm as the flagship/daily-driver
+(scalar-better, the scissor win you flagged); (b) keep keybo-lsb (conservative, avoids the adverse-
+posture bin); (c) set scissor_bin_epsilon policy (0.10 vs 0.15) which mechanically decides HOLD-vs-
+PROMOTE; or (d) run the preregistered scissor-priority FRESH-2 first to see if a layout cuts
+middle-pinky WITHOUT the adverse-posture side effect (would dominate both). Implementation committed
+by manager; promotion + epsilon policy = user.
