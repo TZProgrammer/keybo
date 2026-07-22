@@ -5674,3 +5674,37 @@ the rare-ngram guard. If instability IS material even with equal repeats -> stay
 disqualification, honestly). Either way report the equal-repeats regret distributions for BASE vs
 combo + the derived threshold. Read-only repo + own scratch; commit nothing; ADOPTION into the
 production model remains USER-GATED (this audit only determines candidacy).
+
+### STAB-AUDIT-1 OUTCOME — TIE under equal repeats; TRI-PS+FREQ-PRIOR advances to Phase D (2026-07-22; after running)
+Verdict: TIE. The old optimizer-stability rejection was an ARTIFACT of unequal evidence and is removed.
+METHOD executed exactly as registered — symmetric, equal-effort, preregistered before run: arms {BASE,
+TRI-PS+FREQ-PRIOR}; model seeds 0-19; search seeds 888301-888320; 20 searches on every seed-specific
+model surface AND 20 on every leave-one-model-seed-out consensus surface; 40 models, 80 surfaces, 1,600
+searches, 10,000 paired model-seed bootstrap draws. For each model seed the selected layout was scored on
+the mean of the other 19 surfaces; candidate-minus-BASE consensus regret paired by seed.
+RESULT: candidate mean consensus regret 0.124993% vs BASE 0.108749%; paired delta +0.016243pp, 95% CI
+[-0.035908, +0.066360] — CONTAINS ZERO -> TIE by the registered rule (CLEAR = upper<0, TIE = CI straddles
+0, FAIL = lower>0). Honest read of the tails: candidate's MEAN and MEDIAN regret were slightly HIGHER
+(median 0.1192% vs 0.0600%; higher on 12/20 seeds) but its UPPER TAIL was LOWER (P95 0.2337% vs 0.2779%,
+max 0.2479% vs 0.2817%); search-level regret nearly identical (means 0.0427% vs 0.0415%). Both arms
+produced 20 DISTINCT seed-selected layouts -> exact optimizer positions remain underidentified even at
+small objective regret (why exact-agreement was only diagnostic, never a gate). The old "0.14850% > 0.07737%
+tol" disqualification is retired: it mixed model+residual search variation, used unequal evidence (max-of-3
+vs 1), and exempted BASE — under equal effort BASE itself reaches 0.28169% seed-consensus regret vs the
+candidate's 0.24794%; neither is credibly less stable.
+DECISION RULE evaluated — all three registered conditions MET: (a) transfer win holds under corrected
+bootstrap (rho/ceiling +0.02845, CI [+0.02126,+0.03244]) ✓; (b) equal-repeats seed-instability does NOT
+exceed BASE's beyond the materiality bar (delta CI contains 0) ✓; (c) rare-ngram guard passes (rare-three-
+decile MAE -4.12%) ✓. => TRI-PS+FREQ-PRIOR status changes optimizer-rejected -> ADVANCE_PHASE_D (an
+ADOPT-CANDIDATE). This does NOT select a new production layout and does NOT make the koyu plateau sample a
+winner. PRODUCTION ADOPTION REMAINS USER-GATED; only a preregistered Phase-D participant comparison of
+BASE-selected vs candidate-selected layouts (blinded controls) can resolve whether the small objective
+differences are material and which model yields the better novel layout.
+ARTIFACTS (verified, SHAs match callback): result keybo-e2e/runs/tri-frequency-stability.json
+sha256 5a88914cabc21011a9d52ad9212c316958844e6fdb7e3036b5e0104326db7669; report ...-report.md sha256
+6438e1178aa85d3a1c20bce8dfa28ce7b59ca2f09d40fc66f84db5e30d066086; log ...-stability.log sha256
+751a53ba10dbae9895e92a8feedee5deab0bb7b6de20be9883069424a6985ef6; frozen input SHA c7eead886301ecb47...
+(matches the recorded TRI-PS+FREQ-PRIOR input). Durable copy in
+state/keybo-optimization/artifacts/stab-audit-1/. Clean source 5eff01b; 18 expected-green tests pass, known
+shipped-bootstrap RED reproduces [0,0]; py_compile + Ruff pass; BASE tensor parity 0.0ms for seeds 0/1/2;
+no commit or production change made by the audit.
