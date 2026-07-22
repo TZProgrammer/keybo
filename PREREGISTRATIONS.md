@@ -5566,3 +5566,39 @@ negative. ROOT LIMITER = tau saturation from too few held-out layouts (a layout-
 problem, not a frequency problem); with more layout diversity the Aalto/comm ranking test could
 become discriminating and the question should be RE-OPENED. Production design (freq = weight +
 practice term) stands as the conservative default, not as a proven-optimum.
+
+### SELECT-METHOD-1 CHARTER — better model-selection methodology + near-miss revival (2026-07-21; before running)
+User: improve HOW we select better models, and RETRY promising experiments to actually get better
+models — including COMBINING two experiments that each fell just short of the bar (their gains may
+sum past it). Motivated by three findings this session:
+(A) rho-bar-is-noise: the adoption rule "ρ/ceiling must beat incumbent by +0.005 (or +0.02)" uses
+    UNDERIVED round-number bars almost certainly INSIDE rho's own sampling noise. A participant-
+    level bootstrap CI on rho ALREADY EXISTS (validate.py::_bootstrap_rho_ci) but was NOT used as
+    the bar — so past "rejected, ρ/ceiling 0.964 < bar" decisions may be NOISE-rejections.
+(B) tau-saturation: with ~4-5 held-out layouts LOLO tau pins to 1.0 and cannot discriminate top
+    arms; the pipeline leaned on rho/ceiling to break ties but with a noise-width bar (see A).
+(C) deferred near-misses never revisited: P-MED/P-M5 (LIFTED tau 0.67->1.0 AND improved wmae/umae,
+    rejected on an UNEVALUABLE different-frame rho compare — matched-frame follow-up registered as
+    future work, never done); the FREQ-FEAT-1 post-to_ms additive community correction (improved
+    mean MAE, 2/4 layouts regressed); possibly others in the P2/target-null/robustness families.
+MANDATE (deliver a DESIGN + evidence, manager implements/commits, schema+production changes user-gated):
+1. STATISTICAL BAR REDESIGN: replace the fixed ±0.005/±0.02 rho/ceiling bars with the MEASURED
+   bootstrap-CI-aware rule — adopt only when a metric gain clears its own participant-level bootstrap
+   CI (or a registered effect-size floor derived from that CI), and declare everything inside the CI
+   a genuine TIE broken by a substantive criterion (rare-ngram guard, raw support, tau if non-
+   saturated) NOT by noise. Quantify rho/ceiling's actual CI width on our folds so the new floor is
+   evidence-based. Also address tau saturation: propose the discriminating metric to use WHEN tau is
+   at ceiling (and flag that true resolution needs Phase-D layout diversity).
+2. NEAR-MISS AUDIT + REVIVAL: enumerate every past experiment that improved a magnitude/accuracy
+   metric but was rejected on a sub-CI margin or an unevaluable compare (P-MED/P-M5, freq additive,
+   scan the ledger for the pattern). Re-adjudicate each under the redesigned bar; re-run the ones
+   whose original compare was unfair (e.g. P-MED/P-M5 matched-frame). Report which flip to ADOPT.
+3. COMBINATION EXPERIMENTS (the user's key lever): for pairs of near-miss arms that each improved a
+   DIFFERENT sub-metric or cell region (e.g. a head-MAE winner + a rare-decile winner; T-CAP +
+   cand-4; a bigram-level + trigram-level freq additive), test whether STACKING them clears the
+   redesigned bar when neither did alone. Prereg the pairs + the combined-adoption rule BEFORE
+   running; require the combination to pass the rare-ngram guard AND not regress tau.
+GUARDRAILS: decisive metric is still cross-layout generalization (tau where it resolves, else the
+CI-aware rho/ceiling + rare-ngram guard); NEVER adopt on head-MAE alone (the T-MAE / memorization
+failure); all model retrains via the LOLO harness; frequency source = independent English corpus.
+Read-only repo + own scratch; commit nothing; any production model/schema change is USER-GATED.
