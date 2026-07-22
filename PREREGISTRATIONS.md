@@ -5522,3 +5522,26 @@ OUTPUT: which (model, level-set) permutations HELP tau, which HARM, the winning 
 and whether ANY beats the current freq-NOT-a-feature production. If all lose tau (OQ-1 replicates
 at finer grain), that clean negative is the valid result. Read-only repo + own scratch; commit
 nothing; manager reviews + integrates; any schema/model change is user-gated (FEATURE_VERSION bump).
+
+### FREQ-FEAT-1 OUTCOME (2026-07-21; merged artifact, safe-panel) — OQ-1 REPLICATES at finer grain
+VERDICT: frequency-as-a-FEATURE REJECTED for the optimizer across ALL THREE models (Aalto,
+community, pool). 0/32 permutations beat production LOLO layout-ranking tau in ANY model (baselines
+1.0/1.0/0.857 — the top-tier arms all tie at ceiling, none exceed). Meanwhile EVERY model's best arm
+improves held-out MAE (Aalto 22.81->19.03, community 32.44->29.83, pool 25.09->22.14). That MAE-down/
+tau-flat split IS the registered OQ-1 memorization signature — now confirmed at PER-LEVEL grain AND
+in the non-qwerty community/pool regimes (where I'd flagged the mechanism might not bind — it does).
+All six fitted 128x2048 panels PASS exact placement invariance; frequency contributions remain
+POSITION-ASSOCIATED (observational confounding persists), so a freq feature is a memorization/
+practice-fit channel, not a ranking-relevant geometry signal — exactly OQ-1's finding.
+LEVEL DIRECTIONS (MAE, informational): Aalto first+second-bigram help, trigram helps valid weighted
+pairs but extrapolates badly on invalid ones, skipgram HARMS, unigram mixed; community unigram/
+first-bigram/trigram/skipgram help MAE, second-bigram harms; pool bigrams+trigram help, unigram/
+skipgram mixed.
+ONE EXPLORATORY NON-NULL (not adopted): a POST-to_ms ADDITIVE community frequency correction
+(1gram+bigram1+trigram+skipgram) improves community mean MAE/WMAE/log-WMAE but 2/4 held layouts
+REGRESS -> fails the no-regression bar; needs independent/nested confirmation before it could be
+considered, and it is a serve-time additive (like the practice term), NOT an optimizer feature.
+CONCLUSION: the production design (frequency = objective WEIGHT + additive practice term, NOT a
+model feature) STANDS, now validated at finer grain and across all three models. No schema change;
+FEATURE_VERSION unchanged. Answers the user's per-level/per-model question definitively: no
+permutation is safe to add as an optimizer-facing feature.
