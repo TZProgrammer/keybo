@@ -5708,3 +5708,48 @@ sha256 5a88914cabc21011a9d52ad9212c316958844e6fdb7e3036b5e0104326db7669; report 
 state/keybo-optimization/artifacts/stab-audit-1/. Clean source 5eff01b; 18 expected-green tests pass, known
 shipped-bootstrap RED reproduces [0,0]; py_compile + Ruff pass; BASE tensor parity 0.0ms for seeds 0/1/2;
 no commit or production change made by the audit.
+
+### PHASE-D PRE-DATA PACKAGE — banked design (2026-07-22; NOT run, NO human data, NO production change)
+Status: the pre-data (design) HALF of Phase-D is implemented + verified and BANKED. Phase-D itself (the human
+participant study) is NOT run and is DEPRIORITIZED by the user ("won't do Phase-D for a long, long time —
+months or never"); adoption of TRI-PS+FREQ-PRIOR stays gated on it and is therefore INDEFINITELY DEFERRED.
+This entry records the reusable design so it survives whenever/if-ever the study runs. All work is LOCAL-ONLY
+in a child worktree (commit a28b2a7, NOT pushed; child origin/main still 5eff01b); durable copy harvested to
+state/keybo-optimization/artifacts/phase-d-predata/.
+PROTOCOL (protocol.md sha cbb64157...): 8-session blinded crossover + a controlled 19-layout ranking panel.
+Tests TWO claims: (1) does the candidate-selected layout reduce OBSERVED sustained typing time vs the
+BASE-selected layout without raising errors; (2) does the frozen candidate SERVED model rank NOVEL layouts
+better than BASE (the thing held-layout tau cannot test — it saturates). Target N=80 completed (cap 100 for
+20% attrition), 44 laptop / 36 external, blocked across 3 WPM bands. Track S scores sessions 3-8 (drops first
+2 as warmup); Track R assigns qwerty + both primaries to all 80 + 5 balanced of the other 16 (=25 each), fixed
+fingering. POWER (paired log-time, alpha 0.05, 90%): served UMAE gap 5.42% needs 34; WMAE 8.77% needs 13;
+served RARE gap 1.88% needs 73; the frozen 0.0608% selected-layout model gap needs ~283,790 (intentionally
+infeasible — prevents reading model-error gains as speed gains). CORRECTION to my earlier note: the
+"9->90% / 19->95%" figures are no-failure conformal n/(n+1) bounds needing exchangeable LAYOUT units, NOT
+participant counts — do not cite them as such. With 19 layouts one discordant pair moves tau by 0.0117 (vs
+0.333 at 4 layouts) — that is how the panel de-saturates ranking.
+DECISION RULE (fail-closed, preregistered): ADOPT_CANDIDATE requires ALL of — >=1% observed sustained-time
+improvement with paired CI excluding 0; error-rate noninferiority; >=80% bilateral plateauing; all 19 layouts
+evaluable; positive nested-bootstrap tau gain; candidate rho/own-ceiling >=0.8 on every layout; positive
+paired overall rho/ceiling gain; served-rare and matched-geometry delta-MAE ratios with upper CI < 1; no
+device/WPM-stratum or fingering-control failure. Clear directional harm -> KEEP_BASE; any inside-CI /
+underpowered / saturated / failed-quality -> TIE. Even a pass only advances to a SEPARATE user-gated
+production review (adoption never automatic).
+STIMULI (stimuli.json sha c4916988...): qwerty + dvorak + 3 top-tier anchors + 7 generated per arm = 19
+distinct valid layouts; campaign config (C30M pinned space, 90 WPM, seeds 889101-889112, SA 12x16k + 2-opt),
+zero direct-rescore error. Primaries: BASE flmpg'.oyksntdcireahxzbwvu,-qj ; CANDIDATE
+bgdlm-.yo'csthrpnieafxvwku,jqz (Hamming 29-30 from archive-1843/1846/keybo-lsb+lm => genuinely novel, not
+perturbations). Each arm prefers its own primary by ~0.16% objective fit (NOT a predicted human-speed effect).
+HARNESS (phase_d_analysis.py sha 9c00b1da...): validates event/prediction/blinded-manifest contracts, excludes
+Track-S warmup, derives final-transition K31 timings, participant-split ceilings, and evaluates all guards;
+participant bootstrap preserves replacement multiplicity; ranking nests layout resampling (avoids 4-layout tau
+saturation); refuses to emit an authoritative decision on synthetic data (requires --allow-synthetic, marks
+synthetic=true/authoritative=false). QUALITY NOTE: the child ran its OWN adversarial cold-reviewer, which found
+3 real harness bugs (trial-grouping ignoring block/period; manifest fail-open on identical primaries; fingering
+pass computed over non-confirmatory events); I independently VERIFIED all 3 are FIXED in the committed artifact
+(_trial_key is the full 7-tuple incl period+block_id L363-369; manifest requires distinct 19 ids/strings +
+primary set == expected models L260-265; fingering pass scoped to confirmatory samples) — find->fix->verify
+loop closed. Verification: 115 tests/analysis pass, 31 focused Phase-D tests, Ruff+py_compile, synthetic refusal
++ byte-identical rerun, 43 direct rescores at 0.0 error.
+BOUNDARY: draft for a study owner to register + run. Human recruitment, consent/ethics, collection, ledger
+registration, production adoption, and any model/schema change all remain OUT of scope and un-done.
