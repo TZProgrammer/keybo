@@ -5627,3 +5627,29 @@ models stand, now for statistically defensible reasons rather than lucky round-n
 Follow-ups: (a) manager to review+commit the bootstrap fix to src (user-gated as a production
 change? — it is a pure bug fix to a diagnostic; commit under standing test-fix authority, note
 here); (b) whether old-decision robustness was coincidence = reflection question in flight.
+
+### SELECT-METHOD-1 follow-up: TRI-PS+FREQ-PRIOR is a DEFERRED transfer-winning near-miss (2026-07-22; tri-frequency.json c7eead88)
+Extended sweep (BASE/TRI-PS/FREQ-PRIOR/combo/NGRAM-FE/JOINT-SHAP, paired K31 LOLO under the
+corrected bootstrap). Findings:
+- TRI-PS+FREQ-PRIOR = the STRONGEST cross-layout transfer arm tested: rho/ceiling +0.02845 (95% CI
+  [+0.02126,+0.03244] — clears zero, a REAL generalization gain under the fixed bootstrap), rare-cell
+  MAE -4.12%, matched geometry-delta -2.53%, exactly frequency-invariant. It also optimizes to a
+  layout 0.024% better than BASE's own plateau on BASE's mean surface.
+- REJECTED on ONE guard: optimizer model-seed stability (combo max-seed regret 0.14850% > candidate
+  search tolerance 0.07737%). BUT that tolerance is NOT a calibrated materiality bar — it is the MAX
+  of three mean-surface searches compared against SEED surfaces that had one search each (apples-to-
+  oranges), and BASE ITSELF FAILS the symmetric test (BASE seed0 regret 0.05005% > its 0.02006%
+  tolerance — verified in the artifact). So the incumbent would be disqualified by the same rule.
+- VERDICT: same class as the rho-bar noise-floor fix — a real transfer win blocked by an
+  un-calibrated stability tolerance. TRI-PS+FREQ-PRIOR adoption is DEFERRED (not rejected) pending a
+  registered EQUAL-REPEATS / materiality audit of the seed-stability bar (equal search counts per
+  surface; a materiality threshold derived from measured seed-regret spread, not a raw max). If the
+  instability proves immaterial under that audit, TRI-PS+FREQ-PRIOR is a genuine candidate to IMPROVE
+  the production model's cross-layout transfer.
+- JOINT-SHAP subtraction REJECTED cleanly (fails fixed-geometry intervention by 46.24 ms).
+- 'koyu,vdmnlheiapcstrfqj-.'gwbxz' = BASE.mean rng888301 plateau sample (the pre-existing production
+  optimum on one seed), NOT a new winning layout — do not report as top-tier.
+CONCLUSION: BASE production model retained for now; TRI-PS+FREQ-PRIOR is the first genuinely
+promising model-improvement lever the campaign has surfaced, parked on a fixable bar. Registered as
+the priority follow-up. User-gated: whether to run the equal-repeats stability audit that could
+unblock it.
