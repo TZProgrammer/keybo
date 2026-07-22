@@ -5653,3 +5653,24 @@ CONCLUSION: BASE production model retained for now; TRI-PS+FREQ-PRIOR is the fir
 promising model-improvement lever the campaign has surfaced, parked on a fixable bar. Registered as
 the priority follow-up. User-gated: whether to run the equal-repeats stability audit that could
 unblock it.
+
+### STAB-AUDIT-1 CHARTER — equal-repeats materiality audit of TRI-PS+FREQ-PRIOR (2026-07-22; before running)
+Motivation: TRI-PS+FREQ-PRIOR is a verified transfer-winning near-miss (rho/ceiling +0.0285 CI
+[+0.021,+0.032], rare -4.12%) DEFERRED only on optimizer seed-stability (combo 0.1485% > tol
+0.0774%). That tolerance is UNCALIBRATED: it is the MAX of 3 mean-surface searches vs seed surfaces
+with 1 search each (apples-to-oranges), and BASE itself FAILS the symmetric test (seed0 0.0500% >
+its 0.0201% tol). This audit re-decides adoption under a FAIR, calibrated stability bar.
+METHOD: (1) EQUAL search repeats per surface — run the SAME number of independent SA searches (>=3,
+same 12x16k+2opt config) on EVERY model-seed surface for BOTH BASE and TRI-PS+FREQ-PRIOR, so
+seed-instability is measured identically (removes the max-of-3-vs-1 artifact). (2) Derive a
+MATERIALITY threshold from the measured BASE seed-regret SPREAD (e.g. BASE's own across-seed regret
+distribution — a candidate is unstable-beyond-incumbent only if its regret exceeds BASE's by more
+than BASE's own measured spread / a bootstrap CI on the regret gap), NOT a raw max. (3) Re-adjudicate
+TRI-PS+FREQ-PRIOR: is its instability MATERIALLY worse than BASE's under the equal-repeats bar?
+DECISION RULE (registered): TRI-PS+FREQ-PRIOR becomes an ADOPT-CANDIDATE iff (a) its transfer win
+holds under the corrected bootstrap (already shown), AND (b) under equal-repeats its seed-instability
+does NOT exceed BASE's own by more than the measured materiality threshold, AND (c) it still passes
+the rare-ngram guard. If instability IS material even with equal repeats -> stays rejected (real
+disqualification, honestly). Either way report the equal-repeats regret distributions for BASE vs
+combo + the derived threshold. Read-only repo + own scratch; commit nothing; ADOPTION into the
+production model remains USER-GATED (this audit only determines candidacy).
