@@ -5602,3 +5602,28 @@ GUARDRAILS: decisive metric is still cross-layout generalization (tau where it r
 CI-aware rho/ceiling + rare-ngram guard); NEVER adopt on head-MAE alone (the T-MAE / memorization
 failure); all model retrains via the LOLO harness; frequency source = independent English corpus.
 Read-only repo + own scratch; commit nothing; any production model/schema change is USER-GATED.
+
+### SELECT-METHOD-1 OUTCOME (2026-07-22; artifact selmethod.json sha 22cafed5, harvested)
+1. SHIPPED BOOTSTRAP DEFECT (production bug, fix pending manager commit): validate.py::
+   _bootstrap_rho_ci is DEGENERATE — observed CI [0.0, 0.0] width ZERO. Root cause: replacement
+   draws converted to a set (multiplicity lost) + full-sample observations reused. RED test written;
+   corrected paired participant-bootstrap implemented in agent scratch.
+2. MEASURED TRUTH ABOUT THE OLD BAR (validates the user's critique quantitatively): corrected
+   marginal CI widths across 8 fold/seeds span 0.0068-0.1318 (p95 half-width 0.0652; conservative
+   legacy unpaired floor 0.1648). The old +0.005 adoption margin = 3.8% of the p95 CI width — pure
+   noise-scale. The old +0.02 similarly. Registered NEW BAR: adopt only when the PAIRED participant-
+   bootstrap challenger-minus-incumbent rho/ceiling 95% CI LOWER BOUND > 0, with rare-ngram and
+   resolvable-tau guards; anything inside the CI = TIE (broken by substantive criteria, not noise).
+3. NEAR-MISS RE-ADJUDICATION (honest null): NO historical rejection flips to ADOPT under the honest
+   bar. MED/M5 remain rare-decile rejects (matched-frame); CAP4 rejects MORE decisively (paired rho
+   delta -0.0057, CI [-0.0070,-0.0037] entirely negative, rare +3.9%); TRI-PS stays REOPEN/HOLD.
+4. COMBINATION EXPERIMENT (the user's stacking lever, preregistered CAP4+MED): does NOT clear —
+   rho +0.0015 CI [-0.0061,+0.0052] (straddles 0 = tie), WMAE -8.53% (real head gain) but rare-
+   decile +5.62% CI [+3.62,+5.76] -> the rare-ngram guard fires decisively. REJECT. No combination
+   clears; no better model produced.
+CONCLUSION: the methodology upgrade is REAL (degenerate CI fixed, evidence-based bar registered,
+old margins proven noise-scale) and the model-selection verdicts are UNCHANGED — the incumbent
+models stand, now for statistically defensible reasons rather than lucky round-number bars.
+Follow-ups: (a) manager to review+commit the bootstrap fix to src (user-gated as a production
+change? — it is a pure bug fix to a diagnostic; commit under standing test-fix authority, note
+here); (b) whether old-decision robustness was coincidence = reflection question in flight.
