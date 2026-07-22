@@ -5545,3 +5545,24 @@ CONCLUSION: the production design (frequency = objective WEIGHT + additive pract
 model feature) STANDS, now validated at finer grain and across all three models. No schema change;
 FEATURE_VERSION unchanged. Answers the user's per-level/per-model question definitively: no
 permutation is safe to add as an optimizer-facing feature.
+
+### FREQ-FEAT-1 OUTCOME — CORRECTION (2026-07-21; supersedes the prior entry's framing)
+The prior entry overstated the result and used an unsatisfiable criterion. Corrected read from the
+merged artifact:
+- Aalto + community baseline LOLO tau = 1.0 (SATURATED — only ~4-5 held-out layouts, tau pins to
+  ceiling). "0/32 beat production tau" there is VACUOUS: nothing can beat 1.0. Checked the right
+  question instead — did any freq arm DROP tau? NONE did (all 32 stay 1.0 on both). So on Aalto/
+  community the honest finding is: MAE improves (Aalto 22.8->19.0, comm 32.4->29.8) with NO
+  detectable ranking harm. That is NOT evidence against frequency; the ranking test simply has no
+  resolution at ceiling.
+- POOL is the only NON-saturated ranking test (baseline tau 0.857). There, 18/32 freq arms DROP tau
+  to 0.786 — i.e. where the metric CAN discriminate, frequency features HURT cross-layout ranking.
+  This is the real evidence, and it matches the OQ-1 memorization mechanism.
+CORRECTED VERDICT: do NOT adopt frequency as an optimizer feature by DEFAULT (pool shows ranking
+harm; Aalto/comm tau cannot rule out hidden harm behind the ceiling; MAE alone rewards memorization).
+BUT the earlier "definitively rejected at finer grain across all regimes" was TOO STRONG: on Aalto/
+community there is no measured ranking harm and a real MAE gain, so the case is AMBIGUOUS there, not
+negative. ROOT LIMITER = tau saturation from too few held-out layouts (a layout-DIVERSITY / Phase-D
+problem, not a frequency problem); with more layout diversity the Aalto/comm ranking test could
+become discriminating and the question should be RE-OPENED. Production design (freq = weight +
+practice term) stands as the conservative default, not as a proven-optimum.
