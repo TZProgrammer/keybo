@@ -5874,3 +5874,13 @@ ARTIFACTS (verified, SHAs match callback; harvested to state/keybo-optimization/
 sha 649cbdf1...; gauge-board.json sha 75f0f567...; clear-winner-audit.md sha 171a7273...; driver p17_coopt.py + commit patch.
 DISPOSITION: the better model (TRI-PS+FREQ-PRIOR family) does NOT produce a clear-winner flagship layout under the actual
 generator — incumbents (keybo-lsb / lsb-sib / archive-1846) retain the robustness floor. No adoption/promotion; no production change.
+PRECISION ADDENDUM (replicate-gen stranger-read self-audit, I verified vs gauge-board.json; verdict UNCHANGED): two framing
+refinements to the above. (1) The best case is 8/10 not "7/10" — COMMUNITY_FREQ_PRIOR:pick reaches >=8/10 axes vs archive-1846
+(POOL_TRI:runner_up likewise >=8/10 vs lsb-sib); the null holds because the 2 lost axes are the decisive ones: six-surface
+floor 2.176% vs 3.160% (a 0.98pp / 31%-relative collapse on AALTO_BASE) AND scissors 0.694 vs 0.181 (3.8x worse, material
+comfort concession) = "no floor win AND concedes material comfort." (2) The new POOL/COMMUNITY picks DO win the six-surface MEAN
+axis (verified: COMMUNITY_FREQ_PRIOR pick mean 3.785% vs incumbents <=3.660%; top new means 3.79-3.90%) plus LSB/SFB/SFS — a
+coherent profile (higher average cross-surface speed + better rolling comfort) that loses specifically on floor + scissors +
+oxey2. So the honest characterization is not "new picks are worse" but "new picks trade a higher MEAN for a lower FLOOR and worse
+scissors" — a preference-dependent trade, still not a dominating clear winner. Positive control re-verified exact (56/56, runner-up
+== keybo-lsb char-for-char, rescore 0.0).
