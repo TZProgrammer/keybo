@@ -5819,3 +5819,25 @@ pool JSON/report SHAs the body left as "status lolo_complete"). REPRODUCIBILITY:
 workspace); I harvested all drivers + focused tests to state/keybo-optimization/artifacts/drivers/ (run_tri_frequency{,_comm,
 _pool,_layouts,_optimizer}.py, selmethod.py, tri_frequency.py, stability_reexam.py, run_tri_frequency_stability.py, +
 test_*.py) so these outcomes remain reproducible after the child is reaped.
+
+### SCOPE DIRECTIVE — Phase-D is CANCELLED; current data is FINAL (2026-07-23, user)
+User directive (verbatim intent): "We are not getting Phase-D data. Do not block anything on it. Assume the data we have is final."
+CONSEQUENCE — this reinterprets every "gated on Phase-D" / "deferred pending Phase-D" clause in THIS ledger. Phase-D was
+the registered path to (a) de-saturate held-layout tau (currently 1.0 for ALL arms incl BASE, on 4-5 held layouts -> the
+ranking test cannot discriminate) and (b) get observed sustained-typing evidence to adjudicate model/layout adoption. That
+path is now CLOSED, not merely deferred. So decisions previously parked "pending Phase-D" must be made ON THE EXISTING
+EVIDENCE or explicitly abandoned — they can no longer wait.
+WHAT THIS DOES AND DOES NOT CHANGE:
+- Does NOT retroactively change any measured result, verdict, CI, or SHA above. The evidence base is frozen as-is.
+- Does NOT lower the evidentiary bar or manufacture significance. "We can't get more data" != "the data we have now proves
+  what the missing data would have." Claims that genuinely REQUIRED sustained-typing evidence (e.g. "the candidate model
+  generates a BETTER novel layout") remain UNPROVEN and must be stated as such — now permanently, not "pending."
+- DOES remove "wait for Phase-D" as a valid reason to defer a decision. Adoption/promotion calls are now pure USER judgment
+  on the frozen evidence (still user-gated as externally-consequential), with no future data arriving to change them.
+STANDING RESULT under this directive (evidence recap, unchanged): held-layout tau is SATURATED at 1.0 for BASE and every
+candidate arm -> there is NO measurement, and now never will be, that shows the freq-prior candidate RANKS novel layouts
+better (or worse) than the keybo-lsb-era BASE. Served-frame accuracy IS better for the candidate (Aalto served UMAE -5.42%,
+WMAE -8.77%; served rho/ceiling 0.852->0.864, no CI); freq-prior replicates on comm + the pooled set; TRI_PS-alone does not.
+RANK-1 remains a preference-dependent 4-way tie with no all-around flagship. NONE of that is Phase-D-contingent; it stands as
+the final read. The remaining choices (flagship layout; adopt the freq-prior model as the generator; charset) are now
+decidable-today USER calls on this frozen evidence — no longer blocked, no longer waiting.
