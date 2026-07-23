@@ -5753,3 +5753,47 @@ loop closed. Verification: 115 tests/analysis pass, 31 focused Phase-D tests, Ru
 + byte-identical rerun, 43 direct rescores at 0.0 error.
 BOUNDARY: draft for a study owner to register + run. Human recruitment, consent/ethics, collection, ledger
 registration, production adoption, and any model/schema change all remain OUT of scope and un-done.
+
+### COMM+POOL-INVEST-1 OUTCOME — TRI-PS+FREQ-PRIOR replicates on community + pool; new-layout board rebuilt on full objective (2026-07-23; after running)
+Question (user-directed): the TRI-PS+FREQ-PRIOR decomposition (target = g(geometry,WPM) + b(ngram), b shrunk toward a
+smooth frequency-curve prior h(log corpus freq); only g served, frequency NEVER a served input) was established for the
+AALTO model only. Does it also help the COMMUNITY and POOL models? And generate new layouts from every winning
+geometry-only serving surface. NOTE: adoption stays USER-GATED + Phase-D-deferred (months-or-never); this is research on
+the frozen models, not a production change. All numbers VERIFIED against the frozen artifacts (SHAs below).
+METHOD: same as the Aalto tri-frequency run — LOLO held-layout validation, the CORRECTED paired model-seed bootstrap CI
+(not the degenerate shipped set-collapse bootstrap), rare-ngram guard, served-frequency-invariance check; general-English
+corpus weighting (data/corpus/, NOT Aalto-training frequencies — honors the provenance constraint). Decision rule
+preregistered in-artifact before each run: ADOPT_ELIGIBLE = rho/ceiling paired CI lower endpoint > 0 AND no rare/tau/
+invariance guard fails; TIE = rho CI contains 0 + guards pass; REJECT = credible rho harm or a guard fails.
+COMMUNITY (tri-frequency-comm.json): FREQ_PRIOR ADOPT_ELIGIBLE rho +0.01107 CI [+0.00628,+0.01608]; TRI_PS_FREQ_PRIOR
+ADOPT_ELIGIBLE rho +0.01052 CI [+0.00431,+0.01670]; TRI_PS-alone TIE (rho +0.0002 CI straddles 0). STRUCTURAL CAVEAT
+(artifact reliability_normalization.reason): each community layout has exactly ONE typist -> no split-half ceiling
+exists, so comm rho is RAW and conditional on the 4 observed typists (selection-inseparable, same limit as the RCA
+finding); "eligible" here = conditional on those 4, NOT a population claim. Served gains marginal (UMAE -0.49%/-0.60%,
+WMAE slightly WORSE +0.14%/+0.22%); the strong rare-ngram CIs are FULL-model.
+POOL (tri-frequency-pool.json): FREQ_PRIOR ADOPT_ELIGIBLE rho +0.00866 CI [+0.00702,+0.01033]; TRI_PS_FREQ_PRIOR
+ADOPT_ELIGIBLE rho +0.01089 CI [+0.00914,+0.01268], rare -2.60% CI [-2.99%,-2.22%]; TRI_PS-alone REJECT (rho CI clears 0
+but rare barely improves CI [-0.0094,-0.0012] and it fails the guard set — the same non-saturated-pool anti-signal seen in
+FREQ-FEAT-1). Both freq-prior arms hold across all three models; TRI_PS-alone does NOT (TIE on comm, REJECT on pool).
+NEW-LAYOUT BOARD (tri-frequency-layouts.json / -report.md): 60 frozen searches (12 seeds x 5 eligible candidate surfaces),
+each 12x16k SA + exhaustive 2-opt, on the FULL production objective T3 = seed-mean bigram T2 + candidate seed-mean
+geometry-only trigram Tcond; 46 unique layouts, all direct-rescored at max abs error 0.0, WPM-90 rebuild 0 ms.
+⚠ SUPERSEDES an earlier buggy board: the banked Phase-D stimulus generator had loaded Tcond-only .seedmean.npy and OMITTED
+T2 -> its layout strings (incl. the earlier-quoted bgdlm-.yo'csthrpnieafxvwku,jqz) are RETRACTED. This board uses the
+complete objective. Best per surface: AALTO_TRI_PS_FREQ_PRIOR woyu,kdlncgeiapmhtrsqj-.'fbvxz (3.579% own vs qwerty);
+COMMUNITY_(TRI_PS_)FREQ_PRIOR cstrv,deaigylnmkpo.uwqjfxbhz'- (5.98-6.08%); POOL_FREQ_PRIOR cnthd.aeskpblrmuioygwzvfx,'-qj;
+POOL_TRI_PS_FREQ_PRIOR iaed,vhtscyuop.mrlfg-q'kzbnxjw.
+FINDING: Aalto yields a better PURE-SPEED candidate, but NO all-around flagship emerges — cross-surface robustness +
+comfort keep lsb-sib / keybo-lsb among the strongest anchors (consistent with the RANK-1 4-way-tie conclusion). Provenance
+re-confirmed: keybo-lsb = P17 POL-CHEB-r888514 (Aalto BASE + ergo gauges); lsb-sib = COMM-OPT-1 BOTH-SEED-keybo-lsb (Aalto
+BASE + older comm surface + gauges). Corrected raw support maps space to the true K31 index 31 (the historical SELECT-1
+index-30 alias is excluded — the bug fixed at select.py earlier this campaign).
+DISPOSITION: the decomposition is a robust research improvement across all three models (freq-prior arms), NOT a promotion.
+Adoption of any candidate MODEL or LAYOUT remains USER-GATED and gated on Phase-D human data (deferred). No production/
+schema/layout/model change or commit to the production tree was made.
+ARTIFACTS (verified, SHAs match callback; durable copies in state/keybo-optimization/artifacts/{comm-invest,comm-pool-board}/):
+comm tri-frequency-comm.json sha 3e7acd89..., report aacc261e...; pool tri-frequency-pool.json (status lolo_complete);
+layout board tri-frequency-layouts.json sha 427c3eabf0f7d9aac926568f6f620434bc95c378b778bd0532b7cdd38641be95, report
+0e019c27dd13228b1be31ac0a0d50c3aa4ae6fda8834bd231ab9a25a09ad86b1; SELECT-METHOD-1 driver JSON sha 22cafed5...; clean
+source 5eff01b. A separate child (stimgen-fix) is adding a regression test + root-cause fix for the T2-omission generator
+bug (local, uncommitted to production).
