@@ -5841,3 +5841,36 @@ WMAE -8.77%; served rho/ceiling 0.852->0.864, no CI); freq-prior replicates on c
 RANK-1 remains a preference-dependent 4-way tie with no all-around flagship. NONE of that is Phase-D-contingent; it stands as
 the final read. The remaining choices (flagship layout; adopt the freq-prior model as the generator; charset) are now
 decidable-today USER calls on this frozen evidence — no longer blocked, no longer waiting.
+
+### REPLICATE-GEN-1 OUTCOME — flagship generator re-run on new model surfaces; CLEAR-WINNER = HONEST NULL (2026-07-23)
+Question (user-directed): replicate the ACTUAL flagship-generation pipeline that produced keybo-lsb/lsb-sib — NOT the pure-speed
+46-layout board — but with the new eligible candidate model surfaces swapped onto the SPEED axis, then audit whether any single
+output is a "clear winner." Local research on frozen models; no adoption (user-gated). All claims MODELED/gauge-based (tau
+saturated, Phase-D cancelled — no realized/observed speed or ranking claim is possible).
+PIPELINE (replicate-gen, commit 9345f4a in its own clone off a28b2a7): p17_coopt.py = the P17/COMM-OPT-1 recipe — 4-axis
+augmented-Chebyshev over speed+genkey+oxey1+oxey2, weight family 44 Dirichlet CHEB + 6 MMX + 2 SPD + 4 SEEDED, SA 12x16k +
+exhaustive 2-opt + top-10 polish, speed-capped min-max pick, gauge normalization held stationary (p16 board mins / qwerty,
+exactly as comm_opt1.py built lsb-sib). Speed axis driven by each of the 5 eligible surfaces (AALTO/COMMUNITY/POOL x freq-prior
+arms) in turn.
+POSITIVE CONTROL (the load-bearing validation, I VERIFIED it): with AALTO_BASE on the speed axis the pipeline reproduces P17
+BIT-FOR-BIT — 56/56 search layouts identical, PICK POL-MMX-r888404, RUNNER-UP POL-CHEB-r888514 = keybo-lsb (confirmed:
+replicate-polcheb.json .surfaces.AALTO_BASE.runner_up.layout == pyuo,vgdnlhiea.cstrmkj-z'fwbxq), max_direct_rescore_error 0.0 on
+all 6 surfaces. So the replication IS the flagship generator and the candidate arms differ ONLY in the model — a fair test.
+PER-SURFACE NEW-MODEL PICKS (rescore err 0): AALTO_TRI_PS_FREQ_PRIOR pyu,.vgdnlhieaocstrmkj'z-fwbxq; COMMUNITY_FREQ_PRIOR
+prtsgx,aeycldmv.nouiwqkfzbh'-j; COMMUNITY_TRI_PS_FREQ_PRIOR crtsmzpeaigldyf.nou,wqkvxbh'-j; POOL_FREQ_PRIOR
+crtskx,aeypldmf.nouiwzqgvbh'-j; POOL_TRI_PS_FREQ_PRIOR crtsgx,aeymldpv.nouiwqkfzbh-'j.
+VERDICT = HONEST NULL, NO CLEAR WINNER (I verified the floor ordering in gauge-board.json): (a) NO dominance — no new pick is
+>= keybo-lsb/lsb-sib on all 10 gauge axes (best beats lsb-sib 7/10 but loses 3; loses to keybo-lsb on >=5/10). (b) NO floor win
+— the 6-surface robustness floor is held by INCUMBENTS: archive-1846 3.160, lsb-sib 3.156, keybo-lsb 3.137, archive-1843 3.081,
+keybo-lsb+lm 3.058; the BEST new floor is 2.968 (AALTO_TRI), BELOW every incumbent. (c) COMMUNITY/POOL picks OVERFIT their own
+surface (5.57-5.63% saved on COMMUNITY_*) but crater on Aalto (floor 1.74-2.32) and concede scissors (0.49-0.87 vs incumbents
+0.14-0.22) while winning LSB/SFB — a TRADE, not a win. Axis wins split across 9 layouts = Pareto tie. Consistent with RANK-1's
+4-way preference-dependent tie: a better MODEL does not, under the flagship generator, yield a layout that dominates the incumbents.
+PROVENANCE CORRECTION (both replicate-gen AND I independently reached this; supersedes my earlier speculation): clgmk.,ouysrthd
+pnaeiqxwbvfz-'j — keybo-selmethod's 8-surface maximin #1 — is NOT a new-model generation. It is P10-w0.5, an OLD legacy co-opt
+layout / warm-start seed (appears in p12_robust, p14/p15_coopt, comm_opt1 WARM). On the canonical 6-surface floor it is 2.972,
+BELOW all 5 incumbents; its 8-surface maximin lead came from including old surfaces it was historically tuned against.
+ARTIFACTS (verified, SHAs match callback; harvested to state/keybo-optimization/artifacts/replicate-gen/): replicate-polcheb.json
+sha 649cbdf1...; gauge-board.json sha 75f0f567...; clear-winner-audit.md sha 171a7273...; driver p17_coopt.py + commit patch.
+DISPOSITION: the better model (TRI-PS+FREQ-PRIOR family) does NOT produce a clear-winner flagship layout under the actual
+generator — incumbents (keybo-lsb / lsb-sib / archive-1846) retain the robustness floor. No adoption/promotion; no production change.
