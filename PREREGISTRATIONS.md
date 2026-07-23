@@ -5797,3 +5797,25 @@ layout board tri-frequency-layouts.json sha 427c3eabf0f7d9aac926568f6f620434bc95
 0e019c27dd13228b1be31ac0a0d50c3aa4ae6fda8834bd231ab9a25a09ad86b1; SELECT-METHOD-1 driver JSON sha 22cafed5...; clean
 source 5eff01b. A separate child (stimgen-fix) is adding a regression test + root-cause fix for the T2-omission generator
 bug (local, uncommitted to production).
+
+### COMM+POOL-INVEST-1 CORRECTION ADDENDUM — stranger-read self-audit (2026-07-23; 3 gaps, none change eligibility)
+A post-hoc stranger-read audit of the above by keybo-selmethod (I code-verified all 3 against the harvested drivers) found
+three wording/scope gaps. None change any arm's eligibility verdict; they correct HOW the result is stated.
+(1) POOL is NOT independent of Aalto+community. run_tri_frequency_pool.py:55-56 loads the pooled dataset from the aalto
+source (tristrokes_cond_v3.tsv) AND the community source — pool is a SUPERSET that CONTAINS both. So any framing of "POOL
+independently confirms / independently eligible" (which I used verbally) is OVERSTATED: pool overlaps the other two by
+construction, it is a pooled re-analysis, not an independent third sample. The ledger body above ("hold across all three
+models") is fine; the "independent" gloss is retracted.
+(2) COMMUNITY's one-typist-per-layout / model-seed-only-CI caveat, present in the ledger body above, was ABSENT from the
+frozen board JSON/report — now made explicit in state. Carry it wherever comm rho is cited.
+(3) The comm-TRI_PS=TIE vs pool-TRI_PS=REJECT difference is a real DECISION-RULE ASYMMETRY, not an inconsistency, and my
+earlier "fails the guard set" was vague on which guard. Mechanism (run_tri_frequency_pool.py:669-699): the matched-geometry-
+delta failure is WAIVED only when rho_tie is also present. Comm TRI_PS (rho tie + matched-delta fail) -> waived -> TIE; pool
+TRI_PS (credible rho GAIN, so no rho_tie, + same matched-delta fail) -> not waived -> REJECT. Same guard failure, opposite
+verdict, because the waiver is conditional on the rho tie.
+AUDIT POSITIVES: independent reconstruction reproduced all 276 mean scores, 828 seed scores, 322 comfort-axis values at 0
+error; six parent-state comm/pool/board copies rehash to 3e7acd89/aacc261e, d994cd78/801ee28a, 427c3eab/0e019c27 (pins the
+pool JSON/report SHAs the body left as "status lolo_complete"). REPRODUCIBILITY: keybo-e2e/ is pure scratch (dies with the
+workspace); I harvested all drivers + focused tests to state/keybo-optimization/artifacts/drivers/ (run_tri_frequency{,_comm,
+_pool,_layouts,_optimizer}.py, selmethod.py, tri_frequency.py, stability_reexam.py, run_tri_frequency_stability.py, +
+test_*.py) so these outcomes remain reproducible after the child is reaped.
