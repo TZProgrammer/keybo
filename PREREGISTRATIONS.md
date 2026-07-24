@@ -6120,3 +6120,34 @@ from the all-gauge-table 'WFD' (oxey2.components['wfd']) — a1846 -1.73e13 vs -
 flagship-compare clone e8087e7; harvested state/keybo-optimization/artifacts/flagship-compare/ (report f3b8ad7a, csv 7cea9a17, json
 f1d8df0f), 13 tests pass. USER-GATED promotion; no production change. (wider-dominance search — does ANY layout beat all 5 — still
 running.)
+
+### WIDER-DOMINANCE-1 — PARTIAL: no universal dominator; the 5 incumbents are a genuine Pareto frontier (2026-07-24)
+The larger dominance search (does ANY single layout dominate ALL 5 incumbents?) COMPLETE. VERDICT = PARTIAL, verified against
+verdict-final.json (universal_dominator_found=False on BOTH normalized and raw; positive-controlled to 7.3e-13 vs frozen board; all
+reported dominators slow-path verified <3e-13 vs actual KmStats/community_suite/O2Port). Budget: 9,754,623 unique evals (gen1 5.31M
++ gen2 4.45M; 128,011 unique candidates rescored) — exceeds closure-3's 3.38M and the >=8M target. Modeled/gauge only; no
+realized/human claim; no adoption/push/CR.
+ANSWER — NO single layout dominates all 5. The incumbents are a GENUINE PARETO FRONTIER (they were already mutually non-dominated;
+the search confirms nothing external dominates all of them either). Per-incumbent (10-axis, NORMALIZED ceilfrac floor):
+- lsb-sib: DOMINATED 10/10 (closure-3 already had this).
+- archive-1846: DOMINATED 10/10 by the flagship pyou'vgdnmheai.cstrlkjz,-wfbxq (now confirmed under normalized floor too).
+- archive-1843: DOMINATED 10/10 by uyo,.fdnsleiatkpchmrq-xg'bwvzj — NEW (closure-3 could NOT reach it; it is the normalized-floor
+  HOLDER at 0.7517). Climbing the NORMALIZED floor in-loop reaches it; a separate layout dominates it on RAW floor too, so closure-3
+  had merely under-pointed its raw-floor hunt. => the FLAGSHIP-COMPARE-1 note that "archive-1843 leads the floor / flagship only
+  dominates one" is refined: archive-1843 IS dominable, just not BY the flagship — by a different generated layout.
+- keybo-lsb: RESISTS (max 8/10). keybo-lsb+lm: RESISTS (max 8/10). Across the 128k archive + targeted hunts warm-started from each
+  hold-out and the ideal point, ZERO layouts reach even 9/10 vs these two — nothing within one axis. BLOCKING AXES = wfd + sfb:
+  keybo-lsb/+lm hold the set's best wfd (~-1.508e13) and best sfb (1.1415); high-floor designs sit at wfd~-1.75e13, sfb~1.46. It's a
+  multi-axis trade (65 layouts beat keybo-lsb on wfd AND sfb together but each loses elsewhere), not one fortress axis. keybo-lsb/+lm
+  are low-SFB / high-WFD CORNER designs that a high-floor layout structurally cannot also be.
+BEST MULTI-DOMINATOR: uyog.bdnsleiat,pchmrz-'kjfwvxq dominates 3 of 5 at once (lsb-sib + archive-1843 + archive-1846, 10/10 each,
+verified). Max achievable = 3/5.
+NET / CLOSES THE ARC: the corrected in-loop search dominates 3 of the 5 incumbents (up from closure-3's 2) but CANNOT dominate all 5
+— keybo-lsb and keybo-lsb+lm are Pareto-frontier corners (best SFB + WFD) that the high-floor/scissor region can't reach. So the
+FINAL layout picture is: (1) there is NO board-wide modeled winner (confirmed at ~10M evals) — RANK-1's preference-dependent tie is
+now strongly corroborated; (2) but better-generated layouts DO exist that dominate 3 of 5 incumbents on the modeled board — real,
+new flagship CANDIDATES that beat everything except the two SFB/WFD-corner layouts; (3) the promotion choice is preference-dependent:
+a high-floor/scissor candidate (dominates lsb-sib/archive-1843/1846) vs a low-SFB/high-WFD incumbent (keybo-lsb/+lm). Which family
+you prefer is the user's gated call; human superiority remains unmeasurable (Phase-D cancelled). Artifacts: wider-dominance clone
+dde4ab2 (unpushed); harvested state/keybo-optimization/artifacts/wider-dominance/ (verdict-final f7be3dc4, why-resist 8c670f1e,
+generators/hunts). No production change.
