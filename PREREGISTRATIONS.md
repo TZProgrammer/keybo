@@ -5922,3 +5922,38 @@ NONE can establish realized human typing superiority — that stays unknowable (
 DISPOSITION: no result RETRACTED (fit gains real, positive control holds, honest null stands within its generator); but the
 "best model/layout" and "REAL served generalization" framings are corrected to their bounded form. These are research findings;
 no production/adoption change. The 3 closures are candidate follow-ups for USER decision, not auto-launched.
+
+### CLOSURE-1 OUTCOME — nested selection + rank stability: all 3 audit concerns CONFIRMED (2026-07-24)
+Audit closure #1 (inference/selection rigor + rank stability) COMPLETE. I INDEPENDENTLY VERIFIED the load-bearing numbers +
+positive controls against the frozen artifacts (harvested to state/keybo-optimization/artifacts/closure1-nested/; report sha
+ab96197b, piece1 7ee4f6ce, piece2 c00cd4d9, piece3 7b43c108; child commit 9cfe130 local-not-pushed). Positive controls EXACT:
+piece2a reproduces the audit's POOL margin-tau -0.009519210137443335 to full precision; piece1 reproduces the frozen selector at
+max point err 0.0, 0 verdict mismatches. This tightens AUDIT-BEST-1 from "overstated" to quantified.
+PIECE 1 — the peak gains do NOT survive generalization-aware inference. The nominal paired-seed CIs resample only the 20 MODEL
+SEEDS (training randomness); re-running the whole selector inside an OUTER held-layout resample x inner seed resample widens them
+~10-25x and they cross/graze zero (verified in piece1_nested.json): AALTO peak nominal +0.0303 [+0.0272,+0.0332] -> nested
+[-0.0463,+0.1027] CROSSES 0 (positive in only 84.6% of layout draws; dvorak fold -0.076; the peak is argmax-selected in only 64.5%
+of draws = NOT identifiable). COMMUNITY nested [-0.0007,+0.0142] grazes 0, peak argmax-selected only ~21% (ties EFFECT_K_300 +
+incumbent). POOL nested bootstrap keeps lower +0.0003 but the more-conservative across-fold t-interval [-0.0020,+0.0258] crosses 0.
+=> NO surface's peak is clearly clear of zero under layout-generalization inference; POOL is merely closest, method-dependently.
+The "peak beats incumbent" claim is a within-training-randomness statement, not a generalization one.
+PIECE 2 — the min-only tau guard hid a real regression; ONE decision-relevant flip. Root cause verified at source
+(run_tri_frequency_pool.py:634-657): the guard adjudicates MIN-over-seeds margin tau, and all 4 POOL board arms share the same min
+0.904513, so min-only passes everyone while the seed MEANS diverge (BASE 0.9197 vs TRI_PS_FREQ_PRIOR 0.9102). Under a paired
+MEAN-margin-tau guard, TRI_PS_FREQ_PRIOR FLIPS min-pass -> mean-FAIL on the LAYOUT BOARD (mean_tau_guard_pass=False,
+verdict_flips=True) => it LOSES its POOL ADOPT_ELIGIBLE. The 3 selected peak-search configs do NOT flip (AALTO/POOL tau constant
+across seeds at 4 layouts; COMMUNITY genuinely passes). POST-HOC/exploratory, but it means the earlier POOL "ADOPT_ELIGIBLE" for
+TRI_PS_FREQ_PRIOR was an artifact of a min-only guard that can't see systematic seed-level rank harm.
+PIECE 3 — incumbent top-tier is FRAGILE / preference-dependent, and the pivot is SOURCE not model. Among the 4 on-board anchors,
+mean Kendall tau-b WITHIN a source family = +0.80 (model barely matters) but ACROSS source families = -0.13 (often anti-
+correlated). 4 distinct within-tier winners across 8 judges: keybo-lsb #1 on AALTO_BASE but LAST on all 3 COMMUNITY judges;
+archive-1843 wins all COMMUNITY; lsb-sib wins AALTO_TKG+POOL. lsb-sib is a WEAK Condorcet winner (beats each other anchor on a
+majority of judges) = most-defensible-if-forced. This INDEPENDENTLY REPRODUCES the campaign's standing "community-trust is the
+pivot" / preference-dependent-tie conclusion — from a different method. (Home-field confound handled: surface-native REPLICATE-GEN
+outputs trivially win their own judge, excluded.) LIMITATION: fresh2-024/025 not on the frozen 99/46 boards, not scored (would
+need refit, out of scope).
+NET: closure-1 CONFIRMS the audit on all 3 axes. The model-improvement claims are weaker than registered (peak gains are training-
+randomness, not generalization; TRI_PS_FREQ_PRIOR's POOL eligibility flips under a sounder guard), and the layout top-tier is
+explicitly preference-dependent on corpus source. NONE of this needed human data. NO result forces a production change (nothing was
+adopted); it recalibrates confidence DOWNWARD on "we found a better model" and REAFFIRMS "no source-independent best layout." The
+served-fit improvements themselves are not disproven — only their generalization CIs are shown to be too narrow.
