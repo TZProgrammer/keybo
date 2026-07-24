@@ -5957,3 +5957,18 @@ randomness, not generalization; TRI_PS_FREQ_PRIOR's POOL eligibility flips under
 explicitly preference-dependent on corpus source. NONE of this needed human data. NO result forces a production change (nothing was
 adopted); it recalibrates confidence DOWNWARD on "we found a better model" and REAFFIRMS "no source-independent best layout." The
 served-fit improvements themselves are not disproven — only their generalization CIs are shown to be too narrow.
+CLOSURE-1 REFLECTION SHARPENING (self-audit, I verified vs piece1_nested.json; report rev2 sha ff5270b4; NO verdict overturned,
+two headlines corrected toward honesty — both partly SOFTEN the entry above, so recorded to avoid overstating the damage):
+(1) PIECE-1, separate real fragility from t-crit width: model-free (no t-crit/bootstrap) per-fold gains show AALTO is GENUINELY
+sign-fragile — dropping qwertz collapses its LOO gain to -0.00206 and the dvorak fold is -0.076 (1/4 folds negative). POOL is
+NOT fragile the same way: its per-fold gains are all positive and its leave-one-layout-out mean stays [+0.0086,+0.0163], so my
+"POOL across-fold t-CI crosses 0" leaned on the small-df t-crit(3df)=3.18 WIDTH inflation, not real sign-fragility. Corrected read:
+POOL SURVIVES on the calibrated bootstrap; AALTO FAILS model-free; COMMUNITY winner unidentifiable (~21% argmax). Audit point (a)
+— nominal CIs too narrow / conditional on training randomness — still holds for all three; but POOL is the one that does generalize,
+not merely "closest."
+(2) PIECE-3, the SOURCE-pivot magnitude is COMMUNITY-confound-amplified: the strong -0.13 across-source anti-correlation is driven
+by the one-typist COMMUNITY surfaces (across-source pairs involving community avg -0.20; AALTO<->POOL alone avg +0.03 = near-zero,
+NOT anti-correlated). So the "sources actively disagree" strength is a community artifact. HOWEVER the top-tier-FRAGILE verdict
+HOLDS without community: the winner still flips among AALTO+POOL judges alone ({keybo-lsb, lsb-sib, archive-1846}), and within-
+source model tau +0.80 is rock-solid. Corrected read: "no single source-robust winner" stands even excluding community; only the
+anti-correlation magnitude was community-amplified.
