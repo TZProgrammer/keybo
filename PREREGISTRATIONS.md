@@ -6052,3 +6052,45 @@ floors under-counted Community; the normalized floor is the corrected metric goi
 strengthens under the fix) nor any comfort-axis result (charset-agnostic, unaffected). MODELED/gauge only; no adoption/production
 change. floor3 clone commit 0aa45a8a (unpushed); artifacts state/keybo-optimization/artifacts/floor3/ (report 692fb9d0, board
 ec0aaf31), 12 tests pass.
+
+### CLOSURE-2 OUTCOME — model-family gap: HONEST NULL, the peak family + configs stand (2026-07-24) — AUDIT ARC COMPLETE
+Audit closure #2 (the model-family + knob-pair gap from AUDIT-BEST-1 Q1) COMPLETE. HONEST NULL on both runs; I INDEPENDENTLY
+VERIFIED the two headline claims vs the frozen results.json (harvested to state/keybo-optimization/artifacts/closure2-gam/;
+closure2-report.md sha 0a8935df, closure2-results.json 531577c2; child clone commit 5680e337, unpushed). Judged on the SERVED frame
+throughout; same-env baseline validated by reproducing the AALTO peak +0.03029 exactly.
+RUN 1 (GAM/spline family vs CAND4-XGBoost, 7 GAM variants incl. steelman grid + interaction): the smooth-additive family does NOT
+beat the tree family on served generalization. AALTO served-rho gain CI [-0.0732,-0.0696] = credibly WORSE (verified: fully
+negative, robust not a CI artifact — best GAM 0.805 below the XGB 20-seed spread [0.8585,0.8769]); POOL -0.038..-0.057 (also fails
+tensor+margin-tau). COMMUNITY (4-typist, weakest): GAM served-rho CI clears 0 (+0.009..+0.041) w/ LOWER served UMAE, but still WORSE
+— fails the optimizer-tensor guard (Spearman 0.63-0.68<0.75) AND margin-tau (0.802<0.980): its pos^3 trigram ranking diverges from
+the tree family. NGRAM-FE TRAP confirmed+avoided: GAM_INTERACT AALTO FULL-UMAE 16.51<XGB 17.97 (better FULL) but WORSE SERVED —
+full-frame judging would have wrongly picked GAM. Every GAM variant on every surface = WORSE. The peak model FAMILY stands.
+RUN 2 (all 85 compatible two-knob stacks + 14 singles = 99 arms, NO stage-2 pre-filter, 20 seeds, BH-FDR q=0.05 + Bonferroni): NO
+arm beats the per-surface peak under multiplicity-aware inference on ANY surface (verified: every arm beats_peak_multiplicity_aware
+=False, bh_fdr_reject=False). Dropping the pre-filter DID surface the rescue-combinations the audit worried about (concern was REAL
+and worth testing): on POOL, STACK[BACKFIT_1 + LAYOUT_CAP_1P25] has genuinely higher served-rho than peak (+0.00879 CI>0, survives
+BH) — but FAILS the margin-tau guard (0.822<0.905), the exact rho-vs-ranking tradeoff; COMMUNITY BACKFIT_3 rescue-pairs edge up on
+point estimate but all CIs include 0. So no rescue-combo clears the guarded+multiplicity bar. The per-surface PEAK configs stand.
+NET: closure-2 CONFIRMS the peak model choice — neither a different FAMILY (GAM) nor the untried knob-PAIRS beat it on served
+generalization under a sounder, multiplicity-aware bar. Combined with closure-1 (the peak's generalization CIs are too narrow /
+POOL survives, AALTO fragile) the honest model picture is: the freq-prior family + per-surface peak configs are the best FOUND and
+now well-searched (family + pairs + inference all checked), but their served gains over the predecessor are modest and partly
+training-randomness — a solid research result, not "the global optimum." MODELED/gauge only; no adoption/production change.
+
+### AUDIT-BEST-1 ARC — CONSOLIDATED (all 3 closures done, 2026-07-24)
+The adversarial audit ("best model + best layout is OVERSTATED, all 5 GAP") and its three Phase-D-free closures are COMPLETE:
+- CLOSURE-1 (inference/rank): peak gains are training-randomness not generalization (AALTO sign-fragile, POOL survives, COMMUNITY
+  unidentifiable); min-only tau guard hid a regression (TRI_PS_FREQ_PRIOR loses POOL eligibility under mean-tau); layout top-tier is
+  preference-dependent on SOURCE (independently reproduces "community-trust is the pivot").
+- CLOSURE-2 (model family/pairs): HONEST NULL — GAM and all knob-pairs lose to the peak on served frame; the peak family+configs
+  stand. Model search is now well-covered (family + 99 arms + multiplicity), not narrow.
+- CLOSURE-3 (generator): NULL-BROKEN — in-loop mixed-operator search finds layouts that FULLY DOMINATE the two strongest floor-tier
+  incumbents (archive-1846, lsb-sib); the P17 honest-null was a post-hoc-scalarization artifact. Robust + strengthened under the
+  FLOOR-METHODOLOGY-1 normalized floor. Whether one layout dominates ALL FIVE is unresolved (budget-limited).
+FINAL CORRECTED CAMPAIGN PICTURE (all modeled/gauge; Phase-D cancelled => human superiority permanently unmeasurable): (1) MODEL —
+the freq-prior decomposition modestly improves held-out served fit across all 3 sources, is now well-searched, but its
+generalization gains are smaller/shakier than first framed; no global-optimum claim. (2) LAYOUT — there is NO source-independent
+single best (preference-dependent tie, pivot = community-trust), BUT the corrected in-loop generator DOES produce layouts dominating
+the strongest incumbents on the modeled board — real flagship CANDIDATES (chief: pyou'vgdnmheai.cstrlkjz,-wfbxq) that did not exist
+under the old search. (3) METHODOLOGY — the floor metric was scale-broken (raw min discarded community); the normalized floor is the
+corrected metric. ALL adoption/promotion remains USER-GATED; nothing was adopted or changed in production.
