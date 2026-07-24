@@ -12,12 +12,17 @@ correctness is tested against synthetic worlds where the right answer is known:
 A harness that can't tell those apart would pass any model, which is worse than no harness.
 """
 
+import warnings
+
 import numpy as np
 import pytest
+from scipy.stats import ConstantInputWarning
 
-from keybo.data.strokes import StrokeRow
+from keybo.data.strokes import StrokeRow, iqr_average
 from keybo.training.validate import (
     Cell,
+    _bootstrap_rho_ci,
+    _centered_spearman,
     _predict_cells,
     aggregate_layout_table,
     build_cells,
@@ -352,6 +357,330 @@ def test_validate_reports_slope_worst_cell_and_ci():
         # participant-bootstrap CI brackets the point estimate
         lo, hi = m["rho_ci95"]
         assert lo <= m["rho"] <= hi
+
+
+# --- participant bootstrap: the CI must be a real interval, not a point mass ------------
+
+
+def _disagreeing_cells(n_pids=10, samples_per_pid=6, seed=0):
+    """Cells whose two participant halves rank the ngrams in OPPOSITE orders.
+
+    Every participant contributes to every cell, so the drawn PARTICIPANTS decide the
+    per-cell means: which half a replicate over-samples flips the sign of rho. A bootstrap
+    that resamples participants must therefore report a WIDE interval; one that reuses the
+    full-sample observations reports a point mass regardless of what it drew.
+    """
+    rng = np.random.default_rng(seed)
+    cells = []
+    for i, ngram in enumerate(_NGRAMS):
+        samples = []
+        for pid in range(1, n_pids + 1):
+            ascending = pid <= n_pids // 2
+            base = 100 + 20 * i if ascending else 220 - 20 * i
+            for _ in range(samples_per_pid):
+                samples.append((70, int(base + rng.normal(0, 3)), pid, 50))
+        cells.append(
+            Cell(
+                layout="held",
+                ngram=ngram,
+                positions=_D[2 + i],
+                frequency=100,
+                bucket=60,
+                wpm=70.0,
+                obs=iqr_average([s[1] for s in samples]),
+                n=len(samples),
+                samples=samples,
+            )
+        )
+    return cells
+
+
+@pytest.mark.parametrize("trial", range(40))
+def test_weighted_iqr_average_matches_literal_replication(trial):
+    """The rebuild's aggregation must BE ``iqr_average``, on (value, count) bins.
+
+    A replicate of the real qwerty fold is ~27M samples, so the rebuild works on counts
+    instead of an expanded array — which is only legitimate if it agrees exactly with the
+    aggregation :func:`build_cells` used, outlier trimming included.
+    """
+    from keybo.training.validate import _weighted_iqr_average
+
+    rng = np.random.default_rng(trial)
+    n = int(rng.integers(1, 12))
+    values = np.sort(rng.choice(np.arange(50, 400, dtype=np.float64), size=n, replace=False))
+    weights = rng.integers(0, 5, size=n)
+    if trial % 7 == 0:  # an extreme value the IQR rule must trim
+        values[-1] = 100_000.0
+    if trial % 11 == 0:  # all the mass on a single duration
+        weights = np.zeros(n, dtype=np.int64)
+        weights[int(rng.integers(0, n))] = int(rng.integers(1, 30))
+    if not weights.sum():
+        pytest.skip("empty draw is covered by the drop-cells test")
+    assert _weighted_iqr_average(values, weights) == pytest.approx(
+        iqr_average(np.repeat(values, weights).tolist())
+    )
+
+
+def test_bootstrap_ci_is_not_degenerate_under_participant_disagreement():
+    """RED at a6da599: the shipped bootstrap returns a ZERO-WIDTH interval.
+
+    It ``set()``-ed the replacement draw (killing multiplicity) and kept whole cells on
+    mere pid-set intersection while reusing the full-sample obs, so every replicate scored
+    the identical rho on the identical numbers: percentile 2.5 == percentile 97.5.
+    """
+    cells = _disagreeing_cells()
+    obs = np.array([c.obs for c in cells])
+    pred = np.arange(len(cells), dtype=float)
+
+    lo, hi = _bootstrap_rho_ci(cells, pred, obs, n_boot=400, seed=7)
+
+    assert np.isfinite(lo) and np.isfinite(hi)
+    # The halves disagree completely, so participant-level uncertainty is near-total.
+    assert hi - lo > 0.5, f"degenerate CI [{lo}, {hi}] — participant resampling is inert"
+
+
+def test_bootstrap_resampling_preserves_draw_multiplicity():
+    """A participant drawn k times must contribute k copies of its samples.
+
+    Two participants, one slow and one fast, and a draw of (2, 0): the replicate is the
+    SLOW participant twice, so the rebuilt cell mean must be the slow value — not the
+    two-participant average that ``set()``-ing the draw would leave in place.
+    """
+    from keybo.training.validate import _prepare_bootstrap, _resample_cell_observations
+
+    cells = [
+        Cell(
+            layout="held",
+            ngram="ab",
+            positions=_D[2],
+            frequency=10,
+            bucket=60,
+            wpm=70.0,
+            obs=200.0,
+            n=2,
+            samples=[(70, 300, 1, 50), (70, 100, 2, 50)],
+        )
+    ]
+    keep, boot_obs = _resample_cell_observations(_prepare_bootstrap(cells, {1: 0, 2: 1}), [2, 0])
+    assert keep == [0]
+    assert boot_obs[0] == pytest.approx(300.0)  # slow pid twice, fast pid absent
+    # The mirror draw yields the fast participant twice.
+    _, boot_obs = _resample_cell_observations(_prepare_bootstrap(cells, {1: 0, 2: 1}), [0, 2])
+    assert boot_obs[0] == pytest.approx(100.0)
+
+
+def test_bootstrap_rebuild_at_unit_counts_reproduces_cell_obs():
+    """Every participant drawn exactly once must reproduce ``Cell.obs`` exactly.
+
+    This pins the rebuild against the SAME aggregation the cells were built with
+    (``iqr_average``), so a replicate is a resample of the data rather than a different
+    statistic computed on it.
+    """
+    from keybo.training.validate import _prepare_bootstrap, _resample_cell_observations
+
+    cells = _disagreeing_cells()
+    index = {pid: i for i, pid in enumerate(sorted({s[2] for c in cells for s in c.samples}))}
+    keep, boot_obs = _resample_cell_observations(_prepare_bootstrap(cells, index), [1] * len(index))
+    assert keep == list(range(len(cells)))
+    for cell, rebuilt in zip(cells, boot_obs, strict=True):
+        assert rebuilt == pytest.approx(cell.obs)
+
+
+def test_bootstrap_drops_cells_with_no_resampled_samples():
+    """A cell whose contributors are all un-drawn is DROPPED, never aggregated at 0.0.
+
+    ``iqr_average([])`` returns 0.0, so a silent rebuild would inject a spurious
+    zero-duration cell into the replicate and corrupt its rho.
+    """
+    from keybo.training.validate import _prepare_bootstrap, _resample_cell_observations
+
+    cells = [
+        Cell("held", "ab", _D[2], 10, 60, 70.0, 300.0, 1, [(70, 300, 1, 50)]),
+        Cell("held", "cd", _D[3], 10, 60, 70.0, 100.0, 1, [(70, 100, 2, 50)]),
+    ]
+    keep, boot_obs = _resample_cell_observations(_prepare_bootstrap(cells, {1: 0, 2: 1}), [2, 0])
+    assert keep == [0]  # pid 2's cell is gone, not present as obs 0.0
+    assert boot_obs.tolist() == [pytest.approx(300.0)]
+
+
+def test_bootstrap_ci_brackets_point_estimate_and_is_deterministic():
+    cells = _disagreeing_cells()
+    obs = np.array([c.obs for c in cells])
+    pred = np.arange(len(cells), dtype=float)
+    point = _centered_spearman(cells, pred, obs)
+
+    lo, hi = _bootstrap_rho_ci(cells, pred, obs, n_boot=400, seed=7)
+    assert lo <= point <= hi
+    # Same seed -> same interval; a different seed still yields a real interval.
+    assert (lo, hi) == _bootstrap_rho_ci(cells, pred, obs, n_boot=400, seed=7)
+    other_lo, other_hi = _bootstrap_rho_ci(cells, pred, obs, n_boot=400, seed=8)
+    assert other_hi - other_lo > 0.5
+
+
+def test_bootstrap_ci_brackets_rho_of_an_independent_predictor():
+    """The documented reading: the interval covers an OUT-OF-SAMPLE prediction's rho.
+
+    Pinned because the honest caveat is easy to lose: a percentile bootstrap does NOT
+    bracket the rho of a predictor built from these same observations (resampling breaks
+    the shared noise that inflated it). ``validate`` only ever scores models trained on the
+    other layouts, which is the case asserted here.
+    """
+    rng = np.random.default_rng(5)
+    n_pids = 24
+    truth = {ng: 100.0 + 20 * i for i, ng in enumerate(_NGRAMS)}
+    quirk = {(pid, ng): rng.normal(0, 30) for pid in range(1, n_pids + 1) for ng in _NGRAMS}
+    cells = []
+    for i, ngram in enumerate(_NGRAMS):
+        samples = [
+            (70, int(truth[ngram] + quirk[(pid, ngram)] + rng.normal(0, 4)), pid, 50)
+            for pid in range(1, n_pids + 1)
+            for _ in range(8)
+        ]
+        cells.append(
+            Cell(
+                "held",
+                ngram,
+                _D[2 + i],
+                100,
+                60,
+                70.0,
+                iqr_average([s[1] for s in samples]),
+                len(samples),
+                samples,
+            )
+        )
+    obs = np.array([c.obs for c in cells])
+    # Independent of the sampled observations: the world's true per-ngram durations.
+    pred = np.array([truth[c.ngram] for c in cells])
+    point = _centered_spearman(cells, pred, obs)
+
+    lo, hi = _bootstrap_rho_ci(cells, pred, obs, n_boot=400, seed=11)
+    assert hi - lo > 0, f"degenerate CI [{lo}, {hi}]"
+    assert lo <= point <= hi, f"CI [{lo}, {hi}] excludes independent-predictor rho {point}"
+
+
+def test_bootstrap_ci_narrow_when_participants_agree():
+    """Sanity in the other direction: agreeing participants -> a TIGHT interval.
+
+    Width > 0 must come from real between-participant variance, not from noise the
+    estimator manufactures, so the same code must also report near-certainty.
+    """
+    rng = np.random.default_rng(1)
+    cells = []
+    for i, ngram in enumerate(_NGRAMS):
+        samples = [
+            (70, int(100 + 20 * i + rng.normal(0, 2)), pid, 50)
+            for pid in range(1, 21)
+            for _ in range(8)
+        ]
+        cells.append(
+            Cell(
+                "held",
+                ngram,
+                _D[2 + i],
+                100,
+                60,
+                70.0,
+                iqr_average([s[1] for s in samples]),
+                len(samples),
+                samples,
+            )
+        )
+    obs = np.array([c.obs for c in cells])
+    pred = np.arange(len(cells), dtype=float)
+    lo, hi = _bootstrap_rho_ci(cells, pred, obs, n_boot=400, seed=3)
+    assert lo == pytest.approx(1.0, abs=1e-9) and hi == pytest.approx(1.0, abs=1e-9)
+
+
+def test_bootstrap_ci_nan_for_single_participant():
+    """One participant = no participant-level replication; refuse rather than invent."""
+    cells = [
+        Cell("held", ng, _D[2 + i], 10, 60, 70.0, 100.0 + i, 2, [(70, 100 + i, 1, 50)] * 2)
+        for i, ng in enumerate(_NGRAMS)
+    ]
+    obs = np.array([c.obs for c in cells])
+    lo, hi = _bootstrap_rho_ci(cells, np.arange(len(cells), dtype=float), obs, n_boot=50)
+    assert np.isnan(lo) and np.isnan(hi)
+
+
+def test_bootstrap_ci_handles_all_identical_observations():
+    """All-constant durations: rho is undefined per replicate, so the CI must be NaN.
+
+    The failure mode to avoid is a confident-looking interval computed from a handful of
+    accidentally-finite replicates.
+    """
+    cells = [
+        Cell(
+            "held",
+            ng,
+            _D[2 + i],
+            10,
+            60,
+            70.0,
+            150.0,
+            20,
+            [(70, 150, pid, 50) for pid in range(1, 11) for _ in range(2)],
+        )
+        for i, ng in enumerate(_NGRAMS)
+    ]
+    obs = np.array([c.obs for c in cells])
+    with warnings.catch_warnings():
+        # scipy rightly warns that rho is undefined on constant input — that IS the case
+        # under test, so assert the refusal instead of leaking the warning as suite noise.
+        warnings.simplefilter("ignore", ConstantInputWarning)
+        lo, hi = _bootstrap_rho_ci(
+            cells, np.arange(len(cells), dtype=float), obs, n_boot=100, seed=0
+        )
+    assert np.isnan(lo) and np.isnan(hi)
+
+
+def _rows_with_participant_variance(seed=0, n_pids=12, samples_per_pid=8):
+    """The lawful world plus a per-participant-PER-NGRAM idiosyncratic offset.
+
+    ``_lawful_rows`` draws every participant from an identical distribution, so a correct
+    participant bootstrap reports (rightly) almost no uncertainty there. A *uniform*
+    per-participant speed offset would not help either: it shifts every cell equally and
+    Spearman is rank-invariant to a common shift, so rho would still be exactly 1.0 in
+    every replicate. What makes the ranking genuinely uncertain — and what real typists
+    have — is participants DISAGREEING about which ngram is faster, i.e. a
+    participant x ngram interaction. That is the spread the CI must propagate.
+    """
+    rng = np.random.default_rng(seed)
+    quirk = {(pid, ng): rng.normal(0, 35) for pid in range(1, n_pids + 1) for ng in _NGRAMS}
+    rows = []
+    for layout, ngrams in _POSITIONS.items():
+        for ngram, positions in ngrams.items():
+            samples = []
+            for pid in range(1, n_pids + 1):
+                for _ in range(samples_per_pid):
+                    dur = 60 + 25 * _distance(positions) + quirk[(pid, ngram)] + rng.normal(0, 4)
+                    samples.append((int(rng.integers(65, 95)), int(dur), pid, 50))
+            rows.append(
+                StrokeRow(
+                    layout=layout, positions=positions, ngram=ngram, frequency=100, samples=samples
+                )
+            )
+    return rows
+
+
+def test_validate_reports_positive_width_ci_on_real_folds():
+    """End-to-end: with real between-participant spread, ``rho_ci95`` is a true interval."""
+    report = validate(
+        _rows_with_participant_variance(),
+        seeds=[0],
+        wpm_lo=60,
+        wpm_hi=100,
+        bucket_width=40,
+        min_cell_samples=4,
+        n_boot=10,
+        train_params=_fast_params(),
+    )
+    for layout, fold in report["folds"].items():
+        m = fold["seeds"][0]
+        lo, hi = m["rho_ci95"]
+        assert np.isfinite(lo) and np.isfinite(hi), f"{layout}: non-finite CI"
+        assert hi > lo, f"{layout}: degenerate CI [{lo}, {hi}]"
+        assert lo <= m["rho"] <= hi, f"{layout}: CI {[lo, hi]} excludes rho {m['rho']}"
 
 
 # --- trigram harness support (Phase B keystone enabler) --------------------------------

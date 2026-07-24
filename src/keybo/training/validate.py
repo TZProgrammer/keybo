@@ -30,6 +30,7 @@ from collections import defaultdict
 from dataclasses import dataclass
 
 import numpy as np
+from scipy.sparse import csr_matrix
 from scipy.stats import kendalltau, spearmanr
 
 from keybo.data.strokes import StrokeRow, iqr_average
@@ -206,6 +207,97 @@ def _per_bucket_rho(cells: list[Cell], pred: np.ndarray, obs: np.ndarray) -> dic
     return out
 
 
+def _weighted_iqr_average(sorted_values: np.ndarray, weights: np.ndarray) -> float:
+    """``iqr_average(np.repeat(sorted_values, weights))`` without materializing the repeat.
+
+    ``sorted_values`` must be ascending and ``weights`` the matching integer multiplicities.
+    A replicate of the qwerty fold is ~27M samples, so the observation rebuild has to work
+    on (value, count) bins rather than on expanded sample lists.
+    """
+    keep = weights > 0
+    values, counts = sorted_values[keep], weights[keep]
+    if not len(values):
+        return 0.0
+    cumulative = np.cumsum(counts)
+    total = int(cumulative[-1])
+
+    def percentile(q: float) -> float:
+        # numpy's default 'linear' rule, evaluated against the implied expanded array.
+        rank = (total - 1) * q
+        lo_rank, hi_rank = int(np.floor(rank)), int(np.ceil(rank))
+        lo = values[np.searchsorted(cumulative, lo_rank, side="right")]
+        hi = values[np.searchsorted(cumulative, hi_rank, side="right")]
+        return float(lo + (hi - lo) * (rank - lo_rank))
+
+    q1, q3 = percentile(0.25), percentile(0.75)
+    iqr = q3 - q1
+    inlier = (values >= q1 - 1.5 * iqr) & (values <= q3 + 1.5 * iqr)
+    if not inlier.any():  # mirrors iqr_average's fall back to the plain mean
+        return float(np.average(values, weights=counts))
+    return float(np.average(values[inlier], weights=counts[inlier]))
+
+
+def _prepare_bootstrap(cells: list[Cell], pid_index: dict[int, int]) -> dict:
+    """Pre-bin every cell's durations by (duration, participant) for fast rebuilds.
+
+    Each cell becomes ascending unique durations plus a sparse ``bins x participants``
+    count matrix, so one replicate is a single matrix-vector product against the draw
+    counts instead of a re-scan of the raw samples.
+    """
+    values_by_cell: list[np.ndarray] = []
+    offsets = [0]
+    rows: list[np.ndarray] = []
+    cols: list[np.ndarray] = []
+    counts: list[np.ndarray] = []
+    n_pids = len(pid_index)
+    for cell in cells:
+        durations = np.array([s[1] for s in cell.samples], dtype=np.float64)
+        pids = np.array([pid_index[s[2]] for s in cell.samples], dtype=np.int64)
+        values, inverse = np.unique(durations, return_inverse=True)
+        # One row per (duration, participant) pair actually present in this cell.
+        codes, pair_counts = np.unique(inverse * n_pids + pids, return_counts=True)
+        rows.append(offsets[-1] + codes // n_pids)
+        cols.append(codes % n_pids)
+        counts.append(pair_counts)
+        values_by_cell.append(values)
+        offsets.append(offsets[-1] + len(values))
+    matrix = csr_matrix(
+        (np.concatenate(counts), (np.concatenate(rows), np.concatenate(cols))),
+        shape=(offsets[-1], n_pids),
+        dtype=np.int64,
+    )
+    return {"values": values_by_cell, "offsets": np.array(offsets, dtype=np.int64), "bins": matrix}
+
+
+def _resample_cell_observations(
+    prepared: dict, pid_counts: np.ndarray
+) -> tuple[list[int], np.ndarray]:
+    """Rebuild each cell's IQR-mean from a participant draw, dropping starved cells.
+
+    ``pid_counts[j]`` is how many times participant ``j`` was drawn, so a participant drawn
+    k times contributes k copies of every sample it gave. Cells left with NO samples are
+    reported as dropped rather than aggregated: ``iqr_average([])`` is 0.0, and a spurious
+    zero-duration cell would silently corrupt the replicate's rho.
+
+    Emptiness is the ONLY drop rule here — ``build_cells``'s ``min_cell_samples`` floor is
+    deliberately NOT re-applied per replicate. That floor decides which cells are admissible
+    evidence, and re-imposing it on each draw would re-select the cell set from replicate to
+    replicate, so the interval would mix "how uncertain is rho on these cells" with "which
+    cells survived this draw". Cells are chosen once, on the full sample; the bootstrap then
+    varies only the participants behind them.
+    """
+    weighted = np.asarray(prepared["bins"] @ np.asarray(pid_counts, dtype=np.int64)).ravel()
+    offsets = prepared["offsets"]
+    keep: list[int] = []
+    rebuilt: list[float] = []
+    for i, values in enumerate(prepared["values"]):
+        weights = weighted[offsets[i] : offsets[i + 1]]
+        if weights.any():
+            keep.append(i)
+            rebuilt.append(_weighted_iqr_average(values, weights))
+    return keep, np.array(rebuilt, dtype=np.float64)
+
+
 def _bootstrap_rho_ci(
     cells: list[Cell],
     pred: np.ndarray,
@@ -213,26 +305,48 @@ def _bootstrap_rho_ci(
     n_boot: int = 200,
     seed: int = 0,
 ) -> tuple[float, float]:
-    """95% CI on the centered rho via PARTICIPANT-level bootstrap (backlog E1).
+    """95% CI on the centered rho via PARTICIPANT-CLUSTER bootstrap (backlog E1).
 
-    Cells are resampled by the participants that contribute to them: draw participants
-    with replacement, weight each cell by how many draws hit its contributors. Cells store
-    their samples' pids, so contributor sets are exact; a cell whose contributors are all
-    un-drawn drops out of that replicate.
+    Participants are the resampling unit because samples within a participant are
+    correlated: draw ``n_participants`` of them WITH REPLACEMENT, and a participant drawn
+    k times contributes k copies of all its samples. Each cell's observation is then
+    REBUILT from that resampled pool with the same ``iqr_average`` aggregation
+    :func:`build_cells` used, and rho is recomputed on the rebuilt values.
+
+    Rebuilding is the whole point: reusing the full-sample observations makes every
+    replicate score the same number on the same data, which is what made this CI collapse
+    to a zero-width point mass (a participant drawn 3x also has to count 3x — deduplicating
+    the draw turns the bootstrap into a subsample without replacement).
+
+    Cells whose contributors are all un-drawn are DROPPED from that replicate, and a
+    replicate keeping < 3 cells is discarded (rho on two points is not informative).
+    Returns ``(nan, nan)`` when there are < 2 participants or fewer than 20 replicates
+    yield a finite rho — a refusal, not an interval invented from a handful of draws.
+
+    Read it as an interval on the rho an INDEPENDENT (out-of-sample) prediction earns —
+    which is what this harness always evaluates. It is a plain percentile interval, so if
+    ``pred`` were instead derived from these same observations, the point rho would sit
+    above the interval: resampling breaks the noise the two share, and no percentile
+    bootstrap corrects that coupling. Not a defect, but do not read the interval as
+    bracketing a rho computed against a predictor fit on the held-out cells themselves.
     """
-    pid_sets = [frozenset(s[2] for s in c.samples) for c in cells]
-    all_pids = sorted(set().union(*pid_sets)) if pid_sets else []
+    if not cells:
+        return (float("nan"), float("nan"))
+    all_pids = sorted({s[2] for c in cells for s in c.samples})
     if len(all_pids) < 2:
         return (float("nan"), float("nan"))
+    prepared = _prepare_bootstrap(cells, {pid: i for i, pid in enumerate(all_pids)})
     rng = np.random.default_rng(seed)
+    uniform = np.full(len(all_pids), 1.0 / len(all_pids))
     rhos: list[float] = []
     for _ in range(n_boot):
-        drawn = set(rng.choice(all_pids, size=len(all_pids), replace=True).tolist())
-        keep = [i for i, ps in enumerate(pid_sets) if ps & drawn]
+        # multinomial == drawing len(all_pids) participants with replacement, kept as
+        # per-participant multiplicities.
+        counts = rng.multinomial(len(all_pids), uniform)
+        keep, boot_obs = _resample_cell_observations(prepared, counts)
         if len(keep) < 3:
             continue
-        sub = [cells[i] for i in keep]
-        rho = _centered_spearman(sub, pred[keep], obs[keep])
+        rho = _centered_spearman([cells[i] for i in keep], pred[keep], boot_obs)
         if np.isfinite(rho):
             rhos.append(rho)
     if len(rhos) < 20:
