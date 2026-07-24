@@ -6023,3 +6023,32 @@ oxey2 1/37, wfd 3/37 fine). So the 37 Path-B layouts are FLOOR-WINNERS, not clea
 lsb-sib and vs archive-1846) are verified full 10-axis dominators (both win genkey too). NET: NULL-BROKEN stands and is STRONGER —
 in-loop search produces layouts that fully dominate the two strongest floor-tier incumbents. Still MODELED/gauge only (tau saturated,
 Phase-D cancelled) — human superiority unknowable; the dominators are user-gated flagship candidates, not proven-better layouts.
+
+### FLOOR-METHODOLOGY-1 — the raw min() floor was scale-broken (user-caught); normalized floor fixes it AND strengthens closure-3 (2026-07-24)
+USER caught a real methodology flaw: the "N-surface floor" took a raw min() of per-surface saved% that are on INCOMPATIBLE SCALES —
+Aalto/Pool range ~0-3.9%, but COMMUNITY ranges wider (0-6.08% on the 46-board, ~0-9.5% including closure-3 candidates). VERIFIED
+CONSEQUENCE (floor3, independently + I re-verified vs artifact): Community binds the raw floor 0/46 (and 0/99) times — it is ALWAYS
+the max, never the min, so raw min() SILENTLY DISCARDS the entire Community source. Every "six-surface / three-surface floor" in the
+entries above was FUNCTIONALLY an Aalto+Pool floor; Community's inclusion was inert. This is a genuine flaw in the robustness metric.
+FIX (registered): normalize per-surface BEFORE aggregating. floor3 primary = ceiling-fraction (saved_s / ceiling_s; qwerty is the
+exact per-surface 0 so this = min-max, bounded, origin-preserving = "share of achievable gain"); secondary cross-check = z-score.
+Reference pop = frozen 46-board (excludes the flagship => no circularity). Under either normalization the floor now BINDS ON
+COMMUNITY, so all three sources actually participate.
+RE-TEST of the closure-3 flagship (pyou'vgdnmheai.cstrlkjz,-wfbxq vs archive-1846) under the corrected floor — VERIFIED in
+floor3-board.json (positive control: floor3's rescore reproduces the frozen closure3 verdict to max|err| 6.66e-14):
+  {TRI_PS_FREQ_PRIOR} panel: raw 9/10 (loses FLOOR only) | ceiling-frac 10/10 DOMINATES | z 10/10 DOMINATES
+  {FREQ_PRIOR}        panel: raw 10/10 DOMINATES          | ceiling-frac 10/10 DOMINATES | z 10/10 DOMINATES
+PRIMARY VERDICT: under the (correct) normalized floor the flagship DOMINATES archive-1846 10/10 on ALL board axes in every cell
+(both panels x both normalizations). The closure-3 result is ROBUST to the panel reduction AND STRENGTHENED. MECHANISM: the lone raw
+loss was raw-{TRI_PS}, a 0.004% near-tie on POOL_TRI_PS (3.1729 vs 3.1771); normalization moves the binder to COMMUNITY, the surface
+where the flagship's lead is LARGEST (COMM_TRI_PS ceilfrac 0.7473 vs a1846 0.7344; raw 4.5418 vs 4.4636 = +0.078). So fixing the
+scale flaw HELPED the flagship — raw min() had been discarding the very surface that most favors it.
+HONEST CAVEATS (floor3's own): (1) the primary dominance normalizes FLOOR but keeps MEAN raw; if MEAN is ALSO normalized, {FREQ}
+still dominates 10/10 but {TRI_PS} flips to 9/10 on a 0.0017 MEAN near-tie (flagship weaker on AALTO_TRI_PS) — a mean-axis near-tie,
+NOT a floor flip; the floor axis always favors the flagship once normalized. (2) FLOOR-HOLDER identity is metric-dependent: archive-
+1846 holds under 6-surface + raw{TRI_PS}; lsb-sib under raw{FREQ}; archive-1843 under EITHER normalized panel (a1846->#2, keybo-lsb
+->last). RETROACTIVE SCOPE: this qualifies the "six-surface floor" framing in RANK-1 / REPLICATE-GEN-1 / CLOSURE-3 above — those raw
+floors under-counted Community; the normalized floor is the corrected metric going forward. It does NOT overturn closure-3 (dominance
+strengthens under the fix) nor any comfort-axis result (charset-agnostic, unaffected). MODELED/gauge only; no adoption/production
+change. floor3 clone commit 0aa45a8a (unpushed); artifacts state/keybo-optimization/artifacts/floor3/ (report 692fb9d0, board
+ec0aaf31), 12 tests pass.
