@@ -5972,3 +5972,34 @@ NOT anti-correlated). So the "sources actively disagree" strength is a community
 HOLDS without community: the winner still flips among AALTO+POOL judges alone ({keybo-lsb, lsb-sib, archive-1846}), and within-
 source model tau +0.80 is rock-solid. Corrected read: "no single source-robust winner" stands even excluding community; only the
 anti-correlation magnitude was community-amplified.
+
+### CLOSURE-3 OUTCOME — NULL-BROKEN: the REPLICATE-GEN honest-null was a P17-SCALARIZATION artifact, not a layout-space fact (2026-07-24)
+Audit closure #3 (generator coverage) COMPLETE, and it CHANGES a conclusion I reported repeatedly. A mixed-operator island
+NSGA-II (12 islands, pop200, 200 gens, 5 epochs; swap/3-cycle/block-relocate/OX) optimized the CORRECTED objective IN-LOOP —
+six-surface FLOOR + MEAN + scissor/LSB/SFB/SFS, the axes P17/REPLICATE-GEN judged only POST-HOC. Budget: 3,382,209 globally-unique
+exact-C30M evaluations. Verdict NULL-BROKEN by BOTH preregistered paths. Modeled/gauge-only (tau saturated, Phase-D cancelled — NO
+realized/observed claim). Child clone commit 9d6319b (base a28b2a7, NOT pushed); artifacts harvested to
+state/keybo-optimization/artifacts/closure3-generator/ (closure3-generator.json sha 9e0c9ed9, closure3-verdict.json 684441bd,
+dominance-hunt 7166c63b).
+PATH-A (full 10-axis dominance): found pyou,vgdnlheai.wstrmkqz'-fcbxj which STRICTLY dominates incumbent lsb-sib on ALL 10 board
+axes (verified in closure3-verdict.json: n_ge=10 n_gt=10; floor 3.2082>3.1557, mean 3.6702>3.6600, LSB 0.242<<0.824, scissor
+0.200<0.202, SFB 1.342<1.688, SFS 6.680<6.737, wfd/genkey/oxey1/oxey2 all better). I INDEPENDENTLY re-scored its comfort axes via
+the repo `keybo analyze` (not the child's numbers): SFB 1.249<1.601, SFS 6.498<6.550, LSB 0.222<<0.814, genkey 32.43<32.64 — same
+direction on every locally-checkable axis. ⚠ CRITICAL BOUND: it dominates ONLY lsb-sib (the WEAKEST incumbent). It does NOT
+dominate the other four (keybo-lsb >=6/10, archive-1843 >=7/10, archive-1846 >=8/10, keybo-lsb+lm >=5/10). So "NO single universal
+winner" STILL HOLDS. Found by the targeted 10-axis deficit hunt, not the NSGA-II archive (which searched only 6 of 10 axes).
+PATH-B (floor + RANK-1 non-dominance): 37 layouts EXCEED archive-1846's six-surface floor (3.1599%) AND stay non-dominated under
+BOTH RANK-1 severity arms (neutral + open_posture) = passing the RANK-1 hard gate; they span 10 layout families (floor 3.193-3.368).
+Strongest: pyou,vgdnlhieakcstrmj'-.zfwbxq floor 3.3677 mean 3.8698 (both exceed EVERY incumbent, trading LSB/SFS). Path-B is
+discriminating not permissive: 102/148 floor-winners FAIL the RANK-1 gate, 9 more fail non-dominance.
+WHAT THIS OVERTURNS AND WHAT IT DOESN'T: OVERTURNS the REPLICATE-GEN-1 framing that "a better model does not yield a better layout
+under the generator / incumbents hold the floor" — that null was (partly) an ARTIFACT of P17's restricted post-hoc scalarization,
+which never put six-surface FLOOR or scissors in its SEARCH objective, so it could not reach the high-floor region or a
+full-dominance point. In-loop floor optimization DOES reach layouts that beat every incumbent's floor and one that dominates the
+weakest incumbent outright. Does NOT overturn "no single universal winner" (nothing dominates all 5 incumbents on all 10 axes) NOR
+the preference-dependent-tie conclusion (CLOSURE-1 piece-3). And it is MODELED-gauge only — with Phase-D cancelled, whether these
+high-floor layouts are actually better FOR A HUMAN stays unknowable. Machinery validated zero-error vs KmStats.stats /
+ComfortObjective.values / frozen board; RANK-1 Path-B validated by reproducing rank1.json's keybo-lsb neutral-domination; dropping
+the comm axis is a CONSERVATIVE (harder-to-break) choice. DISPOSITION: research finding; no adoption/production change. These new
+high-floor layouts are candidate STIMULI / flagship contenders for USER consideration, generated the corrected way — but promotion
+stays user-gated and their human superiority is unproven.
