@@ -6151,3 +6151,47 @@ a high-floor/scissor candidate (dominates lsb-sib/archive-1843/1846) vs a low-SF
 you prefer is the user's gated call; human superiority remains unmeasurable (Phase-D cancelled). Artifacts: wider-dominance clone
 dde4ab2 (unpushed); harvested state/keybo-optimization/artifacts/wider-dominance/ (verdict-final f7be3dc4, why-resist 8c670f1e,
 generators/hunts). No production change.
+
+### GAP-CORPUS-1 — every per-gauge layout ranking is CONDITIONAL ON iWEB; corpus is SINGLE-source (2026-07-24) ⚠ MOST CONSEQUENTIAL CAVEAT IN THIS LEDGER
+Audit of the corpus underpinning EVERY modeled/gauge number in this campaign. Three findings; I INDEPENDENTLY VERIFIED the two
+load-bearing ones. Doc-only local branch corpus-provenance (620f4e5+be0beb9, empty code diff, unpushed); PROVENANCE.md written;
+artifacts harvested to state/keybo-optimization/artifacts/gap-corpus/.
+FINDING A — the user's "many different corpuses" requirement is NOT MET. data/corpus is SINGLE-SOURCE iWeb (Davies 2018), named in
+6 places and corroborated numerically (the paper's top-5 bigram/trigram tables match the committed files exactly). Only 2 commits
+ever touched data/corpus; git log --follow traces the 3 originals to 45d2a95 "first commit" (2024-12-15, a different author),
+imported as OPAQUE DATA — no generator script exists in any of 444 commits, so the files are NOT REPRODUCIBLE. UNKNOWN: iWeb
+release/subset, extraction code, tokenization/casing, and why the 3 file totals differ ~1.5%. Files are RAW counts (no round total —
+"sums to 1/100" unmet at file level) but normalization is INTERNAL per-metric (oxey.py:147-155, kmstats.py:168, timecard.py:101), so
+ratio/share gauges are scale-invariant and no ranking is biased BY the scale. I VERIFIED a precise sub-claim: 1-skip31.txt is a
+STRICT marginalization of trigrams.txt (4087 vs 4087 types, ZERO set difference, count ratio exactly 1.000000) => it carries NO
+independent information. STRUCTURAL NOTE: KmStats drops all space-containing ngrams, so C30M gauges score only 63.2% of bigram /
+47.2% of trigram mass.
+FINDING B — AALTO-LEAK VERDICT = NEGATIVE (the user's fear is NOT realized). Corpus vs the Aalto stimulus distribution
+(tristrokes_cond_v3.tsv, 16,406 rows / 6,984 distinct trigrams): trigram Spearman 0.826, JS 0.061 bits, top-100 overlap 80%;
+bigrams 0.923/0.025; 1-skip31 0.935/0.022. Four independent lines say DISTINCT: 9.60% of corpus trigram mass has NO Aalto support;
+the in-repo calibration for "near identical" is rho 0.9993 (commit 97e7588, for a table that IS an exact derivative) so 0.826 fails
+that bar badly; the register signature diverges semantically (Aalto over-weights conversational — "we " 5.63x, bigram "i " 16.5x —
+while iWeb over-weights formal prose+punctuation, and ". " ratio is 0.000: the Aalto stimulus set has NO period-space bigram);
+entropy 10.941 vs 10.127 bits. So we are NOT optimizing for the Aalto training corpus. Honest caveat (coverage, not leak): that same
+9.60% zero-support mass is an EXTRAPOLATION surface for the time model.
+FINDING C — ⚠ RANKINGS FLIP UNDER A DEFENSIBLE ALTERNATIVE CORPUS (the decision-relevant result; I VERIFIED it). First, a trap the
+child flagged: the vendored oxeylyzer1/2 corpora are only JS 0.00108 bits from ours on the space-free C30M subset the gauges see,
+and genkey/keymeow-keybo are OUR corpus reformatted — so "nothing moves under the tool corpora" is NOT evidence of corpus
+robustness and must never be cited as such. Against two genuinely divergent locally-built corpora (alt-technical JS 0.045/0.156;
+alt-code JS 0.127/0.316), over 5 incumbents + the closure-3 flagship x 12 gauges x 9 corpora: gauges-reordering / winners-changed =
+0-1/12 and 0/12 for the tool corpora, but 11/12 and 8/12 for alt-technical, and 10/12 and 11/12 for ALT-CODE. I independently
+reproduced the two headline numbers: keybo-lsb's SFB moves 1.0784 (iWeb) -> 3.2984 (alt-code), a 3.1x change that flips it from BEST
+to WORST on that gauge; and the whole ordering inverts — alt-technical: keybo-lsb > keybo-lsb+lm > flagship > archive-1846 > lsb-sib
+> archive-1843, vs ALT-CODE: archive-1843 > archive-1846 > lsb-sib > flagship > keybo-lsb > keybo-lsb+lm (12 pairwise inversions).
+The FLAGSHIP-vs-incumbent verdict INVERTS: vs keybo-lsb 7/12 -> 10/12, vs keybo-lsb+lm 5/12 -> 10/12, vs lsb-sib 9/12 -> 3/12, vs
+archive-1843 8/12 -> 3/12, vs archive-1846 8/12 -> 4/12. Adversarially checked, NOT an artifact: reproduces on pure KmStats with
+comfort excluded, and all layouts see identical covered mass within a corpus.
+WHAT SURVIVES vs WHAT IS FRAGILE: SURVIVES — "no universal dominator" holds under ALL 9 corpora (nothing ever reaches 12/12), so
+WIDER-DOMINANCE-1 is STRENGTHENED; robust gauge winners sfr (keybo-lsb) and redir (lsb-sib) hold 8/9. FRAGILE — comfort, sfb-dist,
+sfs-dist, lsb, lsb-dist, sr-roll, alt winners all flip under >=1 defensible corpus.
+RETROACTIVE SCOPE (register this against every gauge claim above): every PER-GAUGE layout ranking in this campaign — including the
+FLAGSHIP-COMPARE-1 concede-lists and the closure-3/wider-dominance per-axis dominance counts — must be read as CONDITIONAL ON iWEB
+prose register. It does NOT overturn "no universal dominator" (corpus-robust) nor the modeled-SPEED surfaces (model-fit, not corpus-
+weighted in the same way), but it DOES mean "which incumbent the flagship dominates" is corpus-dependent, and a user typing mostly
+code would get a materially different board. The multi-source-corpus requirement is genuinely unmet and NOT cosmetic. MODELED/gauge
+only; no adoption/production change; no refit performed.
