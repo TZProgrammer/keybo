@@ -5884,3 +5884,41 @@ coherent profile (higher average cross-surface speed + better rolling comfort) t
 oxey2. So the honest characterization is not "new picks are worse" but "new picks trade a higher MEAN for a lower FLOOR and worse
 scissors" — a preference-dependent trade, still not a dominating clear winner. Positive control re-verified exact (56/56, runner-up
 == keybo-lsb char-for-char, rescore 0.0).
+
+### AUDIT-BEST-1 — adversarial audit: "best model + best layout" is OVERSTATED (2026-07-24; all 5 questions GAP)
+A user-directed --codex adversarial audit (AUDIT.md harvested to state/keybo-optimization/artifacts/audit-best/) tried to BREAK
+the "we reached the best model + best layout" conclusion. Verdict: OVERSTATED (audit confidence HIGH). All five questions returned
+GAP. I INDEPENDENTLY VERIFIED the two load-bearing findings against the frozen artifacts (below); the audit is well-bounded — it
+credits the REPLICATE-GEN positive control, affirms the honest null STANDS, and marks provenance gaps "unsupported" not "disproven".
+WHAT THE CAMPAIGN ACTUALLY SUPPORTS (audit's bounded restatement): (1) several decomposition variants improve held-out FIT on the
+frozen data; (2) re-running the exact P17 generator with 5 candidate surfaces produced no layout dominating the incumbents on the
+frozen 10-axis board. It does NOT support "best possible model" or "best possible layout".
+CORRECTION 5A (I VERIFIED on all 3 surfaces — this is the serious one): the CI'd headline gains I registered as a "REAL
+generalization gain" are FULL-frame deltas, not the served (layout-picking) frame. Verified: AALTO published +0.028452 == full;
+served only +0.011877. COMMUNITY published +0.010516 == full; served +0.006910. POOL published +0.010893 == full; served +0.002051.
+The served deltas have NO bootstrap CI (the ledger scope directive already admitted served 0.852->0.864 had no CI). So the
+STAB-AUDIT adoption condition (a) "transfer win holds under corrected bootstrap" was resting on the FULL-frame number while the
+frame that actually scores layouts improves ~40-19% as much with no CI. The verdicts are not overturned (fit does improve on both
+frames) but the "REAL generalization gain" framing on the served claim was overstated — corrected here.
+FINDING 1 (verified): the peak-MODEL search already COMPLETED and BEATS TRI_PS_FREQ_PRIOR on served rho (AALTO +0.03029
+[+0.02720,+0.03315], COMMUNITY +0.00634, POOL +0.01192; peak-model-search.json sha 540478a6, harvested to artifacts/peak-model/).
+So "TRI_PS_FREQ_PRIOR is current-best" is STALE — it is at most the predecessor incumbent. (selmethod had not yet sent its peak
+callback when the audit surfaced this; awaiting its formal report.) BUT the peak search is explicitly NON-GLOBAL: 18 of 2,916
+same-family configs, only 3 of 85 compatible pairs, CAND4-XGBoost fixed (GAM/spline family never run — gaps-and-roadmap.md:89-100).
+OTHER GAPS (audit, not all independently reverified — 🟡): (2) the paired-seed bootstrap is a training-randomness interval, not
+participant/layout/corpus generalization; the min-only tau guard can admit systematic seed-level rank harm (a POOL paired-seed
+reanalysis gives candidate-minus-BASE margin tau -0.0095 [-0.0143,-0.0048] = combined candidate ranks held layouts WORSE than BASE
+on average — post-hoc/exploratory). (3) tau is NOT wholly unmeasurable: corrected SERVED tau is unsaturated (AALTO/COMM 0.667,
+POOL 0.643) and cross-population divergence tau is weak (0.21/0.14/0.048) = an internal domain-robustness warning the 4-layout
+ceiling stat hid. (4) the layout null is conditional on ONE generator (P17) whose decisive floor+scissors gauges were POST-HOC not
+in-loop; a mixed-operator Pareto/NSGA-II search over the corrected floor/mean+mechanics was never run. (5) also: the COMMUNITY
+TRI_PS=TIE waived a failed matched-delta guard not per the frozen "every guard passes" rule (already noted as asymmetry); RANK-1
+named standing set {archive-1843/1846/keybo-lsb/lsb-sib} is STALE vs the final artifact's {archive-1843/1846/fresh2-024/025}.
+TOP PHASE-D-FREE CLOSURES (audit): (1) nested selection inside outer participant/layout/source resamples + paired mean margin-tau
+as a primary guard + source-blocked pairwise rank-margin over the 99-layout board with simultaneous inference; (2) GAM-vs-CAND4
+under identical decomposition + all 82 missing compatible two-knob pairs; (3) mixed-operator Pareto generator optimizing the
+corrected floor/mean+mechanics IN-LOOP. NONE need human data; passing them would justify stronger modeled-robustness claims.
+NONE can establish realized human typing superiority — that stays unknowable (Phase-D cancelled).
+DISPOSITION: no result RETRACTED (fit gains real, positive control holds, honest null stands within its generator); but the
+"best model/layout" and "REAL served generalization" framings are corrected to their bounded form. These are research findings;
+no production/adoption change. The 3 closures are candidate follow-ups for USER decision, not auto-launched.
