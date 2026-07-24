@@ -6003,3 +6003,23 @@ ComfortObjective.values / frozen board; RANK-1 Path-B validated by reproducing r
 the comm axis is a CONSERVATIVE (harder-to-break) choice. DISPOSITION: research finding; no adoption/production change. These new
 high-floor layouts are candidate STIMULI / flagship contenders for USER consideration, generated the corrected way — but promotion
 stays user-gated and their human superiority is unproven.
+CLOSURE-3 SELF-AUDIT AMENDMENT (strengthened the result + corrected MY overstatement above; I INDEPENDENTLY re-verified; verdict
+sha 112a13f6, board 8b45274f, child commit 1dc3aa1): the entry above says the Path-A dominator "dominates ONLY lsb-sib (weakest
+incumbent)" and "no single universal winner STILL HOLDS." The FIRST clause was a search-BUDGET artifact of an under-powered first
+hunt and is now RETRACTED. A harder hunt (60k iters, 8 restarts) found a full 10-axis dominator of ARCHIVE-1846 — the FLOOR-HOLDER
+and strongest-tier incumbent: pyou'vgdnmheai.cstrlkjz,-wfbxq beats archive-1846 on ALL 10 axes (floor 3.1718>3.1599, mean
+3.6668>3.6531, genkey/oxey1/oxey2/wfd/lsb/scissor/sfb/sfs all better). I re-scored its comfort axes via repo `keybo analyze`
+(independent of the child): SFB 1.241<1.315, SFS 6.469<6.648, LSB 0.557<0.575, genkey 32.70<33.20 — same direction on every
+locally-checkable axis; layout is valid C30M. So the null now breaks against the strongest incumbent, ON THE FLOOR AXIS it was
+decided on. IMPORTANT EPISTEMIC BOUND (the child's own, and correct): keybo-lsb / keybo-lsb+lm / archive-1843 were NOT dominated
+AT THIS BUDGET — but a hunt's "no dominator found" is budget-limited and is NEVER proof of undominatedness. So the corrected claim
+is NOT "there is a universal winner" and NOT "the incumbents are safe"; it is: the P17 null was a scalarization artifact, and
+in-loop search dominates at least the two strongest floor-tier incumbents outright — whether a single layout dominates ALL FIVE is
+UNRESOLVED (would need a much larger dominance search, or is genuinely a Pareto frontier). Two other audit results: (2) Path-B
+floors are apples-to-apples — the child's scorer reproduces all 5 incumbent floors to <1e-12 on the SAME six surface tensors + same
+qwerty normalization as the frozen board, so the 3.16 comparison is valid. (3) HONEST CAVEAT: the NSGA-II searched 6 of 10 axes, and
+the 4 unsearched primes PARTIALLY regress in the Path-B set — 20/37 breaks are worse than every incumbent on GENKEY (oxey1 0/37,
+oxey2 1/37, wfd 3/37 fine). So the 37 Path-B layouts are FLOOR-WINNERS, not clean dominators; only the TWO Path-A layouts (vs
+lsb-sib and vs archive-1846) are verified full 10-axis dominators (both win genkey too). NET: NULL-BROKEN stands and is STRONGER —
+in-loop search produces layouts that fully dominate the two strongest floor-tier incumbents. Still MODELED/gauge only (tau saturated,
+Phase-D cancelled) — human superiority unknowable; the dominators are user-gated flagship candidates, not proven-better layouts.
