@@ -6094,3 +6094,29 @@ single best (preference-dependent tie, pivot = community-trust), BUT the correct
 the strongest incumbents on the modeled board — real flagship CANDIDATES (chief: pyou'vgdnmheai.cstrlkjz,-wfbxq) that did not exist
 under the old search. (3) METHODOLOGY — the floor metric was scale-broken (raw min discarded community); the normalized floor is the
 corrected metric. ALL adoption/promotion remains USER-GATED; nothing was adopted or changed in production.
+
+### FLAGSHIP-COMPARE-1 — full-gauge board CORRECTS my "dominates the strongest incumbent" framing (2026-07-24)
+The definitive full-gauge side-by-side (flagship-compare, verified — 4 positive controls incl. frozen-99 rescore max_err 0.0,
+10-axis-board-vs-closure3 2.1e-13; I independently re-pulled the dominance cells + floor ranking from the artifact JSON). This
+SHARPENS/CORRECTS how I characterized the closure-3 flagship in prior turns. Modeled/gauge only; no realized-speed/human claim.
+CORRECTION: I framed the flagship pyou'vgdnmheai.cstrlkjz,-wfbxq as "dominating archive-1846, the STRONGEST/floor-holder incumbent"
+implying a broadly strong candidate. The full board shows it strictly dominates ONLY archive-1846 (10/10, robust across
+raw/ceilfrac/z + both-axes-normalized). Against the other four it does NOT dominate: vs keybo-lsb n_gt=5/10, vs keybo-lsb+lm 6/10,
+vs archive-1843 6/10, vs lsb-sib 8/10 (verified in flagship-compare.json .dominance.flagship.*). And critically: on the NORMALIZED
+(ceilfrac) floor — the corrected robustness metric — archive-1843 LEADS at 0.7517, ABOVE the flagship's 0.7473 (flagship is #2/8).
+So archive-1846 was NOT the floor-holder under the corrected metric (that was an artifact of the old raw floor); calling the
+flagship a dominator of "the strongest incumbent" overstated it.
+SYSTEMATIC CONCEDE PATTERN (ceilfrac primary): the flagship gives up the COMMUNITY PRIMES — oxey1' conceded to ALL 4 non-dominated
+incumbents, genkey'/oxey2' to 3/4; also wfd + sfb to keybo-lsb/keybo-lsb+lm. Its genuine GAINS: best tb-scissor of the whole set
+(0.1171), 2nd-best kmstats-LSB, #2 normalized floor. DOM2 pyou,vgdnlheai.wstrmkqz'-fcbxj dominates ONLY lsb-sib (10/10); vs
+archive-1846 concedes just wfd+scissor; best kmstats-LSB of the set (0.2423).
+BOTTOM LINE (corrected): each closure-3 candidate is a modeled-dominant pick over EXACTLY ONE incumbent and non-dominated vs the
+rest — there is NO board-wide modeled winner. The candidates win speed-floor / scissor / LSB; several incumbents win the community
+primes + SFB. This is fully consistent with RANK-1's 4-way preference-dependent tie — the closure-3 "null broken" result means
+better-generated layouts EXIST that dominate SOME incumbent (real, new), NOT that a single layout beats the field. The promotion
+choice is preference-dependent: pick the flagship if you weight speed-floor + scissors + low-LSB; keep an incumbent if you weight the
+community primes / SFB. CROSS-ARTIFACT TRAP the child caught + I note: the dominance-board 'wfd' (O2Port.wfd()) is a DIFFERENT metric
+from the all-gauge-table 'WFD' (oxey2.components['wfd']) — a1846 -1.73e13 vs -1.83e13; the board carries both, labeled. ARTIFACTS:
+flagship-compare clone e8087e7; harvested state/keybo-optimization/artifacts/flagship-compare/ (report f3b8ad7a, csv 7cea9a17, json
+f1d8df0f), 13 tests pass. USER-GATED promotion; no production change. (wider-dominance search — does ANY layout beat all 5 — still
+running.)
