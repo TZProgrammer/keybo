@@ -6195,3 +6195,39 @@ prose register. It does NOT overturn "no universal dominator" (corpus-robust) no
 weighted in the same way), but it DOES mean "which incumbent the flagship dominates" is corpus-dependent, and a user typing mostly
 code would get a materially different board. The multi-source-corpus requirement is genuinely unmet and NOT cosmetic. MODELED/gauge
 only; no adoption/production change; no refit performed.
+
+### GAP-BOOTSTRAP-1 — the shipped participant-bootstrap CI is FIXED (local branch, awaiting user review/push) (2026-07-24)
+A live correctness bug in SHIPPED code, diagnosed by SELECT-METHOD-1 days ago and never fixed, is now fixed TDD. I VERIFIED the fix
+in the file: the defect `drawn = set(rng.choice(...))` is GONE, replaced by `rng.multinomial` (validate.py:345) preserving draw
+multiplicity plus a new `_weighted_iqr_average` (:210) that REBUILDS each cell's obs from the resampled pool (:297). Commit ff93816
+on LOCAL branch fix-participant-bootstrap (clone of canonical a6da599), touching exactly src/keybo/training/validate.py +
+tests/training/test_validate.py (+456/-13). NOT pushed, no CR — awaiting user review. Patch + report harvested to
+state/keybo-optimization/artifacts/gap-bootstrap/.
+THE BUG (verified before fixing): set() collapsed draw multiplicity (making it a subsample, not a bootstrap) AND cells were kept on
+mere pid-set intersection while reusing FULL-SAMPLE observations — so a "replicate" was not a resample at all. Consequence: DEGENERATE
+zero-width CI. RED was established honestly by STASHING the new impl and running against the real prior code: 6 new tests fail on old
+code — unit-level "degenerate CI [-0.6,-0.6]" on a fixture where two participant halves rank ngrams in OPPOSITE orders, and
+end-to-end through validate() "layA: degenerate CI [1.0,1.0]"; `-k "bootstrap or positive_width"` went 6-failed/3-passed -> all pass.
+THE FIX: true participant-cluster bootstrap — multinomial draw preserves multiplicity (a participant drawn k times contributes k
+copies); each cell's obs rebuilt from the resampled pool using the SAME iqr_average as build_cells; cells left empty are dropped
+EXPLICITLY (iqr_average([]) returns 0.0, so a silent rebuild would inject a spurious zero-duration cell); percentile CI; (nan,nan)
+refusal on <2 participants or <20 finite replicates. Deliberate documented choice: build_cells's min_cell_samples floor is NOT
+re-applied per replicate (re-selecting the cell set each draw would conflate "how uncertain is rho" with "which cells survived").
+Rebuild operates on sparse (duration, participant) count bins because the real qwerty fold is 27.6M samples / 54,689 participants.
+VALIDATION: full suite 530 passed / 1 skipped (exit_code read from the log, not a wrapper status — the child correctly caught that an
+earlier `timed -t 1800` kill was reported as "completed exit 0" by the harness and did NOT trust it); validate module 71 passed
+(39 pre-existing + 32 new, incl. a 40-case fuzz pinning _weighted_iqr_average == iqr_average(np.repeat(...))); ruff + py_compile
+clean. REAL DATA (read-only bistrokes_v5.tsv): the unit-count rebuild reproduces Cell.obs EXACTLY (max|diff| 0.000e+00) on
+dvorak/azerty/qwertz AND the 27.6M-sample qwerty fold; CI width shrinks correctly with participant count (64 pids -> 0.073, 166 ->
+0.045, 485 -> 0.020, 54,689 -> 0.0068); qwerty fold rho 0.2947 CI [0.2901,0.2969] brackets.
+WAS ANY DECISION GATED ON THE BROKEN CI? NO — informational only, and the child stated this plainly rather than inflating the find.
+The sole caller writes rho_ci95 into the report JSON; src/keybo/cli/validate.py never prints or branches on it; no tune/selection/
+gating path reads ci95/ci_lo/confidence; it appears in no preregistered decision rule. The one test asserting lo<=rho<=hi passed
+VACUOUSLY at width 0. The real cost was downstream: SELECT-METHOD-1 hit the degeneracy and had to build a corrected paired bootstrap
+OUTSIDE the package.
+DOCUMENTED CAVEAT (pinned by a test): it is a plain percentile interval, so it brackets an INDEPENDENT out-of-sample prediction's rho
+(dvorak rho 0.1944 in [0.1477,0.2064]) but NOT one derived from the same observations — resampling breaks shared noise. Intrinsic to
+percentile bootstraps; the campaign's corrected reference impl has the same structure. Also for future probes: a predictor constant
+within each WPM bucket is zeroed by _bucket_centered -> rho=NaN -> (nan,nan) CI, which is the metric's design, not a bug.
+OPS NOTE (fleet hygiene, worth propagating): the child's own unscoped `grep -rl ... /local/home/zegertho/agent/state/` ballooned to
+16.6 GiB RSS and was flagged by a fleet-OOM RCA — do NOT sweep state/ unscoped.
