@@ -6738,3 +6738,53 @@ expected honest null, that weighting would not resolve the veto — REFUTED, it 
 ⚠ THE LIVE QUESTION IS NOW A PREDICATE DECISION FOR THE USER, NOT A WEIGHT: should the scissor gauge price NON-ADJACENT two-row reaches
 (wscissor) at all? That single choice, not any weight, decides the head-to-head — and it would change a FEATURE_VERSION-stamped model
 input, so it was correctly left out of scope. DO NOT re-run severity sweeps hoping to break the keybo-lsb/+lm tie: proven impossible.
+
+### NO-ANCHOR-1 — RETRACTION OF MY "STRONGEST LAYOUT" ANSWER: 0 of 22 dominance claims are robust across all three corpora, and ALL FIVE incumbents fall (2026-07-25)
+The blend-v1-no-anchor stress test. It OVERTURNS the answer I gave the user AND the fallback I claimed was corpus-invariant. Branch
+blend-no-anchor (b980e79 corpus, 2c56cf3 hunt-seed fix, 7f53e5d verdict), LOCAL ONLY; production corpus verified untouched at end of run.
+Budget 19,501,654 unique evals (armA 9,913,823 / armB 9,587,831), 249,535 layouts direct-rescored — matched to the gen-on-blend baseline.
+CORPUS BUILT correctly: `keybo build-corpus --no-anchor` from a PINNED `git archive ff793cb` export so the two corpora differ ONLY by the
+anchor. The generator renormalized ITSELF to prose 0.50 / code 0.30 / reference 0.20 = exactly DOUBLE each blend-v1 share (anchor held
+0.50), so the 5:3:2 register ratio is unchanged and nothing was re-decided by hand. All 4 tables sum to EXACTLY 1e9; second build
+BYTE-IDENTICAL incl. manifest. Additive only, with a NEGATIVE-CONTROLLED test (simulated in-place swap -> 3 named failures, rc=1, then
+restored+md5-verified).
+⚠ RETRACTION 1 — ALL FIVE INCUMBENTS FALL ON NO-ANCHOR. I VERIFIED: hunt-noanchor-armB-norm.json dominated_targets = [keybo-lsb, lsb-sib,
+archive-1843, archive-1846, keybo-lsb+lm], every one at n_ge = 10/10, and the INDEPENDENT second-path verifier reports ZERO verdict
+mismatches. keybo-lsb <- pyou.vgdnlciea-mstrhbj',zwfkxq ; keybo-lsb+lm <- uyog,bdnrmeiatkfcslh'j.v-wpxzq ; lsb-sib <-
+pyoujvctnrheai.fsdmlkz',-gwbqx ; archive-1843 <- fyou.vgdnlmeai-csthrkj',qbpwxz ; archive-1846 <- pyou-vgdnmheai.cstrlkj',zbfwqx (ARM-A
+finds five DIFFERENT ones; both arms agree on the verdict). MECHANISM: the hold-outs' block rested partly on sfb, and dropping the anchor
+dissolves keybo-lsb's sfb fortress (1.0784 -> 2.2017). So "keybo-lsb and keybo-lsb+lm always resist" — which GEN-ON-BLEND-1 called
+STRUCTURAL because the blocker was corpus-invariant wfd — is CORPUS-CONTINGENT after all. NOTE the reconciliation (no contradiction in the
+artifacts): the NSGA-II archive alone reports keybo-lsb best_n_ge=8, dominator_exists=False; the 10/10 dominator comes from the TARGETED
+DEFICIT HUNT — the same "only found when pointed AT it" pattern closure-3 established. An archive-only null is not a null.
+⚠ RETRACTION 2 — MY FALLBACK WAS FALSE. I told the user that if no dominator were corpus-robust, "keybo-lsb's never-dominated status is
+the only corpus-invariant fact." That is now disproven by Retraction 1. I should not have offered a fallback that the very run I was
+launching could refute.
+⚠ THE HEADLINE — 0 OF 22 CLAIMS ARE ROBUST-ALL-THREE. I VERIFIED the classification census in three-corpus-table-FINAL.json: zero
+robust-all-three; the classes present are single-corpus(no-anchor only) 16, single-corpus(iWeb only) 12, robust-2-of-3(blend+no-anchor) 9,
+robust-2-of-3(iWeb+blend) 3, single-corpus(blend only) 1. AND THE TWO I BANKED AS CORPUS-ROBUST ARE ONLY 2-OF-3:
+pyou,vgdnlheai.cstmrk'zj-wfbqx and pyou,vgdnlheai-cstmrkjz.'wfbxq are 10/10/**9** vs lsb-sib, each failing by exactly ONE corpus-weighted
+axis on no-anchor (mean -0.02596 and sfs -0.05285). All 4 frozen iWeb dominators incl. the closure-3 flagship are single-corpus(iWeb only)
+— the flagship is 10/8/8 vs archive-1846.
+=> THERE IS NO STRONGEST LAYOUT IN THE MODELLED SENSE. Every dominance claim this campaign produced is corpus-contingent.
+WHAT REMAINS GENUINELY CORPUS-INVARIANT (verified on all four boards): (a) NO layout dominates all five simultaneously —
+universal_dominator_found = False on both arms, the ideal-point hunt stalling at n_ge 7/10 (armB, deficit 0.1086) and 6/10 (armA); (b) that
+all-5 blocker ALWAYS rests on corpus-INVARIANT axes (wfd 5.21e11 + oxey1 + scissor), so it is not corpus-movable; (c) the 5 incumbents
+stay mutually non-dominated; (d) every claim that breaks, breaks on a corpus-WEIGHTED axis, never an invariant one.
+ARCHIVE-1843 7/15 — CONFIRMED, not refuted, and now computed on a REAL artifact (the original figure pointed at a /tmp build that no
+longer existed, which is exactly why it had never been checked). Flagship corpus-sensitive gauges won, iWeb/blend/no-anchor: keybo-lsb
+9/10/11, keybo-lsb+lm 7/8/10, lsb-sib 11/11/11, archive-1843 10/9/**7**, archive-1846 11/10/9, qwerty 14/14/14. Every cell matches
+PROVENANCE.md §5 incl. the two earlier columns as positive controls (11/15 reordered, 63/315 = 20.0%, 9 winner changes). SEMANTIC NOTE:
+this /15 is a per-gauge WIN COUNT — a DIFFERENT quantity from the 10-axis dominance test; do not conflate them.
+VALIDATION: 39/39 new gates + the frozen 24-gate suite, ALL before any new verdict; both frozen verdicts reproduced exactly (gen-on-blend
+per-incumbent patterns and best_n_ge; wider-dominance's 4 dominators beating exactly their frozen target sets incl. the triple); invariant
+axes max spread 0.000e+00 across all THREE corpora; SLOW-PATH max abs err 0.000e+00 at zero fast-path reuse (810 axis checks/arm); an
+independent second-path verifier recomputing dominance from raw comparisons reports 0 mismatches. 591 passed / 1 skipped, REAL rc=0 from a
+sentinel with the 592-collected reconciliation ruling out the -qq hazard. ruff clean.
+PROVENANCE FINDING WORTH BANKING: blend-v1 does NOT rebuild byte-identically on this host — python-stdlib, man-pages, repo-latex and the
+anchor reproduce EXACTLY, but repo-markdown differs (+163 B over the same 44 byte-identical files), so blend-v1 was built mid-commit from a
+tree unrecoverable from git. The child BOUNDED rather than assumed: 0 dominance flips, and a deliberately drifted tree carrying 326x that
+perturbation also flips 0. GENERALIZABLE ROOT CAUSE: a generator that rglob's the repo's own files is SELF-REFERENTIAL — pin the input tree.
+Also fixed: the hunt used PYTHONHASHSEED-salted hash(), so the same hunt silently varied run-to-run (2c56cf3). And a HOST REBOOT killed the
+first search at epoch 4/6 (4.5M evals/arm lost because the EA only persisted at completion) — per-epoch checkpointing added; the relaunch
+reproduced the lost trajectory exactly.
