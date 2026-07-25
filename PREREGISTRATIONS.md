@@ -6447,3 +6447,51 @@ smoke run exact frequency invariance 0.0 and decomposition identity ~3.6e-15.
 LESSON (worth carrying): a share figure is not interchangeable across units — "qwerty is 99% of the data" was true of samples and
 false of the weighting unit, and I propagated it into a brief as a premise. Check WHICH unit a weighting function counts before
 building a hypothesis on a share.
+
+### RESELECT-90-110 — the band re-selection changes NOTHING: same winner, unchanged board (2026-07-25)
+Re-selection under the user's DECLARED 90-110 objective (ledger 32d4113). Child branch reselect-90-110 (a18afc5 prereg frozen BEFORE
+any band value; 450ce31 analysis+tests), NOT pushed. I VERIFIED the load-bearing claims in reselect-band.json /
+board-blend-reselect.json. NO model refit — all values re-weighted from gap-wpm's 300 frozen checkpoints.
+BAND METRIC (preregistered): cell-count-weighted mean of the SCALE-FREE umae_rel (primary) / wmae_rel (secondary) over [80,100) +
+[100,120) — the two buckets whose model inputs are EXACTLY 90.0 and 110.0 WPM (Cell.wpm = bucket + width/2, validate.py:106), which
+is a neat justification of the user's band from the data model rather than from taste. Weights AALTO 0.5554/0.4446, COMMUNITY
+0.4018/0.5982, POOL 0.5470/0.4530, verified arm-invariant. ROBUSTNESS: equal-weight 0.5/0.5 gives the IDENTICAL full ordering on all
+3 surfaces x both metrics, so the weighting choice is not load-bearing.
+ANSWER — SAME WINNER on all three surfaces: band argmin = PEAK_AALTO (STACK[BACKFIT_1 + LAYOUT_CAP_1P25]) under both metrics AND both
+weightings AND both individual buckets (VERIFIED: winner_changes.AALTO both metrics SAME_WINNER, argmin_differs false; every rival arm
+LOSS in-band). AALTO band 0.157756 (PEAK_POOL +0.003105 [+0.002249,+0.003996] worse). POOL band 0.196110, also SAME_WINNER — and
+notably PEAK_AALTO beats PEAK_POOL, the arm the aggregate SEARCH picked for POOL, by -0.027019 [-0.029849,-0.024202]: the band
+REAFFIRMS a pre-existing tension rather than creating one. COMMUNITY: the aggregate argmin was PEAK_POOL and the band argmin is
+PEAK_AALTO on umae_rel (gap -0.008169 [-0.015099,-0.001596]) while wmae_rel was ALREADY PEAK_AALTO — but BOTH band buckets are THIN
+(225 cells/3 layouts with one contributing 2 cells; 335/4) => NO-VERDICT per prereg. The one surface where the winner changes is the
+one surface that cannot tell: its band CI width 0.0146 EXCEEDS the entire AALTO PEAK_AALTO->PEAK_POOL gap of 0.0031.
+NET: the declared band makes the model choice MORE consistent (unanimous PEAK_AALTO) than the aggregate was (split
+PEAK_AALTO/PEAK_POOL). So GAP-WPM-1's finding stands — aggregate selection WAS biased — but correcting it does not overturn the
+current model; it confirms it and removes an inconsistency.
+POWER (verified): AALTO REPORTABLE/REPORTABLE, n 5073/4061, 4 folds, CI width median 0.001401 => verdict YES. POOL REPORTABLE, n
+5219/4322, width 0.007393 => YES but NOT independent (pools Aalto). COMMUNITY THIN/THIN, n 225/335, width 0.014615 => NO VERDICT.
+Carried limits: [100,120) under-powered at 4 layout clusters; AALTO qwerty share 72%->85% ACROSS THE BAND (96% at 120-140, outside it)
+so the upper band is near-single-layout — the per-fold census confirms it (at [80,100): qwerty 3629 of 5073 cells vs dvorak 189).
+Intervals nominal/unadjusted and the PEAKs were selected on these same surfaces => within-run description, NOT an adoption argument.
+gap-wpm CONFIRMED on its ORIGINAL absolute metric too: COMMUNITY aggregate PEAK_POOL is 1st by 0.038 ms yet 4th at [80,100) by 2.11 ms;
+AALTO's top bucket does flip — but 120-140 is OUTSIDE the declared band and contributes ZERO weight, which is precisely why declaring
+the band mattered.
+THE PAYOFF — the blend-v1 flagship board is UNCHANGED, and structurally CANNOT change. Proven two ways rather than asserted: (1) the
+re-selected model EQUALS the aggregate-selected model on both surfaces that can carry a verdict; (2) the board is MODEL-INVARIANT BY
+CONSTRUCTION — a signature probe shows all 7 gauge entry points take only corpus tables + layout (ZERO model/surface/arm/wpm/seed
+params), and a perturbation probe re-scored 105 gauge cells with the vendored K31 models made UNREACHABLE at max abs err 0.0. This is a
+null obtained BY LOOKING, not by failing to look. Independent board reproduction: 0.0 max abs error over 210 gauge cells vs the frozen
+board_iweb_vs_blend.json, flagship_dominance identical.
+⚠ PRECISION CORRECTION TO MY OWN EARLIER REPORTING (I VERIFIED this in board-blend-reselect.json flagship_dominance): I told the user
+the flagship "INVERTS vs archive-1843" on the blend. On blend-v1 archive-1843 goes 10/15 -> 9/15, and 9 IS STILL A MAJORITY (threshold
+7.5) — an EROSION, not an inversion. The majority LOSS at 7/15 belongs to blend-v1-NO-ANCHOR, a variant not built on this host. Correct
+statement: on blend-v1 the flagship HOLDS its majority against every incumbent it held before (keybo-lsb 9->10, keybo-lsb+lm 7->8,
+lsb-sib 11->11, archive-1843 10->9, archive-1846 11->10, qwerty 14->14); the inversion is a NO-ANCHOR-corpus phenomenon.
+CONTROLS PASS, overall max abs err 3.553e-15: per-bucket reproduction from checkpoints 350 checks @ 0.0 (exhaustive, not a spot check);
+band identity via an independent 2nd code path @ 0.0; board @ 0.0 over 210 cells. ⚠ TWO ARTEFACTS WORTH CARRYING: (a) the frozen
+27.74932671266818 / 25.94824797152804 anchors are a 2-SEED quantity (seeds {0,1}), NOT the 20-seed aggregate — comparing them to the
+20-seed value "fails" by 1.29e-2, a category error in the CONTROL not a data problem; averaging seeds {0,1} reproduces to 3.6e-15.
+(b) gap-wpm's fold->seed aggregation is a PLAIN UNWEIGHTED mean over folds then seeds; a cell-weighted fold mean is wrong by ~2.6 ms on
+the first bucket (15.52 vs 18.16) — now pinned by a test. DISCLOSED prereg exposure (child's own, declared in prereg §0 not hidden):
+before freezing it had printed gap-wpm's AGG/SERVE90/HI argmins for AALTO; neither SERVE90 nor HI is the registered band metric, the
+exposure concerned the SAME_WINNER surface, and the one surface whose argmin changes (COMMUNITY) was not exposed.
