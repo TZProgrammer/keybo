@@ -6231,3 +6231,47 @@ percentile bootstraps; the campaign's corrected reference impl has the same stru
 within each WPM bucket is zeroed by _bucket_centered -> rho=NaN -> (nan,nan) CI, which is the metric's design, not a bug.
 OPS NOTE (fleet hygiene, worth propagating): the child's own unscoped `grep -rl ... /local/home/zegertho/agent/state/` ballooned to
 16.6 GiB RSS and was flagged by a fleet-OOM RCA — do NOT sweep state/ unscoped.
+
+### BUCKET-1 — per-WPM-bucket adjudication (user-identified gap): filtering helps ONLY at 120-140, nothing at the serving speed (2026-07-24)
+USER-IDENTIFIED GAP: "two models with the same UMAE/WMAE are not equally good if one is more accurate at higher WPM." VERIFIED as a
+real blind spot before starting: the pipeline DOES bucket WPM (run_tri_frequency.py:65, 40-140 width 20) but the frozen artifacts
+contain ZERO wpm paths — every reported metric was aggregate-only. Two agents attacked it from different angles (complementary, NOT
+duplicate); artifacts harvested to state/keybo-optimization/artifacts/bucket-methodology/ (selmethod.json 2128ea97,
+bucket-adjudication-report.md a1889fad, patch 57cc4329 — all SHAs I verified).
+BUCKET-1 (keybo-selmethod) — does the ADOPTION BAR change per bucket? Preregistered BEFORE any bucket outcome existed: 20-WPM bins
+over [40,140); EQUAL-WEIGHT over the 8 (layout,seed) folds — FORCED, because qwerty is 98.5-99.3% of raw samples in EVERY bucket, so
+a raw-pooled bucket metric is arithmetically a qwerty metric; support floors 25 cells / 15 participants per fold-bucket; ONE
+co-primary bucket [80,100) justified from SOURCE not outcomes (--target-wpm default 90.0 at cli/_scorer.py:41, cli/train.py:25,
+timecard.py:163). RESULT (t_3 layout-cluster CIs): 3 IMPROVE / 0 HARM / 27 TIE. The only survivors are at [120,140): MED umae -5.11%
+[-8.60,-1.62], MED wmae -7.08% [-11.99,-2.17], CAP4+MED wmae -7.32% [-13.81,-0.83]. The CO-PRIMARY [80,100) is a TIE for all three
+arms (CAP4+MED umae -2.05% [-11.85,+7.75]), and all three still fail the global rare-ngram guard. VERDICT: NO ARM ADOPTS —
+filtering/pace helps only at the very top of the speed range, buys NOTHING measurable at the speed we actually optimize for, and its
+co-primary effect is not even sign-consistent across layouts (azerty -4.19, dvorak -1.48, qwerty +6.08, qwertz -8.60).
+THE METHODOLOGICAL FINDING (the child's own headline, and it is the durable lesson): the UNCERTAINTY MODEL dominated every per-bucket
+conclusion. It shipped, then SELF-CAUGHT and fixed, TWO interval defects — (1) wrong sampling unit (index-wise replicate averaging
+omitted between-layout spread); (2) wrong critical value (an n=4 percentile bootstrap covers only 0.833-0.843 because it deflates the
+SE by sqrt(3/4) AND uses z=1.96 where t_3=3.182 is required; the shipped t_3 fix measures 0.941-0.955 coverage). Each fix was
+REGISTERED BEFORE recomputation. Together they moved credible labels from 12-improve/5-harm to 3/0 — i.e. they RETRACTED every harm
+claim — while leaving the verdict unchanged (artifact confirms ci_method_sensitivity.verdict_unchanged=True). The child also accepted
+a bare skeptical reviewer's corrections to TWO of its own overstatements: attenuation is ANTI-conservative for the harm guard (a true
++2.00% harm reads +1.55-1.72%, i.e. MASKED), and "the fix strengthened the negative" was wrong (it left the verdict unchanged while
+retracting harm claims). 10 of its other claims survived that attack (layout-as-unit premise, exact qwerty shares, bit-identical
+_bucket_matrix refactor over 640 comparisons, co-primary justification, no off-by-one/double-counting).
+⚠ DO NOT OVER-READ [100,120): it LOOKS strong (7.5-12.5%, sign-consistent 4/4) but qwertz supplies 57-74% of it, no leave-one-out
+subset stays credible, and it sits BELOW what 4 layout clusters can resolve (1.591 x between-layout SD = 13.4%). It needs more
+LAYOUTS (Phase-D, cancelled), not more samples.
+GAP-WPM (parallel agent, still running) — does MODEL RANKING change per bucket? Its interim findings already answer the user's
+question AFFIRMATIVELY: on COMMUNITY, "PEAK_POOL is 1st on AGGREGATE umae but 4th at the [80,100) SERVING bucket" = a genuine
+candidate-ranking change; on AALTO the aggregate ranking is mostly preserved per bucket BUT the top bucket [120,140) FLIPS
+(PEAK_POOL 12.683 beats aggregate-winner PEAK_AALTO 12.965). It also confirms the scale trap I flagged: relative umae is nearly FLAT
+above 60 WPM on AALTO (.180-.187, with [40,60) an outlier at .236), so the absolute-MAE drop with WPM is a SCALE ARTIFACT — raw
+per-bucket MAE must not be compared across buckets (same failure class as the raw-min floor flaw). On COMMUNITY, error falls 3.0x with
+WPM vs a 1.7x duration scale, so relative accuracy there genuinely DOES improve at high WPM. Final gap-wpm entry to follow.
+NET: the user's gap was REAL and it matters — aggregate UMAE/WMAE does hide per-bucket differences, and at least one candidate's
+ranking reorders between the aggregate and the serving bucket. But no filtering arm earns adoption, and the strongest-looking bucket is
+under-powered at 4 layouts. UNCOMMITTED: a 2-file/94-insertion validate.py bucket-extension diff is preserved as
+validate-bucket-extension.patch (57cc4329) for user review — NOT committed (child honored its no-commit contract). Tests: 398/398
+non-analysis, 269/269 in dirs touching validate.py, 24/24 test_validate.py; the 1 remaining failure is the PRE-EXISTING intentional-RED
+_bootstrap_rho_ci regression which fails identically on unmodified base (now superseded by the b581e3b fix). HAZARD for follow-ups:
+/tmp/keybo_venv's editable install points at /local/home/zegertho/repos/keybo/src, NOT a workspace — prefix PYTHONPATH=<ws>/src/keybo/src
+or commands silently exercise the other tree.
