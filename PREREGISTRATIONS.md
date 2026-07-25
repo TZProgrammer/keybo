@@ -6788,3 +6788,35 @@ perturbation also flips 0. GENERALIZABLE ROOT CAUSE: a generator that rglob's th
 Also fixed: the hunt used PYTHONHASHSEED-salted hash(), so the same hunt silently varied run-to-run (2c56cf3). And a HOST REBOOT killed the
 first search at epoch 4/6 (4.5M evals/arm lost because the EA only persisted at completion) — per-epoch checkpointing added; the relaunch
 reproduced the lost trajectory exactly.
+
+### SELECT-MAXIMIN-1 — ⚠ POST-HOC (NOT PREREGISTERED): a worst-case-across-corpora selection rule, and its degeneracy (2026-07-25)
+STATUS AND STANDING. This is EXPLORATORY, computed AFTER seeing the three-corpus results. It is NOT a preregistered decision rule and
+carries none of the authority of one. I am registering it so the post-hoc status is on the record rather than laundered into the campaign's
+verdicts. NO-ANCHOR-1 established that 0 of 22 dominance claims are robust-all-three, which leaves the campaign with no selection rule at
+all — every rule we HAD registered was a dominance rule, and dominance is now known to be corpus-contingent. This entry asks what a
+corpus-agnostic rule would have said, and finds that the honest answer is partly DEGENERATE.
+METHOD. Ceiling-fraction normalization per (corpus, gauge) cell — the FLOOR-METHODOLOGY-1 fix — then two aggregates over 3 corpora x 15
+corpus-sensitive gauges: MAXIMIN (a layout's worst normalized cell) and MEAN. Computed from the child's own board_three_corpora.json; the 6
+mutually-non-dominated incumbents plus qwerty. Artifact: state/keybo-optimization/artifacts/noanchor-1/minimax-selection.json.
+⚠ SELF-CORRECTION MADE DURING THIS ANALYSIS. My first pass assumed all 4 corpus-INVARIANT axes were lower-better. FALSE: `lower_better` in
+the board omits those 4 axes, and qwerty is the MOST NEGATIVE layout on oxeylyzer1/oxeylyzer2/wfd, so those three are HIGHER-better (only
+genkey is lower-better). My error made archive-1843 look like the invariant-axes winner; with the directions inferred correctly from
+qwerty-is-worst, the invariant-axes winner is keybo-lsb (0.994) and archive-1843 is LAST (0.931). Lesson, and it is the same one as the
+share-figure retraction: a direction/units convention that is ABSENT from the metadata must be derived from a known reference point, never
+assumed uniform.
+⚠ THE DEGENERACY — MAXIMIN IS AN ARTIFACT OF THE QWERTY ANCHOR. With qwerty in the normalization field, maximin ranks flagship-c3 first
+(0.8832) over lsb-sib (0.8720). Drop qwerty and normalize WITHIN the 6-layout field and ALL SIX layouts score worst-case exactly 0.0000 —
+because each of the six is field-worst on at least one of the 45 cells. So maximin does not discriminate among the incumbents at all; it
+only measures distance-from-qwerty, and any "maximin winner" reported without the anchor is sort order, not a result. A maximin rule is
+therefore NOT usable on this board as-is. Reporting this rather than the flattering version of it.
+WHAT SURVIVES BOTH NORMALIZATIONS. The MEAN ranking is stable: flagship-c3 first with the anchor (0.9911) and without it (0.8413), and it
+leads EVERY per-corpus column (iWeb 0.985 / blend-v1 0.994 / no-anchor 0.994). Per-corpus mean order is otherwise identical across the two
+normalizations. So the defensible post-hoc statement is about the MEAN, not the worst case.
+AND THE COUNTERWEIGHT, WHICH MATTERS. flagship-c3 is the field-best layout in only 17 of 45 (corpus x gauge) cells; the other 28 go to
+keybo-lsb 8, archive-1846 7, lsb-sib 7, keybo-lsb+lm 3, archive-1843 3. A mean-aggregate leader that wins under 40% of cells is a
+BROAD-COMPETENCE pick, not a dominant one — fully consistent with NO-ANCHOR-1's finding that no layout dominates. Aggregating with equal
+gauge weights is itself an unregistered modelling choice, and equal weights are not defensible on any evidence we hold.
+=> NET: NO-ANCHOR-1's "there is no strongest layout in the modelled sense" STANDS. This entry does not overturn it and must not be cited as
+doing so. If a corpus-agnostic pick is wanted anyway, flagship-c3 is the best-supported one on the MEAN axis across all three corpora — a
+weaker and differently-shaped claim than dominance, offered with its 17/45 counterweight attached. Whether to adopt any layout, and whether
+a mean-aggregate rule should ever be registered PROSPECTIVELY, remain USER decisions.
