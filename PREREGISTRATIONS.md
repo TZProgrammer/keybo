@@ -6591,3 +6591,49 @@ field — its to_model_config SILENTLY DISCARDED the temper, degrading the arm t
 itself. Fixed by fitting every arm's tensor via its own fit_arm and DELETING to_model_config ("a lossy conversion that compiles is worse
 than none") + 3 regression tests; post-fix TEMPER_SQRT's tensor differs while CAP_200/CAP_INF correctly stay identical. Verdicts
 unchanged; the 360 fits stayed valid (fingerprint provably unchanged at 924227c98d910a16).
+
+### REWEIGHT-WPM-1 — up-weighting high WPM DOES improve the model, but it is NOT a high-WPM gain, and it changes NO board (2026-07-25)
+User request: "weight higher WPM more strongly." Outcome: exactly one arm beats control, the win is REAL but is NOT learned fast-typing
+structure, fitting ONLY on the declared band is CREDIBLY HARMFUL, and the qwerty confound ran OPPOSITE to the direction I warned about.
+Child branch reweight-wpm @ 9cba84a (prereg frozen f87c245 BEFORE any fit), nothing pushed. 320 LOLO jobs = 8 arms x 20 seeds x
+AALTO(primary) + POOL(replication). POSITIVE CONTROL: W_UNIFORM reproduces GAP-WPM-1's frozen archive at max abs err 0.000e+00 over 160
+checks (it vendored pms_frozen.py verbatim, per that run's registered lesson).
+⚠ FINDING 1 — MONOTONE AND BAND-CENTRED ARE DIFFERENT TARGETS, AND THE DECLARED ONE LOSES. "Higher WPM" OVERSHOOTS the objective:
+W_POW4 puts only 39% of weight on 90-110 and drags the weighted-mean WPM to 120.1, i.e. into [120,140) which is NOT the target, while
+W_BAND_GAUSS puts 90.7% on the band. So the user's declared band implies the BAND-CENTRED family — but every band-concentrated arm is
+CREDIBLY WORSE (VERIFIED rare-guard CIs, all entirely positive = real harm): W_BAND_GAUSS +0.00382 [+0.00287,+0.00483] with rare CI
+[+2.58,+2.95]; W_BAND_GAUSS_LAYOUT_FIXED +0.00199; W_BAND_ONLY +0.02069 with rare CI [+11.73,+12.21]. MECHANISM (measured, not
+speculated): starving low WPM wrecks the SHARED wpm curve — [40,60) umae_rel .210 -> .273 -> .367 and whole umae 24.55 -> 27.93 ->
+36.42; POOL reproduces. HEADLINE RULE FOR THE 90-110 OBJECTIVE: JUDGE on the band (as registered) but NEVER FIT only on it.
+⚠ FINDING 2 — THE QWERTY CONFOUND MASKED A REAL GAIN (opposite to my brief's warning). I VERIFIED both twins: W_POW4 (qwerty effective
+share .4372, +75% rel) = WORSE, rare-guard CI [+0.037,+0.326] entirely positive; its twin W_POW4_LAYOUT_FIXED (IDENTICAL wpm shape,
+qwerty PINNED at exactly .2500) = BEATS-CONTROL with band delta -0.00793 (nearly 2x better) and rare CI [-0.216,+0.019] CLEAN. Same WPM
+profile; the only difference is pinning layout balance. So up-weighting high WPM does mechanically up-weight qwerty (my warning was
+right about the mechanism) but the effect was SUPPRESSING a genuine gain and adding rare-ngram damage — not fabricating a gain.
+DESIGN RULE (adopt this for any future WPM reweighting): pin layout balance.
+THE ONE WINNER: W_POW4_LAYOUT_FIXED, band delta -0.008032 [-0.009091,-0.006963] BONFERRONI-adjusted over 7 arms, -4.97% relative,
+negative on 20/20 seeds, ALL FOUR guards pass (frequency-invariance exactly 0.0; min-seed margin-tau 0.844406 UNCHANGED; optimizer
+tensor healthy), and POOL replicates STRONGER at -0.01971. W_LIN and W_POW2 TIE.
+⚠ BUT IT IS NOT A HIGH-WPM GAIN — the honest read, and the child said so itself. Per-bucket delta: [40) -0.0080, [60) -0.0067, [80)
+-0.0082, [100) -0.0068, [120) +0.0004. It improves the LOWEST bucket as much as the band (band/low-40 ratio 1.010) and the ONLY bucket
+it worsens is the FASTEST. A level-removal diagnostic shows the advantage GROWS once bias is removed (-0.0079 -> -0.0108), so it is
+STRUCTURAL not calibration (whereas W_POW4's smaller gain is ~59% level). Correct description: a better-fitting surface OVERALL, not
+learned fast-typing structure. So the user's hypothesis ("a model more accurate at high WPM is better for our purposes") is NOT what this
+arm demonstrates.
+BOARD: UNCHANGED. blend-v1 speed ranking IDENTICAL with 0 inversions under W_LIN/W_POW2/W_POW4/W_POW4_LAYOUT_FIXED; the closure-3
+flagship still loses to every incumbent incl. archive-1846 and archive-1843 exactly as under control. Only the guard-FAILING band arms
+reorder it (BAND_GAUSS 10, BAND_ONLY 9 inversions) — movement from a DEGRADED surface, which is not evidence. Reason: reweighting shifts
+the surface LEVEL near-uniformly (-1.55% to -1.67% across all 7 layouts) rather than the CONTRASTS, and the board is a plateau anyway
+(all non-qwerty within 0.10%; qwerty +3.49%). BOUNDARY STATED NOT FAKED: the 15-gauge corpus board takes (layout, corpus) and NO model,
+so a reweighting cannot move it — no "reweighted" column was fabricated. SCOPE LIMIT: arms are trigram models so only Tcond is
+reweighted; T2 is the unchanged production K31 bigram table in every column INCLUDING control.
+NULL = NO-EFFECT, NOT NO-POWER: MDE 0.56-0.85% relative against a 5% materiality anchor (GAP-WPM-1's credible effects were 5.1-7.3%);
+9,134 band cells over 4 AALTO clusters x 20 seeds, POOL 9,541 over 8 folds. [120,140) statements remain near-single-layout (qwerty 96%).
+GATES: harness 70 collected / 0 failed; FULL SUITE 647 collected / 0 failed — both REAL rc from a sentinel that pytest_sessionfinish
+writes INSIDE the pytest process (not parsed stdout). ruff clean. TWO BUGS ITS OWN TESTS CAUGHT BEFORE ANY COMPUTE: the weight injection
+had dropped its `arm` argument (every arm would have TypeError'd), and the POOL sign-flip guard compared np.bool_ with `is False`, which
+is ALWAYS False — a dead guard that would have let a sign-flipped arm adopt.
+TWO OPS LESSONS WORTH PROPAGATING: (a) xgboost n_jobs must be SMALL under fleet contention — at load ~600 on 192 cores, n_jobs=16
+measured 13x SLOWER than n_jobs=4 on the same fit (143s vs 10.8s), and a first pilot at --workers 2 --n-jobs 40 burned 3 CPU-hours for
+zero checkpoints. TIME ONE FIT before sizing a grid. (b) a stray /tmp/enum.py from another agent SHADOWED the stdlib and broke
+`import json` for anything run from /tmp.
