@@ -6540,3 +6540,54 @@ TWO FLEET GOTCHAS BANKED: (a) keybo's pyproject sets addopts="-q", so passing -q
 summary line — a run looks truncated when it is fine (this explains earlier summary-line confusion in this campaign). (b) a size/time
 watcher capped at ~2x expected runtime fired ~1 min BEFORE the sentinel landed on a ~95-min suite, producing a false "no sentinel"
 alarm — size watchers must exceed the real suite duration, not the estimate.
+
+### REWEIGHT-LAYOUT-1 — weighted resampling on inverse layout share makes the model WORSE: HONEST NULL (2026-07-25)
+User request: "weighted resampling weighted on fraction of data from that layout, so we lower qwerty's weight." Outcome: the user's arm
+(RESAMPLE_INV) is WORSE, no arm reaches ADOPT-CANDIDATE, and per the preregistration the blend-v1 board was therefore NOT re-run.
+Child branch reweight-layout (cc34693, 5 commits), NOTHING pushed. This also supplies the EMPIRICAL proof for the RETRACTION above.
+MY RETRACTED PREMISE, NOW PROVEN WRONG EMPIRICALLY (not just arithmetically): the registered null-arm controls CAP_200 and CAP_INF
+returned max |delta| = EXACTLY 0.0 on every metric, seed and surface — because the cap never binds. I VERIFIED the census directly:
+CTRL_CAP50 gives qwerty mass_share = 0.3333 (exactly 1/3 of the weight mass, i.e. complete inverse-share balance already), with
+uncapped_weight_wanted 0.4216 == effective_weight 0.4216 (no clipping). Largest weight any layout wants: AALTO 7.503, POOL 16.321,
+COMMUNITY 1.670 vs cap 50. cap50/cap200/cap-inf are bit-identical weight vectors on all 12 folds, and the control is bit-identical to
+the shipped keybo.training.train.layout_balance_weights — so the control provably IS production.
+EFFECTIVE DOSE ACHIEVED (qwerty mass share, AALTO — the dose that matters, since a cap bounds the VALUE not the SHARE): raw 0.731 ->
+TEMPER_SQRT 0.496 -> CAP_1P25 0.426 -> CTRL_CAP50 0.250 -> RESAMPLE_INV 0.245.
+RESULT (primary = equal-weight mean of scale-free umae_rel over the 90-110 band, studentized max-statistic SIMULTANEOUS band over the 3
+informative arms, m=3 crit 2.320, 10,000 joint draws, 20 paired seeds; Bonferroni agrees with every verdict):
+  AALTO (primary): CAP_1P25 -0.00483 [-0.00567,-0.00399] WIN · TEMPER_SQRT -0.00426 WIN · RESAMPLE_INV +0.00104 [+0.00002,+0.00206] LOSS
+  POOL (co-primary): CAP_1P25 -0.03568 WIN · TEMPER_SQRT -0.02638 WIN · RESAMPLE_INV -0.00496 [-0.01031,+0.00039] TIE (inside its noise)
+  COMMUNITY: all TIE, inside noise, and carries NO verdict by preregistration (4 typists; a band fold-bucket with 2 cells)
+ADOPTION: RESAMPLE_INV = WORSE (verified adoption.RESAMPLE_INV.verdict = WORSE, LOSS under nominal AND Bonferroni AND simultaneous) —
+credible band LOSS on AALTO plus TWO guard failures: credible_served_rare_harm (rare3 +0.127 [+0.012,+0.242]) and decisively
+credible_served_rho_harm (rho/ceiling -0.00927), i.e. THE SERVED GEOMETRY THAT RANKS LAYOUTS GOT WORSE. Worse in all five buckets on
+AALTO. CAP_1P25 and TEMPER_SQRT = SURFACE-SPECIFIC, not adopt-candidates: they win the band, rare3 and rho on both surfaces but FAIL
+margin-tau no-regression on POOL (0.861343 < control 0.904513) — exactly the guard failure the frozen peak search already recorded for
+LAYOUT_CAP_1P25 on POOL. So the guarded, multiplicity-aware bar is met by NO arm.
+WHY RESAMPLING LOSES (mechanism, not just a number): it reaches the SAME balance the control already has (mass 0.245 vs 0.250) but pays
+by DUPLICATION — Kish ess_frac 0.214-0.432 per AALTO fold vs the control's 0.273-0.758, keeping only 41-58% of DISTINCT rows per draw.
+It buys, at the lowest effective sample size in the study, a balance that loss-reweighting achieves EXACTLY and for free. THE SHAPE OF
+THE RESULT: the only direction that improves the 90-110 band is LESS balancing (toward qwerty) — the OPPOSITE of the request — and even
+that is blocked cross-surface by margin-tau.
+NOISE HONESTY (registered, not retrofitted): the AALTO band loss (+0.00104) sits only just outside its own MDE (0.00102), so the
+served-rho harm is the more decisive signal; and the same arm is a TIE on POOL. So the honest statement is "harmful on the primary
+surface, indistinguishable on the co-primary", NOT "uniformly harmful". Band non-qwerty support 1,444 cells at [80,100) / 614 at
+[100,120); AALTO's band is 84.9% qwerty. RESAMPLE_INV was tested at temper 1.0 ONLY — "resampling never helps at any strength" is NOT
+what was measured.
+BOARD NOT RE-RUN — and that is the registered outcome (§10 Q4 was conditional on an ADOPT-CANDIDATE). Rebuilding the blend-v1 board on a
+surface that failed the bar would manufacture a decision from noise.
+VALIDATION: positive control PASS at max abs err 5e-5 ms (bar 0.01) on all 3 surfaces; three further EXACT reproductions of frozen
+numbers it did not fit for (AALTO min-seed margin-tau 0.844406, POOL CAP_1P25 0.861343, AALTO CAP_1P25 rho gain +0.024735); cache
+reproduces gap-wpm exactly; decomposition identity <=4e-15 on every fold x seed x arm; exact frequency invariance 0.0 for every arm; all
+optimizer tensors pass. Suite 611 collected, 610 passed + 1 skip, REAL rc=0 from a process-written sentinel — and because the -q summary
+line was ABSENT (the addopts="-q" -> -qq gotcha), it did NOT treat rc=0 as proof of coverage but cross-checked 611 progress chars
+against a separate --collect-only over 49 files.
+TWO BUGS IT FOUND IN ITS OWN WORK, both fixed + test-pinned, disclosed because the second briefly disabled a guard: (a) a test caught an
+error in its own PREREGISTRATION — it had called TEMPER_SQRT "between" CAP_1P25 and the control, but a cap clips only the TOP of the
+range while a temper compresses BOTH ends, so TEMPER_SQRT has the wider weight ratio (4.22 vs 3.66) yet the LARGER qwerty mass share
+(0.496 vs 0.426) — not nested; corrected and the dose restated on mass share. (b) TEMPER_SQRT's optimizer tensor was BIT-IDENTICAL to
+the control's because the tensor path used the frozen build_optimizer_tensor whose ModelConfig has layout_weight_cap but NO temper
+field — its to_model_config SILENTLY DISCARDED the temper, degrading the arm to the control, so that guard was comparing the control to
+itself. Fixed by fitting every arm's tensor via its own fit_arm and DELETING to_model_config ("a lossy conversion that compiles is worse
+than none") + 3 regression tests; post-fix TEMPER_SQRT's tensor differs while CAP_200/CAP_INF correctly stay identical. Verdicts
+unchanged; the 360 fits stayed valid (fingerprint provably unchanged at 924227c98d910a16).
