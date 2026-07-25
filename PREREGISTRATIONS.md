@@ -6679,3 +6679,62 @@ a two-corpus hybrid. Confirmed two banked hazards empirically (the -qq summary s
 OPEN PROBE THE CHILD NAMED (honest, and I endorse it): blend-v1 carries a declared unverifiable component — 50% of its weight is the
 non-redistributable iWeb anchor whose derivation cannot be reproduced. The ANCHOR-FREE variant is where the board moves MOST, so
 pointing this same machinery at blend-v1-no-anchor is the honest stress test of the cross-corpus result. Pure local compute; not run.
+
+### SCISSOR-SEVERITY-1 — pinky/bottom-row weighting: the veto RESOLVES toward PROMOTE, but via the PREDICATE not the preference (2026-07-25)
+User request: weight scissors more aggressively by pinky involvement and bottom row. Delivered, swept, and it answers the live
+keybo-lsb+lm veto question — but the credit belongs to the SUPPORT (which pairs count) not to any weight. Branch scissor-severity @
+711df9b, LOCAL ONLY (origin/main verified still bcdaf97); STRICTLY ADDITIVE (7 files added, 1719 insertions / 0 deletions; diff vs
+classify.py/oxey.py/kmstats.py EMPTY, so the FEATURE_VERSION-stamped is_scissor model input is untouched). Preference PREREGISTERED
+before any scoring (e6fe9df): w_pinky 2.0, w_ring 1.5, w_down 1.5, monotone pinky>ring>other — explicitly a STATED PREFERENCE, not a
+measurement (no human data exists to calibrate severity; Phase-D cancelled).
+⚠ TWO STRUCTURAL FACTS, both found PRE-COMPUTE and both INDEPENDENTLY VERIFIED BY ME via exhaustive enumeration of all 900 ordered
+pairs: (1) ALL 24 scissor pairs are top<->bottom (rows involved = [1,3] exactly, since rows are y in {1,2,3} and is_scissor requires
+|dy|==2). So a STATIC "involves the bottom row" term is identically TRUE across the whole support — zero variance, it can weight
+NOTHING (the same degeneracy DIST-1 proved for scissor-vdist). The user's bottom-row idea therefore had to become a SIGNED direction
+term (top_to_bottom vs bottom_to_top) to be non-degenerate. (2) MIDDLE<->PINKY IS ABSENT FROM THE SCISSOR SUPPORT: verified col-pairs
+are only {2,3},{3,4},{4,5} — never {3,5} — because is_adjacent requires |dcol|==1 (classify.py:60-79). CONSEQUENCE: THE FLAT OXEY
+SHARE THE BOARD IS GRADED ON CANNOT SEE THE BIN THE VETO IS ABOUT. Only the wide (adjacency-gate-dropped) support can.
+THE HEADLINE IS A PROOF, NOT A MEASUREMENT: a RELATIVE PER-BIN REGRESSION TEST IS PROVABLY INVARIANT TO ANY PER-CLASS WEIGHTING —
+both layouts' mass in a bin takes the same multiplier, so the ratio cancels. Measured confirmation: the regressing-bin SET and every
+bin's relative % are IDENTICAL at flat / at P / at sweep-max (+537%, +62%, +293% all unchanged). So NO severity weighting can EVER move
+a relative-epsilon veto. This AGREES with the campaign's registered "no further reweighting can resolve keybo-lsb vs +lm" and explains
+WHY it was true.
+VETO RESOLVED -> PROMOTE, on the DENOMINATOR: the disputed bin costs +0.048pp while the WIDE total moves -0.17pp (iWeb) / -0.36pp
+(blend) in +lm's favour. BREAK-EVEN: that ONE bin would need an extra 3.27x (iWeb) / 6.70x (blend) ON TOP of P — total effective
+~9.8x/~20.1x versus 1x for every other scissor class — before +lm loses. Not defensible => the adverse sub-bin is REAL BUT IMMATERIAL,
+PROMOTE justified ON SCISSOR GROUNDS. Caveats kept: resolves the SCISSOR component only; requires accepting the WIDE support (on narrow
+the bin has ZERO mass, so the 0.10/0.15 scissor_bin_epsilon knife-edge is a narrow-support ARTIFACT — undefined rather than answered);
+"immaterial" is relative to total scissor movement under a stated preference, NOT a claim the posture is harmless.
+SWEEP (117 pts, pinky 1.0-4.0 x down 1.0-3.0, per 4 corpus x support cells, + ring_ratio 0/0.5/1): NO weight flips the keybo-lsb vs +lm
+head-to-head ANYWHERE (117/117 in all four cells) — and this is ALGEBRAIC not range-limited: the deciding l<->m swap touches ONLY
+right-pinky keys (slots 9,19 col 5), so non-pinky scissor mass is BIT-IDENTICAL between them and w_pinky FACTORS OUT of the sign
+(verified to pinky=1000). Flips that do exist need w_down >= 11-13 ("reaching down is 12x worse") = indefensible. Board-order flips that
+DO occur: archive-1843 vs 1846 at pinky>=2.5, vs lsb-sib >=3.0-3.5, vs keybo-lsb >=3.75; one FRAGILE sub-2x flip (archive-1843 vs +lm on
+blend/wide at pinky>=1.25) means WHICH layout is best on blend/wide is preference-driven and must not pick a winner.
+BOARD RE-SCORE — and the wide support REOPENS the board beyond the keybo-lsb pair: wide@P has archive-1843 BEST on BOTH corpora
+(106-113/117 pts, NOT corpus-conditional), whereas narrow@P is corpus-conditional (keybo-lsb/+lm flips sign between corpora). HEAD-TO-HEAD:
+narrow = the known near-tie (+lm by 0.27% iWeb, keybo-lsb by 0.25% blend); WIDE = +lm by 25.8% (iWeb) / 43.4% (blend), because the swap
+cuts pinky wide mass -49.5%/-60.9% while non-pinky mass is bit-identical and the gate hides most of it.
+⚠ THE FRAGILITY CAVEAT (the child's own, and it matters more than the gap size): weight-robust != corpus-robust. The ENTIRE wide-support
+gap rests on 16 bigrams, with bl/lf/fl (against mb) carrying 69-88% of the net; dropping the single largest helper keeps +lm ahead, but
+DROPPING TWO FLIPS THE SIGN on both corpora. So "+lm wins wide by 25-43%" is a claim about a handful of high-frequency bigrams, not a
+broad structural advantage. It does NOT overturn the veto conclusion, which rests on the ~10-20x break-even RATIO not the gap's size.
+SIDE-FINDING THAT IS THE REAL INCONSISTENCY (child 🟢 on the numbers, 🟡 on the inference): FRESH-2's headline +lm figures reproduce ONLY
+on the WIDE support — the -27.7% total and the -56% middle-pinky leaf (child got -27.7% and -56.2%) — while on narrow the same total is
+-0.2% and the leaf DOES NOT EXIST. So BOTH the -27.7% that motivated +lm AND the +537% bin that vetoes it were ALREADY
+non-adjacency-gated quantities, while the graded oxey share is narrow. That SUPPORT MISMATCH, not any weighting, is the load-bearing
+inconsistency in the +lm question.
+VALIDATION: positive control max abs err EXACTLY 0.0 at all-weights-1.0 + narrow vs oxey.pattern_shares()["scissor"] (7 layouts x 2
+corpora, plus 5 named layouts on full iWeb) and NON-VACUOUS (shares 0.077-1.571%; P differs from flat by 1.29-2.21x) => strict
+generalization, not a rival metric. SHAPE-robustness: re-scored under v2's DISAGREEING non-monotone factors (3 variants x 2 corpora) —
+wide winner is +lm UNANIMOUSLY 6/6 by 25.3-38.4%, so the verdict is not an artifact of the chosen preference shape. FOUR independent
+reproductions of prior agents' numbers through a different code path (+537% bin -> +536.6%; its mass 0.057 -> 0.05707; FRESH-2 -56% and
+-27.7%; DIST-1's archive-1843 worst->best). 21 new TDD tests (red-first), full suite 597 passed / 1 skipped rc=0 from a process-written
+sentinel, cross-checked by a 598-char census against --collect-only; the child DISCARDED and re-ran its first suite because it started
+before the ruff-format commit and so would not have described HEAD. ruff's B023 caught a real latent late-binding closure bug; fixed, and
+both artifact JSONs regenerated BYTE-IDENTICAL.
+PREDICTIONS SCORED HONESTLY (no prereg amendments): 4 of 6 right; P4 (stays corpus-conditional) REFUTED on wide; P5 — the child's OWN
+expected honest null, that weighting would not resolve the veto — REFUTED, it does resolve it via the support/denominator.
+⚠ THE LIVE QUESTION IS NOW A PREDICATE DECISION FOR THE USER, NOT A WEIGHT: should the scissor gauge price NON-ADJACENT two-row reaches
+(wscissor) at all? That single choice, not any weight, decides the head-to-head — and it would change a FEATURE_VERSION-stamped model
+input, so it was correctly left out of scope. DO NOT re-run severity sweeps hoping to break the keybo-lsb/+lm tie: proven impossible.
