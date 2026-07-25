@@ -6495,3 +6495,48 @@ band identity via an independent 2nd code path @ 0.0; board @ 0.0 over 210 cells
 the first bucket (15.52 vs 18.16) — now pinned by a test. DISCLOSED prereg exposure (child's own, declared in prereg §0 not hidden):
 before freezing it had printed gap-wpm's AGG/SERVE90/HI argmins for AALTO; neither SERVE90 nor HI is the registered band metric, the
 exposure concerned the SAME_WINNER surface, and the one surface whose argmin changes (COMMUNITY) was not exposed.
+
+### DIST-1 — distance-weighted strain gauges: HONEST NULL (redundant); but the scissor PREDICATE hides real strain (2026-07-25)
+User request: add "sfb_distance" and "scissor_distance" (= distance if sfb/scissor, else 0), and for scissors consider a VERTICAL
+distance. Outcome: the distance weighting is REDUNDANT and is NOT adopted as a selection gauge — a clean null. The valuable finding is
+adjacent: the scissor PREDICATE's adjacency gate hides layout-relevant strain. Child branch dist-metrics (588df8a, 42aacb2), LOCAL
+ONLY, not pushed; artifacts harvested.
+PRE-EXISTING (verified before any work): sfb_distance ALREADY EXISTED as kmstats `sfb-dist` (kmstats.py:80) with EXACTLY the requested
+definition, as did sfs-dist and lsb-dist — nothing was re-added, only evaluated. `scissor` had NO kmstats gauge at all, so 5 additive
+gauges were added reusing classify.is_scissor UNTOUCHED: scissor (share, same-denominator baseline), scissor-dist (euclidean),
+scissor-vdist (vertical-only), wscissor + wscissor-dist (adjacency gate dropped, row span still 2). All in STAT_NAMES; `keybo analyze`
+text + --json verified.
+⚠ THE USER'S VERTICAL SUGGESTION IS DEGENERATE AGAINST THIS PREDICATE — and I VERIFIED the mechanism at source: is_scissor
+(classify.py:99-103) returns `abs(a[1] - b[1]) == 2`, i.e. it fires ONLY at row span EXACTLY 2. So the vertical distance is ALWAYS 2
+whenever the predicate is true => scissor-vdist is provably 2.000000 x scissor, a rigid rescale with 0/19900 discordant pairs. The
+suggestion was well-motivated in principle (a scissor IS a row-span strain, and euclidean _distance blends it) but it cannot add
+information while the predicate is span-exactly-2. Euclidean takes only 2 values (2.0156 with stagger, 2.6575 against).
+REDUNDANCY (n=200 random layouts, 19,900 pairs — the honest sample size; the 6-layout incumbent board is far too small to judge
+redundancy): rank correlation vs the plain share — scissor-vdist +1.000000, scissor-dist +0.994, wscissor-dist vs wscissor +0.962,
+sfb-dist 0.928, sfs-dist 0.939, lsb-dist 0.996. Only wscissor breaks rho 0.9 (+0.654). Rank CHANGES are confined to near-ties
+(scissor-dist moves 1-2 pairs at 0.5-3.6% gaps; sfb-dist breaks the exact keybo-lsb/keybo-lsb+lm tie).
+VERDICT: do NOT adopt any distance convention as a selection gauge. Keep them as free diagnostics with no weight. This is a null
+obtained by measuring, not by declining to measure.
+THE ACTUAL FINDING (worth carrying): is_scissor's ADJACENCY gate hides layout-relevant strain — unflagged two-row mass is 2.45-6.29x
+(iWeb) / 2.83-8.33x (blend-v1) the flagged mass, LAYOUT-DEPENDENTLY, and pricing it reorders the incumbent board with NO distance
+metric involved (wscissor moves 9-10 pairs and sends archive-1843 worst->best). wscissor is therefore a DIAGNOSTIC and an OPEN
+QUESTION, not a criterion — it needs a severity estimate first. (SCISSOR-2's predicate idea reused; its superseded magnitudes
+deliberately NOT quoted, per SELMETHOD-CLOSEOUT.)
+CORPUS-CONDITIONALITY, correctly scoped: on the 6-candidate board the rankings ARE corpus-conditional and the plain scissor SHARE
+ITSELF flips (rho 0.49, 5 flips incl. keybo-lsb vs keybo-lsb+lm), scissor-dist worst (rho 0.03), while sfb/sfs/lsb shares are stable
+(rho 1.000). BUT at n=200 EVERY gauge is rho 0.98-0.99 including plain scissor (0.989) — so that instability is a property of the
+SATURATED incumbent board (the candidates retain only 1.3% of random-layout dispersion in scissor mass, all below the 0th percentile),
+NOT of the gauges. The redundant-vs-informative verdicts do not flip between corpora.
+TWO SELF-CORRECTIONS the child made on evidence (both improve the result): (1) its first "weighted" convention graded ANY row travel,
+but 83-87% of that mass is ONE-row, so it replaced it with span-2-only; (2) a degrees-of-freedom check OVERTURNED two of its own
+small-board readings — scissor-dist is MORE redundant than 6-7 layouts suggested (0.994, not 0.83-0.96) and wscissor does NOT reverse
+rankings in general (+0.65, not -0.71); the reversal is LOCAL to the saturated board. This is the same small-n trap that makes the
+incumbent board a bad instrument for judging gauges.
+VALIDATION: full suite 595 collected, 594 passed + 1 skip, 0 F/E, REAL rc=0 from a sentinel the pytest process itself wrote. 17 new TDD
+tests (red-first: 11 KeyError pre-impl), 21 kmstats/scissor, 21 KAN-1 parity incl. the kmrun golden; 11 keymeow-parity stats
+BIT-IDENTICAL (max abs diff 0.0); independent recomputation via a separate code path agrees at 0.0 across 14 layout x corpus cases;
+14/14 report claims audited against the artifact JSONs. ruff check + format both rc=0.
+TWO FLEET GOTCHAS BANKED: (a) keybo's pyproject sets addopts="-q", so passing -q AGAIN yields -qq which SUPPRESSES pytest's "N passed"
+summary line — a run looks truncated when it is fine (this explains earlier summary-line confusion in this campaign). (b) a size/time
+watcher capped at ~2x expected runtime fired ~1 min BEFORE the sentinel landed on a ~95-min suite, producing a false "no sentinel"
+alarm — size watchers must exceed the real suite duration, not the estimate.
