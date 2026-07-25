@@ -796,6 +796,92 @@ def test_weighted_mae_and_mape_reported_per_fold_and_bucket():
             assert stats["n"] >= 5
 
 
+def test_bucket_matrix_reports_umae_and_support_per_bucket():
+    """A bucket slice is only readable next to its own support and its rare-cell error.
+
+    A bucket's wmae is corpus-weighted, so in this dataset it is dominated by whichever
+    layout contributes the most occurrences; without per-bucket ``umae`` a slice can look
+    good while the rare cells inside it are abandoned (the same gap ``uniform_mae`` closes
+    globally). And a bucket metric with no sample/participant count cannot be checked
+    against a support floor, so a thin high-speed bucket would read as a real result.
+    """
+    rows = _lawful_rows(n_pids=10, samples_per_pid=8)
+    report = validate(
+        rows,
+        seeds=[0],
+        wpm_lo=60,
+        wpm_hi=100,
+        bucket_width=20,
+        min_cell_samples=4,
+        n_boot=10,
+        train_params=_fast_params(),
+    )
+    for fold in report["folds"].values():
+        stats_by_bucket = fold["seeds"][0]["bucket_matrix"]
+        assert stats_by_bucket
+        for stats in stats_by_bucket.values():
+            assert set(stats) >= {
+                "rho",
+                "wmae",
+                "umae",
+                "slope",
+                "n",
+                "n_raw",
+                "n_participants",
+            }
+            assert stats["umae"] > 0 and np.isfinite(stats["umae"])
+            # support counts the actual observations behind the slice, so raw samples
+            # must exceed cells and participants must be real.
+            assert stats["n_raw"] >= stats["n"]
+            assert 1 <= stats["n_participants"] <= 10
+
+
+def test_bucket_umae_is_unweighted_and_wmae_is_frequency_weighted():
+    """The two bucket magnitudes must not be the same number computed twice: ``umae`` gives
+    a rare cell equal say, ``wmae`` gives it its corpus share."""
+    from keybo.training.validate import _bucket_matrix
+
+    cells = [
+        Cell("held", "ab", ((0, 0), (1, 0)), 1000, 60, 70.0, 100.0, 4, [(70, 100, 1, 0)] * 4),
+        Cell("held", "cd", ((0, 0), (2, 0)), 1, 60, 70.0, 100.0, 4, [(70, 100, 2, 0)] * 4),
+    ] * 3  # 6 cells so the bucket clears the 5-cell floor
+    pred = np.array([110.0, 200.0] * 3)
+    obs = np.array([100.0, 100.0] * 3)
+
+    stats = _bucket_matrix(cells, pred, obs)["60"]
+
+    assert stats["umae"] == pytest.approx((10 + 100) / 2)
+    assert stats["wmae"] == pytest.approx((10 * 1000 + 100 * 1) / 1001)
+    assert stats["n"] == 6
+    assert stats["n_raw"] == 24
+    assert stats["n_participants"] == 2
+    # obs is constant here, so spearman is undefined and _per_bucket_rho drops the bucket:
+    # pin the NaN fallback explicitly rather than covering it only incidentally.
+    assert np.isnan(stats["rho"])
+
+
+def test_bucket_matrix_rho_floor_matches_the_row_floor():
+    """A row must never be emitted with finite magnitudes but a silently-dropped rho: the
+    rho floor has to track ``min_bucket_cells``, not a separate hardcoded 5."""
+    from keybo.training.validate import _bucket_matrix
+
+    # 3 cells => below the default 5-cell floor, so no row at all by default.
+    cells = [
+        Cell("held", ng, ((0, 0), (1, 0)), 10, 60, 70.0, 100.0, 4, [(70, 100, 1, 0)] * 4)
+        for ng in ("ab", "cd", "ef")
+    ]
+    pred = np.array([110.0, 130.0, 150.0])
+    obs = np.array([100.0, 120.0, 160.0])
+
+    assert _bucket_matrix(cells, pred, obs) == {}
+
+    # Lowering the floor emits the row -- and its rho must be a real number, not NaN,
+    # because the rho pass now uses the SAME floor.
+    stats = _bucket_matrix(cells, pred, obs, min_bucket_cells=3)["60"]
+    assert stats["n"] == 3
+    assert np.isfinite(stats["rho"])
+
+
 def test_weighted_mae_weights_by_cell_frequency():
     """A high-frequency cell's error must dominate wmae (weights proxy objective weights)."""
     from keybo.training.validate import weighted_mae

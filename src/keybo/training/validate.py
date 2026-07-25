@@ -191,19 +191,64 @@ def weighted_mape(cells, pred: np.ndarray, obs: np.ndarray) -> float:
     return float((w * rel).sum() / w.sum())
 
 
-def _per_bucket_rho(cells: list[Cell], pred: np.ndarray, obs: np.ndarray) -> dict[int, float]:
+def _per_bucket_rho(
+    cells: list[Cell], pred: np.ndarray, obs: np.ndarray, min_bucket_cells: int = 5
+) -> dict[int, float]:
     """Plain Spearman within each wpm bucket (already single-bucket => no centering
-    needed). Buckets with < 5 cells are skipped (a 3-cell rho is noise)."""
+    needed). Buckets with fewer than ``min_bucket_cells`` cells are skipped (a 3-cell rho is
+    noise). The floor is a parameter so a caller that reports bucket rows at a *lower* floor
+    cannot emit a row whose other metrics are finite while its rho was silently dropped."""
     by_bucket: dict[int, list[int]] = defaultdict(list)
     for i, c in enumerate(cells):
         by_bucket[c.bucket].append(i)
     out: dict[int, float] = {}
     for bucket, idx in sorted(by_bucket.items()):
-        if len(idx) < 5:
+        if len(idx) < min_bucket_cells:
             continue
         rho = spearmanr(pred[idx], obs[idx]).statistic
         if np.isfinite(rho):
             out[bucket] = float(rho)
+    return out
+
+
+def _bucket_matrix(
+    cells: list[Cell],
+    pred: np.ndarray,
+    obs: np.ndarray,
+    min_bucket_cells: int = 5,
+    bucket_rhos: dict[int, float] | None = None,
+) -> dict[str, dict[str, float]]:
+    """Per-wpm-bucket slice: ``{bucket: {rho, wmae, umae, slope, n, n_raw, n_participants}}``.
+
+    Both magnitudes are reported because they answer different questions inside a slice:
+    ``wmae`` is corpus-weighted (what the optimizer feels), ``umae`` gives every cell equal
+    say (the rare-ngram guard). Support travels with the numbers — a slice metric read
+    without its sample/participant count cannot be checked against a support floor, and a
+    thin high-speed bucket would then read as a real result.
+
+    ``bucket_rhos`` may be passed in when the caller already computed it (the validate() path
+    does) to avoid recomputing the same Spearman pass; it is computed at the SAME
+    ``min_bucket_cells`` floor as the rows, so a row's rho is never silently dropped.
+    """
+    by_bucket: dict[int, list[int]] = defaultdict(list)
+    for i, c in enumerate(cells):
+        by_bucket[c.bucket].append(i)
+    if bucket_rhos is None:
+        bucket_rhos = _per_bucket_rho(cells, pred, obs, min_bucket_cells)
+    out: dict[str, dict[str, float]] = {}
+    for bucket, idx in sorted(by_bucket.items()):
+        if len(idx) < min_bucket_cells:
+            continue
+        sub = [cells[k] for k in idx]
+        out[str(bucket)] = {
+            "rho": bucket_rhos.get(bucket, float("nan")),
+            "wmae": weighted_mae(sub, pred[idx], obs[idx]),
+            "umae": uniform_mae(pred[idx], obs[idx]),
+            "slope": calibration_slope(pred[idx], obs[idx]),
+            "n": len(idx),
+            "n_raw": int(sum(c.n for c in sub)),
+            "n_participants": len({s[2] for c in sub for s in c.samples}),
+        }
     return out
 
 
@@ -630,20 +675,7 @@ def validate(
         tau_all4 = layout_ranking_tau(obs_table, aggregate_layout_table(all_cells, pred_all))
 
         bucket_rhos = _per_bucket_rho(test_cells, pred, obs)
-        by_bucket_idx: dict[int, list[int]] = defaultdict(list)
-        for _i, _c in enumerate(test_cells):
-            by_bucket_idx[_c.bucket].append(_i)
-        bucket_matrix = {}
-        for _b, _idx in sorted(by_bucket_idx.items()):
-            if len(_idx) < 5:
-                continue
-            _sub = [test_cells[_k] for _k in _idx]
-            bucket_matrix[str(_b)] = {
-                "rho": bucket_rhos.get(_b, float("nan")),
-                "wmae": weighted_mae(_sub, pred[_idx], obs[_idx]),
-                "slope": calibration_slope(pred[_idx], obs[_idx]),
-                "n": len(_idx),
-            }
+        bucket_matrix = _bucket_matrix(test_cells, pred, obs, bucket_rhos=bucket_rhos)
         worst_bucket, worst_rho = (
             min(bucket_rhos.items(), key=lambda kv: kv[1]) if bucket_rhos else (None, float("nan"))
         )
