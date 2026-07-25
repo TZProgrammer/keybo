@@ -6414,3 +6414,36 @@ single-layout claim than a cross-layout one. (c) absolute MAE must NOT be compar
 absolute error shrinks mechanically) — use the scale-free relative metric within the band.
 STATUS: registered as a standing objective. No model was re-selected under it; re-running selection on the 90-110 band is
 future work, and any such run should also be evaluated on blend-v1 (CORPUS-BLEND-1) rather than the old single-source corpus.
+
+### RETRACTION — my "the layout-balance cap is throttling the qwerty correction" hypothesis is FALSE (2026-07-25)
+I authored a hypothesis in the reweight-layout brief — that LAYOUT_WEIGHT_CAP=50 clips the inverse-share correction to ~47% of
+full balance because qwerty is 98.5-99.3% of the data — and used it to motivate the run. The child refuted it PRE-FIT from counts
+alone, and I INDEPENDENTLY REPRODUCED the refutation. The hypothesis is RETRACTED.
+WHY IT WAS WRONG (two errors, both mine): (W1) I conflated SAMPLE share with EXAMPLE share. 98.5-99.3% is qwerty's share of raw
+SAMPLES (the BUCKET-1 figure); `layout_balance_weights` counts EXAMPLES, and the example matrix has one row per
+(stroke-row, wpm-group) so non-qwerty layouts contribute an example per WPM group while carrying far fewer samples each. VERIFIED
+from the regenerated cache's examples_per_layout: AALTO 610,797 examples = qwerty 73.10% (qwertz 15.24 / azerty 7.56 / dvorak 4.11);
+POOL 636,206 = qwerty 68.71%; COMMUNITY 34,765 (no qwerty). So the imbalance the cap must fight is ~2.7:1, NOT ~100:1.
+(W2) The cap therefore NEVER BINDS. VERIFIED by recomputing the largest uncapped inverse-share weight any layout wants on any LOLO
+fold: AALTO 7.503 (holdout azerty, layout dvorak), POOL 16.321, COMMUNITY 1.670 — all far below cap 50. Consequently cap50 /
+cap200 / cap-inf produce BIT-IDENTICAL weight vectors on all 12 folds (child confirmed via np.array_equal, and that the control is
+bit-identical to the shipped keybo.training.train.layout_balance_weights). The existing weighting ALREADY achieves exact, complete
+inverse-share balance — every training layout gets exactly 1/3 of the weight mass (AALTO/COMMUNITY, 3 training layouts per fold) or
+exactly 1/7 (POOL). There was nothing to un-throttle.
+ALSO CORRECTED: the weights are computed ONCE per fit over the whole training array (pms_frozen.py:823), so PER-BUCKET shares never
+enter the weight computation — there is no per-bucket weighting path in the pipeline at all, which my brief implicitly assumed.
+AND THE LEVER WAS ALREADY SEARCHED, in the opposite direction: layout_weight_cap is not an untested constant — it is
+ModelConfig.layout_weight_cap (default 50.0) in the frozen peak search, and the arm that REDUCES balancing to cap 1.25 was
+BEATS-INCUMBENT on AALTO (+0.02473 rho/ceiling [+0.02220,+0.02735]); STACK[BACKFIT_1 + LAYOUT_CAP_1P25] IS the selected AALTO peak.
+So the only measured direction of benefit is toward LESS layout balancing, not more — the opposite of what my brief assumed.
+CONSEQUENCE for the running experiment (child amended its prereg §4a PRE-FIT, correctly): CAP_200 / CAP_INF are demoted to null-arm
+HARNESS CONTROLS that must return delta exactly 0.0; the informative family is CTRL_CAP50 (== production), CAP_1P25, TEMPER_SQRT,
+and RESAMPLE_INV (the user's actual ask — draw examples with p proportional to inverse layout share, then fit with UNIT weights
+throughout, including into the frequency prior and the effect shrinkage). 6 arms x 3 surfaces x 20 seeds = 360 LOLO jobs, served
+frame, primary = equal-weight mean umae_rel over the 90-110 band, studentized max-statistic simultaneous band. Reproduction fidelity
+verified by the child: regenerated cache matches gap-wpm exactly (examples 610797/636206/34765, cells 24079/866/24580), AALTO
+split-half ceilings reproduce, corpus SHA matches the frozen manifest, xgboost 3.3.0, driver SHA 1f79fa11 = the frozen pms driver,
+smoke run exact frequency invariance 0.0 and decomposition identity ~3.6e-15.
+LESSON (worth carrying): a share figure is not interchangeable across units — "qwerty is 99% of the data" was true of samples and
+false of the weighting unit, and I propagated it into a brief as a premise. Check WHICH unit a weighting function counts before
+building a hypothesis on a share.
