@@ -90,6 +90,28 @@ skips work that's already done. The English corpus frequency files under
 `data/corpus/{trigrams,bigrams,1-skip}.txt` (derived from the licensed iWeb corpus, not
 freely downloadable) **are already committed** in the repo, so there's nothing to fetch there.
 
+### Corpora: the iWeb import vs the multi-source blend
+
+The committed `data/corpus/*.txt` are **single-source** (iWeb) and, because iWeb is licensed
+and no extraction script was ever kept, **cannot be regenerated**. They remain the production
+corpus.
+
+`keybo build-corpus` builds a **multi-source alternative** in `data/corpus/blend-v1/` from
+named local sources (repo prose, LaTeX, Python stdlib, man pages) blended with the iWeb counts
+at declared per-register weights, with a `manifest.json` recording every source's bytes,
+SHA-256 and weight. Each table sums to exactly 1e9, so `count/1e9` sums to 1 and `count/1e7`
+to 100. Everything except the iWeb component is reproducible; `--no-anchor` drops that
+component for a fully reproducible blend.
+
+```bash
+keybo build-corpus --out data/corpus/blend-v1        # the committed blend
+keybo build-corpus --out /tmp/b --no-anchor          # fully reproducible variant
+```
+
+Layout rankings are **corpus-conditional** on some gauges — see
+`data/corpus/blend-v1/PROVENANCE.md` for the measured iWeb-vs-blend board and what switching
+the production corpus would change.
+
 ## Architecture
 
 The package is built around plug-and-play seams, so swapping an implementation (a different

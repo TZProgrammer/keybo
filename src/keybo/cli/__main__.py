@@ -8,6 +8,7 @@ from collections.abc import Sequence
 
 from keybo.cli import (
     analyze,
+    build_corpus,
     effect_curves,
     fetch_data,
     inspect,
@@ -22,10 +23,11 @@ from keybo.cli import (
 )
 
 # subcommand name -> module exposing add_arguments(parser) and run(args).
-# Ordered along the pipeline: fetch-data -> process-data -> train -> (tune) ->
-# validate -> optimize / score, then the analysis tools.
+# Ordered along the pipeline: fetch-data -> (build-corpus) -> process-data -> train ->
+# (tune) -> validate -> optimize / score, then the analysis tools.
 _COMMANDS = {
     "fetch-data": fetch_data,
+    "build-corpus": build_corpus,
     "process-data": process_data,
     "train": train,
     "tune": tune,

@@ -1,0 +1,132 @@
+{
+ "schema": "keybo-corpus-manifest/1",
+ "built_with_python": "3.13.14",
+ "declared_total": 1000000000,
+ "charset": " \"',-./:;<>?ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz",
+ "charset_size": 64,
+ "case_preserved": true,
+ "skipgram_convention": "skip(a,c) = sum_b trigram(a,b,c) (matches committed 1-skip31.txt)",
+ "reproducible_without_anchor": false,
+ "weights_declared": {
+  "anchor": 0.5,
+  "prose": 0.25,
+  "code": 0.15,
+  "reference": 0.1
+ },
+ "weights_effective": {
+  "anchor": 0.5,
+  "prose": 0.25,
+  "code": 0.15,
+  "reference": 0.1
+ },
+ "sources": [
+  {
+   "name": "repo-markdown",
+   "register": "prose",
+   "extraction": "all *.md tracked under the repo, sorted by path, excluding data/corpus and the transient directories ['.eggs', '.git', '.mypy_cache', '.pytest_cache', '.ruff_cache', '.tox', '.venv', '__pycache__', 'build', 'dist', 'node_modules', 'site-packages', 'venv'] (whose contents depend on whether the tests have been run); fenced+inline code, URLs, table rows and emphasis/link markup stripped (strip_markdown), then normalized onto the charset",
+   "reproducible": true,
+   "root": "/local/home/zegertho/agent/state/build-corpus/keybo",
+   "units": 44,
+   "raw_bytes": 717013,
+   "sha256": "071b178dcb20431af5c04e4e06e9082617e3aa8f092911069946ea3e88478965",
+   "normalized_chars": 655014,
+   "ngrams": {
+    "bigram_types": 2013,
+    "bigram_tokens": 655013,
+    "trigram_types": 15065,
+    "trigram_tokens": 655012
+   }
+  },
+  {
+   "name": "repo-latex",
+   "register": "prose",
+   "extraction": "all *.tex tracked under the repo, sorted by path, excluding the transient directories listed for repo-markdown; comments, math/tabular/figure environments and control sequences stripped (strip_latex), then normalized",
+   "reproducible": true,
+   "root": "/local/home/zegertho/agent/state/build-corpus/keybo",
+   "units": 12,
+   "raw_bytes": 103901,
+   "sha256": "f46a6e336abc23b2bbbea51ce891e18bf014bff9a43cb3e625c4021b7f78d154",
+   "normalized_chars": 70481,
+   "ngrams": {
+    "bigram_types": 846,
+    "bigram_tokens": 70480,
+    "trigram_types": 4166,
+    "trigram_tokens": 70479
+   }
+  },
+  {
+   "name": "python-stdlib",
+   "register": "code",
+   "extraction": "all *.py under the CPython stdlib root excluding site-packages/ and test directories, sorted by path; docstrings and comments stripped (strip_python, so the prose inside code lands in the prose register, not here), then normalized",
+   "reproducible": true,
+   "root": "/local/home/zegertho/.local/share/uv/python/cpython-3.13.14-linux-x86_64-gnu/lib/python3.13",
+   "units": 633,
+   "raw_bytes": 6923454,
+   "sha256": "ac37ab97557a36a1d2931afd50e29409e7579fb69711ba703bcd614ff2cbdb67",
+   "normalized_chars": 4464283,
+   "ngrams": {
+    "bigram_types": 3068,
+    "bigram_tokens": 4464282,
+    "trigram_types": 30160,
+    "trigram_tokens": 4464281
+   }
+  },
+  {
+   "name": "man-pages-man1+man8",
+   "register": "reference",
+   "extraction": "gzipped man pages in man1/man8, sorted by name; roff comments, metadata requests and font/size escapes stripped (strip_roff) while prose-bearing request arguments are kept, then normalized",
+   "reproducible": true,
+   "root": "/usr/share/man",
+   "units": 2661,
+   "raw_bytes": 32237026,
+   "sha256": "7317f159fab9942852066698b2162985f74cff384dab1c31fb2a9c215af23608",
+   "normalized_chars": 28751373,
+   "ngrams": {
+    "bigram_types": 3856,
+    "bigram_tokens": 28751372,
+    "trigram_types": 54821,
+    "trigram_tokens": 28751371
+   }
+  },
+  {
+   "name": "iweb-anchor",
+   "register": "anchor",
+   "extraction": "NOT REPRODUCIBLE \u2014 consumed as committed derived counts. The iWeb corpus (Davies 2018) is licensed and non-redistributable and no extraction script was ever committed, so these counts cannot be regenerated from source text. Their identity is pinned by the sha256 below; their derivation is unverifiable. Skipgrams re-derived from trigrams.txt by marginalization for consistency.",
+   "reproducible": false,
+   "files": {
+    "bigrams.txt": {
+     "bytes": 30098,
+     "sha256": "c61e6cbd2eed1bef008509877cee67d268d83d0565c0d47b5d83379b32dbede1"
+    },
+    "trigrams.txt": {
+     "bytes": 704245,
+     "sha256": "ffa77f3a38922f0ad304fa53c796b6281bbdb827fcdf220450fd3a2f751908c2"
+    }
+   }
+  }
+ ],
+ "outputs": {
+  "bigrams": {
+   "files": [
+    "bigrams.txt"
+   ],
+   "types": 4081,
+   "total": 1000000000
+  },
+  "trigrams": {
+   "files": [
+    "trigrams.txt"
+   ],
+   "types": 114920,
+   "total": 1000000000
+  },
+  "skipgrams": {
+   "files": [
+    "1-skip.txt",
+    "1-skip31.txt"
+   ],
+   "types": 4094,
+   "total": 1000000000
+  }
+ }
+}
