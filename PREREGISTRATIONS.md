@@ -6361,3 +6361,38 @@ WIDENS to 10/15; (d) genkey/oxey1/oxey2/WFD and the speed surface are completely
 basis. GATES BEFORE LANDING (canonical): tests/data 132 passed real rc=0, ruff check+format clean, `keybo build-corpus --help`
 reachable, cherry-pick additive-only (production tables untouched); 43 new tests; child's own full suite 577 collected/1 skipped real
 rc=0.
+
+### SELMETHOD-CLOSEOUT — three previously-UNREGISTERED verdicts, banked before reap (2026-07-25)
+keybo-selmethod's final pre-reap self-audit surfaced three deliverables that never had callbacks and were never registered. All
+artifacts now harvested to state/keybo-optimization/artifacts/{scissor-methodology,feature-engineering,analyze-convention-fix,
+selmethod-closeout}/. I VERIFIED the safety-critical claims. NOTE the reflection also caught TWO gaps in its own bookkeeping: those
+three dirs were missing from its artifact index, and the 10 subagent reports live only in state/<child>/ so harvesting artifacts/
+alone would have missed the whole evidence base (now harvested: report.md 858 l + closeout-common.md, whose four amendments are the
+best record of what it got wrong).
+SCOPE VERIFIED (the safety-critical one): I confirmed in canonical that ONLY `_bucket_matrix` reached origin/main (1 file in src/);
+`row_span_class`, `outer_low_severity`, `cell_detailed`, `restrict_to_common`, `--no-common-ngrams` and the test_posture /
+test_row_span files are ALL ABSENT (0 files each). So the landed 515aa5b is precisely scoped and the child's accounting is accurate.
+Its 8-file/293-insertion diff is DECLARED-NOT-COMMITTED per contract and reconstructible from two harvested patches
+(feature-engineering/classify-additive.patch + analyze-convention-fix/analyze-common-ngrams.patch, both confirmed present), so
+reaping loses nothing — but that code is NOT in the repo until someone applies them.
+VERDICT 1 — SCISSOR-2 (scissor-methodology): the predicate is ADOPTED-IN-PRINCIPLE (the `is_scissor` blind spot is real,
+`row_span_class` is correct, and `is_scissor` is provably bit-identical so the frozen campaign is intact) BUT the severity NUMBERS were
+SUPERSEDED TWICE and the layout RANKING is WITHDRAWN. Safe to close as methodology; NOT safe to quote any magnitude or ranking from it.
+Traps a reader of the artifact alone would miss: its "unmeasurable" verdict on the b/l bigram was the child's OWN punctuation filter
+deleting 857 real intervals (+17.4%, a lower bound), and critic-report.md shows cell CIs 2x-156x too narrow with contrasts contaminated
+by UNMEASURED cells.
+VERDICT 2 — feature-engineering (feat2 / feat3-S4-ALL): HONEST NULL — 14 arms gated, none adoptable. Safe to close. IMPORTANT: the null
+is a POWER limit (MDE 0.004-0.032 vs observed deltas 0.0003-0.010), NOT evidence the features are useless. ⚠ MY CORRECTION TO ITS
+SELF-CRITICISM: the child warned that feat2.json's `gate1_nullspace` text and the F-HAND nullspace fields are "FABRICATED (F-HAND was
+never in the gate's arm list)". I CHECKED — F-HAND IS present in the gate's actual arm list (feat2-nullspace.json arms =
+[A-OUTER-LOW-G, B-ROWPAIR, BASE, C-SPAN-ANYFINGER, D-PINKY-STRETCH, E-COMBINED, F-HAND], all 7), so that self-flag is itself partly
+WRONG — the child was over-harsh on its own work. Recorded both ways: prefer feat3-s4all-gate1.json as the child advises, but the
+fabrication charge does not hold as stated.
+VERDICT 3 — analyze-convention-fix: FIXED, 239/239 gates green, with the missing mixed-charset regression added RED-then-GREEN. Safe to
+close ONLY once committed (it is in the uncommitted set above). OPEN ITEM for the user, not settled by the patch: door-charset argues
+for MASS-NORMALISATION over the child's intersection convention because intersection does not scale (COMMUNITY common trigrams
+collapse to 32 of 5251). That convention choice is the user's.
+NOTHING UNFINISHED OR STRANDED: every conclusion is in its report.md/index; all 8 closeout agents + 2 critics returned and were reaped
+with roster notes; no background jobs live. ESTIMAND CAVEAT the child raised and I endorse: every number in its artifacts was computed
+on the OLD single-source corpus and NONE has been recomputed on blend-v1 — they are not the same estimand as anything in
+CORPUS-BLEND-1. Its independent WITHDRAWAL of the archive-1843 recommendation corroborates the blend-v1 inversion finding.
