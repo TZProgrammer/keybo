@@ -6275,3 +6275,46 @@ non-analysis, 269/269 in dirs touching validate.py, 24/24 test_validate.py; the 
 _bootstrap_rho_ci regression which fails identically on unmodified base (now superseded by the b581e3b fix). HAZARD for follow-ups:
 /tmp/keybo_venv's editable install points at /local/home/zegertho/repos/keybo/src, NOT a workspace — prefix PYTHONPATH=<ws>/src/keybo/src
 or commands silently exercise the other tree.
+
+### GAP-WPM-1 OUTCOME — per-WPM-bucket accuracy measured for the FIRST time; the ranking DOES change by bucket (2026-07-24)
+Closes the user-identified gap ("two models with equal UMAE/WMAE are not equally good if one is more accurate at higher WPM").
+300 jobs = 5 models x 3 surfaces x 20 model seeds (1,200 LOLO fold-evals), SERVED frame only. POSITIVE CONTROL PASS: max abs err
+7.1e-15 ms over 2,560 per-seed-per-fold checks vs the archived peak-search checkpoints (+36 aggregate); frozen BASE AALTO
+27.7493/25.9482 and the split-half ceilings reproduce exactly; cached surfaces bit-identical to frozen prepare_surfaces(). Artifacts
+harvested to state/keybo-optimization/artifacts/gap-wpm/ (wpm-buckets.json b4c8dd29, report 5c4ee37a — SHAs I verified); child commit
+46bcabe, 23/23 tests, nothing pushed.
+HEADLINE — THE RANKING CHANGES BY BUCKET, and the aggregate hides it in BOTH directions: 7 CI-credible SIGN REVERSALS. I independently
+verified the two decisive ones in wpm-buckets.json: (1) AALTO — PEAK[AALTO] (that surface's own selected peak) beats PEAK[POOL] on
+AGGREGATE UMAE by +0.549 ms [+0.466,+0.626] but CREDIBLY LOSES the [120,140) bucket to it at -0.282 ms [-0.390,-0.173] (verified:
+comparisons.AALTO|PEAK_POOL...whole.umae.point = +0.5495 vs buckets.120-140 = -0.2822); on WMAE PEAK[POOL] also wins [100,120).
+(2) POOL INVERTS IT — PEAK[AALTO] wins the aggregate by -1.298 ms yet CREDIBLY LOSES [120,140) at +0.665 ms [+0.502,+0.839] (verified),
+i.e. THE AGGREGATE HIDES A HIGH-WPM REGRESSION. (3) Two COMMUNITY reversals exist but sit in a THIN bucket -> no verdict.
+STRUCTURAL READ (why): the BACKFIT_1 family is relatively stronger at HIGH WPM while the LAYOUT_CAP_1P25 stack buys its aggregate lead
+in the LOW/MIDDLE buckets — and because the peaks were SELECTED ON AGGREGATE rho, selection systematically favoured the
+low-WPM-strong config. That is the user's point, confirmed with a mechanism.
+SERVING-POINT / WEIGHTING: bucket [80,100) IS the serving point (cell midpoint exactly 90.0). (a) The aggregate MISSTATES
+serving-point accuracy on every surface, in INCONSISTENT directions: AALTO 6-9% BETTER than the aggregate implies, COMMUNITY 21-32%
+WORSE, POOL ~2-3% worse. (b) A HIGH-WPM-weighted (100-140) metric picks a DIFFERENT model than aggregate MAE on AALTO in 4/4 metrics
+(AGG picks PEAK[AALTO] 23.924; HI picks PEAK[POOL] 14.309 vs 14.421) — but SERVE90 AGREES with AGG on all three surfaces. So
+"optimize for fast typists" and "optimize at the WPM-90 serving point" are DIFFERENT objectives selecting different models. No
+refit/reselect was run (named out of scope).
+⚠ SCALE CAVEAT THAT CHANGES THE READING (same failure class as the raw-min floor flaw): absolute MAE falls ~2.8x across buckets mostly
+because DURATIONS fall ~2.2x. On the scale-free umae_rel, AALTO is essentially FLAT above 60 WPM (.184/.186/.183/.181) with [40,60)
+the outlier (.239) — so "more accurate at high WPM" is a SCALE ARTIFACT on AALTO. It is REAL on COMMUNITY (.300 -> .177). POOL is
+non-monotone and WORST at [100,120). Reporting absolute MAE alone would have produced a WRONG headline.
+TWO STRUCTURAL FACTS THE AGGREGATE WAS HIDING: (i) the COMMUNITY surface has ZERO cells below 60 WPM — its "aggregate" is a FOUR-bucket
+mean, not five (the 4 typists never typed that slow); (ii) AALTO's qwerty share GROWS with WPM, 61% at [40,60) to 96% at [120,140)
+(dvorak 23 cells, azerty 24) — so AALTO high-WPM accuracy is a NEAR-SINGLE-LAYOUT claim, not cross-layout. Also the surface aggregate
+is NOT a bucket average (fold-mean is unweighted over holdouts with different bucket mixes: 27.583 vs 26.308 cell-count-weighted),
+though the WITHIN-fold identity asserts exactly on all 1,200 fold-evals.
+HONEST LIMITS (the child's own): intervals are NOMINAL, unadjusted for 5 buckets x 3 surfaces x 5 arms x 2 refs, and the PEAKs were
+selected on these same surfaces — so every bucket claim is WITHIN-RUN DESCRIPTION, NOT an adoption argument. COMMUNITY carries no
+per-bucket verdict (all buckets thin; CI half-width +/-1.97 ms at [80,100) vs +/-0.09 on AALTO; conditional on 4 typists). AALTO
+per-bucket rho is RAW not ceiling-normalized, so UMAE/WMAE are the registered primary metrics.
+NET: the gap was REAL and consequential. Aggregate UMAE/WMAE demonstrably hides per-bucket differences, including a high-WPM
+REGRESSION on POOL, and high-WPM-weighted selection would pick a different AALTO model. Selecting on aggregate rho has been
+systematically biased toward low-WPM-strong configs. This does NOT overturn any adopted result (nothing was adopted) but it means any
+FUTURE model selection should declare its WPM objective explicitly. ENV GOTCHA WORTH PROPAGATING: xgboost 3.3.0 vs 3.2.0 produce
+DIFFERENT predictions from identical data/seed/params; the frozen archive needs 3.3.0, uv.lock selects it only for py>=3.12, and a
+bare `uv run` can silently DOWNGRADE it (a pyproject pin is impossible since requires-python is >=3.11) — use
+`uv pip install xgboost==3.3.0` + `uv run --no-sync`; the harness now hard-fails on the wrong version.
