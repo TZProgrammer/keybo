@@ -6637,3 +6637,45 @@ TWO OPS LESSONS WORTH PROPAGATING: (a) xgboost n_jobs must be SMALL under fleet 
 measured 13x SLOWER than n_jobs=4 on the same fit (143s vs 10.8s), and a first pilot at --workers 2 --n-jobs 40 burned 3 CPU-hours for
 zero checkpoints. TIME ONE FIT before sizing a grid. (b) a stray /tmp/enum.py from another agent SHADOWED the stdlib and broke
 `import json` for anything run from /tmp.
+
+### GEN-ON-BLEND-1 — CORPUS-INVARIANT FRONTIER, CORPUS-CONDITIONAL DOMINATORS: 3 of 4 frozen dominators LOSE on blend-v1 (2026-07-25)
+The last unexplored route: re-run the in-loop island-NSGA-II generator with the gauge corpus = blend-v1 (every prior dominator was found
+by optimizing the OLD single-source iWeb corpus). Budget 19,192,875 unique C30M evals across two prereg'd arms (ARM-A 9,520,311 /
+ARM-B 9,672,564, each within 2.4% of the 9,754,623 baseline = budget-matched by design) + 36 targeted hunts x 60k iters x 12 restarts
+per arm. Child branch gen-on-blend @ 6d5aea1, NOTHING pushed. Positive controls: 24/24 gates BEFORE any verdict, slow-path max abs
+error 0.000e+00 on BOTH corpora across all 10 axes; the frozen wider-dominance verdict fully reproduced.
+⚠ THE DECISION-RELEVANT RESULT — I VERIFIED IT IN gen-on-blend-verdict.json: THREE OF THE FOUR FROZEN iWEB DOMINATORS LOSE THEIR
+DOMINANCE UNDER BLEND-V1, classified corpus-SPECIFIC(iWeb only) with beats_on_iweb=True / beats_on_blend=False:
+  - pyou'vgdnmheai.cstrlkjz,-wfbxq (THE CLOSURE-3 FLAGSHIP) LOSES archive-1846 (floor margin flips by -9.09e-05, mean -0.0336)
+  - uyo,.fdnsleiatkpchmrq-xg'bwvzj loses archive-1843 AND lsb-sib
+  - uyog.bdnsleiat,pchmrz-'kjfwvxq (the 3-of-5 multi-dominator) drops from 3 targets to 1
+ONLY TWO CORPUS-ROBUST DOMINATOR PAIRS EXIST IN THE WHOLE CAMPAIGN, both against lsb-sib: pyou,vgdnlheai.cstmrk'zj-wfbqx and the new
+pyou,vgdnlheai-cstmrkjz.'wfbxq. Symmetrically the blend-found dominators mostly fail on iWeb (mldfbxhae-crstp.nouiwqvgky,jz' beats
+archive-1843 10/10 on blend but 6/10 on iWeb; all three ARM-A dominators are blend-specific). EVERY break is on a CORPUS-WEIGHTED axis
+(floor/mean from trigrams, scissor from bigrams); every mechanics and community margin is unchanged or improves. Structural: the
+normalized-FLOOR holder flips archive-1843 -> archive-1846 under blend-v1.
+CONSEQUENCE — I am correcting my own recommendation: the closure-3 flagship must NOT be offered as a dominator to a multi-source user.
+It dominates archive-1846 on iWeb ONLY. Every incumbent-beating layout from the iWeb campaign except the two lsb-sib ones must be
+RE-QUALIFIED before it is offered.
+WHAT IS CORPUS-ROBUST (and this STRENGTHENS the standing conclusion): the FRONTIER SHAPE. Identical in both arms and on all 4 boards —
+(a) the 3 already-dominated incumbents STAY dominated (lsb-sib, archive-1843, archive-1846) though BY DIFFERENT LAYOUTS; (b) keybo-lsb
+and keybo-lsb+lm STILL RESIST; (c) NO layout dominates all five. The 5 incumbents remain mutually non-dominated on every board. So the
+Pareto-frontier conclusion is corpus-robust even though the individual dominators are not.
+AND THE HOLD-OUTS ARE NOW CLOSED STRUCTURALLY, NOT BY BUDGET: ARM-B probes deeper than the frozen run (reaching 9/10 vs its hard 8/10
+ceiling), so blend-tabling sfb DOES move keybo-lsb closer — its sfb lead over archive-1846 narrows 0.2410 -> 0.0708 (3.4x). But
+enumerating EVERY n_ge>=9 layout returns exactly ONE (the frozen iWeb triple), short SOLELY on wfd — a CORPUS-INVARIANT axis. The
+all-five ideal-point hunt stalls at 7-8/10, short on wfd + oxey2 (both corpus-invariant) + scissor. So no corpus change can dominate the
+hold-outs; the corpus route for them is closed.
+⚠ TWO CORRECTIONS TO MY BRIEF, both found PRE-COMPUTE (rule 7b), one of which reframes a headline I reported: the board's lsb/sfb/sfs are
+tabled from the KEYMEOW VENDORED corpus (I VERIFIED at run_tri_frequency_layouts.py:989-994, data/community/vendored/keymeow-keybo.json.gz),
+NOT data/corpus — and wfd/genkey/oxey1/oxey2 take no corpus argument at all (bit-identical, delta 0.0). So a naive corpus swap moves only
+3 of 10 axes and does NOT move sfb, one of the two documented blockers. GAP-CORPUS-1's headline "keybo-lsb sfb 1.0784 -> 2.2017" is a
+CORPUS-TABLED sfb, a DIFFERENT QUANTITY from the board's keymeow sfb 1.1415 — my earlier reporting conflated them. Hence the two arms:
+ARM-B (primary) re-tables lsb/sfb/sfs to blend as well, and is the only board where keybo-lsb's sfb fortress narrows. Second correction:
+9,754,623 + normalized floor is WIDER-DOMINANCE, not closure3-generator (3,382,209, raw floor) — the child re-pointed the right machinery.
+VALIDATION: full suite REAL rc=0 from a process-written sentinel, 600 passed / 1 skipped (576 repo + 24 gates); ruff clean on all 12
+authored files; normalized-floor ceilings RE-DERIVED per corpus over the same frozen 46-layout reference population so the floor is not
+a two-corpus hybrid. Confirmed two banked hazards empirically (the -qq summary suppression; /tmp/enum.py stdlib shadowing).
+OPEN PROBE THE CHILD NAMED (honest, and I endorse it): blend-v1 carries a declared unverifiable component — 50% of its weight is the
+non-redistributable iWeb anchor whose derivation cannot be reproduced. The ANCHOR-FREE variant is where the board moves MOST, so
+pointing this same machinery at blend-v1-no-anchor is the honest stress test of the cross-corpus result. Pure local compute; not run.
