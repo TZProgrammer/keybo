@@ -6396,3 +6396,21 @@ NOTHING UNFINISHED OR STRANDED: every conclusion is in its report.md/index; all 
 with roster notes; no background jobs live. ESTIMAND CAVEAT the child raised and I endorse: every number in its artifacts was computed
 on the OLD single-source corpus and NONE has been recomputed on blend-v1 — they are not the same estimand as anything in
 CORPUS-BLEND-1. Its independent WITHDRAWAL of the archive-1843 recommendation corroborates the blend-v1 inversion finding.
+
+### USER DECISION — the WPM OBJECTIVE is 90-110 (2026-07-25)
+User directive: "WPM objective should be 90-110." This SETTLES the open question raised by GAP-WPM-1 (which proved that
+"optimize for fast typists" and "optimize at the WPM-90 serving point" select DIFFERENT models, and that selecting on
+AGGREGATE rho was systematically biased toward low-WPM-strong configs).
+BINDING CONSEQUENCE for all future model selection and reporting: the target band is 90-110 WPM. In the pipeline's own
+20-wide bucketing over [40,140) that spans the [80,100) and [100,120) buckets — i.e. the serving point (WPM 90 is exactly
+the [80,100) midpoint) PLUS the next bucket up. Selection metrics must be reported and adjudicated on that band, not on the
+5-bucket aggregate. Aggregate UMAE/WMAE is henceforth DESCRIPTIVE ONLY for model choice; it demonstrably hid a high-WPM
+regression on POOL (GAP-WPM-1: PEAK[AALTO] won the aggregate by -1.298 ms yet credibly LOST [120,140) at +0.665 ms).
+KNOWN LIMITS the band inherits (do not re-discover them): (a) [100,120) is UNDER-POWERED at 4 layout clusters — qwertz
+supplies 57-74% of its signal, no leave-one-out subset stays credible, and the effect sits below what 4 clusters can
+resolve (1.591 x between-layout SD = 13.4%); resolving it needs more LAYOUTS (Phase-D, cancelled), not more samples.
+(b) AALTO's qwerty share GROWS with WPM (61% at [40,60) to 96% at [120,140)), so the upper part of the band is closer to a
+single-layout claim than a cross-layout one. (c) absolute MAE must NOT be compared across buckets (durations fall ~2.2x, so
+absolute error shrinks mechanically) — use the scale-free relative metric within the band.
+STATUS: registered as a standing objective. No model was re-selected under it; re-running selection on the 90-110 band is
+future work, and any such run should also be evaluated on blend-v1 (CORPUS-BLEND-1) rather than the old single-source corpus.
