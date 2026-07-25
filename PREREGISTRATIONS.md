@@ -6318,3 +6318,46 @@ FUTURE model selection should declare its WPM objective explicitly. ENV GOTCHA W
 DIFFERENT predictions from identical data/seed/params; the frozen archive needs 3.3.0, uv.lock selects it only for py>=3.12, and a
 bare `uv run` can silently DOWNGRADE it (a pyproject pin is impossible since requires-python is >=3.11) — use
 `uv pip install xgboost==3.3.0` + `uv run --no-sync`; the harness now hard-fails on the wrong version.
+
+### CORPUS-BLEND-1 — the multi-source corpus is BUILT; the flagship verdict survives but INVERTS against archive-1843 (2026-07-25)
+Closes the user requirement GAP-CORPUS-1 found unmet ("a frequency list which sums to 1/100 and uses many different corpuses"). Landed
+additively; production data/corpus/*.txt UNTOUCHED (a test asserts their totals + th=9,709,171 so an accidental in-place swap fails
+loudly). Child commit add1bbe, cherry-picked to canonical. I VERIFIED the load-bearing claims myself.
+SHIPPED: src/keybo/data/build_corpus.py (616 l) + `keybo build-corpus` CLI (I confirmed --help is reachable), emitting
+data/corpus/blend-v1/ + manifest.json with per-source root/bytes/sha256/extraction-rule/weights. SOURCES+WEIGHTS (effective==declared):
+anchor 0.50 iweb · prose 0.25 repo-markdown(44 files/717,013 B) + repo-latex(12/103,901 B) · code 0.15 python-stdlib(633/6,923,454 B) ·
+reference 0.10 man-pages(2,661/32,237,026 B). VERIFIED: every table sums to EXACTLY 1,000,000,000, so count/1e9 sums to 1 and count/1e7
+to 100 — the user's normalization requirement is MET. (Fractions are not written literally because load_frequencies parses with int()
+and SILENTLY SKIPS failures, so a literal sums-to-1 file would load EMPTY — a real trap the child caught.) Charset = production 64 chars
+CASE-PRESERVED (the harvested build_alt_corpora.py used 31-char lowercase, which would have been incommensurate with the anchor).
+Skipgrams by marginalization verified BYTE-EXACT vs committed 1-skip31.txt (4,087 entries, 0 mismatches).
+iWEB-ANCHOR HONESTY (kept, not papered over): iWeb is licensed and its extraction script was never committed, so that component CANNOT
+be regenerated — it is consumed as a declared 50%-weight trust anchor whose sha256 pins its IDENTITY but nothing pins its DERIVATION.
+`--no-anchor` builds a FULLY REPRODUCIBLE variant. PROVENANCE.md states this plainly plus two further limits (the local registers are
+~40 MB of registers, not a general-English sample; python-stdlib/man-pages are host-dependent, hence recorded roots).
+⚠ THE DECISION-RELEVANT RESULT (I re-verified every cell in board_iweb_vs_blend.json): the flagship conclusion SURVIVES but is
+corpus-conditional, and the movement is NOT uniform — report PER-INCUMBENT, never just the headline pair. Flagship-won axes,
+iWeb -> blend-v1 -> blend-v1-no-anchor (of 15 corpus-sensitive gauges): archive-1846 11 -> 10 -> 9 (STILL DOMINATES, margin narrows
+monotonically); archive-1843 10 -> 9 -> 7 (INVERTS — the flagship LOSES its majority under the fully-reproducible anchor-free corpus);
+keybo-lsb 9 -> 10 -> 11 and keybo-lsb+lm 7 -> 8 -> 10 (flagship GAINS); lsb-sib 11 -> 11 -> 11 (flat); qwerty 14 flat. MECHANISM
+(verified): keybo-lsb's sfb DOUBLES 1.0784 -> 2.2017 while the flagship's rises only 1.2408 -> 2.0926 — keybo-lsb's iWeb sfb win was
+corpus-specific. This reproduces the GAP-CORPUS-1 inversion effect at a DEFENSIBLE blend weight rather than a 100%-code corpus.
+MOVEMENT: blend-v1 reorders 8/15 gauges, 23/315 pairwise inversions (7.3%), 3 gauge winners change (alt archive-1846->keybo-lsb, redir
+lsb-sib->archive-1843, comfort keybo-lsb+lm->archive-1846); no-anchor 11/15, 63/315 (20.0%), 9 winners. But SEVEN gauges (sfr sfb sfs
+sfs-dist lsb lsb-dist sr-roll) keep their FULL ordering under blend-v1 — a reweighting, not noise. JS from iWeb on the C30M subset:
+blend-v1 bigram 0.01492 / trigram 0.04367; no-anchor 0.05010 / 0.14648.
+GAUGE BOUNDARY (important, not an omission): genkey / oxeylyzer-1 / oxeylyzer-2 / WFD are CORPUS-INVARIANT BY CONSTRUCTION —
+community.py loads each from data/community/vendored/*.json.gz and community_suite(pinned) takes NO corpus argument, so they cannot move
+under any blend; reported once rather than given a fabricated blend column. The SPEED surface was NOT re-evaluated (models/ is empty in
+both trees, and a speed surface is a model FIT not a corpus reweighting) — stated boundary, no refit.
+REAL BUG THE CHILD FOUND BY REBUILDING (not by reading code): the repo-prose sources used a bare rglob that descended into .venv/ and
+.pytest_cache/, so merely having run the test suite added 15 vendored third-party LICENSE.md files to the "repo prose" register and
+changed every count between two runs of the SAME generator (59 files/746,342 B -> 60/746,577 B) — both non-reproducible AND a
+contaminated register. Fixed via _REPO_SKIP_DIRS with 2 regression tests; rebuilds now byte-identical including manifest.json; board
+numbers re-derived post-fix and PROVENANCE.md updated to match the COMMITTED artifact.
+WHAT SWITCHING PRODUCTION WOULD CHANGE (the USER's call; nothing was swapped): (a) the corpus gains a declared total and a regenerable
+provenance chain; (b) 8/15 gauges and 3 gauge winners shift; (c) flagship-vs-archive-1846 narrows to 10/15 while flagship-vs-keybo-lsb
+WIDENS to 10/15; (d) genkey/oxey1/oxey2/WFD and the speed surface are completely unaffected. PROVENANCE.md section 5 is the measured
+basis. GATES BEFORE LANDING (canonical): tests/data 132 passed real rc=0, ruff check+format clean, `keybo build-corpus --help`
+reachable, cherry-pick additive-only (production tables untouched); 43 new tests; child's own full suite 577 collected/1 skipped real
+rc=0.
