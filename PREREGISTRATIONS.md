@@ -7270,3 +7270,74 @@ without-qwerty, as a TIEBREAK among layouts already equivalent on predicted time
 2-6. The child still declines it, and so do I: a tiebreak that systematically prefers the SLOWEST candidate is a second objective smuggled in.
 WHAT WOULD CHANGE THIS IS UPSTREAM OF ANY AGGREGATE — an instrument that resolves sub-0.72 ms/char (the tau-saturation problem), or an OUTCOME to
 fit weights against. **MORE GAUGES WILL NOT HELP.** This converges with THEORY-1 and WSCISSOR-ARMB-1: the binding constraint is the instrument.
+
+### WFD-FRAMES-1 — 🔴 THE "SECOND wfd CONVENTION" IS A BUG THAT SCORES A NON-PERMUTATION BOARD; 14 OF 42 FROZEN DOMINANCE VERDICTS DO NOT SURVIVE CORRECTING IT (2026-07-26)
+STATUS. User-requested ("if wfd is 2 quantities, can we decompose them / express both"). Branch `wfd-frames` @ 6216299 in an isolated worktree,
+NOTHING pushed; PREREGISTRATIONS.md untouched by the child. This is the campaign's most consequential single finding and it INVALIDATES an
+artifact class plus part of my own ledger.
+=> 🟢 THE MECHANISM, WHICH I REPRODUCED MYSELF FROM SCRATCH. `Oxeylyzer2.wfd_apostrophe_pinned` (community.py:205) hand-rolls its index arrays
+and thereby BYPASSES `_dof_arrays`' validation. It moves `'` to the quote slot but NEVER assigns `;` a position, so `;` keeps its `np.zeros`
+default and lands on **dof 0 (top-left, LEFT PINKY)**, evicting the character that belongs there; the scatter then refills the dof `'` vacated
+with index 0, so `q` is typed on TWO keys. I verified keybo-lsb's scored board is EXACTLY `;yuo,vgdnlhiea.cstrm'kj-zqfwbxq` — **30 distinct
+characters on 31 keys, `q` duplicated, `p` ABSENT ENTIRELY**, `IS A PERMUTATION: False`. This is a BUG, not a convention. My own earlier framing
+("one metric on two permutations, differing in which char sits on the quote slot") was WRONG on the decisive word: the second board is NOT a
+permutation.
+ROOT CAUSE IS UPSTREAM IN MY OWN DRIVER: `noanchor-1/drivers/oxey_ports.py:255-264` `perm_arrays` — correct for a CLASSIC charset, corrupt for
+C30M, and the campaign ALWAYS passed C30M. The shipped guard admits ONLY C30M, so there is no input for which that method is correct.
+🟢 BLAST RADIUS IS CONFINED TO wfd: genkey / oxey1 / oxey2 reproduce exactly from the validated path (positive-controlled on no-anchor arm B).
+WHY IT HID FOR THE WHOLE CAMPAIGN — and this is the part worth internalising. The corruption is negligible iff the layout's slot-0 character is
+`q`, and **qwerty30m is the ONLY layout that qualifies**: it moves 0.084% while every other layout moves 1.4-7.0% (I measured: flagship-c3
+2.918, keybo-lsb 6.977, keybo-lsb+lm 6.907, lsb-sib 3.907, archive-1843 2.541, archive-1846 5.173, graphite 1.428, semimak 1.863). The campaign
+DERIVED ITS AXIS DIRECTIONS FROM "qwerty-is-worst" — so the reference layout was the single blind spot, and the one number we leaned on hardest
+was the one number the bug spared. ⚠ ONE REFINEMENT I MUST RECORD AGAINST THE CALLBACK: it says 8 of 9 layouts score a non-permutation and that
+qwerty "qualifies". I measure **9 of 9** — for qwerty30m the collision is `;` and `q` BOTH on dof 0, so its board is `;wertyuiopasdfghjklq'…`
+and is also not a permutation; what is special about qwerty is that the damage is NEGLIGIBLE (0.084%), not that the board is well-formed. The
+mechanism and the blind-spot argument are unaffected.
+Q1 — DOES IT DECOMPOSE? YES, EXACTLY, and I verified the reconciliation to the last integer. wfd is additive over same-finger dof pairs, so the
+gap attributes to just 3 dofs. keybo-lsb: dof0 +1,832,625,463,900 / dof20 -1,196,658,771,000 / dof25 +495,287,431,800, summing to
+**+1,131,254,124,700 = exactly** `wfd_legacy - wfd_own` (-15,082,741,528,300 − −16,213,995,653,000). But the decomposition is the argument
+AGAINST reporting it as a small delta term: the only convention-LIKE leg (dof20, the actual quote slot) is a MINORITY — |corruption|/|delta| is
+70-521%, median ~330% — the legs partially cancel, which is precisely why the total passed for a plausible 1-7% offset instead of looking broken.
+Q2 — WHICH CONVENTION IS RIGHT? ILL-POSED: own-pin is FORCED. The 30 characters are given, so the leftover character has exactly one place to
+go. Physically layout index 19 IS the `;` key and `APOS_DOF = 20` IS the `'` key, so C30M swaps `;`/`'` relative to qwerty and own-pin scores
+that real board. The other "convention" is not a re-pin — IT EDITS THE LAYOUT. REPRODUCIBILITY IS PRESERVED: a renamed `wfd_legacy_board()`
+reproduces every frozen number bit-for-bit, test-pinned.
+Q3 — ANALYSIS: `analyze` printing both was wrong on TWO INDEPENDENT counts, and the second would have survived fixing the board. 🟢
+`score_primed() == stretch` EXACTLY — i.e. priming DROPS wfd, wfd IS the removed term, so a "primed wfd" column asserted a pair that does not
+exist. A category error, now replaced by ONE wfd plus a reconciliation block printing correct/legacy/exact-delta/delta% AND the legacy board
+string with the evicted and duplicated characters NAMED.
+Q4 — DOMINANCE IS CONVENTION-CONTINGENT: **14 OF 42 FROZEN VERDICTS FLIP.** Method: take the frozen `best_layout` + `best_axes`, correct ONLY
+the wfd axis (for candidate AND target), hold everything else frozen, recount `n_ge`. POSITIVE CONTROL 42/42 reproduce both the frozen wfd axis
+and the frozen `n_ge`. **All 14 flips go dominates -> NOT; ZERO reverse flips** — the signature of a selection effect, since the hunts minimised
+a deficit ON the corrupt axis (median winning margin 1.23% of incumbent spread; 33 of 35 within 30%). Affected: blend armA/armB/twelve `lsb-sib`;
+no-anchor armA {keybo-lsb, lsb-sib, archive-1843, keybo-lsb+lm}, armB {lsb-sib, keybo-lsb+lm}, twelve {keybo-lsb, lsb-sib, archive-1843,
+keybo-lsb+lm}; iWeb twelve `lsb-sib`. Two flips are THIN (0.19% / 4.58% of spread) and are flagged fragile.
+🟢 WHAT SURVIVES — the campaign's two headline nulls are NOT convention-contingent: every `IDEAL(all5)` row survives, so **NO-ANCHOR-1's
+"no layout dominates all five" NULL STANDS** (on no-anchor the CORRECT axis blocks HARDER: 5.21e11 -> 2.67e12); and **WSCISSOR-ARMB-1's
+"wscissor axis is inert" STANDS** (placebo-differenced, and wfd enters both arms identically). ⚠ CRITICAL SCOPE LIMIT the child states itself:
+this is a RE-ADJUDICATION OF FROZEN AXES, **NOT A RE-RUN** — a hunt against the corrected bar could find DIFFERENT candidates, so the 14 flips
+mean "these specific frozen dominators do not survive", not "no dominator exists".
+⚠ ARTIFACT TRIAGE — every future agent must consult this before quoting a wfd number. POISONED: `wscissor-allgauge`, `wscissor-score`, all
+`hunt-*`/`whunt-*`, `wider-dominance-*`, `closure3-*`, `gen-on-blend/*`, `wscissor-armb-1/*`, `replicate-gen/gauge-board`. CLEAN:
+`board_three_corpora`, `board-blend-reselect`, `board_iweb_vs_blend`, `all-gauge-table`, `comm-pool-board`. BOTH (check the key):
+`flagship-compare`, `allgauge-1/flagship-vs-graphite`. NOTE MY BRIEF WAS WRONG that `board_three_corpora` is apos-pin — it is OWN-PIN and
+therefore CLEAN (the sibling `geomean` independently confirmed this), which is why GEOMEAN-1's conclusions did not move.
+CROSS-AGENT CORROBORATION, both directions: the sibling `geomean` reproduced this mechanism INDEPENDENTLY in a pristine worktree (matching
+dof0-doubled + dof25-empty, now pinned as assertions) and cross-checked 6 values bit-for-bit from a column it had recorded from the start;
+correcting the axis RAISES community-block redundancy (oxey2|wfd rho 0.9413 -> 0.9938, genkey|wfd 0.9052 -> 0.9609, over 4367 layouts x 3
+corpora) without changing its verdict. This child then CORRECTED geomean's inference that the 14 flips show "~1 effective axis": the flips turn
+on wfd being COUNTED as an independent axis, not on wfd carrying independent INFORMATION — different claims, and the latter was not tested. It
+also DECLINED geomean's suggestion to put the permutation assert inside the legacy accessor, because that would make every frozen artifact's wfd
+unreconcilable, and relocated the assert instead. That is the right call.
+SHIPPED (local only): `wfd_legacy_board()` renamed + documented; `wfd_apostrophe_pinned()` kept as a DeprecationWarning shim; NEW public
+`check_dof_permutation()` — the guard whose ABSENCE IS THIS BUG — now inside `_dof_arrays`, naming both keys-with-none and keys-with->1; NEW
+`legacy_board_of()` returning the broken board as a string. 35 tests REPLACE `test_community_wfd_frames.py` (whose premise was false), and the
+new tests are MUTATION-TESTED (injecting the intended `'`/`;` swap fails 15). Tests deliberately pin that `wfd_legacy_board` does NOT assert.
+TESTING HONESTY, which I credit: 🟢 CONSUMER CLOSURE — it enumerated every consumer of the changed API (a closed set: `analyze.py` + 6 test
+files), all pass, 61 passed / 1 skipped, ruff clean over 134 files. The full 786-test suite was still running detached with a push callback +
+deadman at 301/786 with 0 FAILED / 0 ERROR, and **per trap 1 it explicitly does NOT call the suite green until the sentinel exists** — it stands
+on consumer closure instead. That is the correct discipline and the opposite of the "612 passed" claim an earlier child had to retract.
+=> NET: `analyze` should report ONE wfd (own-pin) plus a named legacy reconciliation; the 14 affected frozen verdicts are RETRACTED as
+convention-contingent pending a re-run against the corrected bar; the two headline nulls survive. The deeper lesson is the one the trap file now
+carries: **a hand-rolled reimplementation of a validated constructor loses the validation**, and the ONE layout our axis directions were derived
+from was the ONE layout the bug spared. Landing this branch and any re-run remain USER decisions.
