@@ -161,12 +161,26 @@ def hunt_worker(args) -> dict:
     best = None
     seen: set[str] = set()
     start_restart = 0
+    rng = np.random.default_rng(seed)
     if ckpt.exists():
         try:
             prev = json.loads(ckpt.read_text())
             if prev.get("seed") == seed and prev.get("target") == name:
                 start_restart = int(prev.get("restarts_done", 0))
                 seen = set(prev.get("seen_digests", []))
+                # Restore the EXACT bit-generator state, so a resumed run continues the same
+                # random trajectory an uninterrupted one would have taken. Skipping N draws
+                # instead (an earlier version) is NOT equivalent: each restart consumes
+                # ~3*iters draws, so the resumed walk diverges and the "same budget" claim
+                # becomes approximate. A checkpoint without the state falls back to that
+                # approximate path and says so in the output.
+                if isinstance(prev.get("rng_state"), dict):
+                    rng.bit_generator.state = prev["rng_state"]
+                    _G["resume_exact"] = True
+                elif start_restart:
+                    for _skip in range(start_restart):
+                        rng.random()
+                    _G["resume_exact"] = False
                 if prev.get("best_layout"):
                     ax = board.axes12(prev["best_layout"], floor_kind)
                     best = {
@@ -176,10 +190,7 @@ def hunt_worker(args) -> dict:
                     }
         except (OSError, ValueError, KeyError):
             start_restart = 0  # a truncated checkpoint restarts the epoch, never the arm
-
-    rng = np.random.default_rng(seed)
-    for _skip in range(start_restart):  # keep the RNG stream identical to an uninterrupted run
-        rng.random()
+            rng = np.random.default_rng(seed)
 
     def score(layout: str):
         seen.add(layout)
@@ -240,6 +251,8 @@ def hunt_worker(args) -> dict:
                 "wfd_mode": wfd_mode,
                 "restarts_done": r + 1,
                 "restarts_total": restarts,
+                # the exact bit-generator state, so a resume continues the SAME trajectory
+                "rng_state": rng.bit_generator.state,
                 "unique_layouts": len(seen),
                 "best_layout": best["layout"],
                 "best_deficit": best["sc"]["deficit"],
