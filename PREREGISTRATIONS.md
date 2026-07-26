@@ -7145,3 +7145,70 @@ against its own reference and confirmed the match. Resolution-floor caveat carri
 is 2.603 ms/char, which resolves against the ~1 ms/char floor.
 => NET: `analyze` is now a single command that reports the whole campaign frame, and the round's most valuable output is the corpus-file bug —
 a shipped default that silently disagreed with every frozen board. Nothing is pushed; landing the branch remains a USER decision.
+
+### WSCISSOR-ARMB-1 — the wscissor AXIS IS INERT as a dominance constraint (a same-size placebo proves it), and TWO CORRECTIONS TO MY OWN WSCISSOR-GEN-1 ENTRY (2026-07-26)
+STATUS. Arm B (corpus-tabled kmstats) of the wide-graded search, plus the attribution run WSCISSOR-GEN-1 named but never executed. 9 arms
+{iWeb, blend-v1, blend-v1-no-anchor} x {wide, narrow, none} at 9.59-10.01M unique evals each (arm A: 9.86-10.12M), per-epoch checkpointed, +12
+targeted hunts (3 corpora x 4 frames). Branch `wscissor-gen` @ da09b8c, 3 commits, NOTHING pushed. PREREGISTRATIONS.md untouched by the child.
+=> HEADLINE, AND IT CLOSES ARM A's LARGEST OPEN ROUTE: THE WSCISSOR AXIS IS INERT AS A DOMINANCE CONSTRAINT. The child added a same-SIZE
+PLACEBO frame — `narrow11` = ten axes + `nscissor` — because going ten -> wide11 changes TWO things at once (an axis is added AND the frame
+grows), so the naive comparison attributes nothing. Dominators by frame: iWeb ten=3 / narrow11=3 / wide11=3 / twelve=1; blend 2/2/2/1;
+no-anchor 5/3/4/4. So wscissor's OWN marginal effect (narrow11 -> wide11) is **0 / 0 / +1**, and EVERY dominator lost in the 12-axis frame is
+attributable to `nscissor` — the NARROW axis. Without the placebo, iWeb's ten=3 -> twelve=1 would have been misread as the WIDE axis blocking
+two. I verified the attribution artifact directly (`armb-attribution.json`: `wscissor_own_marginal_effect_narrow11_to_wide11` = 0, 0, 1). Note
+the placebo is CONSERVATIVE by construction — `nscissor` is nested inside `wscissor` and so shares most of its information, which UNDERSTATES
+the wide axis's marginal cost; the inertness finding survives that bias. CONCLUSION: the wscissor axis constrains the search PATH, not the
+ACHIEVABLE SET.
+ARM A's CORE FINDINGS ALL REPRODUCE ON ARM B, so WSCISSOR-GEN-1's verdict stands unchanged: the unconstrained wide champion wins `scissor` —
+the gauge it was trained on — against all 5 incumbents on all 3 corpora, and only 1-2 of 19 independent gauges; the `none` control with NO
+severity axis still beats archive-1843 on wide by 76-92% (vs the wide arm's 78-93%), so the wide support earns no credit; all three wide
+champions have NEGATIVE normalized floors against incumbents at +0.7176..+0.7517; the champion loses 9 of 12 axes to all five; nesting rho
+0.8808/0.8894/0.8856 with wide >= narrow pointwise 6000/6000.
+STRUCTURAL FACT THAT BOUNDED THIS WHOLE ARM A PRIORI: the INDEPENDENT 19-gauge frame is ARM-INVARIANT and was ALREADY arm-B-tabled —
+`wscissor_allgauge` builds KmStats from `load_corpus`, never from keymeow. Measured on no-anchor: |19-gauge sfb - armB sfb| = 0.000e+00 while
+|vs armA| = 1.060. So arm A's "wins 1 of 19" headline was never vulnerable to the re-tabling, and this follow-up could not have overturned it.
+WHAT ARM B DOES CHANGE — it admits feasible CONSTRAINED candidates where arm A had none: iWeb 0 of 137,327 -> 20 of 138,591; blend 0 of
+138,373 -> 25; no-anchor 53 -> 406. Those champions have POSITIVE floors ABOVE every incumbent (+0.7262 / +0.8059 / +0.8035), win 4-11 of 19
+gauges (iWeb 10/19 against BOTH lsb-sib and archive-1843), and look like real layouts — BUT they win a DIFFERENT gauge set (lsb, lsb-dist,
+imbalance, roll), NOT scissor, and score 0 of 5 on 12-axis dominance on every corpus, blocked by wfd / genkey / oxey1 — the corpus-INVARIANT
+gauges that no re-tabling can touch. A 2x2 decomposition (holding layouts vs bar fixed) attributes the feasibility change to THE LAYOUTS on
+iWeb (+21/+20 vs -1/+0), to THE BAR on no-anchor (+402/+215), and reports blend as NOT SEPARABLE at this budget — the child's own first guess
+("the bar moved") held on only one corpus of three, and it says so.
+⚠ CORRECTION 1 TO MY OWN WSCISSOR-GEN-1 ENTRY — the champion-floor range I wrote in the brief, "-0.022 to -0.184", IS WRONG. I re-derived it
+from arm A's own artifact: over the 45 champion floors in `wscissor-score.json` the range is **-0.9394 to +0.7270**, with 36 of 45 negative;
+restricted to arm A's 9 published arms the child measures -0.0330 to -0.4470 (arm A's report says -0.03 to -0.45). My figure understated the
+magnitude by ~2.4x. Incumbents are +0.7176..+0.7517. The VERDICT is unaffected — the wide champions are still negative — but the range I quoted
+was not a real quantity.
+⚠ CORRECTION 2, THE SHARPER ONE — MY CLAIM "EVERY champion had a NEGATIVE floor" IS OVER-GENERALIZED, and I VERIFIED THE DEFECT MYSELF. Arm A
+NEVER COMPUTED a floor for its CONSTRAINED champion: I enumerated every corpus x arm in `wscissor-score.json` and `axes` is ABSENT for the
+constrained champion in ALL NINE cells, while 8 of the 9 report a non-zero `n_feasible_in_archive` (iWeb narrow 73, iWeb none 78, blend narrow
+34, blend none 195, no-anchor wide 53, narrow 123, none 54) and a concrete layout string. Only `iweb/wide` and `blend/wide` are genuinely empty
+(`layout: None`, `n_feasible_in_archive: 0`). Arm A's report printed "(feasible)" where a number belonged. The child computed it: arm A's
+constrained champion floor is **+0.8025 — ABOVE ALL FIVE INCUMBENTS**. So my sentence covers UNCONSTRAINED champions ONLY, and it is not true
+of arm B either (6 of 9 negative, though all 3 WIDE champions are). This is the campaign's cleanest instance of a general failure: A METRIC
+ABSENT FROM A PUBLISHED JSON WAS NEVER COMPUTED — check the KEYS, not the report's prose.
+AN ARCHIVE-ONLY NULL IS NOT A NULL — a FOURTH independent reproduction. "No dominator found in the archive" (0 for every incumbent on every
+corpus, those exact words); the TARGETED hunts found SIX (iWeb lsb-sib; blend lsb-sib; no-anchor keybo-lsb + lsb-sib + archive-1843 +
+archive-1846), all at 12/12 with n_strict 12, ALL slow-path verified at max rel err EXACTLY 0.0, all valid C30M permutations. They win on lsb
+(0.5429 vs 0.8141; 0.3332 vs 1.0956) and sfb (1.1798 vs 1.6013; 1.4336 vs 2.2015) while wide moves -2.19% to -49.67%, UNCORRELATED with
+dominance — the same mechanism arm A found. IDEAL(all5) dominated on NO corpus. PRIOR ART THE CHILD FLAGGED ITSELF: NO-ANCHOR-1 already ran arm
+B as its PRIMARY arm on the 10-axis frame and found 10/10 dominators for all five on no-anchor; what is new here is arm B WITH the wscissor axis
+IN THE LOOP, and it frames it that way rather than claiming novelty.
+VERIFICATION: end-to-end positive control — the child's clone + its arm-parameterized drivers reproduce arm A's published `wscissor-score.json`
+at max rel err EXACTLY 0.0 over 2,220 numeric leaves with all 9 verdict strings verbatim, so an arm-A-vs-B difference CANNOT be a harness
+difference (this is the right control for a re-implementation and the campaign should copy it). Trap 9 closed numerically on the axis it lives
+on: kmstats' denominator EXCLUDES space-touching bigrams, the severity gauge's INCLUDES them, ratio 1.4826-1.5106x per corpus, and the severity
+denominator is arm-invariant. Arm B proved EFFECTIVE not merely requested (lsb/sfb/sfs move; the other 9 axes exactly 0.0; `evaluate_batch`
+carries the arm). BITE-TESTED rather than merely green: a keymeow-fallback sabotage fails 15 of 25 tests, a denominator-convention swap fails 9
+of 25. All 12 hunts used warm_extra=6 / warm_source=front0 of a COMPLETED pass (trap 10), every frame within a corpus sharing an identical warm
+source. Full suite sentinel rc=0, collected=723, failed=0 — and keybo-e2e really WAS collected, proved by arithmetic because addopts=-q hides
+paths (tests alone 613 + keybo-e2e alone 110 = 723); the bite test gives rc=1 failed=1. All three corpus md5s re-derived, not trusted.
+SIX NEW TOOLING TRAPS (banked to artifacts/TOOLING-TRAPS.md): a nested-frame attribution without a same-SIZE placebo measures the frame size,
+not the axis; a feasibility count is a TWO-FACTOR quantity so a delta cannot attribute it (use a 2x2); "X is unexplored" is a CLAIM to grep
+sibling state for; a number can be WRONG IN THE BRIEF and RIGHT IN THE ARTIFACT IT CITES (both my corrections above are this); a metric ABSENT
+FROM A PUBLISHED JSON WAS NEVER COMPUTED (check keys, not prose); and the Bash tool clamps timeouts to ~10 min, where a killed run leaves NO rc
+sentinel, so anything longer must run detached with a push callback plus a deadman.
+=> NET: WSCISSOR-GEN-1's verdict is CONFIRMED, not overturned, and the wscissor axis is now known to be INERT on the achievable set rather than
+merely unhelpful as an objective. The constrained arm-B candidates are the only genuinely new layouts here, and they are blocked by the
+corpus-invariant gauges — consistent with THEORY-1's finding that the instrument, not the search, is the binding constraint. Nothing pushed,
+nothing promoted; adoption remains a USER decision.
