@@ -6885,3 +6885,66 @@ TEST that fails if the trap conditions change. This is the -qq hazard's sibling 
 => VERDICT: REJECT layout-targeted training reweighting on every surface at every tilt tested. Do NOT retry it with different weight shapes:
 the mechanism (zero training rows for the target => no memorization channel) predicts failure for ANY weighting, and the Kish ESS table
 predicts the harm ordering a priori. The round's lasting value is the mechanism, the both-directions negative control, and bug (3).
+
+### WSCISSOR-GEN-1 — the wscissor-GRADED search: OPTIMIZING THE RULER, and the served objective was ALREADY wide-support (2026-07-25)
+Run on the user's direct instruction ("shouldn't we optimize a layout using the better scissor metric we have?"). I had wrongly parked this
+as a user-gated predicate question twice; it was an instruction to optimize, and running it is reversible in-repo compute. 9 arms =
+{iWeb, blend-v1, blend-v1-no-anchor} x {wide, narrow, none}, 9.86M-10.12M unique evals EACH (campaign parity with GEN-ON-BLEND/NO-ANCHOR),
+per-epoch checkpointing, plus 3 targeted 12-axis hunts. Branch wscissor-gen, 9 commits, NOTHING pushed; child did not touch this file.
+⚠ STRUCTURAL FINDING THAT RESHAPES THE QUESTION I PUT TO THE USER — I VERIFIED IT AT SOURCE. The board's SERVED in-loop scissor axis was
+ALREADY WIDE-SUPPORT. `tb_objective_ref.scissor_event_cost` has NO adjacency gate: `is_adjacent` only selects a multiplier
+(`NONADJACENT_SCISSOR_FACTOR = 0.60`), so non-adjacent distinct-finger two-row reaches have been priced at 0.60 weight all along (measured:
+24 non-zero adjacent + 48 non-zero NON-adjacent of 900 ordered pairs; ZERO narrow pairs score zero). So the open question I posed to the user
+— "should the scissor gauge price non-adjacent two-row reaches?" — is ALREADY ANSWERED YES in the served objective. Only the HARD predicate
+(the flat `comfort.py` +15.0 classifier gate and the `is_scissor` feature) was unsearched. My framing of that decision was wrong.
+=> VERDICT: OPTIMIZING THE RULER. The child overrode its own classifier's "PARTIAL" and I confirm the override was correct.
+(a) THE TRAINED GAUGE IS WON HUGELY: wscissor_P 0.05918 vs archive-1843's 0.85724 on iWeb (-93.1%), -81.0% blend, -79.6% no-anchor. It ALSO
+beats all 5 incumbents on the flat/narrow board gauge.
+(b) THE INDEPENDENT 19-GAUGE FRAME KILLS IT, and I verified the counts cell by cell. On iWeb and blend-v1 the wide champion is won=1 /
+lost=17 / tied=1 against EVERY incumbent, and THE SINGLE GAUGE IT WINS IS `scissor` — the one it was trained on. Its normalized floor is
+NEGATIVE (-0.10586 iWeb) against incumbents at +0.7176 to +0.7517, i.e. WORSE THAN QWERTY on a modeled-speed surface. On iWeb/blend ZERO of
+~137,000 searched layouts clear even the weakest incumbent on floor/mean/lsb/sfb/sfs/scissor — not "no dominator found", nothing
+non-regressive at all.
+WHY "IT WINS NARROW TOO" IS WORTHLESS EVIDENCE, quantified: narrow is a strict SUBSET of wide (proven exhaustively over all 900 ordered
+pairs; test-pinned, and I re-ran those 46 tests myself with a real sentinel, rc=0 collected=46), so wide >= narrow POINTWISE and
+rho(wide,narrow) = 0.8881 / 0.8676 / 0.8743. The classifier's second condition is not independent of its first. A guard whose two legs are
+nested is one leg.
+THE CONTROL THAT DISSOLVES THE PREMISE: the BASELINE arm — objective=`none`, NO severity axis whatsoever — ALSO beats archive-1843 on wide
+(iWeb 0.06997) and ALSO wins only 1 of 19. The narrow arm behaves identically. So the effect is a property of pushing ANY single strain axis
+to a Pareto extreme, NOT of the wide support. THE WIDE SUPPORT EARNS NO CREDIT.
+(d) ARCHIVE-1843 DOES NOT SURVIVE AS THE WIDE LEADER once the field is SEARCHED — all three arms beat it on all three corpora, INCLUDING the
+no-severity arm. Its lead was an unsearched-field artifact (best of six hand-curated layouts). Therefore SCISSOR-SEVERITY-1's "wide@P reopens
+the board" is NOT SUPPORTED: the board does not reopen, because nothing the wide search found is admissible. REFINEMENT to register against
+that entry: "archive-1843 is the wide leader on BOTH corpora" is PREFERENCE-DEPENDENT, not a raw measurement — at FLAT weights the leader is
+keybo-lsb+lm on blend and flagship-c3 on no-anchor (consistent with that entry's own w_pinky>=1.25 caveat).
+⚠ ONE CAVEAT I ADD BEYOND THE CALLBACK, because no-anchor looks materially different and the callback's "1 of 19" understates it. On
+blend-v1-no-anchor the arms win MORE and on NON-scissor axes: `wide` 3/19 (roll, sr-roll, scissor), `narrow` 4-5/19 (sfs, roll, scissor,
+imbalance, genkey), and a `wide_constrained` arm 5-6/19 (sfs, sfs-dist, lsb, lsb-dist, genkey, oxey1, oxey2) — with `narrow` BEATING `wide`.
+I checked whether that makes any of them admissible: NO. Every searched champion on no-anchor has a NEGATIVE floor (-0.02219 to -0.18378)
+against incumbents at +0.72685 to +0.74772. So the verdict holds on all three corpora, but the honest statement is "1 of 19 on iWeb/blend,
+up to 6 of 19 on no-anchor yet still inadmissible on the floor", not a flat 1-of-19 everywhere.
+STEP-1 REPRODUCTION PASSED on an independent code path (positive control max abs err 0.0 on all 3 corpora): unflagged/flagged 2-row mass
+iWeb 2.4491-6.2896x (quoted 2.45-6.29), blend 2.8266-8.3325x (quoted 2.83-8.33), and no-anchor NEW at 2.5162-10.3597x. Middle-pinky pairs: 0
+in narrow vs 8 in wide, so the motivating premise (the incumbent predicate cannot price middle-pinky mass at all) HOLDS.
+AN ARCHIVE-ONLY NULL IS NOT A NULL — reproduced independently in a THIRD round, 3 for 3. The archive scan reported 0 dominators for every
+incumbent on every corpus; the TARGETED hunts found SEVEN (iWeb: lsb-sib. blend: lsb-sib. no-anchor: ALL FIVE, independently reproducing
+NO-ANCHOR-1 at 12/12 axes). All 7 re-verified through the ZERO-REUSE slow path at max rel err EXACTLY 0.0, all valid C30M permutations;
+IDEAL(all5) dominated on no corpus. CRUCIAL MECHANISM: the dominators' wide-share deltas span -0.34% to -44.57% with NO relation to achieving
+dominance — the no-anchor archive-1843 dominator wins 12/12 while moving wide by only 0.34%; they win on lsb/sfb/sfs. So the useful role for
+wscissor is as a CONSTRAINT inside a targeted hunt, NOT a global objective, and even there its marginal contribution is small.
+TWO ERRORS THE CHILD FOUND IN ITS OWN WORK, both worth banking: (1) it first used kmstats' space-EXCLUDING denominator while the severity
+gauge's layout-restricted denominator INCLUDES space-touching bigrams (`Layout.has_key(space)` is True). The numerator was bit-exact either
+way, so EVERY share was inflated by a plausible-looking ~1.5x constant and only the oxey positive control caught it — a wrong denominator is
+invisible to a numerator check. (2) It RETRACTED its own earlier "612 passed / SENTINEL_RC=0": TOOLING-TRAPS trap 1 applied to it exactly, its
+36 new keybo-e2e tests were NEVER COLLECTED (`grep -c keybo-e2e` on its own log = 0) and its "sentinel" was a shell rc. Redone with the
+conftest hook plus a BITE TEST — I verified the bite artifact myself: deliberate assert-False gives rc=1 collected=1 failed=1, so the gate
+provably fires. Trap 3 also applied: its step-1 control covered ONE quantity while the report cites twelve axes; all 12 are now pinned
+fast-vs-slow on 3 corpora x 2 arms, plus `evaluate_batch == axes12` so the EA provably optimizes what the report quotes.
+FINAL SUITE (verified from the sentinel artifact, not parsed stdout): rc=0 collected=689 failed=0 (688 passed, 1 skipped); ruff clean.
+NOT DONE, explicitly, so a successor does not assume coverage: the `--frame wide11/ten` attribution runs that would directly ISOLATE the
+wscissor axis (driver supports them); ARM B (corpus-tabled kmstats) — arm A only, and since sfb is one of the two axes the dominators
+actually exploit, a wide-graded ARM-B run is the highest-value follow-up; only preference P was searched (117-point weight space untested,
+though the nesting result is weight-independent); the hunts used one budget, so the 7 dominators are EXISTENCE PROOFS, not a census.
+=> NET: do NOT adopt any wscissor-searched layout, and do NOT promote wscissor to a global search objective. The hard-predicate question is
+now largely MOOT for the served objective (it already prices non-adjacency at 0.60). Adoption remains the user's decision; nothing here is a
+candidate.
