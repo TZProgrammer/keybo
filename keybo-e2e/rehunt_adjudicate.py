@@ -268,10 +268,17 @@ def main() -> None:
                 f"MARGINAL placebo->real = {marginal:+d}"
                 f"{'  (naive ten->wide11 would read ' + f'{naive:+d})' if naive is not None else ''}"
             )
+    # Absence of data is NOT a contradiction — distinguish the three states explicitly, or a
+    # missing placebo cell reads as a refuted null.
+    if not null2:
+        null2_state = "NOT TESTED (no narrow11/wide11 placebo pair present)"
+    elif all(v["wscissor_inert"] for v in null2.values()):
+        null2_state = "SURVIVES ✅ (marginal placebo->real effect is 0 on every corpus tested)"
+    else:
+        hot = [c for c, v in null2.items() if not v["wscissor_inert"]]
+        null2_state = f"NON-ZERO marginal on {hot} — investigate before calling it a discovery"
     survives2 = bool(null2) and all(v["wscissor_inert"] for v in null2.values())
-    print(
-        f"  NULL 2 {'SURVIVES ✅ (marginal effect 0 on every corpus)' if survives2 else 'sees a NON-ZERO marginal on some corpus'}"
-    )
+    print(f"  NULL 2 {null2_state}")
 
     out = {
         "preflight_verdict": preflight["verdict"],
@@ -297,7 +304,12 @@ def main() -> None:
             "per_cell": null1,
             "frozen_all5_wfd_shortfall_noanchor_armB": FROZEN_ALL5_SHORTFALL,
         },
-        "null_2_wscissor_inert": {"survives": survives2, "per_corpus": null2},
+        "null_2_wscissor_inert": {
+            "survives": survives2,
+            "state": null2_state,
+            "corpora_tested": sorted(null2),
+            "per_corpus": null2,
+        },
         "null_semantics": (
             "Every cell here is a TARGETED per-incumbent hunt warm-started from the incumbent "
             "itself, so an empty result IS a real null. No number in this file comes from an "
