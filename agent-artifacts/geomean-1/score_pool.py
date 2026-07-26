@@ -158,6 +158,15 @@ def main() -> int:
     # GUARD: the wfd bug this driver was corrected for was invisible because the buggy path
     # boarded a NON-PERMUTATION and still returned a plausible number. Assert the property
     # directly on the board the correct path builds, so a regression cannot pass silently.
+    #
+    # Kept as an inline assert on purpose. The sibling `wfd-frames` agent shipped a better
+    # version of this same predicate as a PUBLIC `keybo.analysis.community.check_dof_permutation`
+    # (it reports both halves of the damage: keys with no character, keys with more than one) --
+    # but that lives on their local, UNPUSHED branch and is NOT in `main`, so importing it here
+    # would make this driver fail to run against the committed tree. Switch to the import once it
+    # lands on main. Their other correction is adopted: the guard belongs on the CORRECT path and
+    # on new code, NEVER inside `wfd_legacy_board()` -- asserting there would make every frozen
+    # artifact's wfd unreproducible, which is that method's entire reason to exist.
     from keybo.analysis.community import _dof_arrays  # the validating path
 
     _probe = BOARD_LAYOUTS["keybo-lsb"]
