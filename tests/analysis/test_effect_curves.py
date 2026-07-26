@@ -92,3 +92,59 @@ def test_effect_curves_apply_position_calibration_to_the_served_surface():
     assert curves.class_mean_ms["alternate"] == pytest.approx([138.0])
     assert curves.class_mean_ms["same_hand_other"] == pytest.approx([169.0])
     assert curves.contrast_ms["same_hand_other"] == pytest.approx([31.0])
+
+
+def test_the_roll_classes_are_named_for_what_the_gauge_can_actually_represent():
+    """The two same-hand roll classes must NOT be named for a direction of travel.
+
+    The served bigram gauge has no direction-of-travel channel: every relational and
+    geometric feature is a function of the UNORDERED pair, and direction enters only via
+    the landing-key one-hots (computed from the second key alone). A class named
+    "inroll"/"outroll" therefore asserts an effect the gauge structurally cannot express,
+    which is why they are `outer_high`/`outer_low`.
+    """
+    from keybo.analysis.effect_curves import PATTERN_CLASSES
+
+    assert "outer_high" in PATTERN_CLASSES and "outer_low" in PATTERN_CLASSES
+    assert "inroll" not in PATTERN_CLASSES, "misnamed: the predicate is order-invariant"
+    assert "outroll" not in PATTERN_CLASSES, "misnamed: the predicate is order-invariant"
+
+
+def test_every_pattern_class_predicate_is_order_invariant():
+    """Exhaustive, over all 900 ordered pairs — the proof behind the rename.
+
+    Every class in the table is a function of the unordered pair. If a future class IS
+    genuinely directional it must not go in this table without a landing-key channel to
+    carry it, so this asserts the invariant for the whole table rather than two entries.
+    """
+    import itertools
+
+    from keybo.analysis.effect_curves import PATTERN_CLASSES
+    from keybo.geometry import ROW_STAGGERED_30 as geometry
+
+    pairs = list(itertools.product(geometry.slots, repeat=2))
+    assert len(pairs) == 900
+    for name, (predicate, _features) in PATTERN_CLASSES.items():
+        violations = [
+            (a, b) for a, b in pairs if predicate(geometry, a, b) != predicate(geometry, b, a)
+        ]
+        assert violations == [], f"{name} is order-DEPENDENT on {len(violations)} pairs"
+
+
+def test_the_two_roll_classes_span_the_same_unordered_pairs_as_their_ordered_count_implies():
+    """108 ordered pairs over 54 unordered — every pair's reverse is in its OWN class."""
+    import itertools
+
+    from keybo.analysis.effect_curves import PATTERN_CLASSES
+    from keybo.geometry import ROW_STAGGERED_30 as geometry
+
+    for name in ("outer_high", "outer_low"):
+        predicate = PATTERN_CLASSES[name][0]
+        ordered = {
+            (a, b)
+            for a, b in itertools.product(geometry.slots, repeat=2)
+            if predicate(geometry, a, b)
+        }
+        assert len(ordered) == 108, name
+        assert len({frozenset((a, b)) for a, b in ordered}) == 54, name
+        assert all((b, a) in ordered for a, b in ordered), name

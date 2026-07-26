@@ -18,6 +18,29 @@ them (a big contrast carried by non-SFB features) is itself a finding.
 Both are corpus-weighted by default: each position pair is weighted by the corpus mass a
 representative layout puts on it — pass ``layout`` to weight by that layout's assignment,
 or leave None for uniform pair weighting (pure geometry view).
+
+⚠ **The two same-hand roll classes are ``outer_high`` / ``outer_low``, NOT "inroll" /
+"outroll".** They were named for a direction of travel that **the served bigram gauge cannot
+represent**, and the rename is the fix. Proof (exhaustive, `ROW_STAGGERED_30`): over every
+ordered distinct position pair the maximum absolute difference between the non-landing
+features of ``features(a, b)`` and ``features(b, a)`` is exactly **0.000e+00** — all 11
+relational/geometric features are functions of the UNORDERED pair, including ``angle``,
+``inwards`` and ``outwards``, which merely *look* directional. Direction enters the model
+only through the landing-key one-hots, which are computed from ``b`` alone. Consequently
+``C.is_inwards`` and ``C.is_outwards`` each fire on 108 ordered pairs spanning just 54
+unordered pairs, and all 108 have their own reverse in the SAME class (0 order-dependent
+pairs of 900).
+
+So the class contrast between them is a **real quantity** — it separates
+outer-key-on-the-higher-row from outer-key-on-the-lower-row, which is a genuine geometric
+distinction — but it is **not** a direction-of-travel effect, and the old names asserted one.
+``outer_high``/``outer_low`` say what is actually measured.
+
+This does NOT apply to :func:`keybo.analysis.community._v1_pattern`'s trigram
+``inrolls``/``outrolls``, which are genuinely order-dependent (all 9720 qualifying triples
+relabel under reversal) and are an exact port of oxeylyzer-1's own naming — those keep their
+names. Nor to :mod:`keybo.scoring.oxey`'s bigram ``inroll``/``outroll`` weights, which are
+part of that module's documented community-preference table.
 """
 
 from __future__ import annotations
@@ -41,8 +64,11 @@ PATTERN_CLASSES: dict[str, tuple] = {
         lambda g, a, b: C.same_finger(g, a, b) and a != b,
         ["same_finger"],
     ),
-    "inroll": (C.is_inwards, ["inwards"]),
-    "outroll": (C.is_outwards, ["outwards"]),
+    # NOT "inroll"/"outroll": these predicates are ORDER-INVARIANT (0 order-dependent pairs
+    # of 900), so they cannot express a direction of travel. They separate outer-key-on-the-
+    # higher-row from outer-key-on-the-lower-row. See the module docstring for the proof.
+    "outer_high": (C.is_inwards, ["inwards"]),
+    "outer_low": (C.is_outwards, ["outwards"]),
     "alternate": (
         lambda g, a, b: C.classify_positions(g, a, b) is C.BigramClass.ALTERNATE,
         ["same_hand"],
@@ -255,8 +281,8 @@ def render_effect_curves(curves: EffectCurves, out_prefix: str) -> list[str]:
 
     palette = {
         "sfb": "#e34948",
-        "inroll": "#3987e5",
-        "outroll": "#7db4ef",
+        "outer_high": "#3987e5",
+        "outer_low": "#7db4ef",
         "alternate": "#8a8988",
         "scissor": "#c95fd0",
         "lsb": "#e6a23c",

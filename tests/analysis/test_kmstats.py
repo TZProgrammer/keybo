@@ -3,9 +3,14 @@ from __future__ import annotations
 import pytest
 
 from keybo.analysis.kmstats import STAT_NAMES, KmStats
-from keybo.cli.analyze import _shared_kmstats
+from keybo.cli.analyze import _shared_corpora
 
 QWERTY = "qwertyuiopasdfghjkl;zxcvbnm,./"
+
+
+def _shared_kmstats() -> KmStats:
+    """kmstats wired to the production corpus exactly as `analyze` wires it."""
+    return KmStats(*_shared_corpora())
 
 
 def test_kmstats_small_corpus_pins_every_metric_and_denominator():
@@ -38,13 +43,28 @@ def test_kmstats_empty_corpora_return_the_complete_zero_schema():
 
 
 def test_production_corpus_wiring_has_a_value_oracle():
+    """Oracle for the production wiring, on the ``1-skip31.txt`` skipgram table.
+
+    ALLGAUGE-1 moved ``analyze`` from ``1-skip.txt`` to ``1-skip31.txt`` — the table every
+    frozen campaign gauge board was computed on, and the one ``data/build_corpus.py``
+    documents as the reproducible trigram marginalization ``skip(a,c) = sum_b tri(a,b,c)``
+    (``1-skip.txt`` is a different, unreproducible pass). Exactly the two skipgram-derived
+    cells moved, which is the change's own positive control:
+
+        sfs       11.37683803688819  -> 11.380475122064565
+        sfs-dist  15.648916897054898 -> 15.653519527778622
+
+    The nine bigram/trigram cells are unchanged, as they must be — the swap touches only
+    the skipgram table. See ``tests/cli/test_analyze_allgauge.py`` for the end-to-end
+    control that the new convention reproduces the frozen boards bit-for-bit.
+    """
     assert _shared_kmstats().stats(QWERTY) == pytest.approx(
         {
             "sfr": 2.8385205258856523,
             "sfb": 6.638478872558484,
-            "sfs": 11.37683803688819,
+            "sfs": 11.380475122064565,
             "sfb-dist": 9.483735823380075,
-            "sfs-dist": 15.648916897054898,
+            "sfs-dist": 15.653519527778622,
             "lsb": 3.024213475781101,
             "lsb-dist": 6.720650752657646,
             "alt": 26.583470480629522,
@@ -54,3 +74,22 @@ def test_production_corpus_wiring_has_a_value_oracle():
         },
         abs=1e-12,
     )
+
+
+def test_only_the_skipgram_cells_moved_when_the_skipgram_table_changed():
+    """The convention swap's own positive control: 9 of 11 cells MUST be untouched.
+
+    A change to the skipgram table can only reach ``sfs`` and ``sfs-dist``. If any other
+    cell moves, something other than the intended table swap happened.
+    """
+    from pathlib import Path
+
+    from keybo.data.corpus import load_frequencies
+
+    corpus = Path(__file__).resolve().parents[2] / "data" / "corpus"
+    bigrams = load_frequencies(str(corpus / "bigrams.txt"))
+    trigrams = load_frequencies(str(corpus / "trigrams.txt"))
+    old = KmStats(bigrams, load_frequencies(str(corpus / "1-skip.txt")), trigrams).stats(QWERTY)
+    new = KmStats(bigrams, load_frequencies(str(corpus / "1-skip31.txt")), trigrams).stats(QWERTY)
+    moved = {name for name in STAT_NAMES if old[name] != new[name]}
+    assert moved == {"sfs", "sfs-dist"}

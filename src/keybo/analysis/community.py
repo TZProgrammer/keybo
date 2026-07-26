@@ -194,8 +194,47 @@ class Oxeylyzer2:
         return c["wfd"] + c["stretch"]
 
     def wfd(self, lay30: str) -> int:
-        """The weighted-(same-)finger-distance component alone."""
+        """The weighted-(same-)finger-distance component alone.
+
+        This is the **components** wfd: the quote slot carries the character
+        :func:`pinned_char` selects for this layout (``;`` for a C30M board). See
+        :meth:`wfd_apostrophe_pinned` for the campaign's other wfd convention.
+        """
         return self.components(lay30)["wfd"]
+
+    def wfd_apostrophe_pinned(self, lay30: str) -> int:
+        """wfd with ``'`` FORCED onto the quote slot — the dominance-board convention.
+
+        The campaign has two live wfd quantities and they disagree by ~1-7% (keybo-lsb:
+        -16213995653000 here vs -15082741528300 there), so a comparison stitched across
+        them looks like a real movement that is only a convention change (trap #13, and
+        ``flagship-compare.json``'s own ``board_wfd_note`` flags the same split).
+
+        The difference is *which character sits on the 31st key*. :meth:`wfd` boards the
+        layout's own :func:`pinned_char`; the frozen dominance boards
+        (``wscissor-allgauge``, ``flagship-compare``, via ``oxey_ports.perm_arrays``) pin
+        ``'`` unconditionally and leave ``;`` inside the 30-block. Same weights, same
+        distances, different permutation — hence a different number.
+
+        Reproduces the frozen boards exactly (``keybo-lsb`` -15082741528300, ``qwerty``
+        -65690928179200; pinned in ``tests/analysis/test_community_wfd_frames.py``).
+        """
+        if "'" not in self.chars:
+            raise ValueError("this board has no apostrophe to pin on the quote slot")
+        if "'" not in lay30:
+            raise ValueError(
+                "wfd_apostrophe_pinned needs ' among the layout's 30 characters "
+                "(the dominance-board convention moves it to the quote slot)"
+            )
+        index = {character: position for position, character in enumerate(self.chars)}
+        dof_of_char = np.zeros(N31, dtype=np.int64)
+        for slot, character in enumerate(lay30):
+            dof_of_char[index[character]] = SLOT2DOF[slot]
+        dof_of_char[index["'"]] = APOS_DOF
+        char_at_dof = np.zeros(N31, dtype=np.int64)
+        char_at_dof[dof_of_char] = np.arange(N31)
+        a, b = char_at_dof[self.SF_I], char_at_dof[self.SF_J]
+        return int(((self.SFW[a, b] + self.SFW[b, a]) * self.SF_D).sum())
 
     def score_primed(self, lay30: str) -> int:
         """oxey2' (KAN-PRIME-1): strain residual — the stretch term only, native

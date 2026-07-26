@@ -33,3 +33,25 @@ def test_analyze_rejects_unknown_name():
 def test_analyze_accepts_raw_string_length_check():
     with pytest.raises(SystemExit, match="unknown layout"):
         main(["analyze", "abcdef"])  # neither a name nor 30 chars
+
+
+@pytest.mark.slow
+def test_kmstats_key_is_the_11_keymeow_stats_and_agrees_with_the_gauge_frame(capsys):
+    """`row["kmstats"]` is the historical key and must keep working (ALLGAUGE-1).
+
+    ALLGAUGE-1 added `row["gauges"]` — the campaign's 15-gauge frame, which is these 11 plus
+    scissor/imbalance/oxey-style/comfort. Both are emitted because they name two different
+    things: `kmstats` is a specific external convention (the keymeow metric set), `gauges` is
+    the campaign frame. They must agree exactly on the shared 11.
+    """
+    from keybo.analysis.kmstats import STAT_NAMES
+
+    rc = main(["analyze", "keybo-lsb", "--no-time", "--no-model-scores", "--json"])
+    assert rc == 0
+    row = json.loads(capsys.readouterr().out)["rows"]["keybo-lsb"]
+    assert set(row["kmstats"]) == set(STAT_NAMES)
+    for name in STAT_NAMES:
+        assert row["kmstats"][name] == row["gauges"][name], name
+    # the four gauges ALLGAUGE-1 added are in `gauges` only
+    assert {"scissor", "imbalance", "oxey-style", "comfort"} <= set(row["gauges"])
+    assert not {"scissor", "imbalance", "oxey-style", "comfort"} & set(row["kmstats"])
