@@ -518,8 +518,9 @@ def _print_report(rows: dict[str, dict], ref_name: str, args: argparse.Namespace
         "a winner on small differences. (3) 96.6% of the flagged mass has bottom key `c` or `x`, "
         "so this measures a few qwerty-era letter placements, not a structural law. The "
         "per-finger split says WHERE THE MASS SITS, not which finger is strained — that causal "
-        "claim is not identified (the label is a function of the finger pair, so the contrast "
-        "can never hold the physical lower key fixed)."
+        "claim is not identified ON THE AALTO SAMPLE (there the two groups share no bottom-row "
+        "key). That limit is EMPIRICAL, not structural: the geometry does admit the missing "
+        "comparisons, so a corpus supplying them could identify it."
     )
 
     print("\n== redirect family, oxeylyzer-1 classes (% of layout-covered trigram mass) ==")

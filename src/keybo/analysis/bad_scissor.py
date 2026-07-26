@@ -2,14 +2,22 @@
 finger's.
 
 The flag is defined by **which key is lower**. Do **not** document it as "the weaker finger
-strains": that mechanism is **NOT identified** by the data, even though the measured effect is
-robust. The label is a *function* of (finger pair, which column is lower), so the contrast can
-never hold the physical lower key fixed — verified here independently of the spec: over every
-same-hand distinct-finger row-travel bigram on qwerty, there are **0** cases where a fixed
-(finger-pair, dy, lower-key) triple takes both labels. Any property of the two key groups
-(rarity, neighbour interference, lateral travel) is therefore collinear with the label **by
-construction**, and more data cannot separate them. See ``badscissor-spec.md`` §0 and
-``state/badscissor/report.md`` §4.7.
+strains": that mechanism is **not identified on the Aalto sample**, even though the measured
+effect is robust. On that sample the weak- and strong-descending groups share no bottom-row
+key, so any property of the two key groups (rarity, neighbour interference, lateral travel) is
+collinear with the label and the contrast never holds the physical key fixed.
+
+**This limitation is EMPIRICAL, not structural** — a distinction worth keeping straight,
+because the geometry does admit the missing comparisons. Verified here directly: over all
+layout character pairs (not just corpus-observed ones) the dy==2 bottom-key sets **do**
+intersect on qwerty — ``{',', '.', 'c', 'x'}`` — and a fixed bottom key takes both labels
+(``qx``: top ``q`` = pinky, not flagged; ``ex``: top ``e`` = middle, flagged; same bottom key
+``x``, same row span). So a corpus supplying those strong-descending observations **could**
+identify the mechanism; the Aalto sample simply does not contain them. Do not restate the limit
+as an in-principle one — it is a missing-observations problem, and more data can fix it.
+
+What the effect *is* a statement about, per the spec: a few qwerty-era letter placements, not a
+structural law. See ``badscissor-spec.md`` §0 and ``state/badscissor/report.md`` §4.7.
 
 Implements the specification in ``state/badscissor/badscissor-spec.md`` (the ``badscissor``
 agent, 2026-07-26) exactly. That document derived the predicate, the severity decision, the
@@ -74,10 +82,11 @@ without inventing a split the predicate does not contain. It also keeps the deco
 exact partition.
 
 **Read the per-finger output as "where the flagged mass sits", NOT as "which finger is
-strained".** The finger-level causal claim is not identified (see the identification note at
-the top; ``badscissor-spec.md`` §3, ``report.md`` §4.7). An earlier revision of the spec
-justified this rule with a ``+0.5453`` vs ``-0.1083`` "placebo" contrast; that control is
-**RETRACTED** — it swaps the key set along with the label, so it was never a placebo.
+strained".** The finger-level causal claim is not identified on the Aalto sample (see the
+identification note at the top — empirical, not structural; ``badscissor-spec.md`` §3,
+``report.md`` §4.7). An earlier revision of the spec justified this rule with a ``+0.5453`` vs
+``-0.1083`` "placebo" contrast; that control is **RETRACTED** — on that sample it swaps the key
+set along with the label, so it was never a placebo.
 
 Structural consequence, expected and tested rather than a bug: **both index fingers are always
 0.0**, because the index is the most dextrous finger and so never holds the lower key of a

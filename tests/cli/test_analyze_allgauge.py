@@ -579,11 +579,14 @@ def test_bad_scissor_carries_no_orientation_term(capsys):
 def test_bad_scissor_caveats_reach_the_user_not_just_the_docstring(capsys):
     """The three caveats are user-visible, and the header does not assert the retracted mechanism.
 
-    The mechanistic reading ("the weaker finger strains") is NOT identified by the data: the
-    label is a function of (finger pair, which column is lower), so the contrast can never hold
-    the physical lower key fixed and any property of the two key groups is collinear with the
-    label by construction. The number is robust; the mechanism is not — so the header names the
-    OPERATION and the caveats travel with it.
+    The mechanistic reading ("the weaker finger strains") is not identified ON THE AALTO SAMPLE:
+    there the weak- and strong-descending groups share no bottom-row key, so any property of the
+    two key groups is collinear with the label. The number is robust; the mechanism is not — so
+    the header names the OPERATION and the caveats travel with it.
+
+    The caveat must also NOT overstate the limit as structural — see
+    ``tests/analysis/test_bad_scissor.py`` for the geometric counterexample that makes it
+    empirical.
     """
     rc = main(["analyze", "flagship-c3", "--no-time", "--no-model-scores"])
     assert rc == 0
@@ -595,3 +598,7 @@ def test_bad_scissor_caveats_reach_the_user_not_just_the_docstring(capsys):
     assert "not robust" in text.lower()
     assert "96.6%" in text
     assert "not identified" in text
+    # the limit is EMPIRICAL, not structural — the text must say so, and must not claim
+    # that no amount of data could fix it
+    assert "EMPIRICAL, not structural" in text
+    assert "no amount of data" not in text

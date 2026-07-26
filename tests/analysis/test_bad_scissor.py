@@ -365,3 +365,49 @@ def test_empty_corpus_returns_zeros_not_a_crash():
 
 def test_attribution_rule_is_named_in_the_module():
     assert ATTRIBUTION_RULE == "all-to-descending-weaker-finger"
+
+
+def test_the_identification_failure_is_EMPIRICAL_not_structural():
+    """The geometry DOES admit the comparisons the Aalto sample lacks — so don't overstate it.
+
+    The retraction of the "weaker finger strains" mechanism is correct, but its reason is
+    sample-bound, not structural. On the Aalto sample the weak- and strong-descending groups
+    share no bottom-row key, which is what breaks identification there. Over the full geometry
+    (all layout character pairs, not just corpus-observed ones) the dy==2 bottom-key sets DO
+    intersect, and a fixed bottom key takes both labels — so a corpus supplying the missing
+    strong-descending observations could identify the mechanism.
+
+    Pinned because "no amount of data can fix it" is the tempting stronger claim, and it is
+    false. Docstrings and help text must say "not identified on the Aalto sample".
+    """
+    layout = _layout(LAYOUTS["qwerty"])
+    weak_bottom: set[str] = set()
+    strong_bottom: set[str] = set()
+    for first, second in itertools.product(layout.chars, repeat=2):
+        a, b = layout.pos(first), layout.pos(second)
+        if abs(a[1] - b[1]) != 2:
+            continue
+        if not C.same_hand(GEOM, a, b) or C.same_finger(GEOM, a, b):
+            continue
+        bottom = first if a[1] == 1 else second
+        (weak_bottom if bad_scissor(GEOM, a, b) else strong_bottom).add(bottom)
+    overlap = weak_bottom & strong_bottom
+    assert overlap, "geometry admits no shared bottom key — the limit WOULD be structural"
+    assert {"c", "x"} <= overlap, sorted(overlap)
+
+    # The decisive counterexample: same bottom key, same row span, opposite labels.
+    #   'qx' -> top q = pinky  (weaker than x's ring) -> NOT flagged
+    #   'ex' -> top e = middle (stronger than x's ring) -> flagged
+    assert bad_scissor(GEOM, layout.pos("e"), layout.pos("x")) is True
+    assert bad_scissor(GEOM, layout.pos("q"), layout.pos("x")) is False
+
+
+def test_the_module_docstring_does_not_overstate_the_identification_limit():
+    """Guard the wording itself: 'not identified on the Aalto sample', never 'structural'."""
+    import keybo.analysis.bad_scissor as module
+
+    doc = module.__doc__ or ""
+    assert "not identified on the Aalto sample" in doc
+    assert "EMPIRICAL, not structural" in doc
+    assert "no amount of data" not in doc
+    assert "more data cannot" not in doc
