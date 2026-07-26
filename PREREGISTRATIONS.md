@@ -7341,3 +7341,69 @@ on consumer closure instead. That is the correct discipline and the opposite of 
 convention-contingent pending a re-run against the corrected bar; the two headline nulls survive. The deeper lesson is the one the trap file now
 carries: **a hand-rolled reimplementation of a validated constructor loses the validation**, and the ONE layout our axis directions were derived
 from was the ONE layout the bug spared. Landing this branch and any re-run remain USER decisions.
+
+### CORPUS-SWAP-1 — blend-v1 IS THE PRODUCTION CORPUS behind one resolver; NO dominance verdict moves; and two corrections to my own briefs (2026-07-26)
+STATUS. User APPROVED this swap explicitly. LOCAL branch `corpus-swap-blend-v1` @ f006baa (2 commits) off main 9ce0563; main untouched, NOTHING
+pushed, no CR, **no `data/corpus/*.txt` deleted, moved or overwritten** (the licensed non-regenerable iWeb tables are intact),
+PREREGISTRATIONS.md untouched by the child.
+IMPLEMENTATION — AND MY BRIEF UNDERCOUNTED THE WORK. I said 5 hardcoded call sites; there are **EIGHT** (`cli/_scorer.py`, `cli/inspect.py`,
+`cli/optimize.py` also hardcoded it, as repo-RELATIVE literals — so the default corpus SILENTLY DEPENDED ON CWD). All 8 now route through
+`keybo.data.corpus.production_corpus_dir()`: default **blend-v1**, precedence explicit-arg > `KEYBO_CORPUS` > default, a `--corpus` flag on
+analyze/inspect/score/optimize, and an arbitrary directory path works (it scored blend-v1-no-anchor out-of-repo with no code change). I VERIFIED
+the three behaviours that matter: the default now reports `blend-v1` (flagship sfs 6.7717 vs iWeb's 6.5301); an unknown name FAILS LOUDLY —
+`unknown corpus 'bogus-name': not one of blend-v1, iweb and not an existing directory` — with **no silent fallback**; and output carries
+`corpus` + `corpus_provenance` (name, path, **sha256 PER TABLE**, manifest declared_total), the hash rather than the name being what makes it a
+fact. Three design calls I endorse: corpus had to enter `default_surface`'s lru_cache KEY (else two corpora in one process serve each other's
+surface); `_scorer.freq_path` resolves LAZILY because `build_parser` runs `add_arguments` for every subcommand on every invocation, so an eager
+resolve would let a bad `KEYBO_CORPUS` break `keybo --help`; and `build_corpus`'s anchor stays pinned to iweb DELIBERATELY — it consumes the
+anchor to produce a blend, so following the production default would make the builder read its own output (the self-referential class of bug that
+already cost blend-v1 its byte-reproducibility).
+🟢 SAFETY PROOF, AND I RE-VERIFIED IT MYSELF. A PRE-change baseline was captured before the first edit, and `analyze --corpus iweb` now
+reproduces it BIT-IDENTICALLY over 9 layouts (`pre['rows'] == post['rows']`, exact compare). I independently confirmed the iWeb path still gives
+sfs 6.530070526466785 / sfb 1.2407650391505076 — the values I had verified against the frozen boards. **So this is a behaviour-preserving
+refactor plus a default change, and the campaign's audit trail is intact.** Frozen-board tests now NAME iWeb rather than relying on the default
+(kmstats oracle, KAN-1 G4 gate, `test_analyze_allgauge`'s `_run`, which also asserts the corpus back out of the JSON) — a test that relied on the
+default was asserting the default, not the value.
+WHICH VERDICTS MOVE — **NO DOMINANCE VERDICT CHANGES.** Full pairwise sweep, 9 C30M rows, 72 ordered pairs, 14 live axes: 8 dominating pairs on
+iWeb, 8 on blend-v1, and **all of them are the trivial "X dominates qwerty"** — none lost, none new. The candidate set is mutually non-dominated
+on iWeb ALREADY, which corroborates NO-ANCHOR-1's 0-of-22 from a new direction. Any frozen artifact claiming one candidate dominates another was
+already frame-specific; read it as "wins k of 14". GEN-ON-BLEND-1 reproduced EXACTLY (flagship-c3 11->10 vs archive-1846, 10->9 vs archive-1843).
+THE REAL iWeb-SPECIFICITY IS PER-GAUGE: 13 of 14 gauges reorder across the three corpora and 7 change winner. MATERIAL: `imbalance` (lsb-sib ->
+graphite on no-anchor), `oxey-style` (flagship-c3 -> graphite), `roll` (graphite -> semimak). TIE-LEVEL and NOT to be reported as changes: `alt`
+(0.02-0.21% margin) and `comfort` (0.16-1.87%), which flip in the 4th decimal.
+⚠ RESOLUTION-FLOOR SCOPE, A CORRECTION TO HOW I HAVE BEEN QUOTING IT: the floor is the per-seed spread of the **ms/char SPEED gauge** and
+therefore bounds **ms/char only** — NOT the 15 ratio gauges, which are in different units. Applied correctly: the ONLY ms/char reordering between
+iWeb and blend-v1 is archive-1843 <-> archive-1846 swapping 4th/5th place, driven by a 0.006 ms/char gap on iWeb and 0.048 on blend — **20x to
+160x BELOW the floor, therefore NOT a real change**. 8 of 9 adjacent gaps in the blend ranking are below it; only dvorak->semimak and
+graphite->qwerty resolve.
+⚠ THE ONE NUMBER NOT TO OVER-READ, and the child caught it: `saved_vs_ref_pct` for keybo-lsb reads +2.43% (iWeb) -> +1.12% (blend) -> **-0.33%**
+(no-anchor), and graphite goes NEGATIVE on blend. That is largely a **COVERAGE ARTIFACT, not a slowdown**: `timecard.py:149-150` uses ABSOLUTE
+`total_ms` while coverage differs BY LAYOUT within a corpus (blend: qwerty 86.63% vs keybo-lsb 88.71%, because qwerty's `;/` charset misses blend
+mass that C30M's `-'` covers), so the reference is charged for a different n-gram subset. COVERAGE-NORMALIZED the advantage is STABLE: +3.47 /
++3.44 / +3.43%, gap 9.099 / 9.083 / 9.108 ms/char, resolving against the floor on ALL THREE corpora. Same family as trap 9 (a wrong denominator is
+invisible to a numerator check). It did NOT change the metric — it is a shipped JSON key that frozen artifacts consume — and proposed a sibling
+key instead. Correct restraint.
+⚠ TWO CORRECTIONS TO MY OWN BRIEFS, THE FIRST A SIGN ERROR I PROPAGATED THREE TIMES. (1) **`oxey-style` in the 15-gauge frame is LOWER-better** —
+I VERIFIED IT: qwerty +80.7236 while every candidate is negative (keybo-lsb -10.6436 ... flagship-c3 -13.8071), and the board's own
+`lower_better` says 1. My standing line "oxey1/oxey2/wfd are HIGHER-better" is true of the four COMMUNITY gauges only, and I wrote it in a way
+that reads as covering the similarly-named 15-gauge `oxey-style`. Conflating them FLIPS A SIGN — trap 13's shape, on a gauge name rather than a
+gauge value. (2) **`sfr` is CONSTANT across C30M layouts within a corpus, so dominance has 14 LIVE AXES, not 15** — arrived at independently and
+concurrently with GEOMEAN-1's permutation-invariance proof, by a different route. (3) Minor: no-anchor's `b980e79` is the corpus BUILD commit; the
+branch HEAD is `7f53e5d`.
+NO REFIT, stated in the report AND in the text output: the measured surface and the 3 fitted surfaces are baked at 90 WPM, so the corpus changes
+the frequency WEIGHTING of the objective and NEVER the timing model. The 4 community gauges are corpus-INVARIANT and it verified they are
+BIT-IDENTICAL across corpora (dict ==, raw and primed), now asserted by a test — so they must not be reported as changed by this swap.
+VALIDATION: full suite rc=0, **789 passed / 3 skipped / 0 failed**, and the rc is real by FOUR checks — sentinel exists; sentinel BITES
+(deliberate assert False -> rc=1); `grep -c '^FAILED'` = 0; and 789+3 = 792 = the collect-only total. ⚠ ITS FIRST ATTEMPT HIT TRAP 1 FROM THE
+TIMEOUT DIRECTION and it did NOT report it: `timed -t 590` killed the wrapper at 590s while the suite needed 645s, so NO sentinel was written
+while the log still read "10 failed, 765 passed ... in 645.30s". It re-ran detached instead of quoting that. Exactly the discipline trap 1 exists
+to enforce. 33 new tests.
+CROSS-AGENT RECONCILIATION, mid-run: main moved 9ce0563 -> 84f305c under it. It verified NUMERICALLY that WFD-FRAMES-1 affects NONE of its claims
+(wfd is bit-identical across corpora so contributes 0 to every delta, and it is not among the 14 live axes), and CORRECTED ITS OWN section 3,
+which had used the very framing that agent retracted; its section 4b wfd column is flagged suspect pending the fix.
+ALSO FOUND, NOT FIXED (pre-existing, out of scope, and I reproduced it): `keybo inspect --layout keybo-lsb` raises
+`ValueError: layout has 9 characters but geometry has 30 slots` — `inspect` resolves names only via `NAMED_LAYOUTS` and does not know `analyze`'s
+`_EXTRA_NAMED` registry, so it parses the NAME as a literal layout string. Confirmed on a pristine main worktree, so it predates this branch.
+=> NET: the swap is implemented safely, iWeb remains fully reachable and bit-reproducible by name, and **no dominance verdict depends on it** —
+the corpus-specificity that does exist is per-gauge and mostly at or below tie level. Landing this branch remains a USER decision; the user has
+already approved the swap itself.
