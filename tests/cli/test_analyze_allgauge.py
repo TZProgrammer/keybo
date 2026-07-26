@@ -499,9 +499,7 @@ def test_bad_scissor_decompositions_are_exact_partitions_in_the_cli(capsys):
     out = _run(capsys, ["analyze", "flagship-c3", "qwerty30m", "dvorak", "--no-time", "--json"])
     for name, row in out["rows"].items():
         bad = row["bad_scissor"]
-        assert sum(bad["by_finger"].values()) == pytest.approx(
-            bad["share"], rel=0, abs=1e-9
-        ), name
+        assert sum(bad["by_finger"].values()) == pytest.approx(bad["share"], rel=0, abs=1e-9), name
         assert sum(bad["by_cell"].values()) == pytest.approx(bad["share"], rel=0, abs=1e-9), name
         # both index fingers are structurally zero under this attribution rule
         assert bad["by_finger"]["L-index"] == 0.0 and bad["by_finger"]["R-index"] == 0.0, name
