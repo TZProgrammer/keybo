@@ -7212,3 +7212,61 @@ sentinel, so anything longer must run detached with a push callback plus a deadm
 merely unhelpful as an objective. The constrained arm-B candidates are the only genuinely new layouts here, and they are blocked by the
 corpus-invariant gauges — consistent with THEORY-1's finding that the instrument, not the search, is the binding constraint. Nothing pushed,
 nothing promoted; adoption remains a USER decision.
+
+### GEOMEAN-1 — DO-NOT-SHIP a multi-gauge aggregate: three candidates ARE stable, but what they resolve is not REAL — and the aggregate winner is the SLOWEST layout (2026-07-26)
+STATUS. User-requested ("a sort of geomean optimization across all of our gauges... maybe a clever approach can be beneficial"), and the user
+pre-granted that the naive version is broken. Branch `geomean-1` (94e516c, 71a278d) in a worktree off main 9ce0563, NOTHING pushed;
+PREREGISTRATIONS.md untouched by the child. 6 candidates x 3 corpora x 2 normalizations = 36 cells.
+=> VERDICT: **DO-NOT-SHIP.** A clever aggregate IS constructible — A1 mean-ceiling, A4 rank-geomean and A5 grouped-rank-geomean pass the
+with/without-qwerty test AND all three corpora (flagship-c3 rank-1 in all 18 of their cells), and A1/A4 survive leave-one-GROUP-out with 0 of 11
+group-drops moving rank-1. A0 plain-geomean, A2 maximin and A3 grouped-geomean FAIL: rank-1 flips flagship-c3 -> archive-1846 on blend AND
+no-anchor once the anchor leaves. But ALL SIX fail the decidability test, and that is the verdict.
+⚠ THE DECIDABILITY FAILURE, AND IT INVERTS A RECOMMENDATION I GAVE THE USER. The child MEASURED the resolution floor rather than quoting my
+figure: **0.7186 ms/char** (`TimeSurface(keep_seed_tables=True).seed_totals`) — my "~1 ms/char" was the right order but conservative. **0 of 15
+incumbent pairs resolve**; the largest gap in the whole field is 0.3775. I VERIFIED THE CONSEQUENCE MYSELF at 90 WPM: predicted ms/char is
+keybo-lsb 254.6307 (FASTEST) < keybo-lsb+lm 254.6847 < lsb-sib 254.7058 < archive-1846 254.7961 < archive-1843 254.8436 < **flagship-c3
+254.9761 (SLOWEST of the six)**, max field gap 0.3454 — i.e. under half the floor. So **flagship-c3, which I recommended to the user as "the
+best-supported MEAN pick", is the SLOWEST of the six incumbents on the primary metric**, and every surviving aggregate ranks it first. The
+aggregate ANTI-CORRELATES with predicted time across a span the primary metric cannot resolve. My SELECT-MAXIMIN-1 mean-aggregate
+recommendation is hereby WITHDRAWN as a basis for preferring flagship-c3.
+⚠ CORRECTION TO EVERY "n/15" AND "n/19" COUNT IN THIS LEDGER — `sfr` IS A PERMUTATION INVARIANT. It counts DOUBLED LETTERS, so placement cannot
+move it; closed form 100*(doubled-letter mass)/(charset-restricted mass). I VERIFIED IT: exactly ONE distinct value (2.8187069323648957) over 300
+random permutations of the C30M charset. **The frame is 18 gauges, not 19**, and every per-gauge win-count this campaign published (flagship
+17/45, archive-1843 7/15, the 1-of-19 wscissor results, ALL of it) contains one cell that is a TIE BY CONSTRUCTION. The verdicts do not change —
+a constant cannot break a tie in either direction — but the denominators were wrong. TOOLING NOTE: numpy reports std = 1.9e-14 for it, NOT 0, so
+a `std > 0` filter KEEPS it and then rank-correlates pure noise.
+THE CORRELATION WORK — NECESSARY, AND DECISION-THEORETICALLY INERT. Effective dof is **~4-5, not 19** (participation ratio 4.10-5.01, Kaiser
+4-6); as an axis COUNT, 19 raw axes collapse to **11** |rho|>=0.8 groups, over-counting by 8 slots, with {sfb, sfb-dist, oxey-style, genkey,
+oxey1, oxey2, wfd} supplying 7 slots for ~1 construct. **`oxey-style` is R2 = 0.9937 on {sfb, lsb, scissor, imbalance, redir, alt}** — a
+re-weighted RESTATEMENT of other legs, so it must NEVER be cited as corroboration for a claim already resting on those. lsb|lsb-dist rho = 1.00.
+AND YET: A3/A5 re-run under FIVE groupings (rho>=.9/.8/.7, measurement-family, UNGROUPED) give IDENTICAL rank-1 in all 30 cells. What decides a
+candidate is the TRANSFORM (percentile-rank vs ceiling-fraction), not the grouping and not the effective-dof weighting. Solving the correlation
+problem was scientifically necessary and made no difference to the decision — worth knowing before anyone tries this again.
+⚠ MY OWN LEAVE-ONE-OUT TEST WAS ANTI-CONSERVATIVE, and the child said so instead of banking the easy pass. Dropping `lsb` leaves `lsb-dist` at
+rho = 1.00, so the information never leaves the aggregate. It ran BOTH; the GROUP version is the one that bites. Under either, the FULL ordering
+churns on up to 10 of 11 drops — **only rank-1 is robust, ranks 2-6 are noise.**
+MAXIMIN FAILS ITS OWN PLACEBO — an independent confirmation of SELECT-MAXIMIN-1's degeneracy from a new direction: fed PURE NOISE, maximin picks
+the same layout 0.615-0.89 of the time vs 0.165-0.24 for the other candidates (chance 0.143/0.167). The placebo is also what makes the real
+200/200 bootstrap stability readable — a stability number without a noise placebo is uninterpretable.
+POSITIVE CONTROLS: the child's pipeline reproduces `board_three_corpora.json` at max |delta| = **0.000e+00** (7 x 3 x 15) and SELECT-MAXIMIN-1's
+pooled 45-cell worst_case/mean to all 6 published digits, including that entry's within-6-field degeneracy as a NUMBER (all six at floor;
+n_cells_at_field_worst 15/12/18/6/1/2; qwerty field-worst on 42/45). flagship's 17/45 field-best re-derived EXACTLY — but its 6/15 wins are
+only ~3 INDEPENDENT wins, because sfs+sfs-dist and lsb+lsb-dist are duplicate pairs and oxey-style is R2 = 0.994 on its own legs.
+⚠ A STATISTIC I MUST NOT QUOTE: effective-dof estimated over a pool MIXING optimized and random layouts is 2.08 — BELOW both sub-pools (4.10 /
+4.82) and the most headline-friendly number available. Simpson-style artifact; the sub-pool figures are the real ones.
+CROSS-AGENT: the sibling `wfd-frames` bug hit this child's PRIMARY column. It verified the mechanism itself (the buggy path boards a
+NON-permutation: `;` unassigned -> dof 0, `q` on two keys, `p` absent, dof 25 empty), switched to `o2.wfd`, added a permutation guard, and re-ran
+the ENTIRE chain: **every conclusion unchanged**, and the correction STRENGTHENS the redundancy result (oxey2|wfd rho 0.9413 -> 0.9938). It had
+recorded both columns from the start, which is the only reason the fix cost one re-run. It also corrected the sibling once (a permutation assert
+must NOT go inside the legacy accessor — that would make every frozen artifact's wfd unreproducible) and accepted a correction from it (the
+sibling's 14 flips turn on wfd being COUNTED as an axis, not on wfd carrying independent INFORMATION — different claims).
+TRAP 15 WAS LIVE AND MY DOCUMENTED CHECK WOULD HAVE PASSED IT. `~/repos/keybo` was on sibling branch `corpus-swap-blend-v1` with 9 uncommitted
+files, TWO of them (`data/corpus.py`, `analysis/timecard.py`) in the child's import path — while `HEAD == main` was TRUE the whole time. So the
+`git rev-parse --abbrev-ref HEAD` check I banked is NECESSARY BUT NOT SUFFICIENT. The child re-ran every sensitive result in a pristine
+`git worktree add /tmp/<n> main`: gauges |delta| = 0.000e+00, floor identical to 6 digits. ADOPTED: a pristine worktree is a ~2-minute POSITIVE
+signal and is also where an agent should make its own branch. I used one for this very commit.
+=> RECOMMENDATION, WHICH I ACCEPT: do not ship an aggregate. If one is wanted anyway the least indefensible is **A4 (percentile-rank geomean),
+without-qwerty, as a TIEBREAK among layouts already equivalent on predicted time** — never a search objective, never presented as ordering ranks
+2-6. The child still declines it, and so do I: a tiebreak that systematically prefers the SLOWEST candidate is a second objective smuggled in.
+WHAT WOULD CHANGE THIS IS UPSTREAM OF ANY AGGREGATE — an instrument that resolves sub-0.72 ms/char (the tau-saturation problem), or an OUTCOME to
+fit weights against. **MORE GAUGES WILL NOT HELP.** This converges with THEORY-1 and WSCISSOR-ARMB-1: the binding constraint is the instrument.
