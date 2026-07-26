@@ -92,14 +92,22 @@ FROZEN_FLAGSHIP_C3 = {
 }
 
 #: FROZEN: wscissor-allgauge.json -> invariant_direction_derivation.reference_scores.
-#: These are the PRIMED community scores (score_primed), not score(); `wfd` on this board
-#: is the APOSTROPHE-PINNED convention (see tests/analysis/test_community_wfd_frames.py).
+#: These are the PRIMED community scores (score_primed), not score(). `wfd` is NOT among
+#: them: it is one gauge, not a primed/unprimed pair -- see
+#: tests/analysis/test_community_wfd_legacy_board.py for why that board's wfd is a bug.
 FROZEN_PRIMED_KEYBO_LSB = {
     "genkey_primed": 1.3192528115010698,
     "oxey1_primed": -478152084.0,
     "oxey2_primed": -5014283671800.0,
-    "wfd": -15082741528300.0,
 }
+
+#: FROZEN: board_three_corpora.json / board-blend-reselect.json -> corpus_invariant.
+#: The CORRECT wfd: the layout's own pinned character on the quote slot.
+FROZEN_CORRECT_WFD_KEYBO_LSB = -16213995653000
+
+#: FROZEN: wscissor-allgauge.json + every hunt's `best_axes.wfd` -- the CORRUPT legacy
+#: board's number, kept reproducible so the frozen artifacts can be reconciled.
+FROZEN_LEGACY_BOARD_WFD_KEYBO_LSB = -15082741528300
 
 #: FROZEN: board-blend-reselect.json -> corpus_invariant["flagship-c3"] (RAW score()).
 FROZEN_RAW_FLAGSHIP_C3 = {
@@ -164,10 +172,10 @@ def test_frozen_gauges_reproduce_for_flagship_c3_on_the_second_board(capsys):
 
 @pytest.mark.slow
 def test_primed_and_raw_community_scores_both_reported_and_both_pinned(capsys):
-    """The two community FRAMES are distinct and BOTH are reported, each labelled.
+    """The primed and raw community FRAMES are distinct and BOTH are reported.
 
-    Trap #13: the campaign has two live conventions for the same four community
-    gauges. Reporting one silently is how a comparison gets stitched across frames.
+    Trap #13: the campaign has two live conventions for the same community gauges.
+    Reporting one silently is how a comparison gets stitched across frames.
     """
     out = _run(capsys, ["analyze", "keybo-lsb", FLAGSHIP_C3, "--json"])
     lsb = out["rows"]["keybo-lsb"]
@@ -176,6 +184,34 @@ def test_primed_and_raw_community_scores_both_reported_and_both_pinned(capsys):
     flag = next(r for r in out["rows"].values() if r["layout"] == FLAGSHIP_C3)
     for key, expected in FROZEN_RAW_FLAGSHIP_C3.items():
         assert flag["community"][key] == expected, key
+
+
+@pytest.mark.slow
+def test_wfd_is_one_gauge_plus_a_labelled_legacy_reconciliation(capsys):
+    """wfd is NOT two co-equal quantities — the legacy artifact number is a BUG.
+
+    It came from a board that is not a permutation of the 31 keys (';' on dof 0, the
+    slot-0 character evicted, 'q' duplicated). So it must not appear as a second gauge
+    column beside the correct one; it appears only inside a reconciliation block that
+    names the corruption and carries the exact delta.
+    """
+    out = _run(capsys, ["analyze", "keybo-lsb", "--json"])
+    lsb = out["rows"]["keybo-lsb"]
+
+    # the primed block no longer carries a wfd at all -- there is only one wfd
+    assert "wfd" not in lsb["community_primed"]
+    assert lsb["community"]["wfd"] == FROZEN_CORRECT_WFD_KEYBO_LSB
+
+    rec = lsb["wfd_legacy_reconciliation"]
+    assert rec["correct_wfd"] == FROZEN_CORRECT_WFD_KEYBO_LSB
+    assert rec["legacy_board_wfd"] == FROZEN_LEGACY_BOARD_WFD_KEYBO_LSB
+    # the delta reconciles exactly -- these are integers, so this is exact, not approximate
+    assert rec["delta"] == rec["legacy_board_wfd"] - rec["correct_wfd"]
+    # and the corruption is named, not merely implied by a differing number
+    assert rec["legacy_board_is_a_permutation"] is False
+    assert rec["duplicated_characters"] == ["q"]
+    assert rec["evicted_characters"] == ["p"], "keybo-lsb's slot-0 character"
+    assert rec["legacy_board"][0] == ";"
 
 
 @pytest.mark.slow

@@ -53,7 +53,13 @@ from keybo.analysis import surfaces as S
 from keybo.analysis.bad_scissor import ATTRIBUTION_RULE as BAD_SCISSOR_RULE
 from keybo.analysis.bad_scissor import FINGER_ORDER as BAD_SCISSOR_FINGERS
 from keybo.analysis.bad_scissor import BadScissor
-from keybo.analysis.community import community_suite, pinned_char
+from keybo.analysis.community import (
+    C30M_CHARS,
+    CLASSIC_CHARS,
+    community_suite,
+    legacy_board_of,
+    pinned_char,
+)
 from keybo.analysis.kmstats import STAT_NAMES, KmStats
 from keybo.analysis.redirects import REDIRECT_CLASSES, RedirectFamily
 from keybo.analysis.scissor_fingers import FINGER_NAMES, ScissorByFinger
@@ -172,9 +178,48 @@ def _oxeylyzer_scorable(lay30: str) -> bool:
     layout plus its pinned quote-slot character forms a 31-character permutation. dvorak
     carries BOTH ``'`` and ``;`` and lacks ``-``, so it is neither.
     """
-    c30m = set("qwertyuiopasdfghjkl'zxcvbnm,.-")
-    classic = set("qwertyuiopasdfghjkl;zxcvbnm,./")
-    return set(lay30) in (c30m, classic)
+    return set(lay30) in (set(C30M_CHARS), set(CLASSIC_CHARS))
+
+
+def _wfd_reconciliation(o2, lay30: str) -> dict | None:
+    """How the frozen artifacts' wfd differs from the correct one, decomposed exactly.
+
+    The campaign's wfd came from a board that is not a permutation of the 31 keys, so the
+    gap is not a convention offset to be reported alongside: it is attributable, to the
+    last integer, to the three key positions the bug disturbs. Reporting the decomposition
+    (rather than a second gauge column) is what stops the legacy number being read as an
+    alternative measurement of the same layout.
+
+    ``None`` when the legacy board cannot be built (a classic-charset layout has no ``'``
+    in its 30 block, and the legacy mapping is only *wrong* for C30M anyway).
+    """
+    if "'" not in lay30:
+        return None
+    correct = o2.wfd(lay30)
+    legacy = o2.wfd_legacy_board(lay30)
+    board = legacy_board_of(lay30, o2.chars)
+    evicted = sorted(set(o2.chars) - set(board))
+    duplicated = sorted({c for c in board if board.count(c) > 1})
+    return {
+        "correct_wfd": correct,
+        "legacy_board_wfd": legacy,
+        "delta": legacy - correct,
+        "delta_pct_of_correct": 100.0 * (legacy - correct) / abs(correct),
+        "legacy_board": board,
+        "legacy_board_is_a_permutation": len(set(board)) == len(o2.chars),
+        "evicted_characters": evicted,
+        "duplicated_characters": duplicated,
+        "why": (
+            "the legacy board never assigns ';' a position, so it lands on dof 0 "
+            "(top-left, left pinky) and evicts the character on slot 0; the dof that "
+            "' vacated is refilled by index 0 ('q'). This is a bug, not a convention."
+        ),
+        "use": (
+            "reconcile frozen artifacts only; correct_wfd is the quantity to rank or "
+            "gate on. 14 of 42 frozen per-incumbent dominance verdicts do not survive "
+            "the correction."
+        ),
+    }
 
 
 def run(args: argparse.Namespace) -> int:
@@ -304,12 +349,12 @@ def run(args: argparse.Namespace) -> int:
                 "genkey_primed": gk.score_primed(lay),
                 "oxey1_primed": float(v1.score_primed(lay)),
                 "oxey2_primed": float(o2.score_primed(lay)),
-                # The dominance boards' wfd pins ' on the quote slot; the components wfd
-                # (row["community"]["wfd"]) pins whatever pinned_char() picks. Two
-                # different numbers for the same name -- both reported, both labelled.
-                "wfd": float(o2.wfd_apostrophe_pinned(lay)) if "'" in lay else None,
-                "wfd_frame": "apostrophe-pinned (dominance-board convention)",
             }
+            # The frozen dominance artifacts' wfd came from a CORRUPT board (';' on dof 0,
+            # the slot-0 character evicted, 'q' duplicated) -- a bug, not a second
+            # convention. It is reported as a reconciliation aid ONLY, in its own block,
+            # never beside row["community"]["wfd"] as though the two were co-equal gauges.
+            row["wfd_legacy_reconciliation"] = _wfd_reconciliation(o2, lay)
         else:
             # genkey is charset-agnostic (it scores its own parsed corpus by character).
             row["community"] = {
@@ -322,9 +367,8 @@ def run(args: argparse.Namespace) -> int:
                 "genkey_primed": gk.score_primed(lay),
                 "oxey1_primed": None,
                 "oxey2_primed": None,
-                "wfd": None,
-                "wfd_frame": "apostrophe-pinned (dominance-board convention)",
             }
+            row["wfd_legacy_reconciliation"] = None
 
         # --- fitted model surfaces ---
         if args.no_model_scores:
@@ -428,19 +472,17 @@ def _print_report(rows: dict[str, dict], ref_name: str, args: argparse.Namespace
         )
 
     print("\n== community PRIMED (strain residual; the frozen all-gauge board's frame) ==")
-    print(f"{'layout':<{w}}{'genkey′↓':>12}{'oxey1′↑':>16}{'oxey2′↑':>18}{'wfd(board)↑':>18}")
+    print(f"{'layout':<{w}}{'genkey′↓':>12}{'oxey1′↑':>16}{'oxey2′↑':>18}")
     for n in names:
         p = rows[n]["community_primed"]
         print(
             f"{n:<{w}}{_cell(p['genkey_primed'], 12, '.4f')}"
             + _cell(p["oxey1_primed"], 16, ".0f")
             + _cell(p["oxey2_primed"], 18, ".0f")
-            + _cell(p["wfd"], 18, ".0f")
         )
-    print(
-        "wfd(board) pins ' on the quote slot (dominance-board convention); the wfd above "
-        "it pins the layout's own quote character — two different quantities, same name"
-    )
+    print("wfd is NOT primed away — it is the same one gauge printed above (higher better)")
+
+    _print_wfd_reconciliation(rows, names, w)
 
     print(f"\n== all-gauge frame, shared corpus (1-skip31); {len(GAUGE_NAMES)} gauges ==")
     print(f"{'layout':<{w}}" + "".join(f"{s:>11}" for s in GAUGE_NAMES))
@@ -563,6 +605,42 @@ def _print_report(rows: dict[str, dict], ref_name: str, args: argparse.Namespace
                 "costliest bigrams (ms/char): "
                 + "  ".join(f"{bg!r} {v:.4f}" for bg, v in a["top_bigrams_ms_per_char"][:8])
             )
+
+
+def _print_wfd_reconciliation(rows: dict[str, dict], names: list[str], w: int) -> None:
+    """Reconcile the frozen artifacts' wfd against the correct one — as a decomposed delta.
+
+    Deliberately NOT a second gauge column: the legacy number is not another way of
+    measuring the layout, it is the same measurement taken on a board that cannot exist.
+    Printing it as ``correct + delta``, with the corruption named, is what keeps a reader
+    from stitching a comparison across the two (the failure this whole block exists for).
+    """
+    live = [n for n in names if rows[n].get("wfd_legacy_reconciliation")]
+    if not live:
+        return
+    print("\n== wfd: frozen-artifact reconciliation (the legacy board is a BUG, not a frame) ==")
+    print(f"{'layout':<{w}}{'wfd↑ (correct)':>22}{'legacy board':>22}{'delta':>20}{'delta%':>9}")
+    for n in live:
+        r = rows[n]["wfd_legacy_reconciliation"]
+        print(
+            f"{n:<{w}}{r['correct_wfd']:>22,}{r['legacy_board_wfd']:>22,}"
+            f"{r['delta']:>+20,}{r['delta_pct_of_correct']:>+8.2f}%"
+        )
+    for n in live:
+        r = rows[n]["wfd_legacy_reconciliation"]
+        # quote each character: 'evicted=-' would otherwise read as "evicted: none" on
+        # qwerty30m, whose evicted character genuinely IS '-'.
+        evicted = ",".join(repr(c) for c in r["evicted_characters"]) or "none"
+        duplicated = ",".join(repr(c) for c in r["duplicated_characters"]) or "none"
+        print(
+            f"  {n:<{w}} legacy board {r['legacy_board']!r}"
+            f"  evicted={evicted} duplicated={duplicated}"
+        )
+    print(
+        "the legacy board puts ';' on dof 0 (top-left, left pinky), evicts the character on\n"
+        "slot 0, and duplicates 'q' — so it is not a permutation of the 31 keys. Quote it\n"
+        "only to reconcile a frozen artifact; rank and gate on the correct wfd above."
+    )
 
 
 def _print_model_scores(rows: dict[str, dict], names: list[str], w: int) -> None:
