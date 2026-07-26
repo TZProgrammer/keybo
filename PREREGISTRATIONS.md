@@ -7017,3 +7017,67 @@ baseline itself falls 183.2->104.4 ms across the band.
 actionable openings are (a) add a genuine origin-dependent feature if direction is believed to matter — today it CANNOT be expressed, so any
 orientation term is a PRIOR, not evidence; (b) stop quoting analyzer weight tables as if fitted; (c) never compare two layouts whose gap is
 under ~1 ms/char. Adoption and any production change remain USER decisions; nothing here proposes one.
+
+### BADSCISSOR-1 — ⚠ POST-HOC: a bad-scissor predicate that is a CROSS-CUT not a superset, ship FLAT, and bad-redirect is already correct (2026-07-26)
+STATUS. EXPLORATORY / POST-HOC. Repo untouched by the researcher (no commit/edit/push); PREREGISTRATIONS.md untouched. Deliverables:
+state/badscissor/{badscissor-spec.md, report.md}, 16 indexed runs, critic report+drivers under artifacts/critic/. MODELLED only.
+THE PREDICATE, AND I VERIFIED EVERY COUNT MYSELF EXHAUSTIVELY OVER ALL 870 ORDERED PAIRS:
+  bad_scissor = same_hand AND distinct fingers AND different rows AND the LOWER key belongs to the LESS-DEXTROUS of the two fingers.
+Reproduced exactly: 108 qualifying pairs; dy split {1: 72, 2: 36}; 36 adjacent / 72 non-adjacent; 12 middle-pinky; ZERO symmetry violations;
+excludes 12 of the 24 narrow pairs; and `bad_scissor_finger` NEVER returns index (structural self-check). 🟢
+IT IS A CROSS-CUT, NOT A SUPERSET — the substantive design claim. It DROPS 12 of the incumbent's own 24 narrow pairs (the
+weak-finger-on-TOP class, which measures -0.0179, i.e. FASTER than the same-row baseline at n=1.64M) and ADDS 72 dy=1 descents that neither
+the narrow nor the wide predicate can see. So it is not "more scissor"; it is a different, better-targeted support.
+NOT REDUNDANT WITH THE SERVED OBJECTIVE — this is the ship argument. rho(scissor_event_cost cell-mean, measured cell cost) = -0.0550 over 15
+measured cells and +0.0000 over the 4 measured dy==2 cells. Mechanism: the served cost's `if dy != 2: return 0.0` gate prices ZERO for the
+most expensive measured class, and 0.48 for a class measuring +6%.
+THE USER'S STEER, TESTED RATHER THAN ASSUMED: (a) PINKY — NOT SUPPORTED (R2 = 0.0005 alone; the coefficient goes NEGATIVE, -0.0877, under
+frequency control; index-pinky is the CHEAPEST pair measured). This independently corroborates THEORY-1 retiring pinky load. (b) VERTICAL /
+EUCLIDEAN DISTANCE — REFUTED (dy coefficient -0.0993, -0.0978 controlled). DO NOT build a bad-scissor-dist: the worst measured cell is dy=1
+(ring-pinky home-bottom, +117%) and a dy=2 cell is NEGATIVE (index-ring top-bottom, -4.94%, n=606k). (c) BOTTOM ROW — SUPPORTED, and it is
+WHICH key sits on the bottom row. The researcher independently reproduced THEORY-1's per-landing-key result on its own frame (bottom-home
++8.15 ms, 5/5 buckets; top-home -4.76 ms, 0/5), so "home > top > bottom" is wrong in the middle on two independent frames.
+SEVERITY: SHIP FLAT, and the reasoning is sound — graded per-pair weights would split the effect on the axis that turned out UNIDENTIFIED, so
+they are a prior dressed as a fit. Only 1 of 6 weight variants preserves the board ordering, and NEITHER ordering survives dropping any single
+finger pair. The only robust ordering claims are: qwerty is worst, and lsb-sib < archive-1843. (Same conclusion SCISSOR-SEVERITY-1 reached by
+a different route: "the weights resolve nothing, the support resolves everything.")
+TWO SELF-CORRECTIONS THE RESEARCHER MADE RATHER THAN DEFEND: (1) FREQUENCY CONFOUND, found by itself: log(bigram frequency) explains MORE
+variance (R2 = 0.4030) than any geometric axis including its own (0.2323); the headline attenuates +0.5957 -> +0.4143 and is now quoted as
++0.41 [+0.23, +0.55]. (2) IDENTIFICATION FAILURE, found by an adversarial critic it spawned and told to default to "refuted" — the critic
+first reproduced all 8 headline numbers on its own parser, so its deltas are attributable to the attack. Consequently RETRACTED: the placebo,
+the dy==2 CI (common support crosses zero, [-0.1368, +0.8015]), "not explained by source layout", and "dvorak is a negative result" (that is
+absence of data). The PREDICATE and all NUMBERS stand; only the causal interpretation narrowed to a key-set claim.
+⚠ ONE CORRECTION I MAKE TO THE CALLBACK, having tried to reproduce the decisive step. The callback calls the disjointness "structural, more
+Aalto data cannot fix it". It is EMPIRICAL (in-sample), not structural. Its own `bs15_verify_critic.py` computes the letter sets over BIGRAMS
+OBSERVED IN THE DATA, and I could not reproduce an empty intersection from the GEOMETRY: enumerating all 870 ordered pairs under its exact
+`weak_bottom`/`strong_bottom` definitions (bottom row AND strictly lower) gives weak = {c, x, z} — matching it exactly — but strong =
+{b, c, m, n, v, x}, so the geometric intersection is {c, x}, NOT empty. Its own Claim-2 output shows the same thing: `ax` and `xa` place a
+STRONG finger (ring) on bottom-row `x`. The spec text itself is careful and says the effect "is a statement about a few qwerty-era letter
+placements, not a structural law" (spec line 55) — the CALLBACK overstated it. CONSEQUENCE FOR FUTURE WORK: the mechanism is unidentified ON
+THIS SAMPLE, so a corpus/layout set that supplies the missing strong-descending observations on {c, x} COULD identify it. That is a real
+experiment, not a closed door — do not cite this as structurally impossible.
+WHAT SURVIVED EVERY ATTACK: 5 baselines (+0.5237..+0.6409), column-pair fixed effects, LOO-bigram with 0/15 sign flips, robustness to the
+location statistic, and within-typist replication in 95.6% of 48,643 participants (sign test z = 201). Positive control: sfb reproduced vs
+kmstats at max abs err 0.0 on a PROVABLY DISJOINT support (deliberately not the nested-guard mistake of TOOLING-TRAPS #11).
+DENOMINATOR AND ATTRIBUTION, both stated explicitly (TRAP 9 handled): denominator is space-EXCLUDED (the kmstats convention); the oxey
+convention inflates every share by a near-constant 1.4961-1.4999x with a BIT-IDENTICAL numerator. Attribution sends all mass to the lower
+key's finger, which makes index structurally 0.0 — a built-in self-check.
+NO FEATURE_VERSION BUMP IS WARRANTED, and the researcher checked this against itself: bad_scissor is a new AGGREGATION, not new information —
+it is fully determined by the existing 19-column feature vector (0 colliding buckets). And per THEORY-1's no-direction-channel proof (which it
+reproduced independently: max delta 0.0 over the 11 non-landing features), its predicate is SWAP-INVARIANT (0/900) — a POSTURE term, not one
+of the retired direction terms. The spec proposes NO direction/orientation term at all.
+BAD-REDIRECT: THE COMMUNITY DEFINITION IS ALREADY CORRECT — ship unchanged. 6 candidate criteria tested on 1,173 same-hand-redirect units /
+249 trigram identities: NO criterion's CI excludes zero, and the community's "all three fingers non-index" has the LARGEST point estimate
+(+0.0975) while the researcher's own scissor-derived criterion is the WEAKEST (+0.0141). Pinky involvement is not the answer either. So the
+`_BAD = {0,1,2,7,8,9}` rule in analysis/community.py stands on its own merits.
+LAYOUT NUMBERS (flat, iWeb, space-excluded): lsb-sib 2.498 < archive-1843 2.951 < flagship-c3 3.470 < archive-1846 3.641 < keybo-lsb 3.710 <
+semimak 3.920 < keybo-lsb+lm 4.117 < graphite 4.660. dvorak 5.803 and qwerty 12.500 are NOT C30M (different charset => different denominator)
+and are correctly flagged N/A for cross-layout comparison. qwerty's damage is 73% L-pinky + L-ring; keybo-lsb vs keybo-lsb+lm differ ONLY in
+R-pinky, which is their entire gap.
+CROSS-AGENT VALIDATION THAT WORKED AS DESIGNED: the spec was implemented BLIND by the sibling `analyze-metrics`
+(src/keybo/analysis/bad_scissor.py, landed aca060e) and MATCHES — share to 4.68e-06, by_finger to EXACTLY 0.0 on all 10 layouts x 8 fingers,
+exact partition True, index-always-zero True. Blind implementation from a written spec, then a numeric match, is a far stronger check than one
+agent verifying its own work; adopt this pattern. The implementer's docstrings had carried the RETRACTED mechanistic wording, so the researcher
+wrote 6 exact diffs to state/badscissor/WORDING-CORRECTIONS-for-analyze-metrics.md and relayed them rather than editing another agent's files.
+=> VERDICT: SHIP bad-scissor FLAT, as MEASUREMENT/DIAGNOSIS ONLY — explicitly NOT a search objective (WSCISSOR-GEN-1 stands). Ship bad-redirect
+UNCHANGED. Do NOT build a distance-weighted variant. Adoption of any layout remains a USER decision; nothing here proposes one.
