@@ -7081,3 +7081,67 @@ agent verifying its own work; adopt this pattern. The implementer's docstrings h
 wrote 6 exact diffs to state/badscissor/WORDING-CORRECTIONS-for-analyze-metrics.md and relayed them rather than editing another agent's files.
 => VERDICT: SHIP bad-scissor FLAT, as MEASUREMENT/DIAGNOSIS ONLY — explicitly NOT a search objective (WSCISSOR-GEN-1 stands). Ship bad-redirect
 UNCHANGED. Do NOT build a distance-weighted variant. Adoption of any layout remains a USER decision; nothing here proposes one.
+
+### ALLGAUGE-1 — `analyze` now reports every campaign gauge; and a SHIPPED CORPUS-FILE BUG that made its sfs/comfort reproduce no board (2026-07-26)
+STATUS. Tooling round on user instruction ("analyze should also give us scissor, scissor by finger, imbalance, bad-redirect, and any other
+missing metrics", plus the aalto/comm/pool model scores). Branch `analyze-allgauge` @ ff2e904, 7 commits on base 44d282b, tree clean, NOT
+PUSHED. 139 new tests. PREREGISTRATIONS.md untouched by the child (its 2 draft entries + 9 KB proposals are in its reflection-proposal.md).
+⚠ THE REAL BUG, AND IT INVALIDATES NUMBERS I ALREADY GAVE THE USER. `analyze` loaded `data/corpus/1-skip.txt` while EVERY frozen campaign
+board loads `1-skip31.txt` — the true trigram marginalization; `build_corpus.py` documents `1-skip` as "a different, unreproducible pass". So
+`analyze`'s sfs / sfs-dist / oxey-style / comfort reproduced NO board. I VERIFIED the fix and its blast radius myself: switching the file moves
+EXACTLY sfs and sfs-dist and leaves the other 9 kmstats bit-identical (its own built-in positive control). flagship-c3 sfs 6.4688 -> 6.5301
+(+0.0612) and sfs-dist 7.5464 -> 7.6739 (+0.1275); graphite sfs 6.6399 -> 6.6349 (-0.0051), sfs-dist 7.8772 -> 7.8742 (-0.0030). CONSEQUENCE
+FOR MY EARLIER FLAGSHIP-VS-GRAPHITE TABLE: the sfs and sfs-dist rows I reported were computed on the wrong skipgram table. The corrected
+values NARROW flagship-c3's sfs lead (0.171 -> 0.105) but do NOT flip either winner, so that table's verdicts stand — but the two numbers were
+wrong and are corrected here. After the switch all 15 corpus-sensitive gauges reproduce `wscissor-allgauge` BIT-EXACTLY for keybo-lsb and
+archive-1843, and `board-blend-reselect` bit-exactly for flagship-c3 — three independent artifacts.
+⚠ SECOND FINDING THAT CHANGES A VERDICT I GAVE THE USER: `wfd` IS TWO QUANTITIES (the third instance of TOOLING-TRAPS #13). They differ by
+which character is pinned on key 31 and disagree by 1-7%. I verified the disagreement AND that it flips the comparison: under `wfd` graphite
+leads (-15,898,878,320,600 vs flagship-c3's -17,469,561,624,900), but under the new `Oxeylyzer2.wfd_apostrophe_pinned` FLAGSHIP-C3 LEADS
+(-16,959,769,416,800 vs graphite's -16,125,883,261,700; higher is better). qwerty differs by only 0.08%, which is why this hid. Both are now
+reported and LABELLED, each pinned to the board that produced it. Anyone quoting a single "wfd" winner must say which convention.
+DELIVERED: the 4 missing gauges (scissor, imbalance, oxey-style, comfort); per-finger AND per-pair scissor as EXACT PARTITIONS with the
+attribution rule DECLARED (half-to-each-finger — note this differs from bad-scissor's all-to-the-lower-finger rule, deliberately, and both are
+documented); the 4 oxeylyzer redirect classes including bad-redirect; the 3 model surfaces vendored gzipped (648K, bit-identical roundtrip)
+reproducing all-gauge-table fits at worst rel err 0.0 over 9 layouts x 8 surfaces; the graded scissor cherry-picked from branch
+`scissor-severity` (so the campaign's best scissor code is no longer stranded on a reaped child's branch); and dvorak yields N/A instead of the
+pre-existing ValueError CRASH.
+REDIRECT STRUCTURE, a genuine surprise worth banking: kmstats `redir` EQUALS the oxeylyzer redirect family EXACTLY over all 27,000 triples
+(0 either-only) — NOT the plausible nesting I had told the child to check for. And the 4 classes are mutually-exclusive SIBLINGS, not
+subsets: on qwerty `bad_redirects_sfs` (1.008%) EXCEEDS `bad_redirects` (0.425%), so a `bad_redirects_total` roll-up ships. bad-redirect is NOT
+redundant with redir, and the example is the point: flagship-c3 has FEWER total redirects than graphite (2.31 vs 3.03) but 2.5x MORE BAD ones
+(1.03 vs 0.40).
+THEORY-1 FOLLOW-THROUGH, all three items closed and one boundary drawn correctly: the child verified the order-invariance claim ITSELF and
+found `effect_curves`' inroll/outroll are 0/900 order-dependent -> RENAMED `outer_high`/`outer_low`; the COMMUNITY trigram inrolls/outrolls are
+9720/9720 order-dependent -> GENUINELY directional, correctly left untouched (the no-direction-channel result is about the BIGRAM feature
+vector, and this is the right boundary to draw); and the graded-scissor `down` weight it ships IS an orientation term (24/900) -> now LABELLED
+A PRIOR with the no-orientation share printed alongside. It did NOT rename `oxey.py` or `features/schema.py` because those are
+FEATURE_VERSION-stamped model inputs — correct restraint.
+⚠ AN IMPOSSIBILITY IN MY OWN BRIEF, DECLARED RATHER THAN FAKED: I asked for the model columns to honour `--target-wpm`. They CANNOT — the
+surfaces are baked at 90 WPM and the per-seed models behind 7 of the 8 are GONE, so the flag is unimplementable without retraining. The report
+DECLARES the mismatch instead of reprinting an unchanged number under a new WPM label, which is the right call and the opposite of the
+plausible-looking-constant failure. Also corrected: there is NO `AALTO_FREQ_PRIOR` — 8 surfaces exist, not 9. NOTE this collides with the
+user's stated 90-110 WPM objective: the model columns are FIXED at 90 and cannot be moved to the band without a retrain.
+THREE OF ITS OWN ERRORS, ALL CAUGHT AND FIXED — and the first is the most instructive of the campaign: (1) it renamed the published JSON key
+`row["kmstats"]` -> `row["gauges"]` and BROKE the pre-existing `tests/cli/test_analyze.py`. It survived 133 green NEW tests because THE SUITE
+IT KEPT RERUNNING WAS THE ONE IT WROTE. Fixed by RESTORING the contract (both keys ship, agreement pinned by test) rather than editing the
+failing test, and it KEPT the rc=1 log as `pytest-full-STALE-53e58f7.{rc,log}` rather than burying it — I confirmed that file reads
+`rc=1 collected=756 failed=1`. (2) It OVER-CORRECTED my bad-scissor relay: it wrote "more data cannot separate them" when the limit is
+EMPIRICAL, and produced the concrete counter-case I had asked for — `qx` (top = pinky, not flagged) vs `ex` (top = middle, flagged) hold the
+bottom key `x` and the row span FIXED while the label flips, so the geometry admits the comparison and only the Aalto sample lacks it. Fixed in
+03d28e7 with two guard tests. (3) Its first hand-transcribed test literals were INVENTED rather than copied; caught by diffing literals against
+the artifacts BY SCRIPT before running anything.
+TWO SPEC DISCREPANCIES IT REPORTED RATHER THAN SILENTLY ACCOMMODATED: BADSCISSOR-1's wrong-denominator DIRECTION is backwards — space-touching
+bigrams are 33.8% of mass, so the wrong (oxey) denominator DEFLATES rather than inflates the share; the 1.4961-1.4999x magnitude is exact and
+stands. And that spec's qwerty values are for classic `;./` qwerty (12.49998), not `qwerty30m` (12.52599) — so BADSCISSOR-1's "qwerty 12.500"
+figure is the classic-charset one. Both corrections apply to that entry.
+NOT BUILT, DELIBERATELY: no bad-scissor-dist and no graded bad-scissor weighting (BADSCISSOR-1 refuted the distance axis and mandated flat); no
+scissor distance gauge; `classify.is_scissor` untouched (FEATURE_VERSION-stamped); and bad-scissor wired into NO search objective, so
+WSCISSOR-GEN-1's verdict is not quietly reopened.
+VALIDATION: full suite rc=0 SENTINEL-VERIFIED at ff2e904 (collected=759, failed=0; 756 passed / 3 skipped), with the sentinel PROVEN TO BITE
+first (deliberate assert False -> rc=1). bad-scissor: 83 tests, every spec value reproduced (10 layout shares, 4 per-finger tables, 2 per-cell
+tables, dy2 subtotals, the 900-pair census, the sfb denominator control at max abs err 0.0), and the spec's author cross-checked this code
+against its own reference and confirmed the match. Resolution-floor caveat carried into report section 8: the measured flagship-vs-graphite gap
+is 2.603 ms/char, which resolves against the ~1 ms/char floor.
+=> NET: `analyze` is now a single command that reports the whole campaign frame, and the round's most valuable output is the corpus-file bug —
+a shipped default that silently disagreed with every frozen board. Nothing is pushed; landing the branch remains a USER decision.
