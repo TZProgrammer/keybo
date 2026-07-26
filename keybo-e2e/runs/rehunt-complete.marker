@@ -1,0 +1,30 @@
+ALL-REHUNTS-EXITED 2026-07-26T22:25:22Z
+REHUNT-DONE tag=blend-armA-narrow11 rc=0
+REHUNT-DONE tag=blend-armA-ten rc=0
+REHUNT-DONE tag=blend-armA-twelve rc=0
+REHUNT-DONE tag=blend-armA-wide11 rc=0
+REHUNT-DONE tag=blend-armB-ten rc=0
+REHUNT-DONE tag=iweb-armA-narrow11 rc=0
+REHUNT-DONE tag=iweb-armA-ten rc=0
+REHUNT-DONE tag=iweb-armA-twelve rc=0
+REHUNT-DONE tag=iweb-armA-wide11 rc=0
+REHUNT-DONE tag=noanchor-armA-narrow11 rc=0
+REHUNT-DONE tag=noanchor-armA-ten rc=0
+REHUNT-DONE tag=noanchor-armA-twelve rc=0
+REHUNT-DONE tag=noanchor-armA-wide11 rc=0
+REHUNT-DONE tag=noanchor-armB-ten rc=0
+--- dominated_targets per cell ---
+[4878.2s] done; dominated=['keybo-lsb', 'lsb-sib', 'archive-1843', 'archive-1846', 'keybo-lsb+lm']; unique_layouts=8,920,478
+[4946.2s] done; dominated=['keybo-lsb', 'lsb-sib', 'archive-1843', 'archive-1846']; unique_layouts=6,507,430
+[4971.3s] done; dominated=['keybo-lsb', 'lsb-sib', 'archive-1843', 'archive-1846', 'keybo-lsb+lm']; unique_layouts=8,932,577
+[5024.2s] done; dominated=['keybo-lsb', 'lsb-sib', 'archive-1843', 'archive-1846', 'keybo-lsb+lm']; unique_layouts=6,959,248
+[5067.7s] done; dominated=['keybo-lsb', 'lsb-sib', 'archive-1843', 'archive-1846']; unique_layouts=7,013,265
+[5156.4s] done; dominated=['lsb-sib', 'archive-1843', 'archive-1846']; unique_layouts=6,565,911
+[5240.9s] done; dominated=['lsb-sib', 'archive-1843', 'archive-1846']; unique_layouts=6,679,003
+[5278.2s] done; dominated=['archive-1846']; unique_layouts=6,415,676
+[5296.6s] done; dominated=['lsb-sib', 'archive-1846']; unique_layouts=6,620,224
+[5412.1s] done; dominated=['lsb-sib', 'archive-1843', 'archive-1846']; unique_layouts=6,972,011
+[5419.5s] done; dominated=[]; unique_layouts=6,350,438
+[5434.1s] done; dominated=['archive-1846']; unique_layouts=6,560,346
+[5486.9s] done; dominated=['archive-1843', 'archive-1846']; unique_layouts=6,638,942
+[5536.1s] done; dominated=['lsb-sib', 'archive-1843', 'archive-1846']; unique_layouts=6,525,171
