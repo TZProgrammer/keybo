@@ -33,8 +33,16 @@ from typing import Any
 
 import numpy as np
 
-REPO = Path("/local/home/zegertho/repos/keybo")
+# REHUNT: this used to hardcode the SHARED clone (`~/repos/keybo`) and insert its `src` at
+# sys.path[0] — so importing this module for the scissor axis would shadow the enclosing
+# worktree's `keybo` package with whatever branch a sibling agent happened to have checked out
+# (trap 15/29). Derive the repo from THIS FILE's location instead: keybo-e2e/ lives directly
+# under the repo root, so the tree that owns this driver is the tree that gets imported. Nothing
+# outside the current worktree is ever put on the path.
+REPO = Path(__file__).resolve().parent.parent
 SRC = REPO / "src"
+if not (SRC / "keybo" / "analysis" / "community.py").exists():  # pragma: no cover
+    raise RuntimeError(f"tb_objective_ref: no keybo source tree at {SRC}")
 if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 

@@ -55,14 +55,32 @@ def iweb_a() -> CE.ArmBoard:
 
 
 @pytest.fixture(scope="module")
+def iweb_a_legacy() -> CE.ArmBoard:
+    """The board carrying the CORRUPT-board wfd — the only thing a FROZEN artifact reconciles to.
+
+    Each gate below that pins a frozen NUMBER or a frozen DOMINANCE VERDICT uses this fixture,
+    because those artifacts were computed on the corrupt board (`;` never assigned a slot, so it
+    lands on dof 0, the slot-0 character is evicted and another is duplicated). Under the
+    corrected axis they do NOT reproduce — that is the finding, not a regression. The corrected
+    behaviour is pinned separately by `test_wfd_correction_kills_two_of_the_frozen_three` and by
+    `test_frozen_dominators_under_corrected_wfd`, so both facts are asserted rather than one
+    being silently retired.
+    """
+    return CE.ArmBoard(corpus="iweb", arm="A", wfd_mode="legacy")
+
+
+@pytest.fixture(scope="module")
 def blend_b() -> CE.ArmBoard:
     return CE.ArmBoard(corpus="blend", arm="B")
 
 
 # --- gate 1: reproduce the frozen board ------------------------------------
-def test_iweb_arm_a_reproduces_frozen_verdict_axes(iweb_a: CE.ArmBoard) -> None:
+def test_iweb_arm_a_reproduces_frozen_verdict_axes(iweb_a_legacy: CE.ArmBoard) -> None:
     """iWeb ARM-A must reproduce the frozen closure3-verdict incumbent axes on the 8
-    axes the verdict stores in a corpus-comparable form, plus the RAW floor/mean."""
+    axes the verdict stores in a corpus-comparable form, plus the RAW floor/mean.
+
+    LEGACY board: the frozen artifact's wfd column is the corrupt-board number."""
+    iweb_a = iweb_a_legacy
     with open(CLOSURE3_VERDICT) as fh:
         frozen = json.load(fh)["incumbent_axes"]
     max_err = 0.0
@@ -193,8 +211,12 @@ def test_axes_fast_matches_axes_slow(corpus: str, arm: str) -> None:
 
 
 # --- gate 4: reproduce the frozen wider-dominance VERDICT ------------------
-def test_frozen_dominators_still_dominate_under_iweb_arm_a(iweb_a: CE.ArmBoard) -> None:
-    """The known-positive control: each frozen dominator must be 10/10 vs its target."""
+def test_frozen_dominators_still_dominate_under_iweb_arm_a(iweb_a_legacy: CE.ArmBoard) -> None:
+    """The known-positive control: each frozen dominator must be 10/10 vs its target.
+
+    LEGACY board — this is the reproduction gate for the FROZEN verdict. Two of the three do
+    NOT survive the wfd correction; that is pinned by the corrected-mode test below."""
+    iweb_a = iweb_a_legacy
     inc = iweb_a.incumbent_axes(floor_kind="norm")
     for lay, target in FROZEN_DOMINATORS.items():
         cand = iweb_a.axes(lay, floor_kind="norm")
@@ -203,8 +225,12 @@ def test_frozen_dominators_still_dominate_under_iweb_arm_a(iweb_a: CE.ArmBoard) 
     print(f"gate4 {len(FROZEN_DOMINATORS)} frozen dominators reproduce 10/10 OK")
 
 
-def test_frozen_triple_dominates_three(iweb_a: CE.ArmBoard) -> None:
-    """The frozen verdict's strongest positive: one layout dominating three incumbents."""
+def test_frozen_triple_dominates_three(iweb_a_legacy: CE.ArmBoard) -> None:
+    """The frozen verdict's strongest positive: one layout dominating three incumbents.
+
+    LEGACY board (the frozen claim). Under the corrected axis it beats only archive-1843 —
+    pinned by `test_wfd_correction_kills_two_of_the_frozen_three`."""
+    iweb_a = iweb_a_legacy
     inc = iweb_a.incumbent_axes(floor_kind="norm")
     cand = iweb_a.axes(FROZEN_TRIPLE, floor_kind="norm")
     beaten = {n for n in inc if CE.dominates(cand, inc[n])[0]}
@@ -212,8 +238,9 @@ def test_frozen_triple_dominates_three(iweb_a: CE.ArmBoard) -> None:
     print(f"gate4 frozen triple dominates {sorted(beaten)} OK")
 
 
-def test_resisters_are_not_dominated_by_frozen_candidates(iweb_a: CE.ArmBoard) -> None:
-    """keybo-lsb / keybo-lsb+lm must still resist every frozen candidate."""
+def test_resisters_are_not_dominated_by_frozen_candidates(iweb_a_legacy: CE.ArmBoard) -> None:
+    """keybo-lsb / keybo-lsb+lm must still resist every frozen candidate (LEGACY board)."""
+    iweb_a = iweb_a_legacy
     inc = iweb_a.incumbent_axes(floor_kind="norm")
     for lay in list(FROZEN_DOMINATORS) + [FROZEN_TRIPLE]:
         cand = iweb_a.axes(lay, floor_kind="norm")
@@ -222,6 +249,48 @@ def test_resisters_are_not_dominated_by_frozen_candidates(iweb_a: CE.ArmBoard) -
             assert not is_dom, f"{lay} unexpectedly dominates {resister}"
             assert n_ge <= 8, f"{lay} reaches n_ge={n_ge}/10 vs {resister} (frozen max is 8)"
     print("gate4 resisters still resist all frozen candidates (n_ge<=8) OK")
+
+
+# --- gate 4b: the CORRECTED axis — what the frozen verdict loses -----------------------
+# These pin the OTHER half of gate 4. Without them, retargeting the gates above to the legacy
+# board would silently retire a fact instead of replacing it: the frozen numbers still have to
+# reconcile (legacy), AND the corrected axis has to kill exactly the claims it kills.
+def test_wfd_correction_kills_two_of_the_frozen_three(
+    iweb_a: CE.ArmBoard, iweb_a_legacy: CE.ArmBoard
+) -> None:
+    """FROZEN_TRIPLE beats 3 incumbents on the corrupt board and only archive-1843 on the valid
+    one — and each loss must be on the wfd axis ALONE (n_ge 10 -> 9), never a second axis."""
+    inc_l = iweb_a_legacy.incumbent_axes(floor_kind="norm")
+    cand_l = iweb_a_legacy.axes(FROZEN_TRIPLE, floor_kind="norm")
+    beaten_legacy = {n for n in inc_l if CE.dominates(cand_l, inc_l[n])[0]}
+    assert beaten_legacy == {"lsb-sib", "archive-1843", "archive-1846"}, f"{beaten_legacy}"
+
+    inc_c = iweb_a.incumbent_axes(floor_kind="norm")
+    cand_c = iweb_a.axes(FROZEN_TRIPLE, floor_kind="norm")
+    beaten_corrected = {n for n in inc_c if CE.dominates(cand_c, inc_c[n])[0]}
+    assert beaten_corrected == {"archive-1843"}, f"{beaten_corrected}"
+
+    for lost in ("lsb-sib", "archive-1846"):
+        is_dom, n_ge, _ = CE.dominates(cand_c, inc_c[lost])
+        assert not is_dom and n_ge == len(CE.AXES) - 1, f"{lost}: n_ge={n_ge}"
+        assert cand_c["wfd"] < inc_c[lost]["wfd"], f"{lost} was not lost on the wfd axis"
+    print(f"gate4b correction: frozen triple {sorted(beaten_legacy)} -> {sorted(beaten_corrected)}")
+
+
+def test_frozen_dominators_under_corrected_wfd(iweb_a: CE.ArmBoard) -> None:
+    """Each frozen 10/10 dominator, re-adjudicated on the valid board. Whatever it loses, it may
+    only lose on wfd — a second failing axis would mean the correction is not confined to wfd."""
+    inc = iweb_a.incumbent_axes(floor_kind="norm")
+    survived, died = [], []
+    for lay, target in FROZEN_DOMINATORS.items():
+        cand = iweb_a.axes(lay, floor_kind="norm")
+        is_dom, n_ge, _ = CE.dominates(cand, inc[target])
+        (survived if is_dom else died).append(target)
+        if not is_dom:
+            assert n_ge == len(CE.AXES) - 1, f"{lay} vs {target}: n_ge={n_ge}, not a wfd-only loss"
+            assert cand["wfd"] < inc[target]["wfd"], f"{lay} vs {target} not lost on wfd"
+    assert died, "the correction killed none of the frozen dominators — suspect the wfd path"
+    print(f"gate4b frozen dominators under corrected wfd: survive={survived} die={died}")
 
 
 def test_incumbents_are_mutually_nondominated(iweb_a: CE.ArmBoard) -> None:
