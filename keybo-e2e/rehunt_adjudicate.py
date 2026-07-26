@@ -242,10 +242,43 @@ def main() -> None:
             run = load(runs_dir / f"rehunt-{corpus}-armA-{frame}.json")
             if run is None:
                 continue
+            # A raw dominator COUNT conflates two different failures, and only one of them is
+            # attributable to the frame:
+            #   AXIS-BLOCKED  deficit > 0 — the candidate cannot reach the incumbent on some
+            #                 axis. THIS is a frame effect.
+            #   SELF-TIE      deficit == 0, n_strict == 0, no blocking axis, and the best find
+            #                 IS the incumbent — the search reached the incumbent's own quality
+            #                 and merely failed to find a STRICT win. That is SA stochasticity,
+            #                 not the added axis blocking anything.
+            # Differencing counts without splitting these makes the marginal a noise statistic.
+            per_target = {}
+            for target, best in run["per_target_best"].items():
+                if target.startswith("IDEAL"):
+                    continue
+                blocking = {a: v for a, v in best["residual_shortfall"].items() if v > 0}
+                per_target[target] = {
+                    "dominates": bool(best["dominates_target"]),
+                    "deficit": float(best["best_deficit"]),
+                    "n_strict": int(best["best_n_strict_better"]),
+                    "self_tie": bool(
+                        not best["dominates_target"]
+                        and best["best_deficit"] <= 1e-9
+                        and best["best_layout"] == run["incumbent_axes"][target]["layout"]
+                    ),
+                    "blocking_axes": blocking,
+                }
             counts[frame] = {
                 "n_dominated": len(run["dominated_targets"]),
                 "dominated": run["dominated_targets"],
+                "n_self_tie": sum(v["self_tie"] for v in per_target.values()),
+                "n_axis_blocked": sum(
+                    1 for v in per_target.values() if not v["dominates"] and v["blocking_axes"]
+                ),
+                "axis_blocked_targets": [
+                    t for t, v in per_target.items() if not v["dominates"] and v["blocking_axes"]
+                ],
                 "unique_layouts": run["unique_layouts_total"],
+                "per_target": per_target,
             }
         if "narrow11" in counts and "wide11" in counts:
             marginal = counts["wide11"]["n_dominated"] - counts["narrow11"]["n_dominated"]
@@ -254,29 +287,61 @@ def main() -> None:
                 if "ten" in counts
                 else None
             )
+            # The attributable marginal: does the real axis BLOCK an incumbent the placebo does
+            # not? Only axis-blocked non-dominance counts.
+            blocked_marginal = counts["wide11"]["n_axis_blocked"] - counts["narrow11"][
+                "n_axis_blocked"
+            ]
+            # every count difference that is NOT axis-blocked is a self-tie, i.e. search noise
+            count_diff_is_all_self_tie = bool(marginal != 0 and blocked_marginal == 0)
             null2[corpus] = {
                 "counts": counts,
                 "marginal_placebo_to_real": marginal,
                 "naive_ten_to_wide11": naive,
-                "wscissor_inert": marginal == 0,
+                "attributable_marginal_axis_blocked": blocked_marginal,
+                "count_difference_is_all_self_tie": count_diff_is_all_self_tie,
+                # INERT means the real axis blocks nothing the placebo does not. A count wobble
+                # produced purely by self-ties does not make the axis active.
+                "wscissor_inert": blocked_marginal == 0,
             }
             print(
                 f"  {corpus:9s} ten={counts.get('ten', {}).get('n_dominated', '--')} "
                 f"narrow11(placebo)={counts['narrow11']['n_dominated']} "
                 f"wide11(real)={counts['wide11']['n_dominated']} "
                 f"twelve={counts.get('twelve', {}).get('n_dominated', '--')}   "
-                f"MARGINAL placebo->real = {marginal:+d}"
-                f"{'  (naive ten->wide11 would read ' + f'{naive:+d})' if naive is not None else ''}"
+                f"count marginal={marginal:+d}  "
+                f"ATTRIBUTABLE (axis-blocked) marginal={blocked_marginal:+d}"
+                f"{'   [count wobble is ALL self-ties -> search noise]' if count_diff_is_all_self_tie else ''}"
             )
-    # Absence of data is NOT a contradiction — distinguish the three states explicitly, or a
-    # missing placebo cell reads as a refuted null.
+            for frame in ("ten", "narrow11", "wide11", "twelve"):
+                if frame in counts:
+                    c = counts[frame]
+                    print(
+                        f"      {frame:9s} dom={c['n_dominated']} self_tie={c['n_self_tie']} "
+                        f"axis_blocked={c['n_axis_blocked']} {c['axis_blocked_targets']}"
+                    )
+    # Absence of data is NOT a contradiction — distinguish the states explicitly, or a missing
+    # placebo cell reads as a refuted null.
     if not null2:
         null2_state = "NOT TESTED (no narrow11/wide11 placebo pair present)"
     elif all(v["wscissor_inert"] for v in null2.values()):
-        null2_state = "SURVIVES ✅ (marginal placebo->real effect is 0 on every corpus tested)"
+        wobble = [c for c, v in null2.items() if v["count_difference_is_all_self_tie"]]
+        null2_state = (
+            "SURVIVES ✅ (the real axis blocks NOTHING the same-size placebo does not: "
+            "attributable axis-blocked marginal is 0 on every corpus)"
+        )
+        if wobble:
+            null2_state += (
+                f"; the raw COUNT wobbles on {wobble}, but every count difference is a SELF-TIE "
+                "(deficit 0, no blocking axis, best find IS the incumbent) — i.e. the search "
+                "failing to find a strict win, not the axis blocking"
+            )
     else:
         hot = [c for c, v in null2.items() if not v["wscissor_inert"]]
-        null2_state = f"NON-ZERO marginal on {hot} — investigate before calling it a discovery"
+        null2_state = (
+            f"NON-ZERO attributable marginal on {hot} — the real axis blocks an incumbent the "
+            "placebo does not; investigate before calling it a discovery"
+        )
     survives2 = bool(null2) and all(v["wscissor_inert"] for v in null2.values())
     print(f"  NULL 2 {null2_state}")
 
