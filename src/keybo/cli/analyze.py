@@ -226,6 +226,12 @@ def run(args: argparse.Namespace) -> int:
         # Note this denominator differs from every other gauge's here -- stated, not hidden.
         gauges["comfort"] = comfort.fitness(layout) / bigram_mass
         row["gauges"] = gauges
+        # `kmstats` is the 11 keymeow-class statistics ALONE -- a named external convention,
+        # and the historical JSON key, so it stays. `gauges` is the campaign's 15-gauge frame
+        # (these 11 plus scissor/imbalance/oxey-style/comfort). Same values on the shared 11;
+        # kept as two keys because they name two different things, and dropping the older one
+        # would silently break any consumer reading row["kmstats"].
+        row["kmstats"] = {name: gauges[name] for name in STAT_NAMES}
 
         # Graded scissor: the same support, weighted by finger tier and reach direction.
         # A declared PREFERENCE (docs/scissor-severity-preregistration.md), not a
