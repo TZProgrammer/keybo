@@ -4,13 +4,19 @@ import pytest
 
 from keybo.analysis.kmstats import STAT_NAMES, KmStats
 from keybo.cli.analyze import _shared_corpora
+from keybo.data.corpus import IWEB, resolve_corpus_dir
 
 QWERTY = "qwertyuiopasdfghjkl;zxcvbnm,./"
 
 
 def _shared_kmstats() -> KmStats:
-    """kmstats wired to the production corpus exactly as `analyze` wires it."""
-    return KmStats(*_shared_corpora())
+    """kmstats wired exactly as `analyze` wires it, on iWeb — NAMED, not the default.
+
+    The oracle below is an iWeb number. CORPUS-SWAP-1 made ``blend-v1`` the default, so a
+    test that took the default was asserting *the default* rather than *the value*. Naming
+    the corpus is what keeps the frozen board reproducible across a default change.
+    """
+    return KmStats(*_shared_corpora(resolve_corpus_dir(IWEB)))
 
 
 def test_kmstats_small_corpus_pins_every_metric_and_denominator():

@@ -4,15 +4,22 @@ from __future__ import annotations
 
 import argparse
 import json
+from pathlib import Path
 
 from keybo.cli._paths import ensure_writable_output
-from keybo.data.corpus import load_frequencies
+from keybo.data.corpus import (
+    CORPUS_ENV_VAR,
+    PRODUCTION_DEFAULT,
+    corpus_identity,
+    corpus_name_for,
+    known_corpora,
+    load_frequencies,
+    production_corpus_dir,
+)
 from keybo.geometry import ROW_STAGGERED_30
 from keybo.layout import Layout
 from keybo.layouts import NAMED_LAYOUTS
 from keybo.scoring.inspect import layout_diagnostics
-
-_DEFAULT_BIGRAMS = "data/corpus/bigrams.txt"
 
 
 def add_arguments(parser: argparse.ArgumentParser) -> None:
@@ -21,7 +28,22 @@ def add_arguments(parser: argparse.ArgumentParser) -> None:
         required=True,
         help="A 30-char layout string, or a named layout (qwerty, dvorak, ...)",
     )
-    parser.add_argument("--bigram-freqs", default=_DEFAULT_BIGRAMS, help="Bigram frequency file")
+    # Resolved LAZILY in run() (CORPUS-SWAP-1): the default must follow KEYBO_CORPUS at run
+    # time, and build_parser() builds every subcommand's arguments on every invocation, so
+    # an eager resolve would let a bad KEYBO_CORPUS break even `keybo --help`.
+    parser.add_argument(
+        "--bigram-freqs",
+        default=None,
+        help="Bigram frequency file (default: the --corpus bigrams.txt)",
+    )
+    parser.add_argument(
+        "--corpus",
+        default=None,
+        help=(
+            f"Corpus supplying the default bigram table: {' | '.join(known_corpora())}, or a "
+            f"directory (default {PRODUCTION_DEFAULT}; env: {CORPUS_ENV_VAR})"
+        ),
+    )
     parser.add_argument("--out", help="Write the full diagnostics JSON to this path")
 
 
@@ -32,7 +54,8 @@ def _fmt_pct(x: float) -> str:
 def run(args: argparse.Namespace) -> int:
     if args.out:
         ensure_writable_output(args.out, "--out")
-    freqs = load_frequencies(args.bigram_freqs)
+    bigram_path = args.bigram_freqs or str(production_corpus_dir(args.corpus) / "bigrams.txt")
+    freqs = load_frequencies(bigram_path)
     layout_str = NAMED_LAYOUTS.get(args.layout, args.layout)
 
     target = layout_diagnostics(Layout(layout_str, ROW_STAGGERED_30), freqs)
@@ -45,6 +68,9 @@ def run(args: argparse.Namespace) -> int:
     diags = {"layout": target, **named}
 
     print(f"inspect: {args.layout}")
+    # Name the corpus: every share below is corpus-weighted, and the default changed
+    # (iWeb -> blend-v1) at CORPUS-SWAP-1.
+    print(f"corpus:  {corpus_name_for(Path(bigram_path).parent)} ({bigram_path})")
     print(f"{'':<18}" + "".join(f"{c:>10}" for c in cols))
     fingers = list(target["finger_load"])
     for f in fingers:
@@ -68,6 +94,14 @@ def run(args: argparse.Namespace) -> int:
 
     if args.out:
         with open(args.out, "w", encoding="utf-8") as f:
-            json.dump({"layout": target, "named": named}, f, indent=2)
+            json.dump(
+                {
+                    "corpus_provenance": corpus_identity(Path(bigram_path).parent),
+                    "layout": target,
+                    "named": named,
+                },
+                f,
+                indent=2,
+            )
         print(f"report -> {args.out}")
     return 0

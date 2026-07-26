@@ -175,9 +175,11 @@ def trigram_objective(trigram_path: str) -> tuple[np.ndarray, np.ndarray, np.nda
     )
 
 
-def default_trigram_path() -> str:
-    root = Path(__file__).resolve().parents[3]
-    return str(root / "data" / "corpus" / "trigrams.txt")
+def default_trigram_path(corpus: str | None = None) -> str:
+    """The production corpus's trigram table (``corpus``: a name or path, else the default)."""
+    from keybo.data.corpus import production_corpus_dir
+
+    return str(production_corpus_dir(corpus) / "trigrams.txt")
 
 
 def score_fit(lay30: str, surface: np.ndarray, objective) -> float:

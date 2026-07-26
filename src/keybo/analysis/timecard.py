@@ -159,11 +159,16 @@ class TimeSurface:
         )
 
 
-@lru_cache(maxsize=2)
-def default_surface(target_wpm: float = 90.0) -> TimeSurface:
-    """The surface over the repo trigram corpus (cached — model load is the slow part)."""
-    from keybo.data.corpus import load_frequencies
+@lru_cache(maxsize=4)
+def default_surface(target_wpm: float = 90.0, corpus: str | None = None) -> TimeSurface:
+    """The surface over the production trigram corpus (cached — model load is the slow part).
 
-    root = Path(__file__).resolve().parents[3]
-    tri = load_frequencies(str(root / "data" / "corpus" / "trigrams.txt"))
+    ``corpus`` is a name or path for :func:`keybo.data.corpus.production_corpus_dir`, and is
+    part of the cache key so two corpora in one process cannot serve each other's surface.
+    (The fitted timing model underneath is a baked artifact; the corpus only sets the
+    frequency weighting over it — swapping corpora does not re-fit anything.)
+    """
+    from keybo.data.corpus import load_frequencies, production_corpus_dir
+
+    tri = load_frequencies(str(production_corpus_dir(corpus) / "trigrams.txt"))
     return TimeSurface(tri, target_wpm=target_wpm)

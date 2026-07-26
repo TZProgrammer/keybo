@@ -16,6 +16,7 @@ import sys
 from pathlib import Path
 
 from keybo.data.community import IngestReport, extract_windows, load_sessions, write_tsv
+from keybo.data.corpus import corpus_identity, production_corpus_dir
 
 #: community pids start here — disjoint from aalto participant ids
 PID_BASE = 200001
@@ -33,7 +34,10 @@ def _load_corpus(path: Path) -> dict[str, int]:
 def main() -> None:
     raw_dir, out_dir = Path(sys.argv[1]), Path(sys.argv[2])
     out_dir.mkdir(parents=True, exist_ok=True)
-    corpus_dir = Path(__file__).resolve().parents[3] / "data" / "corpus"
+    # The production corpus supplies the per-ngram frequency column of the stroke TSVs
+    # (a weight on the training rows, not the measured times). Overridable via
+    # KEYBO_CORPUS so a re-ingest can be pinned to the corpus a model was trained on.
+    corpus_dir = production_corpus_dir()
 
     report = IngestReport()
     sessions = load_sessions(sorted(raw_dir.rglob("*.json")), report)
@@ -75,6 +79,8 @@ def main() -> None:
 
     summary = {
         "pids": pids,
+        # WHICH corpus weighted these rows -- the TSVs carry the counts, not their source.
+        "corpus_provenance": corpus_identity(corpus_dir),
         "rows": {"bistrokes": n_bi, "tristrokes": n_tri, "tristrokes_last": n_tl},
         "sessions_total": report.sessions_total,
         "sessions_deduped": report.sessions_deduped,

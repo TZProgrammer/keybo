@@ -15,12 +15,29 @@ from keybo.models.xgboost_model import XGBoostTypingModel
 from keybo.scoring.base import IScorer
 from keybo.scoring.model_scorer import BigramModelScorer, TrigramModelScorer
 
-_DEFAULT_BIGRAMS = "data/corpus/bigrams.txt"
-_DEFAULT_TRIGRAMS = "data/corpus/trigrams.txt"
+
+def freq_path(args: argparse.Namespace, table: str) -> str:
+    """One frequency-table path: the explicit flag if given, else the production corpus's.
+
+    Resolution is LAZY (here, not at parser-construction time) for two reasons: the default
+    must follow ``KEYBO_CORPUS`` at run time, and ``build_parser`` builds every subcommand's
+    arguments on every invocation — so resolving eagerly would make a bad ``KEYBO_CORPUS``
+    break even ``keybo --help``. Before CORPUS-SWAP-1 these defaults were repo-relative
+    literals, so the default corpus silently depended on the cwd.
+    """
+    from keybo.data.corpus import production_corpus_dir
+
+    flag = "bigram_freqs" if table == "bigrams.txt" else "trigram_freqs"
+    explicit = getattr(args, flag, None)
+    if explicit:
+        return str(explicit)
+    return str(production_corpus_dir(getattr(args, "corpus", None)) / table)
 
 
 def add_scorer_arguments(parser: argparse.ArgumentParser) -> None:
     """Add the model + ngram + frequency-file arguments shared by optimize and score."""
+    from keybo.data.corpus import CORPUS_ENV_VAR, PRODUCTION_DEFAULT, known_corpora
+
     parser.add_argument("--model", required=True, help="Path to a saved model (.json)")
     parser.add_argument(
         "--ngram",
@@ -30,13 +47,21 @@ def add_scorer_arguments(parser: argparse.ArgumentParser) -> None:
     )
     parser.add_argument(
         "--bigram-freqs",
-        default=_DEFAULT_BIGRAMS,
-        help="Bigram frequency file (bigram objective only)",
+        default=None,
+        help="Bigram frequency file (bigram objective only; default: --corpus's bigrams.txt)",
     )
     parser.add_argument(
         "--trigram-freqs",
-        default=_DEFAULT_TRIGRAMS,
-        help="Trigram frequency file (trigram objective only)",
+        default=None,
+        help="Trigram frequency file (trigram objective only; default: --corpus's trigrams.txt)",
+    )
+    parser.add_argument(
+        "--corpus",
+        default=None,
+        help=(
+            f"Corpus supplying the default frequency tables: {' | '.join(known_corpora())}, "
+            f"or a directory (default {PRODUCTION_DEFAULT}; env: {CORPUS_ENV_VAR})"
+        ),
     )
     parser.add_argument("--target-wpm", type=float, default=90.0)
 
@@ -49,8 +74,8 @@ def load_freqs(args: argparse.Namespace) -> dict[str, int]:
     frequencies (train/serve parity), so touching those files here would fail on a discarded
     input (e.g. running from a cwd without the repo's data/corpus/).
     """
-    path = args.bigram_freqs if args.ngram == "bigram" else args.trigram_freqs
-    return load_frequencies(path)
+    table = "bigrams.txt" if args.ngram == "bigram" else "trigrams.txt"
+    return load_frequencies(freq_path(args, table))
 
 
 def build_scorer(args: argparse.Namespace, freqs: Mapping[str, int] | None = None) -> IScorer:

@@ -17,6 +17,12 @@ Two frozen frames are used, and the distinction is load-bearing (trap #13):
 
 Both are checked in as literals below rather than read from another agent's state
 directory, so the suite is hermetic.
+
+**Every control here runs on iWeb, NAMED.** CORPUS-SWAP-1 made ``blend-v1`` the production
+default; the ``_run`` helper injects ``--corpus iweb`` and asserts it back out of the JSON,
+so these stay reproductions of the frozen boards instead of quietly becoming assertions
+about whatever the current default is. A test that reads the default asserts the default,
+not the value.
 """
 
 from __future__ import annotations
@@ -26,6 +32,7 @@ import json
 import pytest
 
 from keybo.cli.__main__ import main
+from keybo.data.corpus import IWEB
 
 #: flagship-c3, from artifacts/reselect/board-blend-reselect.json (`layouts`).
 FLAGSHIP_C3 = "pyou'vgdnmheai.cstrlkjz,-wfbxq"
@@ -128,9 +135,23 @@ SCISSOR_FAMILY = ("scissor", "scissor-pinky-share")
 
 
 def _run(capsys, argv: list[str]) -> dict:
+    """Run `analyze` on iWeb — the corpus every frozen board here was computed on.
+
+    ``--corpus iweb`` is injected EXPLICITLY (CORPUS-SWAP-1 made ``blend-v1`` the default).
+    Without it these controls would silently become assertions about the current default
+    rather than reproductions of the frozen boards, which is the audit trail they exist to
+    protect. The corpus is asserted back out of the JSON below, so a future default change
+    cannot quietly relabel these numbers either.
+    """
+    argv = [argv[0], "--corpus", IWEB, *argv[1:]]
     rc = main(argv)
     assert rc == 0, f"analyze {argv} returned {rc}"
-    return json.loads(capsys.readouterr().out)
+    out = json.loads(capsys.readouterr().out)
+    if "--json" in argv:
+        assert out["corpus"] == IWEB, (
+            f"frozen-board controls must run on iWeb, got {out['corpus']!r}"
+        )
+    return out
 
 
 @pytest.mark.slow
@@ -294,7 +315,9 @@ def test_dvorak_text_report_does_not_crash_and_prints_na(capsys):
 @pytest.mark.slow
 def test_json_and_text_report_agree(capsys):
     """The JSON path is the one that silently drifts — pin them against each other."""
-    text_rc = main(["analyze", "keybo-lsb", "--no-time"])
+    # Both halves must name the SAME corpus: `_run` pins iWeb, so the text run does too.
+    # A default-vs-named mismatch here would compare two corpora and read as a drift bug.
+    text_rc = main(["analyze", "--corpus", IWEB, "keybo-lsb", "--no-time"])
     assert text_rc == 0
     text = capsys.readouterr().out
     out = _run(capsys, ["analyze", "keybo-lsb", "--no-time", "--json"])
@@ -528,7 +551,8 @@ def test_bad_scissor_scores_dvorak_too(capsys):
 
 @pytest.mark.slow
 def test_bad_scissor_text_report_agrees_with_json(capsys):
-    text_rc = main(["analyze", "flagship-c3", "--no-time"])
+    # Same-corpus requirement as test_json_and_text_report_agree: `_run` pins iWeb.
+    text_rc = main(["analyze", "--corpus", IWEB, "flagship-c3", "--no-time"])
     assert text_rc == 0
     text = capsys.readouterr().out
     out = _run(capsys, ["analyze", "flagship-c3", "--no-time", "--json"])

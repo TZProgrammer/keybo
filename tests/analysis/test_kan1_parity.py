@@ -67,9 +67,15 @@ def test_g3_kmstats_vs_kmrun():
 
 @pytest.mark.slow
 def test_g4_time_surface_reproduces_p17_board():
-    from keybo.analysis.timecard import default_surface
+    """The P17 board is an iWeb artifact, so this gate NAMES iWeb.
 
-    surf = default_surface(90.0)
+    CORPUS-SWAP-1 made ``blend-v1`` the default; taking the default here would turn a
+    parity gate against a frozen board into an assertion about whatever the default is.
+    """
+    from keybo.analysis.timecard import default_surface
+    from keybo.data.corpus import IWEB
+
+    surf = default_surface(90.0, IWEB)
     for name, want in GOLD["speed"].items():
         card = surf.card(GOLD["layouts"][name])
         assert card.total_ms == pytest.approx(want, rel=1e-6), name

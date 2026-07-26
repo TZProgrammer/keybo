@@ -26,6 +26,7 @@ from keybo.data.build_corpus import (
     default_sources,
     write_build,
 )
+from keybo.data.corpus import IWEB, resolve_corpus_dir
 
 
 def _repo_root() -> Path:
@@ -93,7 +94,13 @@ def run(args: argparse.Namespace) -> int:
         stdlib=Path(args.stdlib) if args.stdlib else None,
         man_root=Path(args.man_root) if args.man_root else None,
     )
-    anchor_dir = None if args.no_anchor else repo / "data" / "corpus"
+    # ⚠ The anchor is the iWeb source, ALWAYS — deliberately NOT production_corpus_dir().
+    # build-corpus CONSUMES the anchor to PRODUCE a blend; pointing it at whatever the
+    # production default happens to be would make the builder read its own output once
+    # the default became a blend (CORPUS-SWAP-1 made it blend-v1), compounding the blend
+    # weights on every rebuild. This is the same self-referential class of bug as the
+    # rglob over the repo's own files that already cost blend-v1 byte-reproducibility.
+    anchor_dir = None if args.no_anchor else resolve_corpus_dir(IWEB)
 
     print(f"building blend into {out_dir} (declared total {args.total:,} per table)")
     result = build_blend(sources, weights=weights, anchor_dir=anchor_dir, total=args.total)
