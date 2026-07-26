@@ -6820,3 +6820,68 @@ gauge weights is itself an unregistered modelling choice, and equal weights are 
 doing so. If a corpus-agnostic pick is wanted anyway, flagship-c3 is the best-supported one on the MEAN axis across all three corpora — a
 weaker and differently-shaped claim than dominance, offered with its 17/45 counterweight attached. Whether to adopt any layout, and whether
 a mean-aggregate rule should ever be registered PROSPECTIVELY, remain USER decisions.
+
+### LAYOUT-SPECIALIZE-1 — layout-targeted training reweighting: 0 of 21 cells clear the bar, and the tautology it was built to catch NEVER MATERIALIZES (2026-07-25)
+ORIGIN AND MY OWN ERROR IN SCOPING IT. This round exists because I MISREAD the user's question. They asked to train LAYOUTS optimizing for the
+new aalto/comm/pool geometry surfaces; I spawned an agent to specialize the MODEL toward a layout. The round is registered anyway because it
+produced a real, reusable negative result and a mechanism — but it answered a question nobody asked. Branch-local only (11 commits, HEAD
+ae96889c05c0c9986e7bba3e14234c0f95c0a7c8, no upstream); prereg 69f980d frozen BEFORE any fit; PREREGISTRATIONS.md untouched by the child.
+THE PREMISE WAS NOT EXECUTABLE AS ASKED, and the child said so instead of papering over it. Three independent reasons, verified from source
+before freezing: (1) new-AALTO-cand has ZERO keystrokes and LOLO needs >=2 layouts, so the training set is empty and the evaluation
+undefined; (2) the served feature vector carries NO character identity (schema.py: "Character identity is deliberately absent" — the OQ-1
+decision), so a served g maps (position-triple, wpm)->ms and has NO SLOT in which a layout could be named; (3) all 7 board layouts are
+permutations of ONE charset, so their typeable-trigram sets are IDENTICAL (22,145 trigrams, 92.47% of corpus mass, test-asserted) — a
+character-n-gram specialization is DEGENERATE here. The only non-degenerate reading, which was run: up-weight training examples by the corpus
+mass the candidate's char->slot map sends to their POSITION patterns.
+RESULT: 0 OF 21 arm-x-surface cells clear the bar. I VERIFIED this cell by cell — all 21 verdict blocks carry at least one disqualifying
+reason and NONE carries an adopt/clears flag. 8 arms at one config (PEAK_POOL__BACKFIT_1) differing ONLY in the mean-1 weight vector
+(1+M/median(M))^tau; Bonferroni-adjusted 99.286%, 20 model seeds, WPM band 90-110 per the user's objective. AALTO served rho degrades in ALL
+7 arms (pair tau .5/1/2 = -0.0086/-0.0237/-0.0921; triple tau 1/2 = -0.2403/-0.4688, the last collapsing rho/ceiling 0.876->0.407 with
+optimizer-tensor Spearman 0.0996 — the NGRAM-FE 0.852->0.164 signature reappearing on a NEW lever). COMMUNITY: all 7 worse; layout_tau_min
+collapses 0.6667->0.0000 for both triple arms. Kish ESS fraction 0.352 (CTRL) down to 0.0034 — that PRE-FIT table predicted the entire harm
+ordering. Triple axis worse than pair at matched tau in 6/6 comparisons.
+THE HEADLINE — THE TAUTOLOGY DOES NOT MATERIALIZE, so the registered "this specializes the ruler" verdict rule NEVER FIRES. I VERIFIED the
+central count directly from the 9 board files: across 3 corpora x 3 surfaces x 5 CANDIDATE arms, rank_improved is False in 45 of 45, and
+own_score_delta_vs_board_mean_pct > 0 (disfavoured vs the board mean) in 45 of 45. There is no cell anywhere in this experiment where
+specializing toward new-AALTO-cand improved new-AALTO-cand's own standing. MECHANISM, which explains the absence: the target contributes ZERO
+training rows, so there is NO MEMORIZATION CHANNEL to exploit — tilting other layouts' data toward its position profile can only destroy the
+shared geometry. So the honest verdict is STRONGER than "specializes the ruler": this specialization neither improves the model nor flatters
+the target.
+⚠ TWO CALLBACK PHRASINGS I TIGHTENED AGAINST THE ARTIFACTS (the verdict is unaffected; the precision matters). (a) The callback says "the
+target's OWN score gets WORSE". Measured: own_score_delta_pct > 0 in only 18 of 45 cells. What IS 45/45 is disfavoured RELATIVE TO THE BOARD
+MEAN — the whole board shifts and the target shifts less. This is the child's own "reweighting moves LEVEL not contrasts" finding, so the
+mechanism is right and only the phrasing overstated. (b) "On AALTO it is already rank 1 of 7 and FALLS to 3/4/6" — it falls only in the
+higher-tilt arms; rank stays 1->1 in 6 of 15 AALTO cells, and is unchanged in 20 of 45 cells overall. Cite "never improved, and disfavoured
+vs the board mean in 45/45", NOT "its own score always got worse".
+THE POOL COMPLICATION, NOT SMOOTHED. The two WEAKEST arms FLIP SIGN on POOL: credible band GAIN (-0.82%/-0.60% rel vs MDE 0.36%/0.40%) AND
+served rho GAIN (+0.97%/+1.17%). Both are disqualified by the PRE-REGISTERED negative-control gate — RANDPERM retains 67.9% of the band gain
+against a 50% threshold fixed in code pre-fit — plus a margin-tau regression. So the precise claim is "harmful on the primary surface and on
+COMMUNITY, disqualified-not-harmful at low tilt on the non-independent pooled surface", NOT "harmful everywhere". HONEST EXCEPTION the child
+flagged rather than buried: on POOL's rho axis the negative control does NOT match (RANDPERM degrades rho while the tau<=1 pair arms improve
+it). That is the one result pointing toward real signal; it is WEAK/INFERRED because POOL is not independent, the effect is ~1% relative, it
+contradicts AALTO, the near-twin shows the same +0.006, and both arms fail other guards. A follow-up would need an INDEPENDENT surface and
+more than two targets.
+NEGATIVE CONTROL IS THE LOAD-BEARING RESULT AND IT WORKED IN BOTH DIRECTIONS: where the arms hurt, RANDPERM hurts too (AALTO rho -0.0115,
+rare +0.442; COMMUNITY rho -0.0188) so the harm is GENERIC to position-mass tilting, not candidate-specific; and where an arm finally looked
+like a win, RANDPERM ate 67.9% of it. Design validity was MEASURED pre-fit, not asserted: candidate-vs-RANDPERM weight correlation 0.4875
+(discriminating), candidate-vs-keybo-lsb 0.9564 (near-twin) — which is WHY the prereg named RANDPERM primary. Layout balance PINNED EXACTLY
+in every arm on every surface (0.250000/0.250000/0.125000 on the real 610,797/34,765/636,206 censuses), so no arm's effect is confounded with
+layout balance.
+VALIDATION I INDEPENDENTLY CONFIRMED: positive control PASS, max abs error 0.000000e+00 ms over 1600 checks with 0 missing, against the
+frozen peak-model BACKFIT_1; ONE code fingerprint across all 480 checkpoints, 0 refused, xgboost 3.3.0 throughout; exact frequency-invariance
+0.0 EXACTLY in all 24 cells; MDE 0.36-1.6% relative (far inside the 5% materiality anchor) so the nulls are genuine no-effect, not no-power.
+I re-derived all three corpus md5s MYSELF rather than trusting the citation: iWeb 50cab38b, blend-v1 c5066fa7 (both matching NO-ANCHOR-1's
+references) and the vendored no-anchor copy 876ae3c3, byte-identical to the source in state/noanchor. Production corpus untouched. Full repo
+suite rc=0, collected=674, failed=0 (673 passed + 1 skipped, 955.5s), count closing exactly as 577 tests/ + 97 harness; ruff clean.
+THREE BUGS THE CHILD CAUGHT, THE THIRD IN ITS OWN VERIFICATION AND THE MOST VALUABLE: (1) summarize_seed averaged rho_metric over per-bucket
+blocks that never define it -> NaN -> allow_nan=False refused a checkpoint mid-grid (COMMUNITY genuinely has 2-cell buckets). (2)
+freq_decile_mae used kind="stable" while cell frequencies are massively tied (674 of dvorak's 677 cells), so the non-default sort put
+different cells in decile 1 and moved the rare-ngram guard 0.03 ms off the archive WHILE umae/wmae/rho reproduced at exactly 0.0 — THREE
+METRICS AGREEING BIT-FOR-BIT DID NOT IMPLY THE FOURTH WOULD, which is a general warning about partial positive controls. (3) ITS OWN rc GATE
+WAS INERT: a full-repo run printed "576 passed" with shell rc 0 while the sentinel file DID NOT EXIST, because pyproject testpaths=["tests"]
+means a bare pytest never loads keybo-e2e/conftest.py where the hook lives — so "real rc" would have been parsed stdout. Fixed via explicit
+plugin load, verified BOTH ways (green probe rc=0; deliberate assert-False probe rc=1/failed=1, so the sentinel bites), and PINNED BY A NEW
+TEST that fails if the trap conditions change. This is the -qq hazard's sibling and belongs with it in the campaign's tooling lore.
+=> VERDICT: REJECT layout-targeted training reweighting on every surface at every tilt tested. Do NOT retry it with different weight shapes:
+the mechanism (zero training rows for the target => no memorization channel) predicts failure for ANY weighting, and the Kish ESS table
+predicts the harm ordering a priori. The round's lasting value is the mechanism, the both-directions negative control, and bug (3).
