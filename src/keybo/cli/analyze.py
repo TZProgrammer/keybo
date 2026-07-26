@@ -50,6 +50,9 @@ import json as _json
 from pathlib import Path
 
 from keybo.analysis import surfaces as S
+from keybo.analysis.bad_scissor import ATTRIBUTION_RULE as BAD_SCISSOR_RULE
+from keybo.analysis.bad_scissor import FINGER_ORDER as BAD_SCISSOR_FINGERS
+from keybo.analysis.bad_scissor import BadScissor
 from keybo.analysis.community import community_suite, pinned_char
 from keybo.analysis.kmstats import STAT_NAMES, KmStats
 from keybo.analysis.redirects import REDIRECT_CLASSES, RedirectFamily
@@ -191,6 +194,7 @@ def run(args: argparse.Namespace) -> int:
     scissor_fingers = ScissorByFinger(bigrams)
     redirects = RedirectFamily(trigrams)
     severity = ScissorSeverity(bigrams)
+    bad_scissor = BadScissor(bigrams)
 
     surf = None if args.no_time else default_surface(args.target_wpm)
     ref_card = surf.card(ref_lay) if surf is not None else None
@@ -247,6 +251,19 @@ def run(args: argparse.Namespace) -> int:
         if args.scissor_pairs:
             row["scissor_by_finger_pair"] = scissor_fingers.pair_shares(layout)
         row["redirects"] = redirects.shares(lay)
+
+        # bad-scissor: the sibling `badscissor` agent's specification, implemented exactly.
+        # A DIFFERENT support from `scissor` -- a cross-cut, not a superset -- and a
+        # DIFFERENT denominator (space-excluded, the kmstats convention), so it is reported
+        # in its own block rather than beside the flat scissor gauge.
+        row["bad_scissor"] = {
+            "share": bad_scissor.share(layout),
+            "by_finger": bad_scissor.by_finger(layout),
+            "by_cell": bad_scissor.by_cell(layout),
+            "attribution_rule": BAD_SCISSOR_RULE,
+            "denominator": "layout-restricted bigram mass, space-EXCLUDED (kmstats convention)",
+            "severity": "flat (1.0 per qualifying bigram) -- the spec refuted a distance grading",
+        }
 
         # --- community scores: raw and primed; N/A when the charset cannot be boarded ---
         gk, v1, o2 = community_suite(pinned_char(lay))
@@ -437,6 +454,31 @@ def _print_report(rows: dict[str, dict], ref_name: str, args: argparse.Namespace
         for n in names:
             pairs = rows[n].get("scissor_by_finger_pair", {})
             print(f"{n:<{w}}" + "".join(f"{pairs.get(k, 0.0):>10.4f}" for k in keys))
+
+    print("\n== bad-scissor: the WEAKER finger descends (% of layout-covered NO-SPACE mass) ==")
+    print(
+        f"{'layout':<{w}}{'share↓':>9}{'dy1':>9}{'dy2':>9}"
+        + "".join(f"{f:>9}" for f in BAD_SCISSOR_FINGERS)
+    )
+    for n in names:
+        bad = rows[n]["bad_scissor"]
+        cells = bad["by_cell"]
+        dy1 = sum(v for k, v in cells.items() if k.endswith("dy1"))
+        dy2 = sum(v for k, v in cells.items() if k.endswith("dy2"))
+        print(
+            f"{n:<{w}}{bad['share']:>9.4f}{dy1:>9.4f}{dy2:>9.4f}"
+            + "".join(f"{bad['by_finger'][f]:>9.4f}" for f in BAD_SCISSOR_FINGERS)
+        )
+    print(
+        f"attribution: {rows[names[0]]['bad_scissor']['attribution_rule']} "
+        "(so both index columns are structurally 0); "
+        f"denominator: {rows[names[0]]['bad_scissor']['denominator']}"
+    )
+    print(
+        "a CROSS-CUT of `scissor`, not a superset: it drops the 12 narrow / 36 wide pairs where "
+        "the weak finger is on TOP and adds 72 single-row descents neither gauge sees — so the "
+        "dy2 column above is the only part the incumbent scissor gauges can price"
+    )
 
     print("\n== redirect family, oxeylyzer-1 classes (% of layout-covered trigram mass) ==")
     print(

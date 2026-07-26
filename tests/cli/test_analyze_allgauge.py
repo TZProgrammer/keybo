@@ -440,3 +440,100 @@ def test_graded_scissor_class_breakdown_is_an_exact_partition(capsys):
         assert sum(graded["class_masses_unweighted"].values()) == pytest.approx(
             row["gauges"]["scissor"], rel=0, abs=1e-12
         ), name
+
+
+#: FROZEN: all-gauge-table.json -> rows["graphite"].speed.surfaces[*], fit AND saved%.
+#: A third layout, and the only control that also pins the saved-vs-qwerty arithmetic.
+FROZEN_GRAPHITE_SURFACES = {
+    "AALTO_TRI_PS_FREQ_PRIOR": (120126518391.9347, 2.2544137097470385),
+    "COMMUNITY_TRI_PS_FREQ_PRIOR": (120343024464.43086, 4.290226189796353),
+    "POOL_TRI_PS_FREQ_PRIOR": (122551005650.32454, 2.503612868116434),
+}
+
+
+@pytest.mark.slow
+def test_graphite_model_fits_and_saved_percentages_reproduce_exactly(capsys):
+    """POSITIVE CONTROL: fit AND saved% for a third layout.
+
+    ``saved_vs_ref_pct`` is computed here from two fits; pinning it against the frozen
+    board checks the ratio arithmetic and the reference layout, not just the numerator
+    (trap #9's shape: a bit-exact numerator says nothing about the quotient).
+
+    The **fits** are asserted bit-exactly. The **saved%** is asserted to 1e-12 relative,
+    and the distinction is deliberate rather than a weakened control: the two drivers
+    reduce the same two bit-identical fits in a different association order, so the last
+    ULP of the quotient can differ (AALTO: 2.254413709747037 here vs 2.2544137097470385
+    frozen — 6.6e-16 relative). Demanding ``==`` on the quotient would pin this driver's
+    float association order, not its value.
+    """
+    surfaces = pytest.importorskip("keybo.analysis.surfaces")
+    if not surfaces.available_surfaces():
+        pytest.skip("no model surfaces vendored or discoverable")
+    out = _run(capsys, ["analyze", "graphite", "--ref", "qwerty30m", "--json"])
+    scores = out["rows"]["graphite"]["model_scores"]
+    assert scores["available"] is True
+    for name, (fit, saved) in FROZEN_GRAPHITE_SURFACES.items():
+        cell = scores["surfaces"][name]
+        assert cell["fit"] == fit, f"{name} fit (must be bit-exact)"
+        assert cell["saved_vs_ref_pct"] == pytest.approx(saved, rel=1e-12), f"{name} saved%"
+
+
+#: FROZEN: badscissor-spec.md §5 (flat share) and §5.2 (dy2 subtotal).
+SPEC_BAD_SCISSOR = {"flagship-c3": 3.46985, "graphite": 4.66037}
+SPEC_BAD_SCISSOR_DY2 = {"flagship-c3": 0.26570}
+
+
+@pytest.mark.slow
+def test_bad_scissor_is_reported_and_matches_the_sibling_specification(capsys):
+    """POSITIVE CONTROL: the CLI's bad-scissor share vs the spec's own expected values."""
+    out = _run(capsys, ["analyze", "flagship-c3", "graphite", "--no-time", "--json"])
+    for label, expected in SPEC_BAD_SCISSOR.items():
+        row = out["rows"][label]
+        assert row["bad_scissor"]["share"] == pytest.approx(expected, abs=5e-5), label
+        assert row["bad_scissor"]["attribution_rule"] == "all-to-descending-weaker-finger"
+        assert "space-EXCLUDED" in row["bad_scissor"]["denominator"]
+
+
+@pytest.mark.slow
+def test_bad_scissor_decompositions_are_exact_partitions_in_the_cli(capsys):
+    out = _run(capsys, ["analyze", "flagship-c3", "qwerty30m", "dvorak", "--no-time", "--json"])
+    for name, row in out["rows"].items():
+        bad = row["bad_scissor"]
+        assert sum(bad["by_finger"].values()) == pytest.approx(
+            bad["share"], rel=0, abs=1e-9
+        ), name
+        assert sum(bad["by_cell"].values()) == pytest.approx(bad["share"], rel=0, abs=1e-9), name
+        # both index fingers are structurally zero under this attribution rule
+        assert bad["by_finger"]["L-index"] == 0.0 and bad["by_finger"]["R-index"] == 0.0, name
+
+
+@pytest.mark.slow
+def test_bad_scissor_dy2_subtotal_matches_the_specification(capsys):
+    """The dy2 subtotal is the number that motivates the predicate — pin it end-to-end."""
+    out = _run(capsys, ["analyze", "flagship-c3", "--no-time", "--json"])
+    cells = out["rows"]["flagship-c3"]["bad_scissor"]["by_cell"]
+    dy2 = sum(value for cell, value in cells.items() if cell.endswith("dy2"))
+    assert dy2 == pytest.approx(SPEC_BAD_SCISSOR_DY2["flagship-c3"], abs=5e-5)
+
+
+@pytest.mark.slow
+def test_bad_scissor_scores_dvorak_too(capsys):
+    """bad-scissor is charset-AGNOSTIC (no oxeylyzer board), so dvorak gets a number.
+
+    Its denominator covers a different bigram set than a C30M layout's, so the value is a
+    within-layout diagnostic and not cross-comparable — but it is not N/A.
+    """
+    out = _run(capsys, ["analyze", "dvorak", "--no-time", "--json"])
+    row = next(r for r in out["rows"].values() if r["layout"].startswith("',.py"))
+    assert row["bad_scissor"]["share"] == pytest.approx(5.80304, abs=5e-5)
+
+
+@pytest.mark.slow
+def test_bad_scissor_text_report_agrees_with_json(capsys):
+    text_rc = main(["analyze", "flagship-c3", "--no-time"])
+    assert text_rc == 0
+    text = capsys.readouterr().out
+    out = _run(capsys, ["analyze", "flagship-c3", "--no-time", "--json"])
+    bad = out["rows"]["flagship-c3"]["bad_scissor"]
+    assert f"{bad['share']:.4f}" in text
+    assert f"{bad['by_finger']['L-pinky']:.4f}" in text
