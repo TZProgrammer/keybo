@@ -6948,3 +6948,72 @@ though the nesting result is weight-independent); the hunts used one budget, so 
 => NET: do NOT adopt any wscissor-searched layout, and do NOT promote wscissor to a global search objective. The hard-predicate question is
 now largely MOOT for the served objective (it already prices non-adjacency at 0.60). Adoption remains the user's decision; nothing here is a
 candidate.
+
+### THEORY-1 — ⚠ POST-HOC: what the fitted surfaces actually know, and the identification limit that dissolves several community arguments (2026-07-26)
+STATUS. EXPLORATORY / POST-HOC, computed after seeing every prior result; registered so its status is on the record and its findings are not
+laundered into preregistered authority. MODELLED/gauge-based only — held-layout tau is SATURATED at 1.0 and Phase-D is cancelled, so NOTHING
+here is a claim about REALIZED typing speed. Repo strictly READ-ONLY (child verified `git status --short` carried only sibling agents' files);
+no commit, no branch, no adoption claim. Deliverables: state/theory/{report.md, theory-claims.md, reflection-proposal.md} + artifacts with
+recovered per-seed tables and 4 recorded positive controls.
+=> HEADLINE, AND I VERIFIED IT MYSELF EXHAUSTIVELY: **THE SERVED BIGRAM GAUGE HAS NO DIRECTION-OF-TRAVEL CHANNEL.** Over every ordered
+distinct position pair, the max absolute difference between features(a,b) and features(b,a) across ALL non-landing features is EXACTLY
+0.000e+00, and NO non-landing feature ever differs. The 11 relational/geometric features (`same_hand`, `same_finger`, `adjacent`, `scissor`,
+`lsb`, `dx`, `dy`, `distance`, `angle`, `inwards`, `outwards`) are each a function of the UNORDERED pair; direction enters ONLY through the
+8 landing-key one-hots (`bottom/home/top`, `pinky/ring/middle/index`, `lateral`), which are computed from `b` alone
+(`features/ngram.py:_placement_row_from_positions`, lines 24-59: `bx, by = b`). NOTE `inwards`/`outwards`/`angle` LOOK directional and are
+called with ordered (a,b) — they are nonetheless provably swap-invariant, which is exactly why this was not noticed. My own count is 992
+ordered pairs (31 slots incl. space) vs the child's 870 (30 non-space slots); same verdict either way.
+THIS IS AN IDENTIFICATION RESULT, NOT AN EMPIRICAL NULL — no amount of additional data can move it. It UPGRADES ledger KM-COVER's "measured
+~0 in matched reverses" from a finding to a structural fact. Falsified by exhibiting ONE ordered pair whose non-landing features change under
+swap. CONSEQUENCES, each measured by the child: (i) `effect-curves`' "inroll"/"outroll" classes are ORDER-INVARIANT — 108 ordered pairs over
+just 54 unordered, 108/108 with their reverse in the SAME mask — so the tool's +13.4 ms gap at wpm 90 is a REAL QUANTITY UNDER A MISLEADING
+NAME (recommendation: rename to outer_high/outer_low); (ii) `tb_objective_ref.PAIR_DIRECTION_MS` (ring-pinky bottom_to_top 162.6 vs
+top_to_bottom 207.7) is a LANDING-KEY difference, not a direction effect, and is derived from this same T2 table. Its prediction was tested
+and holds: fix the landing key EXACTLY and vary only the origin's row => clean null +0.02/+0.71/-0.23 ms, 47% strata positive, all 3 sources.
+2. LAYOUT QUALITY IS NOT PAIRWISE-DECOMPOSABLE, and it flips a real ranking. The LEAST-SQUARES-OPTIMAL additive f(a,b)+g(b,c) fit to Tcond
+(alternating projections, 300 iters) leaves an irreducible 3-way residual of 11.8/15.3/14.5% of total SS on AALTO/COMMUNITY/POOL
+(R2_additive 0.882/0.847/0.855), residual RMS 9.96/17.96/12.49 ms — the same order as the scissor price. On the PRODUCTION surface semimak
+beats graphite under the full objective (+0.450 ms/char) but LOSES under the additive approximation (-0.280), and the flip holds 3/3 seeds.
+EVERY analyzer that sums bigram+skipgram weights structurally cannot express this. Falsified by an additive fit capturing >95% of Tcond.
+3. THE COMMUNITY'S LARGEST MISPRICING IS THE ONE-HAND RUN. I verified the cited weights at source (`analysis/community.py` WT): oxeylyzer-1
+pays `onehands=+90`, BETTER than `alternates=+40` and 430 units better than `redirects=-340`. Measured, matched on the landing signatures of
+BOTH landing keys, a one-hand run is +37.2/+89.5/+52.6 ms SLOWER than alternating (93/95/89% strata; AALTO per-seed [+34.8,+38.5]) and
++5.8/+3.2/+7.3 ms slower than a REDIRECT. Second inversion, weights also verified: `redirects_sfs=-420` is priced WORSE than
+`redirects=-340`, yet measures 5.7-18.3 ms FASTER. Spearman(oxey weight, measured ms) = -0.617 (p=0.077) / -0.383 / -0.417 against a perfect
+-1.0. ⚠ CAVEAT THE CHILD ITSELF SUPPLIED AND I KEEP ATTACHED: its own D7 shows `onehands` and `alternates` can NEVER share a stratum
+(`onehands` requires hand(b)==hand(c), `alternates` requires hand(b)!=hand(c)), so NO context-controlled version of this contrast exists —
+it is therefore weaker evidence than the matched-stratum results, and must not be quoted as if equally identified.
+RETIRED AS UNDERDETERMINED (first-class nulls, each with a magnitude): "inrolls beat outrolls" (-0.22/-3.08/-1.24 ms, 51-54% strata — a coin
+flip, AND unrepresentable per the headline); "pinky load is expensive" (-1.1/+4.8/+0.4 ms — the ROW dominates); "adjacency itself is bad";
+and the MIDDLE LINK of "home > top > bottom" (top-vs-home -0.28/+13.0/+3.2; on the production surface top is marginally FASTER than home,
+3/3 seeds). What DOES hold is the BOTTOM row: +16.2/+36.8/+25.2 ms vs home, 96/94/96% strata. Also: `_PREFERRED_HEIGHT` does not replicate as
+a general rule (sign splits by finger pair: index-middle +24.2 vs ring-pinky -22.2 ms) — a finding about a labelled PRIOR, not a defect. And
+Tcond's 3-way structure is REAL but UNATTRIBUTABLE: one-hand run, redirect and same-finger-skip mechanisms ALL sign-split once the a->b class
+is controlled (SFS collapses from an apparently-agreeing +4.8/+5.8/+5.7 to +2.18/-0.45/+1.42).
+4. A MEASUREMENT EXPLANATION FOR NO-ANCHOR-1. The gauge's resolution floor is ~1 ms/char: per-seed layout spreads are 0.70-0.99 ms/char, so
+qwerty-dvorak (8.34, 8.5x) and colemak-graphite (1.13, 1.14x) RESOLVE but graphite-semimak (0.450, 0.60x) does NOT. The incumbents'
+differences live BELOW the instrument's resolution — which is why no dominance claim survived three corpora. Tcond is ~4.5x less determined
+than T2 (6.8% vs 1.5% seed spread), and uncertainty is WORST exactly where the gauge charges most (bottom-pinky spread 5.58 vs home-row
+0.99-1.09 ms). This is the most important caveat the campaign has produced about its own instrument.
+⚠ THE PROPAGATED TRAP, WHICH I VERIFIED AND MUST NARROW. The child reported that all 8 `*.standardized.npy` surfaces SHARE ONE BIGRAM TABLE,
+making any cross-source bigram agreement "one number three times". I reproduced the mechanism — `(standardized - native)` is constant along
+axis 2 (deviation 0.00e+00 for AALTO, 1.14e-13 for COMMUNITY/POOL), so a bigram table is indeed added in — BUT the recovered table is
+IDENTICAL only ACROSS FIT METHODS WITHIN A SOURCE (AALTO_BASE vs AALTO_TRI_PS_FREQ_PRIOR = 0.00e+00), and DIFFERS ACROSS SOURCES
+(COMMUNITY vs AALTO max abs 1.22e+02; POOL vs AALTO 5.07e+01). So the correct statement is: comparing FIT METHODS on the standardized set is a
+nested check (TOOLING-TRAPS #11); comparing SOURCES is legitimate. The child's own claims used `.native.npy` throughout, so its conclusions
+are unaffected — but the trap as worded would have misled the next agent into discarding valid cross-source evidence. Positive controls it
+recorded: recovered T2_prod vs shipped k31 = 5.7e-14; recovered Tcond vs shipped = 8.5e-14.
+SELF-AUDIT THE CHILD VOLUNTEERED (the reason I trust the rest): 3 caught errors. (1) It hand-derived the oxey finger-enum map as RI=4 when
+the parity-gated port uses RI=6 (enums 4-5 are unused thumb slots) — caught by asserting against `community.FINGERS` instead of trusting its
+own derivation; the onehands headline survived, the redirect-family counts changed. (2) It over-claimed the redirect verdict before running
+the context-controlled version, and now reports "SUPPORTED class-level / UNDERDETERMINED context-level" instead of the +21.7 alone. (3) It had
+TWO WRONG EXPLANATIONS of the inroll/outroll gap before the right one — "composition" (refuted: the classes are perfectly balanced on every
+geometric feature, differing only in the SIGN of angle) then a "finger-row orientation effect" (refuted: a row swap ALWAYS changes the landing
+key, 0/108 couples preserve it). Only the third is reported. WPM reordering is CORROBORATION of BAND-2's registered class-slope divergence,
+not novelty, and is WEAK at the user's 90-110 band (+8.6pp AALTO / +1.1pp COMM); raw-ms slopes must NOT be quoted because the alternate-hand
+baseline itself falls 183.2->104.4 ms across the band.
+=> NET, AND THE CAMPAIGN'S SHARPEST STRATEGIC FINDING: the binding constraint is the INSTRUMENT, not the search. Two structural limits
+(no direction channel; non-pairwise Tcond) and one resolution limit (~1 ms/char) jointly explain why more search has stopped paying. The
+actionable openings are (a) add a genuine origin-dependent feature if direction is believed to matter — today it CANNOT be expressed, so any
+orientation term is a PRIOR, not evidence; (b) stop quoting analyzer weight tables as if fitted; (c) never compare two layouts whose gap is
+under ~1 ms/char. Adoption and any production change remain USER decisions; nothing here proposes one.
