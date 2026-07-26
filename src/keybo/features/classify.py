@@ -125,7 +125,14 @@ def rotation_angle(geometry: Geometry, a: Position, b: Position) -> float:
 
 
 def is_inwards(geometry: Geometry, a: Position, b: Position) -> bool:
-    """Rolling toward the index finger (outer key on the higher row). Two fingers only."""
+    """Whether the outer-column key sits on the HIGHER row. Two fingers, one hand.
+
+    ⚠ SWAP-INVARIANT despite the name and the ordered signature (THEORY-1, ledger f4d126e):
+    "outer" and "inner" are chosen by |column|, a property of the UNORDERED pair, so this
+    cannot express which key was typed first. It is an orientation, not a direction. For
+    the directional quantity the name suggests — "the motion ran toward the index finger" —
+    use :func:`is_directed_inwards`.
+    """
     if not same_hand(geometry, a, b) or same_finger(geometry, a, b):
         return False
     if abs(a[0]) == abs(b[0]):
@@ -135,10 +142,86 @@ def is_inwards(geometry: Geometry, a: Position, b: Position) -> bool:
 
 
 def is_outwards(geometry: Geometry, a: Position, b: Position) -> bool:
-    """Rolling toward the pinky (outer key on the lower row). Two fingers only."""
+    """Whether the outer-column key sits on the LOWER row. Also SWAP-INVARIANT — see
+    :func:`is_inwards`; the directional twin is :func:`is_directed_outwards`."""
     if not same_hand(geometry, a, b) or same_finger(geometry, a, b):
         return False
     if abs(a[0]) == abs(b[0]):
         return False
     outer, inner = (a, b) if abs(a[0]) > abs(b[0]) else (b, a)
     return outer[1] < inner[1]
+
+
+# --- direction of travel (v2 features) --------------------------------------------------
+# Everything above is a function of the UNORDERED pair (except the landing-key one-hots
+# built in ngram.py). Everything below is order-DEPENDENT by construction: swapping a and b
+# changes the value. These back the opt-in BIGRAM_DIRECTION_NAMES block.
+
+
+def signed_dx(geometry: Geometry, a: Position, b: Position) -> float:
+    """Stagger-adjusted horizontal displacement WITH SIGN, from ``a`` to ``b``.
+
+    :meth:`Geometry.stagger_adjusted_dx` takes an absolute value and is therefore a function
+    of the unordered pair; this keeps the sign, making it the finest-grained statement of
+    "which way did the hand move". Positive = rightward on the board. NOT hand-relative —
+    :func:`dir_dx_inward` is the hand-relative version.
+    """
+    ax, ay = a
+    bx, by = b
+    return (bx + geometry.row_offsets.get(by, 0.0)) - (ax + geometry.row_offsets.get(ay, 0.0))
+
+
+def dir_dx_inward(geometry: Geometry, a: Position, b: Position) -> float:
+    """Column steps travelled TOWARD the index finger (positive) or the pinky (negative).
+
+    Measured in |column| space, so it is hand-relative: on either hand a positive value
+    means the motion ran inward. Cross-hand pairs have no such notion and give 0.0 — the
+    convention :func:`rotation_angle` already uses where a roll is undefined.
+    """
+    if not same_hand(geometry, a, b):
+        return 0.0
+    return float(abs(a[0]) - abs(b[0]))
+
+
+def directed_angle(geometry: Geometry, a: Position, b: Position) -> float:
+    """The roll angle measured FROM ``a`` TO ``b`` — the directed twin of :func:`rotation_angle`.
+
+    ``rotation_angle`` measures outer-key-to-inner-key, an unordered notion (hence its
+    swap-invariance). Measuring a->b instead puts the direction of travel in the SIGN:
+    reversing the bigram rotates the vector by 180 degrees.
+
+    Undefined in the same cases (cross-hand, same finger, same column), returning 0.0, so
+    this column is non-zero on exactly the pairs ``rotation_angle`` is non-zero on.
+    """
+    if not same_hand(geometry, a, b) or same_finger(geometry, a, b):
+        return 0.0
+    ax, ay = a
+    bx, by = b
+    if abs(ax) == abs(bx):
+        return 0.0
+    off_a = geometry.row_offsets.get(ay, 0.0)
+    off_b = geometry.row_offsets.get(by, 0.0)
+    hand = geometry.hand(ax) or 1
+    return round(degrees(atan2((by - ay), ((bx + off_b) - (ax + off_a)) * hand)), 2)
+
+
+def is_directed_inwards(geometry: Geometry, a: Position, b: Position) -> bool:
+    """A TRUE inward roll: the SECOND key is nearer the index finger than the first.
+
+    This is what the community means by an "inroll". It is not what :func:`is_inwards`
+    computes. Two fingers on one hand only.
+    """
+    if not same_hand(geometry, a, b) or same_finger(geometry, a, b):
+        return False
+    if abs(a[0]) == abs(b[0]):
+        return False
+    return abs(b[0]) < abs(a[0])
+
+
+def is_directed_outwards(geometry: Geometry, a: Position, b: Position) -> bool:
+    """A TRUE outward roll: the second key is nearer the pinky. See :func:`is_directed_inwards`."""
+    if not same_hand(geometry, a, b) or same_finger(geometry, a, b):
+        return False
+    if abs(a[0]) == abs(b[0]):
+        return False
+    return abs(b[0]) > abs(a[0])
