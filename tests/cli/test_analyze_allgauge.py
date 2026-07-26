@@ -535,3 +535,41 @@ def test_bad_scissor_text_report_agrees_with_json(capsys):
     bad = out["rows"]["flagship-c3"]["bad_scissor"]
     assert f"{bad['share']:.4f}" in text
     assert f"{bad['by_finger']['L-pinky']:.4f}" in text
+
+
+@pytest.mark.slow
+def test_the_graded_scissor_orientation_weight_is_labelled_a_PRIOR(capsys):
+    """The `down` weight is an orientation term; the served gauge cannot corroborate one.
+
+    Every relational/geometric feature of the served bigram gauge is a function of the
+    UNORDERED position pair (direction enters only via the landing-key one-hots), so a
+    direction-of-travel effect is not representable. The weight is a declared preference and
+    the report must say so, and must also publish the share WITHOUT it so a reader can see
+    how much of the number the prior is carrying.
+    """
+    out = _run(capsys, ["analyze", "keybo-lsb", "qwerty30m", "--no-time", "--json"])
+    for name, row in out["rows"].items():
+        term = row["scissor_graded"]["orientation_term"]
+        assert term["weight"] == 1.5
+        assert "PRIOR" in term["status"]
+        assert "direction" in term["status"].lower()
+        # dropping the prior can only lower the share (it is a >= 1.0 multiplier) and must
+        # still sit at or above the flat gauge (the tier weights remain)
+        assert (
+            row["gauges"]["scissor"] <= term["share_without_it"] <= row["scissor_graded"]["share"]
+        ), name
+        assert "PRIOR" in row["scissor_graded"]["note"]
+
+
+@pytest.mark.slow
+def test_bad_scissor_carries_no_orientation_term(capsys):
+    """bad-scissor is flat and its predicate is order-invariant, so no prior to declare.
+
+    Its "the weaker finger is on the lower row" condition is a property of the unordered
+    pair (0 order-dependent pairs of 900, asserted in tests/analysis/test_bad_scissor.py),
+    NOT a direction of travel — so unlike the graded scissor column it needs no prior label.
+    """
+    out = _run(capsys, ["analyze", "keybo-lsb", "--no-time", "--json"])
+    bad = out["rows"]["keybo-lsb"]["bad_scissor"]
+    assert bad["severity"].startswith("flat")
+    assert "orientation_term" not in bad

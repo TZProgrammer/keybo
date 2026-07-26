@@ -240,9 +240,29 @@ def run(args: argparse.Namespace) -> int:
             "by_class": severity.breakdown(layout, DEFAULT_SEVERITY),
             "class_masses_unweighted": severity.class_masses(layout),
             "wide_support_share": severity.share(layout, SeverityWeights(support="wide")),
+            # The `down` weight is an ORIENTATION term, and the served gauge has no
+            # direction-of-travel channel to support one (every relational/geometric feature
+            # is a function of the UNORDERED pair; direction enters only via the landing-key
+            # one-hots). So `down` is a PRIOR, flagged as such -- not a measured effect. It
+            # is also the only order-dependent part of this column: at down=1.5 the severity
+            # differs between (a,b) and (b,a) on 24 of 900 pairs, and at down=1.0 on 0.
+            "orientation_term": {
+                "weight": DEFAULT_SEVERITY.down,
+                "status": "PRIOR — not measured; the served gauge cannot represent direction",
+                "share_without_it": severity.share(
+                    layout,
+                    SeverityWeights(
+                        pinky=DEFAULT_SEVERITY.pinky,
+                        ring_ratio=DEFAULT_SEVERITY.ring_ratio,
+                        down=1.0,
+                        support=DEFAULT_SEVERITY.support,
+                    ),
+                ),
+            },
             "note": (
                 "a declared preference, not a measurement; wide_support_share drops the "
-                "column-adjacency gate (the only support where middle-pinky mass is visible)"
+                "column-adjacency gate (the only support where middle-pinky mass is visible); "
+                "the `down` orientation weight is a PRIOR the served gauge cannot corroborate"
             ),
         }
 
@@ -445,6 +465,15 @@ def _print_report(rows: dict[str, dict], ref_name: str, args: argparse.Namespace
     print(
         "flat-ctl re-derives the flat gauge through the graded code path at all weights 1.0 — "
         "it must equal flat (a positive control that grading generalizes rather than replaces)"
+    )
+    print(
+        "⚠ the `down=` orientation weight is a PRIOR, not a measured effect: the served gauge "
+        "has NO direction-of-travel channel (every relational feature is a function of the "
+        "unordered pair), so it cannot corroborate one. no-orientation column: "
+        + "  ".join(
+            f"{n} {rows[n]['scissor_graded']['orientation_term']['share_without_it']:.4f}"
+            for n in names
+        )
     )
 
     if args.scissor_pairs:
