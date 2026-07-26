@@ -7407,3 +7407,52 @@ ALSO FOUND, NOT FIXED (pre-existing, out of scope, and I reproduced it): `keybo 
 => NET: the swap is implemented safely, iWeb remains fully reachable and bit-reproducible by name, and **no dominance verdict depends on it** —
 the corpus-specificity that does exist is per-gauge and mostly at or below tie level. Landing this branch remains a USER decision; the user has
 already approved the swap itself.
+
+### DIRECTION-1 — direction of travel is now EXPRESSIBLE and it changes essentially NOTHING; do NOT adopt v2 (2026-07-26)
+STATUS. User-instructed ("let's fix that and see how that changes what we optimize for"), following THEORY-1's identification result. 2 commits on
+LOCAL branch `direction-features` (ab3ceee features+placebo+37 tests, d66e1dc drivers+report) in an ISOLATED worktree; NEVER pushed, no CR, no
+publish, PREREGISTRATIONS.md untouched by the child, no layout promoted, no shipped artifact retrained. FEATURE_VERSION deliberately LEFT at
+2026-07-05.3.
+=> THE ANSWER: **DIRECTION CARRIES NO CROSS-SOURCE SIGNAL.** On the 51 roll pairs supported on all three surfaces, only ONE of four classes even
+agrees in sign — flat rolls at **-10.416 (AALTO) / -0.515 (COMMUNITY) / -1.601 (POOL) ms** — and it FAILS the magnitude bar: a 20x spread, with
+COMMUNITY inside its own 0.871 seed spread. Where the data can constrain the answer at all it is **~0 to -1.75 ms/char, below the gauge's own
+~1 ms/char floor**. This is a genuine first-class negative, and it RETIRES the community's inroll/outroll argument on its own terms: the axis is
+now expressible, and it still carries nothing.
+NGRAM-FE GATE — **NOT A REJECT**, and the child says so in those words rather than hedging. Served optimizer-tensor Spearman vs v1 over the 930
+off-diagonal serve-grid cells: **0.9495 AALTO / 0.9344 COMMUNITY / 0.8880 POOL**, per-seed stable. The precedent this gates against went
+0.852 -> 0.164 with 0% optimizer agreement; nothing collapsed here. But it is **NOT AN ADOPT EITHER**: 10 incumbent flips across 3 surfaces, ZERO
+clearing the resolution floor (largest gap 0.2741 against a 0.2528 seed spread on that same pair); leaders and qwerty-last unchanged everywhere.
+The LOLO attributable effect is OPPOSITE-SIGNED BY SOURCE and both surfaces where rho/ceiling is computable DEGRADE (AALTO -0.0134 with umae
++0.314 ms WORSE; POOL -0.0199; COMMUNITY rho +0.027). RECOMMENDATION, WHICH I ACCEPT: do NOT adopt v2 as the served surface.
+⚠ CORRECTION TO MY OWN BRIEF, AND I VERIFIED IT MYSELF — **SWAP-DEPENDENCE IS NECESSARY BUT NOT SUFFICIENT.** I told the child that the cheapest
+decisive test was whether a candidate feature makes the row order-dependent, and implied that signing `dx` would therefore suffice. WRONG:
+`signed_dy` and an origin-ROW one-hot differ on 600 of 870 pairs yet are FULLY DETERMINED by the existing v1 vector, because `dx` is
+STAGGER-ADJUSTED and the per-row offsets differ, so **`dx` already LEAKS the origin row**. I reproduced the counterexample exactly:
+a=(-5,1)->b=(5,2) gives dx=**9.5000** while a=(-5,3)->b=(5,2) gives dx=**10.2500**, at IDENTICAL dy (1.0) and IDENTICAL distance (10.0499). Both
+candidates were therefore rejected BEFORE any fit. The correct test is not "is it swap-dependent?" but "does it add information not determined by
+the existing columns?" — a rank/determinacy check, not a difference count.
+🟢 THEORY-1 SHARPENED, NOT MERELY CONFIRMED — and this is the finding I would keep. The blindness is NOT "the origin key is invisible". The origin
+ROW is recoverable (via the dx leak above), and I VERIFIED that only **30 of 870 ordered pairs (15 unordered, and ALL 30 are cross-hand mirrors)**
+have a featurewise-identical reverse. So the missing quantity is specifically **the SIGN OF TRAVEL, a small channel** — which BOUNDED THE
+ACHIEVABLE GAIN A PRIORI, before any refit. v2 takes those 30 to 0. THEORY-1's headline (max non-landing feature diff under swap = exactly 0) is
+unaffected and remains correct; what changes is the interpretation of how much was missing.
+⚠ THE FRAME-WIDTH ARTIFACT EXCEEDED THE EFFECT — trap 17 was load-bearing here, not a formality. POOL's same-width PLACEBO — nine columns of ZERO
+new information — moved tau_min 0.929 -> 0.857 on one seed and wmae by **-0.242**, LARGER than v2's own attributable **+0.013**. Reading v1->v2
+directly would have overstated direction's effect by roughly **2x**. Any future feature-addition round must carry a same-width placebo.
+⚠ COMMUNITY rho/ceiling IS STRUCTURALLY UNAVAILABLE, which my brief asked for anyway: COMMUNITY has 1 participant per layout, so
+`split_half_ceiling` bisects to nan. The child reported raw centered rho + umae/wmae + tau instead and SAID WHY rather than emitting a number.
+AALTO ceilings are fine (0.652-0.982 over 64-54,690 pids).
+POSITIVE CONTROL per trap 20: AALTO v1 rho/ceiling **1.0245** against the registered REG-LOLO baseline **1.0236** — matches to 0.0009.
+TWO OF ITS OWN ERRORS, both caught and instructive: (1) its v1-parity test was SELF-REFERENTIAL — a deliberate `dy += 0.001` mutation left all 32
+assertions GREEN; the repo's frozen `golden_k30_features.npz` caught it, and the test now uses that golden file. A parity test that regenerates its
+own expectation tests nothing. (2) its served driver was building 20-column matrices for 29-column placebo models, caught by XGBoost's shape guard.
+Full suite 788 passed / 3 skipped; the single warning pre-exists on base main (verified at 9ce0563).
+⚠ TRAP 15 FIRED FOR REAL A THIRD TIME, and this instance is the worst shape: `~/repos/keybo` was checked out on the SIBLING branch
+`corpus-swap-blend-v1` with **9 files of live uncommitted work**, and this child's `git checkout -b` MOVED THAT SIBLING'S HEAD. It restored it and
+verified bit-identically by md5 before doing anything else, then worked only in a worktree; the sibling has since committed that work itself
+(f006baa) and nothing was lost. Two independent children hit this hazard in one session. The trap file's amendment (prefer `git worktree add`, and
+check the branch BEFORE `checkout -b`, not just before committing) is now doubly evidenced.
+=> NET: the instrument can now express direction, and direction turns out not to matter — which CONVERGES with THEORY-1, GEOMEAN-1 and
+WSCISSOR-ARMB-1 on the same conclusion from a fourth direction: **the binding constraint is the instrument's resolution, not the objective's
+expressiveness.** Adding a channel the data cannot constrain does not help. Keep FEATURE_VERSION at 2026-07-05.3; landing the branch (as
+non-default, opt-in machinery plus the placebo harness) remains a USER decision.
