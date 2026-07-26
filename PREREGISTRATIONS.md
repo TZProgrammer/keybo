@@ -7456,3 +7456,53 @@ check the branch BEFORE `checkout -b`, not just before committing) is now doubly
 WSCISSOR-ARMB-1 on the same conclusion from a fourth direction: **the binding constraint is the instrument's resolution, not the objective's
 expressiveness.** Adding a channel the data cannot constrain does not help. Keep FEATURE_VERSION at 2026-07-05.3; landing the branch (as
 non-default, opt-in machinery plus the placebo harness) remains a USER decision.
+
+### REHUNT-1 — a hunt against the CORRECTED wfd bar DOES find dominators (10 of 14 cells) — and 0 OF 19 IS FASTER THAN THE LAYOUT IT DOMINATES (2026-07-26)
+STATUS. I had wrongly listed this re-run as a USER decision; a watchdog nudge was right that it is reversible local compute, and this entry is the
+result of launching it instead of asking. Worktree `/tmp/rehunt`, branch `rehunt-corrected` off `wfd-frames` 6216299, 7 commits, NOTHING pushed;
+shared clone left on main @ 8f9e189 clean; data/corpus untouched; PREREGISTRATIONS.md untouched by the child.
+=> ANSWER TO THE OPEN QUESTION: **WFD-FRAMES-1 retracted the 14 WITNESSES, not the CONCLUSION, in most cells.** A hunt pointed at the corrected
+(permutation-valid) wfd bar finds a dominator in **10 of the 14** flipped cells — every one a NEW layout (never the frozen `best_layout`), each
+winning on ALL axes strictly (10/10 or 12/12). **BOTH THIN FLIPS RESOLVE**: no-anchor-twelve `lsb-sib` (0.19% of spread) and `archive-1843`
+(4.58%) both find new 12/12-strict dominators. The remaining **4 of 14 are real TARGETED-hunt nulls** — and in the strongest possible form: the
+hunt's best find IS the incumbent (deficit exactly 0.0, no strict win, no blocking axis). They are: blend-armB-ten/lsb-sib,
+blend-armA-twelve/lsb-sib, iweb-armA-twelve/lsb-sib, no-anchor-armA-twelve/keybo-lsb+lm. **Not an archive-only null anywhere** — the fifth time
+this campaign has distinguished the two.
+=> 🔴 THE HEADLINE CUTS AGAINST THE LAYOUTS, AND I VERIFIED IT: **0 of 19 dominators is FASTER on predicted time than the incumbent it
+dominates**, and **9 are RESOLVABLY SLOWER** — delta **+0.0448 to +1.6603 ms/char** against per-corpus MEASURED floors (iWeb 0.7185664 /
+blend 0.6654644 / no-anchor 0.6641431; `n_faster_than_incumbent = 0`, `n_resolvably_slower = 9`, `n_clearing_floor = 9`, and GEOMEAN-1's 0.7186
+reproduced to 6/6). **Clearing the full gauge bar is ANTI-CORRELATED with predicted time.** This is a FIFTH independent route to "the instrument's
+resolution is the binding constraint", and a sharper one than GEOMEAN-1: there, an aggregate preferred the slowest layout; here, layouts that beat
+an incumbent on EVERY GAUGE SIMULTANEOUSLY are slower than it, resolvably so, on the metric the project actually optimizes. `wscissor` share moved
+-24.52% to +80.99% with no relation to dominance — consistent with WSCISSOR-ARMB-1.
+BOTH PROTECTED NULLS SURVIVE, as they had to: **no all-five dominator on any of the 7 cells** (n_ge 6-8, with wfd ITSELF blocking on 5 of 7), and
+**wscissor inert** (attributable axis-blocked marginal +0 on all three corpora).
+VALIDATION. PREFLIGHT PASSED 42/42 on four checks (the board reproduces every frozen non-wfd axis; the LEGACY wfd reproduces the frozen integers
+exactly; corrected n_ge == WFD-FRAMES-1's `n_ge_own_pin`; loose verdict matches), reproducing exactly **14 strict flips and 0 reverse** — so this
+round's foundation is the previous round's output, checked rather than assumed. Spread 4,730,157,568,500 re-derived and matches. Budget 60,000
+iters x 12 restarts x 6 seeds x 6 targets per cell = **97,660,720 MEASURED unique layouts** over 14 cells, all rc=0, per-epoch checkpointed.
+ZERO-REUSE VERIFICATION: max rel err EXACTLY 0.0 on candidate axes, incumbent axes, AND a fresh-scorer explicit-loop wfd; 42/42 verdict agreement;
+19 confirmed dominators, each asserted a valid C30M permutation AND a valid 31-key dof mapping (the assertion whose absence WAS the wfd bug).
+⚠ CORRECTION 1 TO MY OWN REGISTERED WORK, AND I VERIFIED IT. `readjudicate.py` (the driver behind WFD-FRAMES-1) defines dominance as
+`n_ge == len(axnames)` with **NO strict-win term** (lines 99-100), so a candidate that merely TIES on every axis is labelled a dominator. I
+confirmed the blast radius from `readjudication.json`: **12 of 42 rows have `margin_as_coded == 0`** and all 12 are counted as dominating, which
+inflates that artifact's `dominates_as_coded = 35` baseline. **MY REGISTERED "14 of 42 flip" IS UNAFFECTED** — I verified that all 14 flips have
+`margin_as_coded != 0`, i.e. none is a tie-row. So the flip count stands; the 35-row baseline in that artifact does not.
+⚠ CORRECTION 2 TO MY BRIEF: the "9.59-10.12M unique evals" I quoted as the budget to match is the NSGA-II **GENERATOR** arms, not the hunts. The
+frozen HUNTS ran 21.6-25.92M nominal, so this round's 25.92M/cell matches the ten-axis cells and EXCEEDS the twelve-axis cells by 20%. I had been
+citing a generator figure as a hunt figure.
+⚠ NEW TRAP — A DOMINATOR COUNT IS A NOISY STATISTIC. `axis_blocked` was 0 in ALL 12 frame x corpus placebo cells, yet the raw dominator count still
+moved by -1 / +1 / -1 (inconsistent signs = noise, not an axis effect). The child's first pass mis-read that as contradicting the wscissor-inert
+null; my brief's instruction to "treat a contradiction as a bug in your setup, not a discovery" fired correctly. **This retrospectively bounds
+WSCISSOR-ARMB-1's "+1 on no-anchor" as WITHIN THE NOISE FLOOR** — its inert conclusion is right, but that +1 is not readable and should not be
+quoted as an effect.
+⚠ NEW TRAP — TRAP 15 RUNNING BACKWARDS, INSIDE A LIBRARY: `noanchor-1/drivers/tb_objective_ref.py` hardcodes `~/repos/keybo` and inserts it at
+`sys.path[0]`, so importing it for the scissor axis can SHADOW a pristine worktree with whatever branch the shared clone is on. **Eight other
+copied drivers carry the same literal.** The child verified its in-flight arms were unaffected two independent ways. A worktree is not isolation if
+a library reaches back into the shared clone.
+TWO DEFECTS IT FIXED IN ITS OWN SETUP BY TESTING RATHER THAN ASSUMING: checkpoint resume was NOT bit-exact (RNG re-seed+skip gave unique_layouts
+7167 vs 7140 while every verdict field matched), and its floor check timed every pair on iWeb while 6 of 7 cells were hunted on blend/no-anchor —
+a CROSS-CORPUS difference dressed as a speed margin. Fixing the latter moved the count from 11 to 9 and SHARPENED the result.
+=> NET: dominators against the corrected bar exist and are new layouts, so the 14 flips were about witnesses rather than the underlying claim in 10
+of 14 cells. But every one of the 19 is slower than what it dominates, 9 resolvably so — which means passing the full gauge bar does not buy speed.
+Adoption remains a USER decision and nothing here is a candidate; landing this branch likewise.
