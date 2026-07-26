@@ -1,10 +1,29 @@
-"""``bad-scissor`` — a same-hand reach in which the WEAKER finger must descend.
+"""``bad-scissor`` — a same-hand row-travel bigram whose LOWER key is the less-dextrous
+finger's.
+
+The flag is defined by **which key is lower**. Do **not** document it as "the weaker finger
+strains": that mechanism is **NOT identified** by the data, even though the measured effect is
+robust. The label is a *function* of (finger pair, which column is lower), so the contrast can
+never hold the physical lower key fixed — verified here independently of the spec: over every
+same-hand distinct-finger row-travel bigram on qwerty, there are **0** cases where a fixed
+(finger-pair, dy, lower-key) triple takes both labels. Any property of the two key groups
+(rarity, neighbour interference, lateral travel) is therefore collinear with the label **by
+construction**, and more data cannot separate them. See ``badscissor-spec.md`` §0 and
+``state/badscissor/report.md`` §4.7.
 
 Implements the specification in ``state/badscissor/badscissor-spec.md`` (the ``badscissor``
 agent, 2026-07-26) exactly. That document derived the predicate, the severity decision, the
 denominator and the attribution rule from the Aalto keystroke frame and pinned expected
 values before this code existed; ``tests/analysis/test_bad_scissor.py`` asserts them.
 Nothing here is re-decided, and nothing is invented.
+
+**Read this as a posture diagnostic, not a speed predictor.** The frequency-controlled,
+overlap-restricted effect is **+0.41 ms [+0.23, +0.55]** — bigram *frequency* explains more
+variance than any geometric axis. Two further caveats travel with every number below: the
+mid-board layout ordering is **not robust** (only "qwerty is worst" and
+"lsb-sib < archive-1843" survive every weighting), and **96.6 % of the flagged mass has bottom
+key ``c`` or ``x``** — so the measured effect is a statement about a few qwerty-era letter
+placements, not a structural law.
 
     bad-scissor fires  <=>  same hand AND different fingers AND different rows
                             AND the WEAKER finger of the pair is on the LOWER row
@@ -25,10 +44,11 @@ narrow \\ bad  (excluded: all weak-on-TOP)       12
 wide   \\ bad  (excluded: all weak-on-TOP)       36
 ============================================  =====
 
-The excluded pairs are the ones the spec's fit measured as *not* strained (the weak-on-top
-wide class measures -0.0179, i.e. faster than the same-row baseline, at n=1.64M). So this
-gauge drops half of the incumbent's own support and adds 72 single-row descents neither
-incumbent can see. Because the supports are **not nested**, comparing it against narrow or
+The excluded pairs are the ones the spec's fit measured as *not* costly (the
+index-key-on-bottom wide class measures -0.0179, i.e. faster than the same-row baseline, at
+n=1.64M — "costly" is what was measured, interval time; "strained" would be the mechanistic
+reading, which is not identified). So this gauge drops half of the incumbent's own support and
+adds 72 single-row descents neither incumbent can see. Because the supports are **not nested**, comparing it against narrow or
 wide is a meaningful check rather than trap #11's nested-guard mistake — but per the spec's
 §6.4, correlation with them is still not independent corroboration of anything.
 
@@ -47,13 +67,21 @@ Space is in no bad-scissor pair (``hand(0) == 0``), so choosing wrong leaves the
 is exactly the failure the campaign's trap #9 describes, and
 ``test_the_space_including_denominator_would_inflate_every_share_by_about_1_497x`` pins it.
 
-**Attribution: the whole of a pair's mass to the DESCENDING (weaker) finger** — not to both,
-not split. The predicate is an asymmetric statement about one finger: in the spec's fit the
-descending weak finger measures +0.5453 while the strong finger's position measures -0.1083,
-so charging both would credit the strong finger with strain the data says it does not bear.
-It also keeps the decomposition an exact partition. Structural consequence, expected and
-tested rather than a bug: **both index fingers are always 0.0**, because the index is the
-most dextrous finger and so is never the weaker member of any pair.
+**Attribution: the whole of a pair's mass to the finger holding the LOWER key** — not to both,
+not split. The predicate is an asymmetric statement about one finger: the flag fires *because*
+of which finger holds the lower key, so that is the only finger the mass can be attributed to
+without inventing a split the predicate does not contain. It also keeps the decomposition an
+exact partition.
+
+**Read the per-finger output as "where the flagged mass sits", NOT as "which finger is
+strained".** The finger-level causal claim is not identified (see the identification note at
+the top; ``badscissor-spec.md`` §3, ``report.md`` §4.7). An earlier revision of the spec
+justified this rule with a ``+0.5453`` vs ``-0.1083`` "placebo" contrast; that control is
+**RETRACTED** — it swaps the key set along with the label, so it was never a placebo.
+
+Structural consequence, expected and tested rather than a bug: **both index fingers are always
+0.0**, because the index is the most dextrous finger and so never holds the lower key of a
+qualifying pair.
 
 ⚠ **This is a MEASUREMENT/DIAGNOSIS gauge — not a search objective.** WSCISSOR-GEN-1
 (ledger ``44d282b``) showed that optimizing a scissor-severity axis is optimizing the ruler:
@@ -245,8 +273,8 @@ class BadScissor:
     def _check_geometry(geometry: Geometry) -> None:
         """Refuse a board this gauge's row semantics are not defined for.
 
-        "The weaker finger is on the lower row" is well defined on any board, but the
-        spec's expected values, its dy census and its severity evidence are all derived on
+        "The lower key belongs to the less-dextrous finger" is well defined on any board, but
+        the spec's expected values, its dy census and its severity evidence are all derived on
         the three-row block. A four-row board would score silently against a support the
         specification never examined, so refuse instead — the same stance
         :mod:`keybo.scoring.scissor_severity` takes.

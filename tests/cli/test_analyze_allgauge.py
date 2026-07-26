@@ -573,3 +573,25 @@ def test_bad_scissor_carries_no_orientation_term(capsys):
     bad = out["rows"]["keybo-lsb"]["bad_scissor"]
     assert bad["severity"].startswith("flat")
     assert "orientation_term" not in bad
+
+
+@pytest.mark.slow
+def test_bad_scissor_caveats_reach_the_user_not_just_the_docstring(capsys):
+    """The three caveats are user-visible, and the header does not assert the retracted mechanism.
+
+    The mechanistic reading ("the weaker finger strains") is NOT identified by the data: the
+    label is a function of (finger pair, which column is lower), so the contrast can never hold
+    the physical lower key fixed and any property of the two key groups is collinear with the
+    label by construction. The number is robust; the mechanism is not — so the header names the
+    OPERATION and the caveats travel with it.
+    """
+    rc = main(["analyze", "flagship-c3", "--no-time", "--no-model-scores"])
+    assert rc == 0
+    text = capsys.readouterr().out
+    assert "lower key on a non-index finger" in text
+    assert "WEAKER finger descends" not in text, "header asserts a mechanism that is not identified"
+    # the three caveats, per spec §0
+    assert "+0.41" in text and "[+0.23, +0.55]" in text
+    assert "not robust" in text.lower()
+    assert "96.6%" in text
+    assert "not identified" in text

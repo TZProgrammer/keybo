@@ -484,7 +484,9 @@ def _print_report(rows: dict[str, dict], ref_name: str, args: argparse.Namespace
             pairs = rows[n].get("scissor_by_finger_pair", {})
             print(f"{n:<{w}}" + "".join(f"{pairs.get(k, 0.0):>10.4f}" for k in keys))
 
-    print("\n== bad-scissor: the WEAKER finger descends (% of layout-covered NO-SPACE mass) ==")
+    print(
+        "\n== bad-scissor: lower key on a non-index finger (% of layout-covered NO-SPACE mass) =="
+    )
     print(
         f"{'layout':<{w}}{'share↓':>9}{'dy1':>9}{'dy2':>9}"
         + "".join(f"{f:>9}" for f in BAD_SCISSOR_FINGERS)
@@ -504,9 +506,20 @@ def _print_report(rows: dict[str, dict], ref_name: str, args: argparse.Namespace
         f"denominator: {rows[names[0]]['bad_scissor']['denominator']}"
     )
     print(
-        "a CROSS-CUT of `scissor`, not a superset: it drops the 12 narrow / 36 wide pairs where "
-        "the weak finger is on TOP and adds 72 single-row descents neither gauge sees — so the "
+        "a CROSS-CUT of `scissor`, not a superset: it drops the 12 narrow / 36 wide pairs whose "
+        "lower key is the index's and adds 72 single-row descents neither gauge sees — so the "
         "dy2 column above is the only part the incumbent scissor gauges can price"
+    )
+    print(
+        "⚠ POSTURE DIAGNOSTIC, NOT A SPEED PREDICTOR. (1) frequency-controlled, "
+        "overlap-restricted effect is +0.41 ms [+0.23, +0.55]; bigram FREQUENCY explains more "
+        "variance than any geometric axis. (2) the mid-board ordering is NOT robust — only "
+        "'qwerty is worst' and 'lsb-sib < archive-1843' survive every weighting, so do not pick "
+        "a winner on small differences. (3) 96.6% of the flagged mass has bottom key `c` or `x`, "
+        "so this measures a few qwerty-era letter placements, not a structural law. The "
+        "per-finger split says WHERE THE MASS SITS, not which finger is strained — that causal "
+        "claim is not identified (the label is a function of the finger pair, so the contrast "
+        "can never hold the physical lower key fixed)."
     )
 
     print("\n== redirect family, oxeylyzer-1 classes (% of layout-covered trigram mass) ==")
