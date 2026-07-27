@@ -7693,3 +7693,51 @@ bigram-clustered bootstrap is exactly reproducible offline. Its index documents 
 => LESSON, AND WHY THE REFLECTION GATE EARNED ITS COST HERE: a warm self-audit retracted a claim that had ALREADY BEEN PUSHED to the ledger, and
 the retraction made the finding STRONGER rather than weaker. Reading the child's report would not have produced this — only the child re-auditing
 its own work while still loaded did.
+
+### EVIDENCE-SCORER-1 — ⚠ POST-HOC: SHAP-derived weights LOSE to the community's taste constants on near-optimal layouts, and the WHY partially rehabilitates hand-tuning (2026-07-27)
+STATUS. USER-REQUESTED ("use the 3 models to create an evidence based optimizer, which uses the model and shapley values to assign a weight and
+loss curve for each of the metrics"). Built and shipped as `keybo score-evidence` on LOCAL branch `evidence-scorer` (3 commits, base main@42b8b0e,
+NOTHING pushed), 42 new tests, full suite rc=0 via a BITE-TESTED out-of-tree sentinel (862 passed + 3 skipped = 865 = collect count, SHELL_RC=0).
+5 arms all at commit a021a32. PREREGISTRATIONS.md untouched by the child; shared clone left on main, clean. MODELLED ONLY.
+=> ANSWER: **NO on the band that matters — and the SPLIT is the finding.** On the ARCHIVE pool (near-optimal layouts, i.e. the band selection
+actually operates in) the SHAP-derived weights LOSE **0 of 12** independent cross-source cells, mean delta-rho **-0.3084**, every paired-bootstrap
+CI excluding 0. And crucially every cell's evidence rho (0.037-0.183) sits INSIDE the noise-placebo band (p95 |rho| **0.4659**), so the honest
+statement is **"does not transfer distinguishably from noise"**, NOT "transfers weakly". On a WIDE random-permutation pool they WIN 12/12, mean
+**+0.3460** — but **43.6% of that attribution is `comfort`**, and `comfort` ALONE scores +0.7203 against the full scorer's +0.7421; ablating it and
+refitting the other 13 leaves **+0.101**, which is the defensible number. Also **5 of 14 fitted signs are mechanistically WRONG** (sfb -0.112,
+scissor -0.472). Robust to seed (+0.3539), corpus (+0.3259 on iWeb) and frame (+0.3711) — **only the POOL flips the sign**; 10-fold LOLO
+reproduces BOTH signs.
+⭐ THE MECHANISM, WHICH IS THE REUSABLE RESULT: **the transfer ceiling collapses on good layouts.** rho(AALTO_BASE, COMMUNITY_BASE) — how well the
+two independent fitted sources predict EACH OTHER — falls from **+0.8350** on random permutations to **+0.2654** on the archive. Restricting to
+near-optimal layouts destroys the shared signal, so a single-source fit learns that source's IDIOSYNCRASY rather than a transferable law. **AND THE
+RIVALS BEAT THAT CEILING:** genkey scores **+0.5104** vs COMMUNITY_BASE (1.9x the ceiling) and **+0.502** against a 2-source consensus vs only
++0.313 against AALTO alone. So the community's taste constants track the source-ROBUST component: **hand-tuned weights transfer BETTER across
+independent fitted sources than weights fitted to any one of them.** That PARTIALLY REHABILITATES them against THEORY-1 — individual prices can be
+demonstrably wrong (onehands, redirects_sfs) while the ENSEMBLE is more transferable. An oracle bound (a surrogate fitted directly on the test
+source) reaches only +0.808/+0.639, so the 14-gauge frame is LOSSY even in-sample; three rescue arms (consensus fit, rank target,
+max-regularized linear) all fail to close the archive gap.
+🟢 CIRCULARITY LAYER 1 — CONFIRMED BY ME, AND IT IS SERIOUS. **The shipped k31 models ARE the AALTO source.** I reconstructed the served surface
+directly (`TimeSurface._T2[:,:,None] + ._Tc` at 90 WPM) and compared it to all three sources: vs `AALTO_BASE` **max abs diff = 0.000e+00 —
+BIT-IDENTICAL** over all 31^3 cells (on BOTH the .native and .standardized frames), while vs COMMUNITY_BASE it is 2.948e+02 and vs POOL_BASE
+2.141e+02. So **fitting on the k31 models and validating against AALTO is not a test at all**, and any future round that does it is measuring
+nothing. This retro-validates the child's decision to treat cross-source transfer as the only real out-of-sample axis. (Also re-confirmed: there
+is NO `AALTO_FREQ_PRIOR` — 8 surfaces, not 9.)
+⚠ CIRCULARITY LAYER 2 — I COULD NOT REPRODUCE IT AS STATED, and I am recording the disagreement rather than the claim. The child reports that
+`.standardized` "substitutes the production AALTO bigram tensor into all 8 surfaces". The SHARING part reproduces: `var(std - nat)` along axis 2 is
+**0.000e+00 (AALTO) / 3.674e-27 (COMMUNITY) / 2.339e-27 (POOL)**, so each surface's standardized frame does add a bigram-only tensor. But the
+tensors are **NOT the same across sources** — recovering `(std - nat)[:,:,0]` per source gives
+**max|COMMUNITY - AALTO| = 1.216e+02** and **max|POOL - AALTO| = 5.074e+01**, and my direct check of `std == T2_aalto + cond_own` misses by
+2.498e+02 / 2.179e+02. This matches what I established in THEORY-1: **the substituted bigram table is shared across FIT METHODS WITHIN a source,
+not across SOURCES.** So cross-source claims on the standardized frame are NOT automatically circular. The child's operational recommendation
+("use `.native`") is still the right default and its own results used it, so its conclusions are unaffected — but the stated justification is
+wrong and must not be inherited. Its per-seed reconstruction figures (native exact 0.0, standardized 121.55) are consistent with MY reading, not
+with its own.
+DELIVERABLES COMPLETE (a)-(e): per-gauge AND per-cluster weights with CIs and per-source agreement; loss curves with valid domains, **13 of 14
+genuinely curved** (so the user's instinct that a scalar weight is insufficient is supported); the out-of-sample table with the noise placebo; an
+explicit cannot-express list; full method notes. state/evidence-scorer/{report.md, reflection-proposal.md, artifacts/}.
+=> NET, AND IT IS A CLEAN NEGATIVE: do NOT ship `score-evidence` as a selection objective. Its wide-pool win is 43.6% one gauge and collapses to
++0.101 once `comfort` is ablated; on the band where layouts are actually chosen it is indistinguishable from noise. The finding worth keeping is
+the MECHANISM — the cross-source transfer ceiling collapses from 0.835 to 0.265 on near-optimal layouts, which is the SAME instrument-resolution
+wall that NO-ANCHOR-1, THEORY-1, GEOMEAN-1, WSCISSOR-ARMB-1, REHUNT-1 and FLAGSHIP-1 all hit, now reached from a SEVENTH direction: not "our gauges
+cannot separate good layouts" but "our SOURCES cannot agree about good layouts". Deriving weights cannot fix that; only a better instrument or a
+real outcome can.
