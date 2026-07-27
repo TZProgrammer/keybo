@@ -7566,3 +7566,66 @@ after.
 => NET: adopt keybo-lsb provisionally, with the not-perceptible caveat stated in the same breath — or keybo-lsb+lm, which the evidence would equally
 support. The scientifically important output is not the pick: it is that **the resolution floor I have been quoting all campaign was the wrong
 statistic for a paired comparison**, which makes the field partly decidable after all, and that **the gap to qwerty is ~25x the gap among the six**.
+
+### LMSCISSOR-1 — ⚠ POST-HOC: bad-scissor ranks keybo-lsb vs keybo-lsb+lm on a SUPPORT-BOUNDARY ARTIFACT; the user's objection is substantively CORRECT (2026-07-27)
+STATUS. EXPLORATORY / POST-HOC, prompted by the USER observing that "+lm's pinky seems much better because of the `bl` bigram... I believe our
+bad scissors, or something, is wrong." Branch `lmscissor-invest` @ bb4768a (drivers only; `git diff main --stat` EMPTY — no src/, data/ or
+ledger edits by the child). Shared clone left on main clean @ 42b8b0e. MODELLED ONLY — tau saturated, Phase-D cancelled.
+=> VERDICT: the objection is CORRECT IN SUBSTANCE though NOT via `bl` directly. bad-scissor's ordering of this pair is a SUPPORT-BOUNDARY
+ARTIFACT and must NOT be used as the flagship tie-break.
+🟢 THE DECISIVE DECOMPOSITION, WHICH I VERIFIED MYSELF: **100% of the +0.3628 penalty is dy=1**. From `by_cell` on blend-v1:
+dy1 3.4669 -> 3.8297 = **+0.362756**; dy2 0.3472 -> 0.3472 = **EXACTLY +0.000000**. Denominators bit-identical (613,558,937), so no trap-9
+artifact. The incumbent `is_scissor`'s +0.0004 is STRUCTURAL BLINDNESS, not a second opinion — both incumbent supports gate |dy| == 2.
+⚠ MY OWN HYPOTHESIS IN THE BRIEF WAS INVERTED, and I verified the correction. I wrote that the high-frequency `l` moves TO the top row. It
+LEAVES it: row index 3 = TOP, 2 = home, 1 = bottom (verified against qwerty: q->3, a->2, z->1). In keybo-lsb `l` sits at (x=5, row=3) — the SAME
+ROW as all four of its heavy same-hand partners `d`(3,3) `n`(4,3) `g`(2,3) `v`(1,3) — so dy=0 and INVISIBLE to every gauge. Moving `l` down to
+home (5,2) CREATES four dy=1 descents. `m` going up removes the mirror set but carries ~20x less mass (l 64.19M vs m 37.82M). The 8 added
+bigrams are ALL bottom-key `l`: `ld` 0.2182pp (60% of the whole regression), `nl` 0.0792, `gl` 0.0497, `dl` 0.0490, `lv` 0.0210, plus ln/lg/vl;
+removed mass (all bottom-key `m`) totals 0.0689. NOT in BADSCISSOR-1's c/x tail — 100% bottom-key `l`, a key the original fit never observed.
+🟢 THE ORDERING IS BACKWARDS ON THE SEVERE CLASS — I re-derived every figure from the child's artifact. `+lm` is strictly better on 2-row mass:
+ALL 2-row same-hand **1.3513 -> 0.8159 (-0.5355pp)**; 2-row NON-adjacent **1.1385 -> 0.6027 (-0.5358pp)**; middle-pinky 2-row
+**0.3187 -> 0.1507 (-0.1680pp)** — exactly the class the user pointed at. **The cell NO gauge prices (2-row AND non-adjacent AND weak-on-top)
+falls 0.9446 -> 0.4087 = -0.5358pp, which is 1.48x the ENTIRE +0.3628 penalty, in the OPPOSITE direction.** Meanwhile the 2-row mass bad-scissor
+DOES price is bit-identical (0.3472 -> 0.3472). So the gauge charges the ARRIVAL of dy=1 mass and cannot credit the DEPARTURE of dy=2 mass. Not
+a same-travel trade either: ALL row travel falls 10.9651 -> 10.8558 (-0.1092). Both facts survive leave-one-finger-pair-out (0/6 sign flips) on
+blend-v1 AND iWeb, so this is not the spec's mid-board-fragility caveat — the two facts genuinely contradict.
+⚠ `bl` ITSELF IS PRICED BY NO GAUGE ON EITHER LAYOUT, for TWO DIFFERENT REASONS — I verified both. On keybo-lsb `b`=(3,1)=MIDDLE,
+`l`=(5,3)=PINKY, same hand, dy=2, adjacent_fingers=FALSE. (i) `is_scissor` = False because the ADJACENCY GATE excludes middle-pinky ({3,5},
+0 of 24 narrow pairs — BADSCISSOR-1 already proved this class unreachable). (ii) `bad_scissor` = False because the LOWER key is `b` (MIDDLE, the
+STRONGER finger) and the predicate requires the lower key on the LESS-dextrous finger. On `+lm` the pair becomes dy=1 and is still unflagged.
+HYPOTHESIS (A) DISPROVED — THE REGISTERED "~55%" IS CORRECT AND REPRODUCES TO THE DIGIT. Running `tb_objective_v2._scissor_event` directly (it
+gates `if dy != 2: return None`, a dy==2-ONLY gauge): iWeb middle_pinky **-56.2%** (registered -56%), total dy2 **-27.7%** (-27.7%), veto bin
+middle_pinky|top_to_bottom|adverse|nonadjacent **+536.6%** (+537%); blend-v1 -52.7% / -39.6% / +292.8%. So the `_EXTRA_NAMED` comment is neither
+stale nor incoherent — it is **UNDER-SPECIFIED** (it names no gauge and no corpus). A reader checking it against either SHIPPED gauge concludes
+it is false, because `is_scissor` cannot reach middle-pinky at all and `bad_scissor`'s own middle-pinky bins move the WRONG WAY (+60.2%,
+0.4074 -> 0.6525). The child did not edit the comment; a rewording is proposed.
+⚠ A REAL DEFECT IN THE PREDICATE'S JUSTIFICATION (the user's "something is wrong" instinct, correctly located). The exclusion of the
+weak-on-TOP class rests on that class measuring -0.0179 ms (n=1,643,289). The child re-estimated the Aalto surface independently from the raw
+TSV (positive control passes: its weakTOP dy2 -0.0139 at n=1,644,724; weakLOWER dy2 +0.7044 vs spec +0.6729) and SPLIT the excluded class by
+which finger is lower: **lower=index -0.0140 (n=1,644,209 = 99.97%) vs lower=NON-index +0.2777 (n=515, 174 pids, 9 bigrams)**. So the
+justifying contrast is **99.97% lower-key-is-INDEX**, yet the PREDICATE generalizes the exclusion to ALL weak-on-top pairs — and `bl`
+(middle over pinky) is exactly such a pair. Adjacency is likewise un-separated: weakTOP dy2 ADJACENT is +0.1212 (n=348,914). NOTE the shipped
+docstring already carries an identification caveat, but it documents the WHOLE predicate's limit, not this narrower gap.
+⚠ COUNTER-EVIDENCE THE CHILD DID NOT BURY: the predicate's DIRECTION is corroborated by the fitted `_T2` table (middle<->pinky, mean of both
+orders: weak-lower 155.13 vs weak-on-top 142.22 ms at dy2; 143.19 vs 133.65 at dy1). So the defect is the ALL-OR-NOTHING EXTENT of the
+exclusion, not its sign. AND AN UNRESOLVED CONTRADICTION, reported rather than resolved in the convenient direction: on the fitted table `bl`
+gets COSTLIER on +lm (142.22 -> 146.50 ms) while the raw-cell path says it gets CHEAPER (dy2 +0.2643 -> dy1 +0.1494). The gauge conclusion
+stands on the boundary argument INDEPENDENTLY of `bl`.
+REPAIRS: 4 of 7 flip the order (drop-dexterity -0.1092; all-2-row -0.5355; shipped+nonadj-2row -0.1731; measured-explicit -0.1288). The TWO
+NON-FLIPS matter more: (i) a dy2-weighted-4x variant CANNOT flip it (+0.3628 unchanged, because the PRICED dy2 mass is exactly equal) — so the
+**SUPPORT, not the weighting, is binding**, which is consistent with BADSCISSOR-1's SHIP-FLAT decision and does NOT reopen it; (ii) scoping the
+exclusion correctly to lower-key=index does NOT flip it either (+0.2155) — **so fixing the over-generalization ALONE does not make +lm win.**
+R7's non-flip is untrustworthy (it prices `bl` with a cell that is 99.96% lower=index, baking in the error under investigation).
+WHICH LAYOUT IS BETTER — UNRESOLVED, and the child declined to upgrade it. The measured-surface cost index favours +lm under all 3 policies
+(-0.1288/-0.1288/-0.1286) but EVERY bootstrap CI crosses zero (P(+lm better) 0.752-0.847). Per-source fitted surfaces SPLIT: AALTO +0.0209%
+favours keybo-lsb, COMMUNITY -0.0205% favours +lm, POOL +0.0868% (not independent). `+lm` wins on every severe-class / travel / comfort measure;
+keybo-lsb wins ONLY on bad-scissor's dy=1 tail — whose dominant added class measures +0.0181 ms (near-free) and where 90.9% of the gauge's mass
+sits.
+=> FLAGSHIP-1 IS UNCHANGED AND STRENGTHENED. **bad-scissor CANNOT be the tie-break**: it orders this pair on a boundary artifact; its
+justification is over-generalized on exactly the deciding sub-class; and its own spec forbids this use IN WRITING ("Do not use mid-board
+bad-scissor differences to pick a winner") — ranks 1/2 IS mid-board. The arbiter that does try fails to resolve, independently reproducing
+FLAGSHIP-1's conclusion. Either layout remains defensible; Phase-D human validation stays the deciding evidence.
+ALSO: TRAP 35 CONFIRMED LIVE — `artifacts/v2/tb_objective_v2.py` hardcodes `REPO = Path("/local/home/zegertho/repos/keybo")`; the child used
+`sys.path.append` and only `_scissor_event`. AND A REUSABLE ASSET: `artifacts/lmscissor_harvest.json` is a 186KB reduction of the 609MB Aalto
+TSV (per cell x bigram-identity x wpm-bucket, with source provenance) — any future row-travel surface question re-answers from it in seconds
+instead of reparsing the raw data.
