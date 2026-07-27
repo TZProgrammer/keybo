@@ -1,0 +1,307 @@
+{
+ "what": "steelman of flagship-c3 against the keybo-lsb recommendation",
+ "modeled_only": "unit conversions on model outputs; not predictions about a person",
+ "speed_gap_in_user_units": {
+  "iweb": {
+   "keybo_lsb_ms_per_char": 253.21035806897302,
+   "flagship_c3_ms_per_char": 253.58787961722257,
+   "delta_ms_per_char": 0.37752154824954687,
+   "delta_pct": 0.14887207890984205,
+   "equiv_wpm_keybo_lsb": 47.391426209868044,
+   "equiv_wpm_flagship_c3": 47.320873608444394,
+   "equiv_wpm_gain": 0.07055260142364972,
+   "seconds_saved_per_1000_words": 1.8876077412477343,
+   "minutes_saved_per_100k_words": 3.146012902079557
+  },
+  "blend-v1": {
+   "keybo_lsb_ms_per_char": 254.6307495925403,
+   "flagship_c3_ms_per_char": 254.9761188060974,
+   "delta_ms_per_char": 0.3453692135570918,
+   "delta_pct": 0.13545159255472705,
+   "equiv_wpm_keybo_lsb": 47.12706544359776,
+   "equiv_wpm_flagship_c3": 47.0632310829301,
+   "equiv_wpm_gain": 0.06383436066765569,
+   "seconds_saved_per_1000_words": 1.7268460677854591,
+   "minutes_saved_per_100k_words": 2.878076779642432
+  },
+  "blend-v1-no-anchor": {
+   "keybo_lsb_ms_per_char": 256.17716302561365,
+   "flagship_c3_ms_per_char": 256.48760544081296,
+   "delta_ms_per_char": 0.3104424151993044,
+   "delta_pct": 0.12103603005133987,
+   "equiv_wpm_keybo_lsb": 46.84258291516871,
+   "equiv_wpm_flagship_c3": 46.785886512434686,
+   "equiv_wpm_gain": 0.05669640273402621,
+   "seconds_saved_per_1000_words": 1.552212075996522,
+   "minutes_saved_per_100k_words": 2.5870201266608692
+  }
+ },
+ "speed_gap_reading": "the gap is ~0.13% of total typing time. Expressed as WPM-equivalent it is ~0.02 WPM on a ~47 WPM-equivalent surface. This is NOT a user-perceptible difference and must not be sold as one; it is a MODEL ORDERING, which is a different thing.",
+ "wins_per_axis_vs_per_cluster": {
+  "n_live_axes": 14,
+  "n_clusters": 9,
+  "effective_dof": 3.9703422002295845,
+  "per_axis_wins_of_42": {
+   "keybo-lsb": 5,
+   "keybo-lsb+lm": 3,
+   "lsb-sib": 7,
+   "archive-1843": 3,
+   "archive-1846": 7,
+   "flagship-c3": 17
+  },
+  "per_cluster_cell_wins": {
+   "keybo-lsb": {
+    "0": 2,
+    "1": 0,
+    "2": 1,
+    "3": 2,
+    "4": 0,
+    "5": 0,
+    "6": 0,
+    "7": 0,
+    "8": 0
+   },
+   "keybo-lsb+lm": {
+    "0": 2,
+    "1": 0,
+    "2": 0,
+    "3": 0,
+    "4": 0,
+    "5": 0,
+    "6": 0,
+    "7": 0,
+    "8": 1
+   },
+   "lsb-sib": {
+    "0": 0,
+    "1": 1,
+    "2": 0,
+    "3": 0,
+    "4": 2,
+    "5": 0,
+    "6": 1,
+    "7": 3,
+    "8": 0
+   },
+   "archive-1843": {
+    "0": 0,
+    "1": 1,
+    "2": 0,
+    "3": 0,
+    "4": 0,
+    "5": 0,
+    "6": 2,
+    "7": 0,
+    "8": 0
+   },
+   "archive-1846": {
+    "0": 1,
+    "1": 0,
+    "2": 0,
+    "3": 1,
+    "4": 0,
+    "5": 3,
+    "6": 0,
+    "7": 0,
+    "8": 2
+   },
+   "flagship-c3": {
+    "0": 1,
+    "1": 10,
+    "2": 5,
+    "3": 0,
+    "4": 1,
+    "5": 0,
+    "6": 0,
+    "7": 0,
+    "8": 0
+   }
+  },
+  "cluster_owner": {
+   "cluster0:sfb+sfb-dist": {
+    "tally": {
+     "keybo-lsb": 2,
+     "keybo-lsb+lm": 2,
+     "lsb-sib": 0,
+     "archive-1843": 0,
+     "archive-1846": 1,
+     "flagship-c3": 1
+    },
+    "owner": "keybo-lsb",
+    "n_cells": 6
+   },
+   "cluster1:sfs+sfs-dist+scissor+oxey-style": {
+    "tally": {
+     "keybo-lsb": 0,
+     "keybo-lsb+lm": 0,
+     "lsb-sib": 1,
+     "archive-1843": 1,
+     "archive-1846": 0,
+     "flagship-c3": 10
+    },
+    "owner": "flagship-c3",
+    "n_cells": 12
+   },
+   "cluster2:lsb+lsb-dist": {
+    "tally": {
+     "keybo-lsb": 1,
+     "keybo-lsb+lm": 0,
+     "lsb-sib": 0,
+     "archive-1843": 0,
+     "archive-1846": 0,
+     "flagship-c3": 5
+    },
+    "owner": "flagship-c3",
+    "n_cells": 6
+   },
+   "cluster3:alt": {
+    "tally": {
+     "keybo-lsb": 2,
+     "keybo-lsb+lm": 0,
+     "lsb-sib": 0,
+     "archive-1843": 0,
+     "archive-1846": 1,
+     "flagship-c3": 0
+    },
+    "owner": "keybo-lsb",
+    "n_cells": 3
+   },
+   "cluster4:roll": {
+    "tally": {
+     "keybo-lsb": 0,
+     "keybo-lsb+lm": 0,
+     "lsb-sib": 2,
+     "archive-1843": 0,
+     "archive-1846": 0,
+     "flagship-c3": 1
+    },
+    "owner": "lsb-sib",
+    "n_cells": 3
+   },
+   "cluster5:sr-roll": {
+    "tally": {
+     "keybo-lsb": 0,
+     "keybo-lsb+lm": 0,
+     "lsb-sib": 0,
+     "archive-1843": 0,
+     "archive-1846": 3,
+     "flagship-c3": 0
+    },
+    "owner": "archive-1846",
+    "n_cells": 3
+   },
+   "cluster6:redir": {
+    "tally": {
+     "keybo-lsb": 0,
+     "keybo-lsb+lm": 0,
+     "lsb-sib": 1,
+     "archive-1843": 2,
+     "archive-1846": 0,
+     "flagship-c3": 0
+    },
+    "owner": "archive-1843",
+    "n_cells": 3
+   },
+   "cluster7:imbalance": {
+    "tally": {
+     "keybo-lsb": 0,
+     "keybo-lsb+lm": 0,
+     "lsb-sib": 3,
+     "archive-1843": 0,
+     "archive-1846": 0,
+     "flagship-c3": 0
+    },
+    "owner": "lsb-sib",
+    "n_cells": 3
+   },
+   "cluster8:comfort": {
+    "tally": {
+     "keybo-lsb": 0,
+     "keybo-lsb+lm": 1,
+     "lsb-sib": 0,
+     "archive-1843": 0,
+     "archive-1846": 2,
+     "flagship-c3": 0
+    },
+    "owner": "archive-1846",
+    "n_cells": 3
+   }
+  },
+  "clusters_owned": {
+   "keybo-lsb": 2,
+   "keybo-lsb+lm": 0,
+   "lsb-sib": 2,
+   "archive-1843": 1,
+   "archive-1846": 2,
+   "flagship-c3": 2
+  },
+  "reading": "per-axis win counts over-weight whichever cluster has the most member axes. clusters_owned is the redundancy-corrected version of the same statement."
+ },
+ "pathology": {
+  "field_p5": 0.8782029499690033,
+  "field_p10": 0.9064100868225312,
+  "per_layout": {
+   "keybo-lsb": {
+    "worst_norm": 0.749892002311753,
+    "n_below_p5": 5,
+    "n_below_p10": 8,
+    "cells_below_p5": [
+     "iweb|sfs",
+     "iweb|redir",
+     "blend-v1|sfs",
+     "blend-v1-no-anchor|sfs",
+     "blend-v1-no-anchor|sfs-dist"
+    ],
+    "mean_norm": 0.9436213135074657
+   },
+   "keybo-lsb+lm": {
+    "worst_norm": 0.749892002311753,
+    "n_below_p5": 5,
+    "n_below_p10": 8,
+    "cells_below_p5": [
+     "iweb|sfs",
+     "iweb|redir",
+     "blend-v1|sfs",
+     "blend-v1-no-anchor|sfs",
+     "blend-v1-no-anchor|sfs-dist"
+    ],
+    "mean_norm": 0.9483873993509574
+   },
+   "lsb-sib": {
+    "worst_norm": 0.8720042253733119,
+    "n_below_p5": 1,
+    "n_below_p10": 4,
+    "cells_below_p5": [
+     "blend-v1-no-anchor|roll"
+    ],
+    "mean_norm": 0.9653367988738992
+   },
+   "archive-1843": {
+    "worst_norm": 0.8045111591921508,
+    "n_below_p5": 1,
+    "n_below_p10": 3,
+    "cells_below_p5": [
+     "iweb|roll"
+    ],
+    "mean_norm": 0.9729258602759219
+   },
+   "archive-1846": {
+    "worst_norm": 0.8286546939907907,
+    "n_below_p5": 1,
+    "n_below_p10": 2,
+    "cells_below_p5": [
+     "iweb|roll"
+    ],
+    "mean_norm": 0.9796733749697211
+   },
+   "flagship-c3": {
+    "worst_norm": 0.8832160437664701,
+    "n_below_p5": 0,
+    "n_below_p10": 1,
+    "cells_below_p5": [],
+    "mean_norm": 0.9904767133028167
+   }
+  },
+  "definition": "a 'pathological axis' = a (corpus,gauge) cell where the layout's ceiling-fraction position falls below the 5th percentile of the whole 6-layout x 42-cell field"
+ }
+}
