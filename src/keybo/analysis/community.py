@@ -30,7 +30,15 @@ Layouts are our canonical 30-char row-major strings. The oxeylyzer boards are
 31-key (they see a pinned character on the home-row quote slot): C30M-charset
 layouts pin ``;`` there and classic-charset layouts pin ``'`` — chosen
 automatically from the layout string, matching how semimak/graphite's own .dof
-files encode the same convention.
+files encode the same convention. The 30 characters are given, so the single
+left-over character has exactly one place to go; there is no second convention.
+
+.. warning::
+   The campaign's frozen dominance artifacts carry a *different* wfd, produced by
+   ``oxey_ports.perm_arrays`` and long documented as "the apostrophe-pinned
+   convention". It is a **bug**, not a convention — the board it scores is not a
+   permutation. :meth:`Oxeylyzer2.wfd_legacy_board` reproduces it for artifact
+   reconciliation only; :meth:`Oxeylyzer2.wfd` is the correct quantity.
 """
 
 from __future__ import annotations
@@ -38,6 +46,7 @@ from __future__ import annotations
 import gzip
 import json
 import math
+import warnings
 from functools import lru_cache
 from pathlib import Path
 
@@ -63,6 +72,11 @@ _HAND = [0 if f <= 3 else 1 for f in FINGERS]
 #: our slot order (30, row-major) -> dof position index; the quote slot is dof 20
 SLOT2DOF = list(range(10)) + list(range(10, 20)) + list(range(21, 31))
 APOS_DOF = 20
+
+#: the two 30-key character universes; the 31st (quote-slot) character is whichever of
+#: ``;`` / ``'`` the universe leaves over — see :func:`pinned_char`.
+C30M_CHARS = "qwertyuiopasdfghjkl'zxcvbnm,.-"
+CLASSIC_CHARS = "qwertyuiopasdfghjkl;zxcvbnm,./"
 
 
 def _load_vendored(name: str) -> dict:
@@ -136,6 +150,51 @@ def pinned_char(lay30: str) -> str:
     return ";" if "'" in lay30 else "'"
 
 
+def legacy_board_of(lay30: str, chars31: list[str] | None = None) -> str:
+    """The 31-character board the campaign's ``perm_arrays`` actually produced, as a string.
+
+    Diagnostic for :meth:`Oxeylyzer2.wfd_legacy_board`: it makes the corruption visible
+    rather than leaving it as a number that differs. Indexed by dof, so position 0 is the
+    top-left key and position :data:`APOS_DOF` is the quote slot. For a C30M layout the
+    result is *not* a permutation — ``;`` appears on dof 0, ``q`` appears twice, and the
+    character that belongs on slot 0 is missing.
+
+        >>> legacy_board_of("pyuo,vgdnlhiea.cstrmkj-z'fwbxq")
+        ";yuo,vgdnlhiea.cstrm'kj-zqfwbxq"
+    """
+    chars31 = list(chars31) if chars31 is not None else list(C30M_CHARS) + [";"]
+    index = {character: position for position, character in enumerate(chars31)}
+    dof_of_char = np.zeros(N31, dtype=np.int64)
+    for slot, character in enumerate(lay30):
+        dof_of_char[index[character]] = SLOT2DOF[slot]
+    dof_of_char[index["'"]] = APOS_DOF
+    char_at_dof = np.zeros(N31, dtype=np.int64)
+    char_at_dof[dof_of_char] = np.arange(N31)
+    return "".join(chars31[i] for i in char_at_dof)
+
+
+def check_dof_permutation(dof_of_char: np.ndarray) -> np.ndarray:
+    """Raise unless ``dof_of_char`` assigns each of the 31 characters a distinct key.
+
+    Use this on **any** hand-rolled character→key mapping. It is the check whose absence
+    is the entire `wfd_legacy_board` bug: a mapping built by assigning into a zero-filled
+    array silently leaves unassigned characters on dof 0, and the scatter that inverts it
+    (``char_at_dof[dof_of_char] = arange(31)``) then hides the collision by dropping one
+    character and duplicating another. Nothing downstream can detect that — the arithmetic
+    stays valid, only the board is impossible — so it has to be caught here.
+
+    Returns ``dof_of_char`` unchanged, so it can wrap a construction inline.
+    """
+    if sorted(dof_of_char.tolist()) != list(range(N31)):
+        counts = np.bincount(dof_of_char, minlength=N31)
+        raise ValueError(
+            "character->key mapping is not a permutation of the 31 keys: "
+            f"keys with no character {[int(d) for d in np.flatnonzero(counts == 0)]}, "
+            f"keys with more than one {[int(d) for d in np.flatnonzero(counts > 1)]}"
+        )
+    return dof_of_char
+
+
 def _dof_arrays(lay30: str, chars31: list[str]) -> tuple[np.ndarray, np.ndarray]:
     """(char_at_dof, dof_of_char) index arrays for a 30-char layout + pinned char."""
     if (
@@ -151,6 +210,9 @@ def _dof_arrays(lay30: str, chars31: list[str]) -> tuple[np.ndarray, np.ndarray]
     for slot, ch in enumerate(lay30):
         dof_of_char[idx[ch]] = SLOT2DOF[slot]
     dof_of_char[idx[chars31[30]]] = APOS_DOF
+    # belt and braces: the input checks above make this unreachable, but the assertion is
+    # what actually protects the scatter below (see check_dof_permutation).
+    check_dof_permutation(dof_of_char)
     char_at_dof = np.empty(N31, dtype=np.int64)
     char_at_dof[dof_of_char] = np.arange(N31)
     return char_at_dof, dof_of_char
@@ -196,36 +258,56 @@ class Oxeylyzer2:
     def wfd(self, lay30: str) -> int:
         """The weighted-(same-)finger-distance component alone.
 
-        This is the **components** wfd: the quote slot carries the character
-        :func:`pinned_char` selects for this layout (``;`` for a C30M board). See
-        :meth:`wfd_apostrophe_pinned` for the campaign's other wfd convention.
+        The quote slot carries the character :func:`pinned_char` selects for this layout
+        (``;`` for a C30M board, ``'`` for a classic one) — the layout's 30 characters are
+        given, so the one left-over character has exactly one place to go. This is the
+        only correct wfd. See :meth:`wfd_legacy_board` for the campaign-era number, which
+        is a bug rather than a second convention.
         """
         return self.components(lay30)["wfd"]
 
-    def wfd_apostrophe_pinned(self, lay30: str) -> int:
-        """wfd with ``'`` FORCED onto the quote slot — the dominance-board convention.
+    def wfd_legacy_board(self, lay30: str) -> int:
+        """wfd on the campaign's CORRUPT board — reproducible, but not a valid layout.
 
-        The campaign has two live wfd quantities and they disagree by ~1-7% (keybo-lsb:
-        -16213995653000 here vs -15082741528300 there), so a comparison stitched across
-        them looks like a real movement that is only a convention change (trap #13, and
-        ``flagship-compare.json``'s own ``board_wfd_note`` flags the same split).
+        This is the number in every frozen dominance artifact (``wscissor-allgauge``,
+        ``flagship-compare``, ``board-blend-reselect``'s ``primes``, every hunt's
+        ``best_axes.wfd``), produced by the campaign's ``oxey_ports.perm_arrays``. It was
+        documented as "the apostrophe-pinned convention" — pin ``'`` on the quote slot
+        instead of the layout's own quote character. **It is not a convention.** The
+        mapping it evaluates is not a permutation of the 31 keys:
 
-        The difference is *which character sits on the 31st key*. :meth:`wfd` boards the
-        layout's own :func:`pinned_char`; the frozen dominance boards
-        (``wscissor-allgauge``, ``flagship-compare``, via ``oxey_ports.perm_arrays``) pin
-        ``'`` unconditionally and leave ``;`` inside the 30-block. Same weights, same
-        distances, different permutation — hence a different number.
+        * ``'`` is moved to the quote slot, but ``;`` is never assigned a position, so it
+          keeps its zero-initialised default and lands on **dof 0** (top-left, left pinky);
+        * the character that genuinely sits on slot 0 is therefore **evicted** from the
+          board entirely;
+        * the dof that ``'`` vacated is refilled by index 0 — so ``q`` is typed on **two**
+          keys.
 
-        Reproduces the frozen boards exactly (``keybo-lsb`` -15082741528300, ``qwerty``
-        -65690928179200; pinned in ``tests/analysis/test_community_wfd_frames.py``).
+        Only ``qwerty30m`` escapes (its slot-0 character *is* ``q``, so the board
+        degenerates to a valid-but-wrong permutation and moves by 0.08% instead of 1-7%).
+        Because qwerty was the reference layout for the campaign's direction derivation,
+        the bug hid behind the one layout it barely touches.
+
+        Kept so the frozen artifacts stay bit-reproducible and so a re-analysis can quote
+        the number it must reconcile against. **Do not use it to rank or gate layouts** —
+        14 of 42 frozen per-incumbent dominance verdicts do not survive the correction.
+        Use :meth:`wfd` for anything new.
         """
         if "'" not in self.chars:
             raise ValueError("this board has no apostrophe to pin on the quote slot")
         if "'" not in lay30:
+            # The hand-rolled mapping below is only sound when the pinned character IS ',
+            # i.e. a classic-charset board -- which this guard rejects. So every input it
+            # accepts is one it scores wrongly; there is no correct input.
             raise ValueError(
-                "wfd_apostrophe_pinned needs ' among the layout's 30 characters "
-                "(the dominance-board convention moves it to the quote slot)"
+                "wfd_legacy_board needs ' among the layout's 30 characters "
+                "(the legacy board moves it to the quote slot)"
             )
+        # NOTE: no permutation assert here, deliberately -- this method's whole purpose is to
+        # evaluate the non-permutation, so asserting would make every call raise and the frozen
+        # artifacts unreconcilable. The guard belongs on the CORRECT path, where it already is
+        # (`_dof_arrays`), and on any NEW hand-rolled mapping. `legacy_board_of` exposes the
+        # broken board so a caller can see the damage instead of asserting against it.
         index = {character: position for position, character in enumerate(self.chars)}
         dof_of_char = np.zeros(N31, dtype=np.int64)
         for slot, character in enumerate(lay30):
@@ -235,6 +317,22 @@ class Oxeylyzer2:
         char_at_dof[dof_of_char] = np.arange(N31)
         a, b = char_at_dof[self.SF_I], char_at_dof[self.SF_J]
         return int(((self.SFW[a, b] + self.SFW[b, a]) * self.SF_D).sum())
+
+    def wfd_apostrophe_pinned(self, lay30: str) -> int:
+        """Deprecated campaign-era name for :meth:`wfd_legacy_board`.
+
+        The old name asserts a convention that does not exist. Kept working because
+        campaign drivers and artifact-reconciliation scripts call it.
+        """
+        warnings.warn(
+            "wfd_apostrophe_pinned names a bug, not a convention: the board it scores is "
+            "not a permutation (';' lands on dof 0, the slot-0 character is evicted, and "
+            "'q' is duplicated). Use wfd() for anything new, or wfd_legacy_board() to "
+            "reconcile a frozen artifact.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return self.wfd_legacy_board(lay30)
 
     def score_primed(self, lay30: str) -> int:
         """oxey2' (KAN-PRIME-1): strain residual — the stretch term only, native
@@ -466,7 +564,5 @@ def community_suite(pinned: str) -> tuple[Genkey, Oxeylyzer1, Oxeylyzer2]:
     on the board, ``;`` pinned); ``pinned == "'"`` the classic universe
     (``; , . /`` on the board, ``'`` pinned).
     """
-    c30m = "qwertyuiopasdfghjkl'zxcvbnm,.-"
-    classic = "qwertyuiopasdfghjkl;zxcvbnm,./"
-    chars31 = list(c30m if pinned == ";" else classic) + [pinned]
+    chars31 = list(C30M_CHARS if pinned == ";" else CLASSIC_CHARS) + [pinned]
     return Genkey(), Oxeylyzer1(chars31), Oxeylyzer2(chars31)
