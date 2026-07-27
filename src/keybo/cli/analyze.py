@@ -64,6 +64,14 @@ from keybo.analysis.kmstats import STAT_NAMES, KmStats
 from keybo.analysis.redirects import REDIRECT_CLASSES, RedirectFamily
 from keybo.analysis.scissor_fingers import FINGER_NAMES, ScissorByFinger
 from keybo.analysis.timecard import default_surface
+from keybo.data.corpus import (
+    CORPUS_ENV_VAR,
+    IWEB,
+    PRODUCTION_DEFAULT,
+    corpus_identity,
+    known_corpora,
+    production_corpus_dir,
+)
 from keybo.geometry import ROW_STAGGERED_30
 from keybo.layout import Layout
 from keybo.layouts import NAMED_LAYOUTS
@@ -87,6 +95,10 @@ _EXTRA_NAMED = {
     "archive-1843": "pyou,vgdnmheai.cstlrjz'k-fwbxq",
     "archive-1846": "pyou,vgdnmheai.cstrlkq'z-fbwjx",
     "lsb-sib": "fyou,vgdnlheaikcstrmzj'.-pwbxq",
+    # The comfort micro-variant of keybo-lsb (SELECT-1's blind spot: it cuts middle-pinky
+    # scissor mass ~55%). Named here so a corpus comparison can cite it as a row rather
+    # than a 30-char string, which is how a transcription error gets into a board.
+    "keybo-lsb+lm": "pyuo,vgdnmhiea.cstrlkj-z'fwbxq",
 }
 
 #: The 15 corpus-sensitive gauges of the frozen all-gauge frame, in board order.
@@ -106,6 +118,15 @@ def add_arguments(parser: argparse.ArgumentParser) -> None:
         "--ref",
         default="qwerty",
         help="Reference layout for '%% time saved' (name or 30-char string; default qwerty)",
+    )
+    parser.add_argument(
+        "--corpus",
+        default=None,
+        help=(
+            f"Corpus to score on: {' | '.join(known_corpora())}, or a directory holding the "
+            f"tables (default {PRODUCTION_DEFAULT}; env: {CORPUS_ENV_VAR}). Use "
+            f"'--corpus {IWEB}' to reproduce the campaign's frozen boards"
+        ),
     )
     parser.add_argument(
         "--target-wpm",
@@ -231,7 +252,10 @@ def run(args: argparse.Namespace) -> int:
     if args.surface_dir is not None and not Path(args.surface_dir).is_dir():
         raise SystemExit(f"--surface-dir {args.surface_dir!r}: model surface directory not found")
 
-    bigrams, skipgrams, trigrams = _shared_corpora()
+    corpus_dir = production_corpus_dir(args.corpus)
+    corpus_block = corpus_identity(corpus_dir)
+
+    bigrams, skipgrams, trigrams = _shared_corpora(corpus_dir)
     kms = KmStats(bigrams, skipgrams, trigrams)
     oxey = OxeyStyleScorer(bigrams, skipgrams, trigrams)
     comfort = ComfortBigramScorer(bigrams, skipgram_freqs=skipgrams)
@@ -241,7 +265,7 @@ def run(args: argparse.Namespace) -> int:
     severity = ScissorSeverity(bigrams)
     bad_scissor = BadScissor(bigrams)
 
-    surf = None if args.no_time else default_surface(args.target_wpm)
+    surf = None if args.no_time else default_surface(args.target_wpm, args.corpus)
     ref_card = surf.card(ref_lay) if surf is not None else None
 
     rows: dict[str, dict] = {}
@@ -389,6 +413,7 @@ def run(args: argparse.Namespace) -> int:
                 target_wpm=args.target_wpm,
                 ref_lay30=ref_lay,
                 surface_dir=args.surface_dir,
+                trigram_path=str(corpus_dir / "trigrams.txt"),
             )
 
         if args.attribution and card is not None:
@@ -407,10 +432,21 @@ def run(args: argparse.Namespace) -> int:
                 {
                     "target_wpm": args.target_wpm,
                     "ref": ref_name,
-                    "skipgram_table": "1-skip31.txt",
+                    # WHICH corpus produced every number below. `corpus` is the label and
+                    # `corpus_provenance.sha256` is the fact -- a report that names only a
+                    # default is how two corpora get stitched into one table.
+                    "corpus": corpus_block["corpus"],
+                    "corpus_provenance": corpus_block,
+                    "skipgram_table": corpus_block["skipgram_table"],
                     "gauge_frame": (
                         "wscissor-allgauge: kmstats + oxey.pattern_shares + comfort/bigram-mass"
                     ),
+                    # The community gauges (genkey/oxeylyzer1/oxeylyzer2/wfd) run on their
+                    # own VENDORED corpora and do not move with --corpus; so do the fitted
+                    # model surfaces' timing values, which are baked at 90 WPM. --corpus
+                    # changes the frequency WEIGHTING of the objective, never a fitted model.
+                    "corpus_sensitive": "gauges, time, redirects, scissor_*, bad_scissor",
+                    "corpus_invariant": "community, community_primed (vendored corpora)",
                     "model_family": args.model_family,
                     "rows": rows,
                 },
@@ -419,24 +455,26 @@ def run(args: argparse.Namespace) -> int:
         )
         return 0
 
-    _print_report(rows, ref_name, args)
+    _print_report(rows, ref_name, args, corpus_block)
     return 0
 
 
-def _shared_corpora() -> tuple[dict[str, int], dict[str, int], dict[str, int]]:
-    """The production corpus: bigrams, ``1-skip31`` skipgrams, trigrams.
+def _shared_corpora(
+    corpus_dir: Path,
+) -> tuple[dict[str, int], dict[str, int], dict[str, int]]:
+    """One corpus's bigrams, ``1-skip31`` skipgrams and trigrams.
 
     ``1-skip31.txt`` (not ``1-skip.txt``) is the table the campaign's frozen gauge boards
-    were computed on — see the module docstring.
+    were computed on — see the module docstring. Pinning it here is what makes an
+    iWeb-vs-blend comparison a corpus comparison rather than a skipgram-convention change:
+    the two files are DIFFERENT tables in iWeb and the same table in blend-v1.
     """
-    from keybo.data.corpus import load_frequencies
+    from keybo.data.corpus import PRODUCTION_SKIPGRAMS, load_frequencies
 
-    root = Path(__file__).resolve().parents[3]
-    corpus = root / "data" / "corpus"
     return (
-        load_frequencies(str(corpus / "bigrams.txt")),
-        load_frequencies(str(corpus / "1-skip31.txt")),
-        load_frequencies(str(corpus / "trigrams.txt")),
+        load_frequencies(str(corpus_dir / "bigrams.txt")),
+        load_frequencies(str(corpus_dir / PRODUCTION_SKIPGRAMS)),
+        load_frequencies(str(corpus_dir / "trigrams.txt")),
     )
 
 
@@ -447,9 +485,27 @@ def _cell(value: float | None, width: int, spec: str = ".3f") -> str:
     return f"{value:>{width}{spec}}"
 
 
-def _print_report(rows: dict[str, dict], ref_name: str, args: argparse.Namespace) -> None:
+def _print_report(
+    rows: dict[str, dict],
+    ref_name: str,
+    args: argparse.Namespace,
+    corpus_block: dict,
+) -> None:
     names = list(rows)
     w = max(len(n) for n in names) + 2
+
+    # WHICH corpus, first line of the report: every corpus-sensitive number below depends
+    # on it, and the default changed (iWeb -> blend-v1) at CORPUS-SWAP-1.
+    tri_sha = corpus_block["sha256"].get("trigrams.txt", "?")[:12]
+    print(
+        f"== corpus: {corpus_block['corpus']} "
+        f"({corpus_block['path']}; skipgrams={corpus_block['skipgram_table']}; "
+        f"trigrams.sha256={tri_sha}) =="
+    )
+    print(
+        "   the community scores below are corpus-INVARIANT (vendored corpora); "
+        "the fitted model surfaces are baked at 90 WPM and are not re-fit by a corpus change\n"
+    )
 
     if not args.no_time:
         print(f"== predicted typing time (measured-keystroke surface; ref = {ref_name}) ==")

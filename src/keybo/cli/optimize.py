@@ -6,7 +6,7 @@ import argparse
 import json
 
 from keybo.cli._paths import ensure_writable_output
-from keybo.cli._scorer import add_scorer_arguments, build_scorer, load_freqs
+from keybo.cli._scorer import add_scorer_arguments, build_scorer, freq_path, load_freqs
 from keybo.geometry import ROW_STAGGERED_30
 from keybo.layout import Layout
 from keybo.layouts import NAMED_LAYOUTS
@@ -116,7 +116,10 @@ def run(args: argparse.Namespace) -> int:
 
             from keybo.data.corpus import load_frequencies
 
-            skipgram_path = Path(args.bigram_freqs).with_name("1-skip.txt")
+            # Sibling tables come from whatever directory the bigram table came from -- the
+            # user's --bigram-freqs, else the resolved production corpus (CORPUS-SWAP-1;
+            # `freq_path` is what keeps this working now that the default is not a literal).
+            skipgram_path = Path(freq_path(args, "bigrams.txt")).with_name("1-skip.txt")
             skipgrams = load_frequencies(str(skipgram_path)) if skipgram_path.exists() else {}
             comfort = ComfortBigramScorer(
                 freqs,
@@ -133,7 +136,7 @@ def run(args: argparse.Namespace) -> int:
             from keybo.data.corpus import load_frequencies
             from keybo.scoring.oxey import OxeyStyleScorer
 
-            corpus_dir = os.path.dirname(args.bigram_freqs)
+            corpus_dir = os.path.dirname(freq_path(args, "bigrams.txt"))
             oxey = OxeyStyleScorer(
                 freqs,
                 load_frequencies(os.path.join(corpus_dir, "1-skip.txt")),
