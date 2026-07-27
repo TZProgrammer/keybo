@@ -112,6 +112,16 @@ MODELLED_ONLY_NOTE = (
     "human-validation phase was cancelled, so no number here predicts how fast anyone types."
 )
 
+#: Effective-dof floor below which a fitting pool is flagged as narrow. Set from the measured
+#: reversal: the archive pool (all near-optimal layouts) sits at 3.99 and the weights fitted
+#: there lose every cross-source cell; the random pool sits at 5.03 and wins every one.
+NARROW_POOL_DOF = 4.5
+
+#: Cross-source agreement below which a weight set must not be used for ranking at all.
+#: Measured: +0.835 on the wide pool (weights transfer, 12/12 wins) vs +0.265 on the narrow
+#: one (weights do not, 0/12). The midpoint is deliberately closer to the failing end.
+NARROW_POOL_SOURCE_AGREEMENT = 0.5
+
 #: Why each surface family/pool may or may not be used to validate the other.
 SOURCE_INDEPENDENCE_NOTE = (
     "AALTO is NOT independent of data/models/k31: the time card's served surface "
@@ -662,6 +672,41 @@ class EvidenceWeights:
     def score_layout(self, lay30: str, context: GaugeContext) -> dict:
         return self.score(context.vector(lay30))
 
+    def transfer_warning(self, source_agreement: float | None = None) -> str | None:
+        """The caveat a caller must see when the fitting pool is too narrow to transfer.
+
+        Measured, not asserted: the same pipeline that beats genkey / oxeylyzer-1 /
+        oxeylyzer-2 in **12 of 12** independent cross-source cells on a WIDE pool of random
+        C30M permutations (mean Spearman advantage +0.346) **loses all 12** on a NARROW pool
+        of near-optimal archive layouts (mean advantage -0.308). The cause is not the scorer:
+        the two independent sources' agreement with *each other* — the ceiling for any
+        cross-source scorer — falls from +0.835 on the wide pool to +0.265 on the narrow one.
+        Where there is shared signal the fit recovers 86-89% of it; where there is almost
+        none it learns the fitting source's idiosyncrasy instead, and the community's
+        constants (which track the source-robust component: +0.502 against a two-source
+        consensus versus +0.313 against one source alone) win.
+
+        So a weight set fitted on a narrow pool must not be quoted as a general scorer, and
+        this string is how the artifact says so.
+        """
+        narrow = self.effective_dof < NARROW_POOL_DOF
+        if source_agreement is not None and source_agreement < NARROW_POOL_SOURCE_AGREEMENT:
+            return (
+                f"DO NOT TRUST FOR RANKING: the fitting pool's cross-source agreement is "
+                f"{source_agreement:.3f}, below {NARROW_POOL_SOURCE_AGREEMENT}. On a pool this "
+                f"narrow these weights lost to genkey/oxeylyzer in 12 of 12 independent cells "
+                f"(mean Spearman -0.308) because there is too little shared signal to learn. "
+                f"Fit on a wider pool, or use the community scorers."
+            )
+        if narrow:
+            return (
+                f"NARROW POOL WARNING: effective dof {self.effective_dof:.2f} over "
+                f"{len(LIVE_GAUGES)} gauges is below {NARROW_POOL_DOF}. These weights may be "
+                f"fitting this pool's idiosyncrasy rather than transferable structure — "
+                f"validate cross-source before ranking with them."
+            )
+        return None
+
     # -- serialization ----------------------------------------------------------------
 
     def weight_table(self) -> list[dict]:
@@ -695,6 +740,7 @@ class EvidenceWeights:
                 }
                 for key, members in self.clusters.items()
             },
+            "transfer_warning": self.transfer_warning(),
             "notes": [*self.notes, MODELLED_ONLY_NOTE, SOURCE_INDEPENDENCE_NOTE],
         }
 

@@ -247,6 +247,40 @@ def _pool_of(surface_name: str) -> str:
     return surface_name.split("_", 1)[0]
 
 
+def cross_source_agreement(targets: dict[str, np.ndarray]) -> dict:
+    """How well the INDEPENDENT sources predict each other — the ceiling for any scorer.
+
+    This is the most informative diagnostic in the module, and it must be reported alongside
+    any advantage figure because it decides how to read one: no scorer fitted on source A can
+    be expected to rank source B better than A itself ranks B. When this number is low, a
+    scorer's poor cross-source showing says nothing about the scorer.
+
+    Measured: **+0.835** over random C30M permutations versus **+0.265** over a pool of
+    near-optimal archive layouts. Restricting to good layouts removes almost all of the
+    agreement between the two fitted sources — which is why the same pipeline wins 12 of 12
+    independent cells on the wide pool and loses 12 of 12 on the narrow one.
+    """
+    pairs = {}
+    names = list(targets)
+    for index, first in enumerate(names):
+        for second in names[index + 1 :]:
+            independent, _ = sources_independent(first, second)
+            if independent:
+                pairs[f"{first}|{second}"] = _spearman(targets[first], targets[second])
+    values = np.array([v for v in pairs.values() if np.isfinite(v)])
+    return {
+        "pairwise": pairs,
+        "mean": float(values.mean()) if len(values) else float("nan"),
+        "min": float(values.min()) if len(values) else float("nan"),
+        "max": float(values.max()) if len(values) else float("nan"),
+        "interpretation": (
+            "the ceiling for any cross-source scorer: a scorer fitted on source A cannot be "
+            "expected to rank source B better than A ranks B. A LOW value means a poor "
+            "cross-source showing is a property of the POOL, not of the scorer."
+        ),
+    }
+
+
 def sources_independent(fit_source: str, test_source: str) -> tuple[bool, str]:
     """Whether a (fit, test) surface pair constitutes an out-of-sample test.
 
@@ -781,6 +815,10 @@ class ValidationReport:
     limitations: list[Limitation]
     competitor_orientation: dict[str, str]
     weights: dict[str, EvidenceWeights] = field(default_factory=dict)
+    #: The ceiling — how well the independent sources agree with each other on THIS pool.
+    #: Without it an advantage figure cannot be read: a low ceiling means a poor
+    #: cross-source showing is a property of the pool, not of the scorer.
+    source_agreement: dict = field(default_factory=dict)
 
     def independent_cells(self) -> list[SourceCell]:
         return [c for c in self.cells if c.independent]
@@ -829,6 +867,35 @@ class ValidationReport:
                     else "undetermined"
                 )
             ),
+            # A win/loss count is unreadable on its own: the SAME pipeline wins 12/12 on a
+            # wide pool and loses 12/12 on a narrow one, and what changed was the ceiling
+            # (source-to-source agreement +0.835 -> +0.265), not the scorer. So the verdict
+            # ships with the ceiling and with the placebo band attached.
+            "ceiling_source_agreement_mean": self.source_agreement.get("mean"),
+            "how_to_read": (
+                "compare each delta against BOTH the ceiling (how well the independent "
+                "sources agree with each other on this pool) and the noise placebo band. A "
+                "loss under a low ceiling is a property of the pool; an evidence rho inside "
+                "the placebo band is not distinguishable from noise at all."
+            ),
+            "placebo_abs_mean": self.placebo.get("spearman_abs_mean"),
+            "placebo_abs_p95": self.placebo.get("spearman_abs_p95"),
+            "evidence_rho_inside_placebo_band": (
+                bool(
+                    max(
+                        (
+                            abs(r["evidence_spearman"])
+                            for r in rows
+                            if np.isfinite(r["evidence_spearman"])
+                        ),
+                        default=0.0,
+                    )
+                    <= self.placebo["spearman_abs_p95"]
+                )
+                if self.placebo.get("spearman_abs_p95") is not None
+                and np.isfinite(self.placebo.get("spearman_abs_p95", np.nan))
+                else None
+            ),
         }
 
     def to_dict(self) -> dict:
@@ -843,6 +910,7 @@ class ValidationReport:
             "cross_source_cells": [c.to_dict() for c in self.cells],
             "lolo": [r.to_dict() for r in self.lolo],
             "noise_placebo": self.placebo,
+            "ceiling_source_agreement": self.source_agreement,
             "paired_resolution": self.resolution,
             "direction_invariance_proof": self.direction_proof,
             "cannot_express": [limitation.to_dict() for limitation in self.limitations],

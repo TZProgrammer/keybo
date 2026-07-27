@@ -510,3 +510,133 @@ def test_competitor_scores_run_on_real_layouts():
     assert scores["genkey"][0] > scores["genkey"][1]
     # oxeylyzer-1 is higher-better, so qwerty must score LOWER.
     assert scores["oxeylyzer1"][0] < scores["oxeylyzer1"][1]
+
+
+# --------------------------------------------------------------------------------------
+# The domain-transfer guard — the finding that a narrow pool reverses the verdict
+# --------------------------------------------------------------------------------------
+
+
+def _weights_with_dof(dof: float) -> E.EvidenceWeights:
+    return E.EvidenceWeights(
+        source="COMMUNITY_BASE",
+        frame="native",
+        corpus="blend-v1",
+        corpus_sha256={},
+        surface_sha256="0" * 64,
+        n_layouts=400,
+        pool_label="synthetic",
+        curves={},
+        clusters={},
+        cluster_shap_share_pct={},
+        cluster_weight={},
+        effective_dof=dof,
+        surrogate_r2_in_sample=0.9,
+        surrogate_r2_holdout=0.7,
+        base_value=250.0,
+    )
+
+
+def test_narrow_pool_is_flagged_and_a_wide_one_is_not():
+    """Measured thresholds: the archive pool sits at dof 3.99 and loses every cell; the
+    random pool sits at 5.03 and wins every cell."""
+    assert _weights_with_dof(3.99).transfer_warning() is not None
+    assert "NARROW POOL" in _weights_with_dof(3.99).transfer_warning()
+    assert _weights_with_dof(5.03).transfer_warning() is None
+
+
+def test_low_source_agreement_escalates_to_do_not_trust():
+    """A ceiling below the threshold must escalate past a mere warning — the archive arm's
+    +0.265 is where the weights lost 12 of 12 cells."""
+    warning = _weights_with_dof(5.03).transfer_warning(source_agreement=0.265)
+    assert warning is not None and "DO NOT TRUST" in warning
+    # And a high ceiling must NOT trip it, or the guard is just noise.
+    assert _weights_with_dof(5.03).transfer_warning(source_agreement=0.835) is None
+
+
+def test_transfer_warning_travels_in_the_serialized_artifact():
+    payload = _weights_with_dof(3.99).to_dict()
+    assert payload["transfer_warning"] is not None
+    assert payload["effective_dof"] == pytest.approx(3.99)
+
+
+def test_cross_source_agreement_uses_only_independent_pairs():
+    """The ceiling must be computed over independent pairs ONLY — a POOL pair would inflate
+    it, since POOL pools the very sources being compared."""
+    rng = np.random.default_rng(31)
+    base = rng.normal(size=200)
+    targets = {
+        "AALTO_BASE": base,
+        "COMMUNITY_BASE": base + rng.normal(scale=2.0, size=200),
+        "POOL_BASE": base,  # identical to AALTO: would read rho 1.0 if wrongly included
+    }
+    result = V.cross_source_agreement(targets)
+    assert set(result["pairwise"]) == {"AALTO_BASE|COMMUNITY_BASE"}
+    assert result["mean"] < 0.9  # not inflated by the POOL pair
+
+
+def test_headline_reports_the_ceiling_and_the_placebo_band():
+    """A win/loss count alone is unreadable; the verdict must carry both rulers."""
+    agreement = {
+        "evidence": V.ScorerAgreement("evidence", 0.10, 0.07, 400),
+        "genkey": V.ScorerAgreement("genkey", 0.51, 0.36, 400),
+        "oxeylyzer1": V.ScorerAgreement("oxeylyzer1", 0.34, 0.24, 400),
+        "oxeylyzer2": V.ScorerAgreement("oxeylyzer2", 0.42, 0.29, 400),
+    }
+    advantages = {
+        name: {"delta_spearman": 0.10 - a.spearman, "ci95": [-0.5, -0.3], "p_gt_0": 0.0}
+        for name, a in agreement.items()
+        if name != "evidence"
+    }
+    report = V.ValidationReport(
+        corpus="blend-v1",
+        corpus_sha256={},
+        surface_frame="native",
+        n_layouts=400,
+        pool_label="archive-400",
+        cells=[
+            V.SourceCell("COMMUNITY_BASE", "AALTO_BASE", True, agreement, advantages, -0.09, 400)
+        ],
+        lolo=[],
+        placebo={"spearman_abs_mean": 0.1543, "spearman_abs_p95": 0.4659},
+        resolution=None,
+        direction_proof={},
+        limitations=[],
+        competitor_orientation={},
+        source_agreement={"mean": 0.2654, "min": 0.2541, "max": 0.2756, "pairwise": {}},
+    )
+    headline = report.headline()
+    assert headline["cells_where_evidence_wins"] == 0
+    assert headline["ceiling_source_agreement_mean"] == pytest.approx(0.2654)
+    assert headline["placebo_abs_p95"] == pytest.approx(0.4659)
+    # evidence rho 0.10 < placebo p95 0.4659 -> must be flagged as indistinguishable
+    assert headline["evidence_rho_inside_placebo_band"] is True
+
+
+def test_headline_does_not_flag_placebo_band_when_signal_is_clear():
+    """The flag must be able to come out FALSE, or it is decoration."""
+    agreement = {
+        "evidence": V.ScorerAgreement("evidence", 0.74, 0.55, 400),
+        "genkey": V.ScorerAgreement("genkey", 0.40, 0.28, 400),
+    }
+    advantages = {"genkey": {"delta_spearman": 0.34, "ci95": [0.25, 0.44], "p_gt_0": 1.0}}
+    report = V.ValidationReport(
+        corpus="blend-v1",
+        corpus_sha256={},
+        surface_frame="native",
+        n_layouts=400,
+        pool_label="random-c30m-400",
+        cells=[
+            V.SourceCell("AALTO_BASE", "COMMUNITY_BASE", True, agreement, advantages, -0.20, 400)
+        ],
+        lolo=[],
+        placebo={"spearman_abs_mean": 0.1122, "spearman_abs_p95": 0.2231},
+        resolution=None,
+        direction_proof={},
+        limitations=[],
+        competitor_orientation={},
+        source_agreement={"mean": 0.8350, "min": 0.8350, "max": 0.8350, "pairwise": {}},
+    )
+    headline = report.headline()
+    assert headline["cells_where_evidence_wins"] == 1
+    assert headline["evidence_rho_inside_placebo_band"] is False

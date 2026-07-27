@@ -222,6 +222,9 @@ def _print_weights(weights: E.EvidenceWeights) -> None:
         "other (lsb|lsb-dist rho 1.00, sr-roll a subset of roll, oxey-style R^2 0.9937 on "
         "six others), so summing 14 gauge prices over-counts."
     )
+    warning = weights.transfer_warning()
+    if warning:
+        print(f"\n  ⚠ {warning}")
 
 
 def _print_validation(report: V.ValidationReport) -> None:
@@ -253,6 +256,22 @@ def _print_validation(report: V.ValidationReport) -> None:
         f"  mean delta rho vs best rival {headline['mean_delta_spearman_vs_best_competitor']:+.4f}"
         f"  (min {headline['min_delta']:+.4f}, max {headline['max_delta']:+.4f})"
     )
+    ceiling = report.source_agreement
+    if ceiling and np.isfinite(ceiling.get("mean", float("nan"))):
+        print(
+            f"\nCEILING — how well the INDEPENDENT sources agree with EACH OTHER on this pool: "
+            f"mean rho {ceiling['mean']:+.4f} (min {ceiling['min']:+.4f}, max {ceiling['max']:+.4f})."
+            f"\n  No scorer fitted on source A can be expected to rank source B better than A "
+            f"ranks B. A LOW ceiling means a poor showing is a property of the POOL, not the "
+            f"scorer:\n  the same pipeline wins 12/12 cells at ceiling +0.835 (random pool) and "
+            f"loses 12/12 at +0.265 (near-optimal archive pool)."
+        )
+    if headline.get("evidence_rho_inside_placebo_band"):
+        print(
+            "\n  ⚠ EVERY cell's evidence rho lies INSIDE the noise-placebo band, so these "
+            "weights do not transfer distinguishably from noise on this pool. Do not read the "
+            "small positive correlations as weak-but-real transfer."
+        )
     placebo = report.placebo
     print(
         f"\nNOISE PLACEBO ({placebo['repeats']} shuffled-label refits): "
@@ -434,6 +453,7 @@ def run(args: argparse.Namespace) -> int:
             ),
             competitor_orientation=V.orient_scores(competitors, reference),
             weights={args.fit_source: weights},
+            source_agreement=V.cross_source_agreement(targets),
         )
         _print_validation(report)
         payload["validation"] = report.to_dict()
