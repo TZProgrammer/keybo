@@ -7608,9 +7608,11 @@ justifying contrast is **99.97% lower-key-is-INDEX**, yet the PREDICATE generali
 docstring already carries an identification caveat, but it documents the WHOLE predicate's limit, not this narrower gap.
 ⚠ COUNTER-EVIDENCE THE CHILD DID NOT BURY: the predicate's DIRECTION is corroborated by the fitted `_T2` table (middle<->pinky, mean of both
 orders: weak-lower 155.13 vs weak-on-top 142.22 ms at dy2; 143.19 vs 133.65 at dy1). So the defect is the ALL-OR-NOTHING EXTENT of the
-exclusion, not its sign. AND AN UNRESOLVED CONTRADICTION, reported rather than resolved in the convenient direction: on the fitted table `bl`
-gets COSTLIER on +lm (142.22 -> 146.50 ms) while the raw-cell path says it gets CHEAPER (dy2 +0.2643 -> dy1 +0.1494). The gauge conclusion
-stands on the boundary argument INDEPENDENTLY of `bl`.
+exclusion, not its sign. ⚠⚠ **AMENDED BY THE REFLECTION PASS — SEE THE ADDENDUM BELOW: the "unresolved contradiction" I registered here was an
+AGGREGATION-LEVEL ERROR and is RETRACTED.** (The original text read: "AND AN UNRESOLVED CONTRADICTION ... on the fitted table `bl` gets COSTLIER
+on +lm (142.22 -> 146.50 ms) while the raw-cell path says it gets CHEAPER (dy2 +0.2643 -> dy1 +0.1494)." That comparison put a fitted PAIR value
+against a raw CLASS mean — two different units of aggregation — so it was never a contradiction.) The gauge conclusion stands on the boundary
+argument INDEPENDENTLY of `bl`, and now ALSO with `bl` in support.
 REPAIRS: 4 of 7 flip the order (drop-dexterity -0.1092; all-2-row -0.5355; shipped+nonadj-2row -0.1731; measured-explicit -0.1288). The TWO
 NON-FLIPS matter more: (i) a dy2-weighted-4x variant CANNOT flip it (+0.3628 unchanged, because the PRICED dy2 mass is exactly equal) — so the
 **SUPPORT, not the weighting, is binding**, which is consistent with BADSCISSOR-1's SHIP-FLAT decision and does NOT reopen it; (ii) scoping the
@@ -7629,3 +7631,65 @@ ALSO: TRAP 35 CONFIRMED LIVE — `artifacts/v2/tb_objective_v2.py` hardcodes `RE
 `sys.path.append` and only `_scissor_event`. AND A REUSABLE ASSET: `artifacts/lmscissor_harvest.json` is a 186KB reduction of the 609MB Aalto
 TSV (per cell x bigram-identity x wpm-bucket, with source provenance) — any future row-travel surface question re-answers from it in seconds
 instead of reparsing the raw data.
+
+### LMSCISSOR-1 ADDENDUM (reflection pass) — the `bl` "contradiction" is RETRACTED; +lm DOES relieve the reach; and the exclusion's own justifying number is indistinguishable from zero (2026-07-27)
+I sent `lmscissor` the reflection state-flush + self-audit BEFORE reaping it. That warm second pass RETRACTED one claim I had already registered,
+downgraded three and strengthened three. **The headline verdicts of LMSCISSOR-1 all SURVIVE** (100% of the delta is dy=1; the ordering is a
+support-boundary artifact; the "~55%" reproduces; FLAGSHIP-1 unchanged). Branch `lmscissor-invest` @ b78f88f, 19 driver .py files only —
+`git diff 42b8b0e..HEAD --stat -- src/ data/ PREREGISTRATIONS.md tests/ docs/` is EMPTY. Its apply-ready patch:
+state/lmscissor/LEDGER-CORRECTION-for-LMSCISSOR-1.md.
+⚠ RETRACTION (mine, registered in 9490d1b): the "`bl` gets costlier on the fitted table but cheaper on the raw path" contradiction **DOES NOT
+EXIST**. It compared a fitted **PAIR** value to a raw **CLASS** mean — different units of aggregation. Two discriminators, both against the
+child's original reading: (D1) **AT EQUAL LEVEL THE PATHS AGREE — I verified this from `lmscissor_audit3.json`**: `middle|pinky` dy2 -> dy1 is
++0.0269 -> +0.0048 on the fitted class rel, alongside +0.2643 -> +0.1494 raw, i.e. CHEAPER on +lm in BOTH. Sign agreement 6/6; Spearman rho
+**+0.4857** (n=6), so same signs but WEAK RANK agreement — worth knowing and reported rather than smoothed. (D2/D3) DECISIVE AND MODEL-FREE: the
+exact `bl` positions are essentially unobserved on the RIGHT hand (n=5 and n=10, dvorak only), but their LEFT-HAND MIRRORS are well observed and
+the predicate is hand-symmetric — (-3,1)<->(-5,3) dy2 = **+0.2665 (n=489)** vs (-3,1)<->(-5,2) dy1 = **+0.1493 at n=172,342**, 5/5 wpm buckets, 3
+source layouts. So **+lm DOES relieve the `bl` reach**, measured at the same two physical positions. The `_T2` pair value was a MODEL
+EXTRAPOLATION into a cell its training data barely contains. **NET: this removes the only counter-evidence against the user's reading, so the
+mis-ordering case is STRONGER, not weaker.** The whole-corpus CIs still cross zero, so the "which layout is better" verdict is unchanged.
+🟢 THE n-GAP IS NOW EXACTLY RECONCILED — I pushed on this in the reflection prompt precisely because it was "tolerated, not explained". Root cause
+found by reading the PRODUCING script: the spec's -0.0179 comes from `bs06_orientation.json` `row_grid["weak=top,strong=bottom"]`, which applies
+MIN_UNIT=50 per (layout,bigram,bucket) plus a PER-LAYOUT baseline, while the child had mirrored `bs01_surface.py` (no per-unit floor, POOLED
+baseline). Reproducing BOTH rules on one pass, the bs06 rule gives **n = 1,643,289, rel = -0.0179, 18 distinct bigrams — matching the spec on the
+sample, the digit AND the bigram count.** The 1,435-sample gap is 100% MIN_UNIT<50 (`dropped_nobase` = 0); no parsing bug in either
+implementation, just two documented conventions. The 122 dropped units split 1256 index / 166 middle / 13 ring — NOT concentrated on the disputed
+sub-class, so the reconciliation STRENGTHENS the finding and upgrades the positive control to a true reproduction.
+⚠ THE DEFECT SUB-CELL: CI NOW STATED, CONFIDENCE DOWNGRADED 🟢 -> 🟡. lower=NON-index +0.2777 has a bigram-clustered 95% CI **[+0.1111,
++0.4690]**, P(rel>0) = 1.000 over 4000 draws, all 5 wpm buckets positive, and it survives the stricter bs06 rule at +0.1815 — so it is
+**SUPPORTED, not merely untested**, and does NOT degrade to "untested". BUT it rests on 9 identities with **96.5% from ONE source layout (azerty,
+497 of 515)** and only one bucket clearing n>=200. So the defensible claim is DIRECTIONAL/STRUCTURAL — "this sub-class was never shown cheap and
+looks costly" — NOT "+0.2777 is the cost".
+🔴 AND A SECOND, INDEPENDENTLY DAMAGING FINDING THE CHILD DID NOT REPORT THE FIRST TIME: **the -0.0179 "cheap" cell that JUSTIFIES the exclusion
+has CI [-0.0654, +0.1049], P(>0) = 0.382 — it is itself INDISTINGUISHABLE FROM ZERO.** So the exclusion rests on a number indistinguishable from
+zero and, at its low end, indistinguishable from the class it excludes. That is a stronger statement of the defect than the over-generalization
+argument alone.
+CONTAMINATION AUDIT OF ALL SEVEN REPAIRS: R1-R5 are pure geometry-only predicates, so R7-style contamination is STRUCTURALLY IMPOSSIBLE for them.
+R6 is essentially clean (only 0.24% of the differing mass uses a coarse fallback). **R7 is WORSE than first reported — every cell it uses is
+coarse, and its largest-mass cell (weakTOP|dy1|nonadj, 10.4M = 69% of the differing mass) is 71.82% one sub-class. DISCARD R7: its non-flip
+carries no evidential weight.**
+⭐ THE SHARPEST ONE-LINE STATEMENT OF THE BOUNDARY PROBLEM, now registered: of the **15,086,474** bigram mass that changes class between the two
+layouts (48 bigrams, 1.5086% of all mass), **the shipped gauge's support contains only 20.36%**. R2 is identical at 20.36% (confirming the
+weighting is inert), R3 31.98%, R4 52.11%, R5 57.25%, R1 100%.
+⚠ (A) IS PARTLY RIGHT AFTER ALL — I over-corrected in the parent entry. The "~55%" claim is true of its own gauge, so not a factual error, but as
+SHIPPED TEXT it is actively MISLEADING rather than merely incomplete: the comment sits at `analyze.py:98-100`, and **six lines below, the same file
+defines `GAUGE_NAMES` including a printed column named `scissor`** (line 105) which reads 0.1429 -> 0.1431 (+0.2%, flat) for these layouts and
+cannot represent a middle-pinky quantity at all. The accurate description is **UNATTRIBUTED**: a true claim about an unnamed, unshipped gauge
+sitting next to two shipped gauges that both contradict it. This raises the rewording from cosmetic to "removes a false-reading trap".
+FOUR PREVIOUSLY-UNTESTED ASSUMPTIONS CHECKED, ALL HOLD, AND ONE GENERALIZES THE FINDING: (C1) the delta is L-hand +0.0000 / R-hand +0.3628 — no
+hand leakage. (C2) the 1.48x blind-spot ratio is DENOMINATOR-INVARIANT (1.4771x under both conventions), so trap 9 cannot touch it. (C3) ⭐
+**dy=1 is 87.1%-99.4% of bad-scissor's total across ALL 15 registry layouts** (dvorak 99.4%, qwerty30m 87.1%, keybo-lsb 90.9%, +lm 91.7%) — the
+cheap-tail dominance is a PROPERTY OF THE GAUGE, not a quirk of this pair. Most reusable result of the audit. (C4) "+lm has less row travel" holds
+on 4/4 counting conventions and the advantage GROWS when dy-weighted (-0.6447 vs -0.1092).
+STILL UNTESTED, recorded so nobody assumes coverage: (i) NO participant-level bootstrap anywhere — every CI clusters on bigram identity only, so
+between-typist variance is unmodelled; (ii) the +0.2777 cell is 96.5% azerty with no source-layout fixed effect; (iii) the cost index was never
+calibrated against a KNOWN ranking (scoring qwerty would do it); (iv) the mirror argument assumes exact L/R symmetry of typing cost, which the
+predicate assumes but the child did not verify on data; (v) everything is bigram-level — trigram/skipgram effects untouched.
+REUSABLE ASSET, now fully documented: `state/lmscissor/artifacts/lmscissor_harvest.json` — a 186KB reduction of the 609MB Aalto TSV holding
+[sum_ms, n] per cell x bigram-identity x wpm-bucket. Because it stores sums and counts it is ADDITIVE, so every mean, re-aggregation and
+bigram-clustered bootstrap is exactly reproducible offline. Its index documents the baked-in filters, the JSON schema, all 6 cell-key families
+(74 cells, 66 supported), a copy-paste `rel()` recipe, the support floors (n>=200/bucket, n_pids>=20, >=3 identities), and the companion
+`lmscissor_audit1_units.json` (21KB) for bs06-rule reconciliation.
+=> LESSON, AND WHY THE REFLECTION GATE EARNED ITS COST HERE: a warm self-audit retracted a claim that had ALREADY BEEN PUSHED to the ledger, and
+the retraction made the finding STRONGER rather than weaker. Reading the child's report would not have produced this — only the child re-auditing
+its own work while still loaded did.
