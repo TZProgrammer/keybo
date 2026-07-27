@@ -662,3 +662,61 @@ def test_bad_scissor_caveats_reach_the_user_not_just_the_docstring(capsys):
     # that no amount of data could fix it
     assert "EMPIRICAL, not structural" in text
     assert "no amount of data" not in text
+
+
+# --- prefix-collision regression (FLAGSHIP-1 found it; the watchdog required the fix) -------
+
+
+KEYBO_LSB = "pyuo,vgdnlhiea.cstrmkj-z'fwbxq"
+KEYBO_LSB_LM = "pyuo,vgdnmhiea.cstrlkj-z'fwbxq"
+
+
+def test_two_layouts_sharing_an_eight_char_prefix_get_two_rows(capsys):
+    """The bug: `rows` was keyed on ``spec[:8] + "…"``, so these two DISTINCT layouts
+    collapsed into ONE row and analyze exited 0 — silent data loss, invisible in any board
+    built from the output. keybo-lsb and keybo-lsb+lm share ``pyuo,vgd``; so do
+    archive-1843 and archive-1846.
+    """
+    out = _run(
+        capsys, ["analyze", "--no-time", "--no-model-scores", "--json", KEYBO_LSB, KEYBO_LSB_LM]
+    )
+    rows = out["rows"]
+    assert KEYBO_LSB in rows and KEYBO_LSB_LM in rows, sorted(rows)
+    # both layouts present AND distinct — a collapsed row would leave one key and equal values
+    assert rows[KEYBO_LSB]["community"]["genkey"] != rows[KEYBO_LSB_LM]["community"]["genkey"]
+
+
+def test_row_count_matches_layouts_requested(capsys):
+    """A dropped row must never be silent again: one row per distinct layout, plus the ref."""
+    out = _run(
+        capsys,
+        [
+            "analyze",
+            "--no-time",
+            "--no-model-scores",
+            "--json",
+            KEYBO_LSB,
+            KEYBO_LSB_LM,
+            "archive-1843",
+            "archive-1846",
+        ],
+    )
+    assert len(out["rows"]) == 5, sorted(out["rows"])  # 4 layouts + qwerty reference
+
+
+def test_registry_names_for_prefix_twins_are_distinct_rows(capsys):
+    """The documented workaround (pass registry NAMES) must also work."""
+    out = _run(
+        capsys, ["analyze", "--no-time", "--no-model-scores", "--json", "keybo-lsb", "keybo-lsb+lm"]
+    )
+    assert {"keybo-lsb", "keybo-lsb+lm"} <= set(out["rows"]), sorted(out["rows"])
+
+
+def test_text_report_labels_prefix_twins_distinguishably(capsys):
+    """An ambiguous LABEL is cosmetic, but it reads exactly like the dropped row."""
+    rc = main(
+        ["analyze", "--corpus", IWEB, "--no-time", "--no-model-scores", KEYBO_LSB, KEYBO_LSB_LM]
+    )
+    assert rc == 0
+    text = capsys.readouterr().out
+    assert "pyuo,vgdnl…" in text and "pyuo,vgdnm…" in text, text[:400]

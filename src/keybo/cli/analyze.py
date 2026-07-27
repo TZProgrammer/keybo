@@ -185,11 +185,22 @@ def _resolve(spec: str) -> tuple[str, str]:
     if key in _EXTRA_NAMED:
         return key, _EXTRA_NAMED[key]
     if len(spec) == 30:
-        return spec[:8] + "…", spec
+        return spec, spec
     raise SystemExit(
         f"unknown layout {spec!r}: not a registry name "
         f"({', '.join(sorted({**NAMED_LAYOUTS, **_EXTRA_NAMED}))}) and not a 30-char string"
     )
+
+
+def _display(name: str) -> str:
+    """Shorten a raw 30-char layout for table columns; registry names pass through.
+
+    Only ever applied at PRINT time. The row key stays the full layout string, because
+    ``rows`` is a dict: keying it on a truncation silently DROPPED a row whenever two
+    layouts shared the first 8 characters (``keybo-lsb`` vs ``keybo-lsb+lm``,
+    ``archive-1843`` vs ``archive-1846``) — two layouts in, one row out, exit 0.
+    """
+    return name[:8] + "…" if len(name) == 30 else name
 
 
 def _oxeylyzer_scorable(lay30: str) -> bool:
@@ -248,6 +259,18 @@ def run(args: argparse.Namespace) -> int:
     ref_name, ref_lay = _resolve(args.ref)
     if all(name != ref_name for name, _ in specs):
         specs.insert(0, (ref_name, ref_lay))
+
+    # A row per distinct layout, or fail loudly. `rows` is a dict, so any two specs that
+    # resolve to the same display name would silently collapse into one row with exit 0 —
+    # invisible in the output and in every board built from it.
+    seen: dict[str, str] = {}
+    for name, lay in specs:
+        if name in seen and seen[name] != lay:
+            raise SystemExit(
+                f"layout name collision: {name!r} resolves to two different layouts "
+                f"({seen[name]!r} and {lay!r}); pass registry names to disambiguate"
+            )
+        seen[name] = lay
 
     if args.surface_dir is not None and not Path(args.surface_dir).is_dir():
         raise SystemExit(f"--surface-dir {args.surface_dir!r}: model surface directory not found")
@@ -426,6 +449,12 @@ def run(args: argparse.Namespace) -> int:
             }
         rows[name] = row
 
+    if len(rows) != len(specs):  # pragma: no cover — the collision check above precludes it
+        raise SystemExit(
+            f"internal error: {len(specs)} layouts requested but {len(rows)} rows produced; "
+            "refusing to emit a table with a dropped row"
+        )
+
     if args.json:
         print(
             _json.dumps(
@@ -492,7 +521,15 @@ def _print_report(
     corpus_block: dict,
 ) -> None:
     names = list(rows)
-    w = max(len(n) for n in names) + 2
+    # Truncate raw 30-char layouts for column width HERE, never in the row key (see _display).
+    # If two truncations would collide, lengthen them until they do not: an ambiguous LABEL is
+    # only cosmetic, but it reads exactly like the dropped row this truncation used to cause.
+    shown = {n: _display(n) for n in names}
+    for cut in range(9, 31):
+        if len(set(shown.values())) == len(names):
+            break
+        shown = {n: (n[:cut] + "…" if len(n) == 30 else n) for n in names}
+    w = max(len(shown[n]) for n in names) + 2
 
     # WHICH corpus, first line of the report: every corpus-sensitive number below depends
     # on it, and the default changed (iWeb -> blend-v1) at CORPUS-SWAP-1.
@@ -513,7 +550,7 @@ def _print_report(
         for n in names:
             t = rows[n]["time"]
             saved = f"{t['saved_vs_ref_pct']:+.2f}" if t["saved_vs_ref_pct"] is not None else "-"
-            print(f"{n:<{w}}{t['ms_per_char']:>9.2f}{saved:>8}{t['coverage_pct']:>11.1f}")
+            print(f"{shown[n]:<{w}}{t['ms_per_char']:>9.2f}{saved:>8}{t['coverage_pct']:>11.1f}")
         print()
 
     print("== community scores (exact ports, native corpora) ==")
@@ -521,7 +558,7 @@ def _print_report(
     for n in names:
         c = rows[n]["community"]
         print(
-            f"{n:<{w}}{_cell(c['genkey'], 12, '.2f')}"
+            f"{shown[n]:<{w}}{_cell(c['genkey'], 12, '.2f')}"
             + "".join(_cell(c[k], width, ".0f") for k, width in (("oxeylyzer1", 16),))
             + _cell(c["oxeylyzer2"], 18, ".0f")
             + _cell(c["wfd"], 18, ".0f")
@@ -532,26 +569,26 @@ def _print_report(
     for n in names:
         p = rows[n]["community_primed"]
         print(
-            f"{n:<{w}}{_cell(p['genkey_primed'], 12, '.4f')}"
+            f"{shown[n]:<{w}}{_cell(p['genkey_primed'], 12, '.4f')}"
             + _cell(p["oxey1_primed"], 16, ".0f")
             + _cell(p["oxey2_primed"], 18, ".0f")
         )
     print("wfd is NOT primed away — it is the same one gauge printed above (higher better)")
 
-    _print_wfd_reconciliation(rows, names, w)
+    _print_wfd_reconciliation(rows, names, w, shown)
 
     print(f"\n== all-gauge frame, shared corpus (1-skip31); {len(GAUGE_NAMES)} gauges ==")
     print(f"{'layout':<{w}}" + "".join(f"{s:>11}" for s in GAUGE_NAMES))
     for n in names:
         g = rows[n]["gauges"]
-        print(f"{n:<{w}}" + "".join(_cell(g[s], 11) for s in GAUGE_NAMES))
+        print(f"{shown[n]:<{w}}" + "".join(_cell(g[s], 11) for s in GAUGE_NAMES))
 
     print("\n== scissor by finger (% of layout-covered bigram mass; sums to `scissor`) ==")
     print(f"{'layout':<{w}}" + "".join(f"{f:>9}" for f in FINGER_NAMES) + f"{'total':>10}")
     for n in names:
         per_finger = rows[n]["scissor_by_finger"]
         print(
-            f"{n:<{w}}"
+            f"{shown[n]:<{w}}"
             + "".join(f"{per_finger[f]:>9.4f}" for f in FINGER_NAMES)
             + f"{sum(per_finger.values()):>10.4f}"
         )
@@ -562,7 +599,7 @@ def _print_report(
     for n in names:
         graded = rows[n]["scissor_graded"]
         print(
-            f"{n:<{w}}{rows[n]['gauges']['scissor']:>10.4f}{graded['share']:>10.4f}"
+            f"{shown[n]:<{w}}{rows[n]['gauges']['scissor']:>10.4f}{graded['share']:>10.4f}"
             f"{graded['flat_control']:>10.4f}{graded['wide_support_share']:>10.4f}"
             f"  {graded['weights']}"
         )
@@ -586,7 +623,7 @@ def _print_report(
         print(f"{'layout':<{w}}" + "".join(f"{k:>10}" for k in keys))
         for n in names:
             pairs = rows[n].get("scissor_by_finger_pair", {})
-            print(f"{n:<{w}}" + "".join(f"{pairs.get(k, 0.0):>10.4f}" for k in keys))
+            print(f"{shown[n]:<{w}}" + "".join(f"{pairs.get(k, 0.0):>10.4f}" for k in keys))
 
     print(
         "\n== bad-scissor: lower key on a non-index finger (% of layout-covered NO-SPACE mass) =="
@@ -601,7 +638,7 @@ def _print_report(
         dy1 = sum(v for k, v in cells.items() if k.endswith("dy1"))
         dy2 = sum(v for k, v in cells.items() if k.endswith("dy2"))
         print(
-            f"{n:<{w}}{bad['share']:>9.4f}{dy1:>9.4f}{dy2:>9.4f}"
+            f"{shown[n]:<{w}}{bad['share']:>9.4f}{dy1:>9.4f}{dy2:>9.4f}"
             + "".join(f"{bad['by_finger'][f]:>9.4f}" for f in BAD_SCISSOR_FINGERS)
         )
     print(
@@ -636,13 +673,13 @@ def _print_report(
     for n in names:
         r = rows[n]["redirects"]
         print(
-            f"{n:<{w}}"
+            f"{shown[n]:<{w}}"
             + "".join(f"{r[c]:>19.4f}" for c in REDIRECT_CLASSES)
             + f"{r['bad_redirects_total']:>12.4f}{r['redirects_family_total']:>10.4f}"
         )
     print("(the four classes are mutually exclusive; family total == the `redir` gauge above)")
 
-    _print_model_scores(rows, names, w)
+    _print_model_scores(rows, names, w, shown)
 
     if args.attribution:
         for n in names:
@@ -663,7 +700,9 @@ def _print_report(
             )
 
 
-def _print_wfd_reconciliation(rows: dict[str, dict], names: list[str], w: int) -> None:
+def _print_wfd_reconciliation(
+    rows: dict[str, dict], names: list[str], w: int, shown: dict[str, str]
+) -> None:
     """Reconcile the frozen artifacts' wfd against the correct one — as a decomposed delta.
 
     Deliberately NOT a second gauge column: the legacy number is not another way of
@@ -679,7 +718,7 @@ def _print_wfd_reconciliation(rows: dict[str, dict], names: list[str], w: int) -
     for n in live:
         r = rows[n]["wfd_legacy_reconciliation"]
         print(
-            f"{n:<{w}}{r['correct_wfd']:>22,}{r['legacy_board_wfd']:>22,}"
+            f"{shown[n]:<{w}}{r['correct_wfd']:>22,}{r['legacy_board_wfd']:>22,}"
             f"{r['delta']:>+20,}{r['delta_pct_of_correct']:>+8.2f}%"
         )
     for n in live:
@@ -689,7 +728,7 @@ def _print_wfd_reconciliation(rows: dict[str, dict], names: list[str], w: int) -
         evicted = ",".join(repr(c) for c in r["evicted_characters"]) or "none"
         duplicated = ",".join(repr(c) for c in r["duplicated_characters"]) or "none"
         print(
-            f"  {n:<{w}} legacy board {r['legacy_board']!r}"
+            f"  {shown[n]:<{w}} legacy board {r['legacy_board']!r}"
             f"  evicted={evicted} duplicated={duplicated}"
         )
     print(
@@ -699,7 +738,9 @@ def _print_wfd_reconciliation(rows: dict[str, dict], names: list[str], w: int) -
     )
 
 
-def _print_model_scores(rows: dict[str, dict], names: list[str], w: int) -> None:
+def _print_model_scores(
+    rows: dict[str, dict], names: list[str], w: int, shown: dict[str, str]
+) -> None:
     """The three fitted model surfaces, or one clear line saying why not."""
     first = rows[names[0]]["model_scores"]
     scored = [n for n in names if rows[n]["model_scores"]["available"]]
@@ -713,7 +754,7 @@ def _print_model_scores(rows: dict[str, dict], names: list[str], w: int) -> None
         scores = rows[n]["model_scores"]
         if not scores["available"]:
             print(
-                f"{n:<{w}}"
+                f"{shown[n]:<{w}}"
                 + "".join(f"{NA:>30}" for _ in surface_names)
                 + f"  ({scores['reason']})"
             )
@@ -726,5 +767,5 @@ def _print_model_scores(rows: dict[str, dict], names: list[str], w: int) -> None
                 f"{cell['fit'] / 1e9:>19.4f}Gms"
                 + (f"{saved:>+7.2f}%" if saved is not None else f"{NA:>8}")
             )
-        print(f"{n:<{w}}" + "".join(f"{c:>30}" for c in cells))
+        print(f"{shown[n]:<{w}}" + "".join(f"{c:>30}" for c in cells))
     print(f"note: {first['wpm_note']}")
