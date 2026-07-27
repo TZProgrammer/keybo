@@ -7722,7 +7722,7 @@ BIT-IDENTICAL** over all 31^3 cells (on BOTH the .native and .standardized frame
 2.141e+02. So **fitting on the k31 models and validating against AALTO is not a test at all**, and any future round that does it is measuring
 nothing. This retro-validates the child's decision to treat cross-source transfer as the only real out-of-sample axis. (Also re-confirmed: there
 is NO `AALTO_FREQ_PRIOR` — 8 surfaces, not 9.)
-⚠ CIRCULARITY LAYER 2 — I COULD NOT REPRODUCE IT AS STATED, and I am recording the disagreement rather than the claim. The child reports that
+⚠⚠ CIRCULARITY LAYER 2 — **MY REFUTATION BELOW IS ITSELF WRONG AND IS RETRACTED; THE CHILD WAS RIGHT. SEE THE ADDENDUM.** (Original text follows for the record.) I COULD NOT REPRODUCE IT AS STATED, and I am recording the disagreement rather than the claim. The child reports that
 `.standardized` "substitutes the production AALTO bigram tensor into all 8 surfaces". The SHARING part reproduces: `var(std - nat)` along axis 2 is
 **0.000e+00 (AALTO) / 3.674e-27 (COMMUNITY) / 2.339e-27 (POOL)**, so each surface's standardized frame does add a bigram-only tensor. But the
 tensors are **NOT the same across sources** — recovering `(std - nat)[:,:,0]` per source gives
@@ -7741,3 +7741,58 @@ the MECHANISM — the cross-source transfer ceiling collapses from 0.835 to 0.26
 wall that NO-ANCHOR-1, THEORY-1, GEOMEAN-1, WSCISSOR-ARMB-1, REHUNT-1 and FLAGSHIP-1 all hit, now reached from a SEVENTH direction: not "our gauges
 cannot separate good layouts" but "our SOURCES cannot agree about good layouts". Deriving weights cannot fix that; only a better instrument or a
 real outcome can.
+
+### EVIDENCE-SCORER-1 ADDENDUM (reflection pass) — I WAS WRONG ON CIRCULARITY LAYER 2; and the pro-taste-constant finding is DOWNGRADED by the child's own audit (2026-07-27)
+I sent `evidence-scorer` the reflection self-audit BEFORE reaping, including my own refutation of its layer-2 claim. It refuted my refutation, and
+I VERIFIED THAT IT IS CORRECT. Branch `evidence-scorer` clean at a021a32, nothing uncommitted, nothing pushed; 10 audit probes preserved in
+artifacts/audit/.
+🔴 RETRACTION OF MY OWN REFUTATION — CIRCULARITY LAYER 2 IS REAL. My counter-test used the WRONG STATISTIC. Writing delta := (std - nat)[:,:,0] =
+B_substituted - B_own, two sources with the SAME B_sub but DIFFERENT B_own MUST have different deltas — so comparing deltas ACROSS sources cannot
+distinguish "shared table" from "per-source table" at all. My `T2_aalto` recovery was additionally a no-op (`Anat[:,:,0] - (Anat - Anat[:,:,:1])[:,:,0]`
+is algebraically just `Anat[:,:,0]`). Using COMMUNITY's SHIPPED per-seed bigram part (`COMMUNITY_BASE.bigram.seedmean.npy`) and the served model's
+`_T2` as AALTO's bigram tensor, BOTH of the child's numbers reproduce for me EXACTLY:
+**max|B_sub(COMMUNITY) - T2_aalto| = 5.6843e-14** (the substituted table IS AALTO's) and **max|T2_aalto - B_own(COMMUNITY)| = 1.2155e+02 — which is
+EXACTLY the 1.216e+02 I had reported as a refutation.** My number was the AALTO-vs-COMMUNITY BIGRAM GAP, i.e. the CONFIRMATION, not a
+contradiction. POOL's 5.074e+01 is the same quantity. My 2.498e+02 / 2.179e+02 reproduce as `std[POOL] - (T2_aalto + cond_COMMUNITY)` and
+`std[POOL] - (T2_aalto + Tcond_AALTO)` — both used the WRONG SOURCE'S conditional part. Corroborating detail I checked independently:
+**max|delta(AALTO)| = EXACTLY 0.0**, i.e. AALTO's own bigram tensor already IS the substituted one.
+=> SO: in the `.standardized` frame — the ONLY frame the repo vendors and the only one `keybo.analysis.surfaces` resolves — ALL sources carry
+**AALTO's** bigram tensor. **Any cross-source claim computed on `.standardized` shares a tensor with the source under test. USE `.native`.** And NO
+CONFLICT WITH THEORY-1: within-source fit-method sharing is verified at 0.0 / 1.14e-13; the child's claim is the ADDITIONAL fact of across-source
+substitution in the standardized frame. THEORY-1's own conclusions are unaffected because it used `.native` — but my THEORY-1 addendum's narrowing
+("shared across fit methods, NOT across sources") is TOO STRONG as a statement about the standardized frame and should be read with this.
+⚠ THREE CORRECTIONS THE CHILD MADE TO ITSELF (headline verdict unchanged; two supporting claims WITHDRAWN):
+(C1) THE PLACEBO-BAND CONTRAST WAS ITSELF NOISE — and not from small n (n=400 in BOTH pools). The p95 came from only 20 repeats, where p95 is
+essentially the MAX; the bootstrap CI on that statistic is 0.195 wide at 20 reps vs 0.061 at 200. At 200 repeats the two nulls are 0.3534
+(archive) and 0.2821 (random), Mann-Whitney **p = 0.866 — indistinguishable**. So **"the archive null is twice as wide" is WITHDRAWN.** But the
+experiment is NOT underpowered, and this is the part that matters: against the corrected 0.353 null, **genkey (0.510) and oxey2 (0.420) DO clear it
+on the same pool at the same n while the SHAP scorer (0.037-0.183) does not** — a real scorer difference. And the paired delta-rho **-0.42
+[CI -0.544, -0.293]** does not depend on the null's width at all.
+(C2) THE REHABILITATION CLAIM IS STRUCK — the child's own error, caught by my Q2. **rho(A,B) does NOT bound a scorer independent of both.** Under a
+shared-common-factor model the bound is **sqrt(rho(A,B)) = 0.5151**, and genkey's 0.5104 sits JUST BELOW it (confirmed by simulation). So nothing
+beat any ceiling: **"1.9x the ceiling" and "hand-tuned weights transfer BETTER than fitted weights" are RETRACTED.** What survives is weaker but
+still notable: **genkey attains ~99% of the shared-signal bound on the archive band, versus 7-36% for the SHAP scorer.** Control passed: not a
+distance-from-qwerty artifact (partial rho retains 81%/101%), and the rivals do NOT beat rho(A,B) on the wide pool.
+(C3) `comfort` IS NOT MODEL-DERIVED, so NOT circular — my Q3 was wrong on provenance. `DEFAULT_COMFORT` is a HAND-CHOSEN table (off_home +8,
+bottom_row +10, sfb +25, scissor +15, lsb +10, lag2_reuse +5) with no fitted parameter; "ms-equivalent" is a DECLARED UNIT. But it is embarrassing
+in a different way: **43.6% of the "evidence-based" attribution came from a RIVAL'S TASTE TABLE**, and it dominates because `off_home`/`bottom_row`
+carry ROW-PLACEMENT information no other gauge in the frame has (in-frame ingredients explain only rank-R2 0.386; partial rho controlling them is
+still +0.634; the archive band INVERTS to -0.159). The +0.101 ablated headline is unaffected.
+🟢 TWO OF MY CHALLENGES RESOLVED IN THE REPORT'S FAVOUR: (Q4) all 5 wrong signs are **collinearity SUPPRESSION, 0 of 5 misfit** — every gauge's
+MARGINAL rho with the surface is sign-correct (sfb +0.289, scissor +0.231) with VIF 12.8-119 (sfb 95.1, lsb-dist 110.0, oxey-style 119.2). So the
+scorer is **uninterpretable per-gauge, NOT broken**. (Oddity worth flagging: `scissor`'s VIF is only 3.6 yet it still flips.) (Q5) the curve null is
+"a straight line", adopted only on >=1% out-of-fold TOTAL-variance gain with the knot searched INSIDE each fold; measured false-positive on PURE
+NOISE is 2.8% at n=400 (the arms' size), rising to 8.2% at n=240 and 13.4% at n=100, correctly linear on linear signal, 94-100% power on a real
+hinge. So **13 of 14 curved is not a noise artifact** — but the FP rate is n-dependent and must be requoted with n.
+GAPS THE CHILD LISTED AND I AM REGISTERING SO NOBODY ASSUMES COVERAGE: only **TWO** truly independent sources exist, so rho(A,B) and the
+common-factor argument rest on ONE source pair and cannot be cross-validated; pool size was fixed at 400 with only TWO pool KINDS, so effective dof
+and rho(A,B) MOVE TOGETHER and mechanism cannot be separated from correlate — **the decisive missing experiment is an interpolated-pool sweep
+between random and near-optimal**; the surrogate's held-out R2 is only 0.4286 on the wide pool (a weak learner of its own target); LOLO holds out
+layouts but not layout FAMILIES; and the shipped `--placebo-repeats` default of 20 is TOO FEW (200 is right — the child did not change it, correctly
+treating that as new work).
+=> NET AFTER REFLECTION: the headline is UNCHANGED — do NOT adopt `score-evidence` as a selection objective (0/12 on the near-optimal band, paired
+delta-rho -0.308, and +0.101 rather than +0.346 on the wide pool once `comfort` is ablated). What changed is the strength of the pro-taste-constant
+result: from "hand-tuning is MORE transferable than fitted weights" down to **"hand-tuning tracks the shared component efficiently (~99% of the
+sqrt bound) where a single-source fit does not"**. AND THE PROCESS LESSON, twice over in one session: the reflection gate caught a claim I had
+ALREADY PUSHED (LMSCISSOR-1) and, here, caught MY OWN REFUTATION being wrong. A warm self-audit is not a formality; it is the cheapest place to
+find that the parent is the one who erred.
