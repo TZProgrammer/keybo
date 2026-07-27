@@ -112,6 +112,29 @@ MODELLED_ONLY_NOTE = (
     "human-validation phase was cancelled, so no number here predicts how fast anyone types."
 )
 
+#: The sign each gauge's price SHOULD carry if the mechanism is what the community says it
+#: is: same-finger reuse, lateral stretch, scissors, redirects and hand imbalance cost time;
+#: alternation and rolls save it. Used only to AUDIT a fitted weight (:meth:`sign_audit`) —
+#: never to constrain the fit, because overturning one of these priors is a legitimate
+#: result and this campaign has already measured two real community mispricings.
+#: ``comfort`` and ``oxey-style`` are composite penalty scores, so higher = worse for both.
+EXPECTED_SIGN: dict[str, float] = {
+    "sfb": +1.0,
+    "sfs": +1.0,
+    "sfb-dist": +1.0,
+    "sfs-dist": +1.0,
+    "lsb": +1.0,
+    "lsb-dist": +1.0,
+    "scissor": +1.0,
+    "redir": +1.0,
+    "imbalance": +1.0,
+    "alt": -1.0,
+    "roll": -1.0,
+    "sr-roll": -1.0,
+    "comfort": +1.0,
+    "oxey-style": +1.0,
+}
+
 #: Effective-dof floor below which a fitting pool is flagged as narrow. Set from the measured
 #: reversal: the archive pool (all near-optimal layouts) sits at 3.99 and the weights fitted
 #: there lose every cross-source cell; the random pool sits at 5.03 and wins every one.
@@ -707,11 +730,60 @@ class EvidenceWeights:
             )
         return None
 
+    def sign_audit(self) -> dict:
+        """Which fitted weights have a mechanistically IMPLAUSIBLE sign, and how many.
+
+        Not a correctness gate — the whole point of a fitted scorer is that it may overturn a
+        prior, and this campaign has already measured two real community mispricings. But a
+        fitted sign that contradicts the mechanism is far more likely to be the correlated
+        frame speaking than a discovery, so the count travels with the weights.
+
+        It is load-bearing: on the wide pool **5 of 14** signs come out implausible, including
+        ``sfb`` at -0.112 — "more same-finger bigrams is faster", which is false and is the
+        community's most agreed-upon penalty. With effective dof ~5 over 14 axes, Shapley
+        distributes credit among restatements, so individual signs are not identified even
+        when the ensemble ranks well. A user reading a per-gauge weight as "the evidence-based
+        price of sfb" would be actively misled, so the tool says so itself.
+        """
+        implausible, plausible = [], []
+        for name, curve in self.curves.items():
+            expected = EXPECTED_SIGN.get(name)
+            sign = float(np.sign(curve.weight))
+            if expected is None or sign == 0.0:
+                continue
+            (plausible if sign == expected else implausible).append(
+                {"metric": name, "weight": curve.weight, "expected_sign": expected}
+            )
+        total = len(plausible) + len(implausible)
+        return {
+            "n_checked": total,
+            "n_plausible": len(plausible),
+            "n_implausible": len(implausible),
+            "implausible": sorted(implausible, key=lambda r: -abs(r["weight"])),
+            "interpretation": (
+                "a sign that contradicts the mechanism is more likely the correlated frame "
+                "(effective dof ~5 over 14 axes) than a discovery. Read the CLUSTER column "
+                "and the ensemble ranking; do NOT quote a single gauge's weight as its "
+                "evidence-based price."
+            ),
+        }
+
     # -- serialization ----------------------------------------------------------------
 
     def weight_table(self) -> list[dict]:
-        """Per-gauge rows sorted by attribution share, descending."""
-        rows = [c.to_dict() for c in self.curves.values()]
+        """Per-gauge rows sorted by attribution share, descending.
+
+        Each row carries ``sign_plausible``: whether the fitted sign agrees with the
+        mechanism. See :meth:`sign_audit` for why that flag is necessary.
+        """
+        rows = []
+        for curve in self.curves.values():
+            row = curve.to_dict()
+            expected = EXPECTED_SIGN.get(curve.metric)
+            sign = float(np.sign(curve.weight))
+            row["expected_sign"] = expected
+            row["sign_plausible"] = None if expected is None or sign == 0.0 else sign == expected
+            rows.append(row)
         rows.sort(key=lambda r: -r["shap_share_pct"])
         return rows
 
@@ -741,6 +813,7 @@ class EvidenceWeights:
                 for key, members in self.clusters.items()
             },
             "transfer_warning": self.transfer_warning(),
+            "sign_audit": self.sign_audit(),
             "notes": [*self.notes, MODELLED_ONLY_NOTE, SOURCE_INDEPENDENCE_NOTE],
         }
 

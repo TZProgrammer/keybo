@@ -200,14 +200,18 @@ def _print_weights(weights: E.EvidenceWeights) -> None:
         + f"; effective dof over {len(E.LIVE_GAUGES)} gauges = {weights.effective_dof:.2f}"
     )
     print(
-        f"\n{'gauge':<12}{'share%':>7}{'weight':>11}{'ci95':>22}{'form':>10}{'R2':>7}{'domain':>22}"
+        f"\n{'gauge':<12}{'share%':>7}{'weight':>11}{'ci95':>22}{'form':>10}{'R2':>7}"
+        f"{'domain':>22}{'sign':>6}"
     )
     for row in weights.weight_table():
         low, high = row["weight_ci95"]
         domain = f"[{row['valid_domain'][0]:.3g},{row['valid_domain'][1]:.3g}]"
+        # "??" marks a sign that contradicts the mechanism — see EvidenceWeights.sign_audit.
+        sign = {True: "ok", False: "??", None: "-"}[row["sign_plausible"]]
         print(
             f"{row['metric']:<12}{row['shap_share_pct']:>7.1f}{row['weight_ms_per_unit']:>11.4f}"
             f"{f'[{low:+.4f},{high:+.4f}]':>22}{row['form']:>10}{row['r2']:>7.3f}{domain:>22}"
+            f"{sign:>6}"
         )
     print(f"\nper correlation cluster (effective dof {weights.effective_dof:.2f}):")
     for key, members in sorted(
@@ -222,6 +226,14 @@ def _print_weights(weights: E.EvidenceWeights) -> None:
         "other (lsb|lsb-dist rho 1.00, sr-roll a subset of roll, oxey-style R^2 0.9937 on "
         "six others), so summing 14 gauge prices over-counts."
     )
+    audit = weights.sign_audit()
+    if audit["n_implausible"]:
+        listed = ", ".join(f"{r['metric']}({r['weight']:+.3f})" for r in audit["implausible"])
+        print(
+            f"\n  ⚠ SIGN AUDIT: {audit['n_implausible']} of {audit['n_checked']} fitted signs "
+            f"CONTRADICT the mechanism: {listed}."
+            f"\n    {audit['interpretation']}"
+        )
     warning = weights.transfer_warning()
     if warning:
         print(f"\n  ⚠ {warning}")

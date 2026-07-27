@@ -640,3 +640,68 @@ def test_headline_does_not_flag_placebo_band_when_signal_is_clear():
     headline = report.headline()
     assert headline["cells_where_evidence_wins"] == 1
     assert headline["evidence_rho_inside_placebo_band"] is False
+
+
+def _curve(metric: str, weight: float) -> E.LossCurve:
+    return E.LossCurve(
+        metric=metric,
+        form="linear",
+        coeffs=[0.0, weight],
+        knot=None,
+        domain=(0.0, 10.0),
+        observed_range=(0.0, 10.0),
+        weight=weight,
+        weight_ci=(weight, weight),
+        r2=0.5,
+        r2_linear=0.5,
+        mean_abs_shap=1.0,
+        shap_share_pct=100.0 / 3,
+    )
+
+
+def test_sign_audit_flags_a_mechanistically_wrong_price():
+    """A negative sfb price says "more same-finger bigrams is faster" — must be flagged.
+
+    Measured on the wide pool: 5 of 14 fitted signs come out implausible, sfb among them.
+    With effective dof ~5 over 14 axes an individual sign is not identified, so the count has
+    to travel with the weights rather than being left for a reader to notice.
+    """
+    weights = _weights_with_dof(5.03)
+    weights.curves = {
+        "sfb": _curve("sfb", -0.112),  # implausible: same-finger reuse cannot save time
+        "scissor": _curve("scissor", -0.472),  # implausible
+        "alt": _curve("alt", -0.346),  # plausible: alternation saves time
+    }
+    audit = weights.sign_audit()
+    assert audit["n_checked"] == 3
+    assert audit["n_implausible"] == 2
+    assert [row["metric"] for row in audit["implausible"]] == ["scissor", "sfb"]  # by |weight|
+
+
+def test_sign_audit_is_clean_when_every_price_agrees_with_the_mechanism():
+    """The audit must be able to come out EMPTY, or it is decoration."""
+    weights = _weights_with_dof(5.03)
+    weights.curves = {
+        "sfb": _curve("sfb", +0.23),
+        "scissor": _curve("scissor", +0.75),
+        "alt": _curve("alt", -0.014),
+        "roll": _curve("roll", -0.019),
+    }
+    audit = weights.sign_audit()
+    assert audit["n_implausible"] == 0
+    assert audit["n_plausible"] == 4
+
+
+def test_weight_table_carries_the_per_gauge_sign_flag():
+    weights = _weights_with_dof(5.03)
+    weights.curves = {"sfb": _curve("sfb", -0.112), "alt": _curve("alt", -0.35)}
+    rows = {row["metric"]: row for row in weights.weight_table()}
+    assert rows["sfb"]["sign_plausible"] is False
+    assert rows["sfb"]["expected_sign"] == 1.0
+    assert rows["alt"]["sign_plausible"] is True
+    assert weights.to_dict()["sign_audit"]["n_implausible"] == 1
+
+
+def test_expected_sign_covers_every_live_gauge():
+    """A gauge missing from the table would be silently exempt from the audit."""
+    assert set(E.EXPECTED_SIGN) == set(E.LIVE_GAUGES)
