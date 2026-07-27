@@ -7796,3 +7796,65 @@ result: from "hand-tuning is MORE transferable than fitted weights" down to **"h
 sqrt bound) where a single-source fit does not"**. AND THE PROCESS LESSON, twice over in one session: the reflection gate caught a claim I had
 ALREADY PUSHED (LMSCISSOR-1) and, here, caught MY OWN REFUTATION being wrong. A warm self-audit is not a formality; it is the cheapest place to
 find that the parent is the one who erred.
+
+### POOLSWEEP-1 — ⚠ POST-HOC: the ceiling collapse is RESTRICTION OF THE SHARED FACTOR, not near-optimality — so the SEVENTH route is WITHDRAWN and seven become six (2026-07-27)
+STATUS. EXPLORATORY / POST-HOC. Run because a watchdog correctly caught me registering this as "the decisive missing experiment" and STOPPING — my
+SIXTH stop-gate failure, and the first whose cost was a CONFOUNDED HEADLINE sitting in the ledger rather than mere delay. Branch `poolsweep`
+@ 96b0ef1 (drivers only), UNPUSHED; shared clone verified clean on main @ 2dc0b8c. MODELLED ONLY — tau saturated, Phase-D cancelled.
+=> ANSWER: **NEITHER of the two candidates I named.** Not near-optimality, and not pool size or gauge dof either — both were proxies for a third
+thing: **WHICH DIRECTION of variation the pool retains.** Decompose the two sources into consensus C = (zA+zB)/2 and disagreement D = (zA-zB)/2
+(z-scored on a 200k random reference bank); then rho(AALTO_BASE, COMMUNITY_BASE) is a near-deterministic monotone function of **C/D alone**.
+🟢 I RE-DERIVED THE IDENTIFICATION MYSELF from the artifacts: over the 49 random-lineage cells, **Spearman(rho, log C/D) = +0.9991 (blend-seed0) /
++0.9998 (blend-seed7) / +0.9998 (iWeb)**, with rho spanning **-0.9886 to +0.9977** across a ~450x range in C/D (0.065-33.4). Leave-one-out residual
+sd 0.021. **Restriction has TWO OPPOSITE MODES**, which is exactly why no scalar spread/dof statistic could ever identify it: restricting D alone
+drives rho to **+0.9999**, restricting C alone to **-0.9886**. The archive restricts C by **10.9x** and D by only **3.7x** (C/D 1.058) — because
+optimizing predicted time IS selection on the sources' consensus.
+🟢 SUFFICIENCY REFUTED, AND THIS IS THE CLEANEST RESULT — I verified the cell directly. Archive layouts plus **ONE random transposition**
+(`kswap1`) restore C/D 1.058 -> **3.817** and rho +0.2184 -> **+0.8158**, at essentially unchanged quality (256.9 vs 254.8 ms/char), landing on the
+random-lineage curve. The whole k-swap ladder follows C/D, not optimality: kswap2 +0.8824, kswap5 +0.8921, kswap12 +0.9020, kswap30 +0.8539. **So
+near-optimality is NOT SUFFICIENT for the collapse — one swap recovers the ceiling while the layouts stay near-optimal.**
+⚠ NECESSITY: WEAKER THAN THE CALLBACK CLAIMS, AND I AM REGISTERING THE HEDGE THE CHILD'S OWN ARTIFACT CARRIES. The callback reports pure random
+permutations selected to match the archive's spreads giving rho +0.1078 vs the archive's +0.2184, paired-bootstrap difference **-0.0130 [-0.1532,
++0.1251], p = 0.8715** — i.e. indistinguishable. But its OWN adversarial file records `P1_verdict` = **"INCONCLUSIVE — the two-stage selection may
+itself depress rho; treat the matched cell with caution"**, and on its parameter-free Thorndike case-2 curve (no fitted parameter) the OPTIMIZED
+lineage carries a **mean residual of +0.152** against the random lineage's -0.091, with the archive cell at +0.1385 and kswap1 at +0.3672. So the
+honest statement is: **sufficiency is REFUTED cleanly; necessity is NOT ESTABLISHED — the matched-pool test is inconclusive by the child's own
+verdict, and a positive optimized residual survives on the parameter-free curve.** The child's own cross-corpus check is what keeps this from being
+a real effect: the residual's SIGN FLIPS across corpora (archive cell +0.157 / +0.164 / **-0.123**), so per trap 34 it is noise rather than a small
+effect — but "noise" is a different claim from "near-optimality adds nothing", and only the former is supported.
+SIZE AND GAUGE-DOF BOTH REFUTED as explanations: rho is FLAT in n — +0.8177/+0.8543/+0.7970/+0.8547/+0.8490 at n=100..1600 (random) and
++0.2965/+0.2275/+0.2654/+0.2064/+0.2554 (archive); and two cells at effective dof 4.42 and 4.50 sit **0.65 apart** in rho.
+⚠⚠ MY OWN BRIEF'S DESIGN WAS WRONG, AND THE CHILD REFUTED IT RATHER THAN EXECUTING IT. I specified an f-interpolation sweep (archive share
+0 -> 1 at fixed size). **It CANNOT answer the question:** a mixed pool is BIMODAL (sd_A 11.45 at f=0.5 vs 4.31 at f=0), so its rho is INFLATED and
+NON-MONOTONE, rising to **+0.9128 at f=0.375** before collapsing. **The apparent "threshold near f=1" I asked it to look for is just the point where
+the between-cluster contrast vanishes — DO NOT register that shape.** On the C/D axis the effect is smooth, monotone and general. This is the second
+time this session a child has corrected my experimental design, and both times the correction was right.
+TWO BUGS THE CHILD FOUND IN ITS OWN CONSTRUCTIONS via an adversarial pass against its own verdict: (i) a contiguous-window band filter SATURATES on
+a large bank (0.2% of the range at n=400 / 200k), so every wide target returned the IDENTICAL pool; (ii) a straight-line fit of rho on log(C/D)
+manufactured a near-optimality effect of **+0.3346 at p=0.026** that VANISHES (+0.0061, p=0.470) under a monotone fit with no extrapolation, because
+rho SATURATES in [-1,+1]. That second one is a general warning: fitting a line through a bounded statistic invents residuals at the bounds.
+=> WHAT THIS DOES TO THE CAMPAIGN'S CONCLUSION — **WITHDRAWN: the reading "the instrument degrades BECAUSE the layouts are near-optimal".** It is
+not an independent seventh witness but a mechanically explained corollary of selecting on the instruments' consensus. **So SEVEN ROUTES ARE REALLY
+SIX** (the trap-27/39 shape: a restatement counted as corroboration). I have cited "seventh independent route" in EVIDENCE-SCORER-1 and in my
+reporting to the user; that phrasing is retracted.
+🟢 WHAT SURVIVES IS THE DECISION-RELEVANT HALF, AND IT IS STRONGER: **a Pareto front is BY CONSTRUCTION a set on which the consensus direction has
+been removed**, so the restriction is STRUCTURAL rather than an avoidable artifact of pool choice — **you cannot escape it by picking a different
+pool**, which makes it HARDER to escape, not easier. Selection divides the shared component by 45.6 while dividing the disagreement by only 3.7.
+And iWeb sharpens it: there the archive's cross-source ceiling is **NEGATIVE (-0.1402)** — the two instruments rank frontier layouts in mildly
+OPPOSITE orders — reached with no appeal to near-optimality at all.
+🟢 EVIDENCE-SCORER-1'S NEGATIVE RESULT IS UNTOUCHED AND SLIGHTLY STRENGTHENED: 23 scorer arms at placebo-repeats 200 show the failure follows the
+CEILING, not layout quality — **11 of 11 cells with ceiling >= +0.79 are OUTSIDE the placebo band; 8 of 9 with ceiling <= +0.30 are INSIDE it,
+INCLUDING the restriction-matched RANDOM pools** (dRho +0.0156, +0.0096) where no optimization exists at all; and dRho rises monotonically along the
+k-swap ladder (+0.047 / +0.098 / +0.211 / +0.374) with optimality held CONSTANT.
+RECOMMENDATION, NOT APPLIED (no default changed): `NARROW_POOL_DOF = 4.5` only appears to detect this failure because it was calibrated on the
+archive-vs-random contrast — it FALSE-POSITIVES at interp-f0.25 (dof 2.43, ceiling +0.9244). The shipped `cross_source_agreement` guard measures the
+operative quantity; **C/D would be better and is computable BEFORE any fit.**
+LIMITS REGISTERED: only TWO independent sources exist, so every rho(A,B) rests on ONE instrument pair and the seed/corpus replicates do NOT repair
+that. The match is on SPREAD, not LEVEL — no random permutation reaches 255 ms/char, a STRUCTURAL disjointness (trap 16), so the claim is "no stable
+effect beyond C/D at REACHABLE levels", not "level is irrelevant". One archive from one NSGA-II run. Residual test power: 12 optimized cells against
+a 49-cell curve.
+VALIDATION: full suite rc=0 via a BITE-TESTED out-of-tree sentinel — 862 passed + 3 skipped = 865 = collect-only count, SHELL_RC=0 (three agreeing
+readings). Gauge-cache positive control max|cached - shipped gauge_matrix| = **0.0 EXACTLY**. Every driver ASSERTS the `.native` frame. The child
+re-checked 39 cited report numbers programmatically against the artifact JSONs (0 mismatches) — and that check caught one of its own errors ("nine
+cells" written from a partial run where the finished table has eleven). It also re-derived every number I quoted in the brief and all reproduced
+exactly (0.8350, 0.2654, 0.8319, 0.2668, sqrt = 0.5151, AALTO native-vs-std diff EXACTLY 0.0).
