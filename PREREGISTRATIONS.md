@@ -7506,3 +7506,63 @@ a CROSS-CORPUS difference dressed as a speed margin. Fixing the latter moved the
 => NET: dominators against the corrected bar exist and are new layouts, so the 14 flips were about witnesses rather than the underlying claim in 10
 of 14 cells. But every one of the 19 is slower than what it dominates, 9 resolvably so — which means passing the full gauge bar does not buy speed.
 Adoption remains a USER decision and nothing here is a candidate; landing this branch likewise.
+
+### FLAGSHIP-1 — ⚠ POST-HOC: adopt keybo-lsb PROVISIONALLY; and the campaign's RESOLUTION FLOOR WAS THE WRONG RULER (2026-07-27)
+STATUS. EXPLORATORY / POST-HOC, the campaign's closing audit, run on the user's instruction to "build or argue for what layout should be adopted
+as the flagship". Local commit 479e90b on branch `flagship-audit`, NOT pushed; PREREGISTRATIONS.md untouched by the child; data/corpus untouched;
+no layout adopted and no production default changed. MODELLED ONLY — held-layout tau is SATURATED at 1.0 and Phase-D is cancelled, so NOTHING here
+is a claim about REALIZED typing speed. ADOPTION REMAINS THE USER'S DECISION.
+=> RECOMMENDATION: adopt **keybo-lsb** `pyuo,vgdnlhiea.cstrmkj-z'fwbxq` **PROVISIONALLY**, published with the sentence *"the speed advantage over
+the other five candidates is not user-perceptible."*
+THE RULE, STATED BEFORE THE LAYOUT (**PT-PAIRED**): rank by predicted ms/char on the measured-keystroke surface, on each of the three corpora
+independently, and adopt the layout that is rank 1 on all three — PROVIDED (a) rank-1 survives a PAIRED (within-seed) analysis rather than the
+unpaired floor, (b) it survives a second uncertainty channel that uses NO model seeds, and (c) no rival has a pathology predicted time is blind to.
+Dominance and gauge aggregates are EXPLICITLY NOT part of the rule: dominance is corpus-contingent AND anti-correlated with speed (REHUNT-1), so it
+filters for a different objective.
+⚠⚠ THE FINDING THAT MATTERS MOST — **THE CAMPAIGN'S RESOLUTION FLOOR WAS AN UNPAIRED RULER APPLIED TO A PAIRED QUESTION, AND THAT IS MY ERROR.**
+GEOMEAN-1's 0.7186 ms/char (and REHUNT-1's per-corpus floors) is the maximum WITHIN-layout per-seed spread — but every layout is scored on the SAME
+three seed tables, so the seed main effect is COMMON MODE and CANCELS in a within-seed difference. I VERIFIED the decomposition myself on iWeb: the
+seed main effect is **78.49% of SS** (child reports 78.49 / 81.73 / 83.44% for iWeb / blend-v1 / no-anchor), and the max spread of PAIRWISE
+DIFFERENCES is ~0.33x the max within-layout spread — consistent with the child's paired resolutions 0.1688 / 0.1723 / 0.2400, roughly 4x tighter.
+CONSEQUENCE: "0 of 15 pairs resolve" (which I reported to the user repeatedly) is true against the UNPAIRED floor; against the PAIRED one
+**8 / 5 / 2 of 15 resolve**. This is a REINTERPRETATION of a REPRODUCED number, not a new measurement — GEOMEAN-1's frozen iWeb table reproduces
+6/6 (ms/char AND per-seed spread, max |d| 4.2e-05) and REHUNT-1's three floors to <5e-4. A SEED-FREE second channel agrees: a paired corpus
+bootstrap (B=400, control exact to <1e-9 on 18/18 cells) puts keybo-lsb rank 1 in **400/400 draws on all three corpora**. Order is stable across
+corpora AND at 90/100/110 WPM — and note the MEASURED surface DOES move with `--target-wpm` (only the 3 FITTED surfaces are baked at 90), so the
+user's 90-110 objective IS honoured for the ranking metric.
+⚠ BUT THE HEADLINE DOES NOT FULLY SURVIVE ITS OWN REFUTATION ATTEMPT, and the child reports this rather than burying it. A label-shuffle placebo
+(2000 draws) survives (real %layout exceeds null p95 on all three; p = 0.0005 / 0.0000 / 0.0060; unanimity-vs-null p = 0.0030 / 0.0015 / 0.0110).
+BUT seeds partly SCALE rather than shift (per-seed slopes on the seed-mean vector 0.69-1.35), so differences do NOT cancel exactly. Under the fully
+conservative test only **3/15 survive on iWeb, 3/15 on blend, and 0 of 15 on no-anchor**. HONEST BOUND: the field is a **3-WAY TIE
+{keybo-lsb, keybo-lsb+lm, lsb-sib}** with flagship-c3 resolvably behind on 2 of 3 corpora. So BOTH of the sentences I have been using are wrong:
+"six layouts within noise" is wrong, and "keybo-lsb is resolvably fastest" is ALSO wrong. keybo-lsb over flagship-c3 is well supported; keybo-lsb
+over keybo-lsb+lm / lsb-sib rests on the point estimate + the bootstrap + the 4 corpus-invariant community gauges (lsb or lsb+lm best on 3 of 4),
+NOT on the conservative test. **Adopting keybo-lsb+lm instead would contradict nothing in the report**, and seed 0 ALONE ranks lsb-sib first on all
+three corpora — that pair is genuinely unresolved.
+THE STRONGEST COUNTERARGUMENT, which the child leads with: flagship-c3 is the better layout ON THE GAUGE FRAME and keybo-lsb is the WORST of the six
+there — ceiling-fraction normalized over 42 cells, c3 has the best mean (.9905), the best worst-case (.8832), is field-worst on only 2 of 42 and has
+ZERO cells below the field 5th percentile, against keybo-lsb's mean .9436 / worst .7499 / FIVE sub-p5 cells. And the speed edge being recommended on
+is 0.121-0.149% of total time = **+0.057..+0.071 WPM-equivalent ≈ 2.6-3.2 minutes per 100,000 words** — NOT user-perceptible. It loses anyway because
+**15 of c3's 17 axis wins sit inside just TWO of nine correlation clusters** (effective dof 3.97): {sfs, sfs-dist, scissor, oxey-style} = 10 wins and
+{lsb, lsb-dist} = 5. Per cluster it owns 2 of 9 — TIED with keybo-lsb, lsb-sib and archive-1846. Its "broad competence" is two facts repeated; this is
+the ~4x independent-evidence over-count, and correcting it REVERSES the verdict.
+THE FALLBACK, if PT-PAIRED is rejected — ONE option, not a menu: adopt **flagship-c3** on explicitly NON-SPEED grounds (the only candidate with no
+pathological axis), while stating that it is the SLOWEST of the six on every corpus and every WPM tested. ⚠ AND NOTE "keep the current production
+layout" IS NOT AVAILABLE: nothing is adopted (BASELINE is still qwerty), and the gap to qwerty30m is **+3.4-3.7%, about 25x the gap among the six**.
+**The choice among the six matters far less than making one.**
+⚠ TWO CORRECTIONS TO MY OWN BRIEF, BOTH VERIFIED BY ME (trap 20). (1) The predicted-time table I labelled iWeb is the **BLEND-V1** table. iWeb is
+keybo-lsb **253.2104** < keybo-lsb+lm 253.2657 < lsb-sib 253.2896 < archive-1843 253.4523 < archive-1846 253.4586 < flagship-c3 **253.5879** — I
+re-derived both. Rank order is IDENTICAL so no conclusion changes, but I mislabelled the corpus while demanding exactly this discipline of the
+agents. (2) The span is PER-CORPUS 0.3775 / 0.3454 / 0.3104 (52.5 / 51.9 / 46.7% of the respective floor), not one 0.3454 measured against iWeb's
+floor.
+TWO REPO DEFECTS FOUND, AND ONE IS IN CODE I JUST MERGED. (a) **`keybo analyze` SILENTLY DROPS A ROW when two layouts share an 8-character prefix**
+— I reproduced it: passing the two DISTINCT layouts keybo-lsb and keybo-lsb+lm returns only ONE row, keyed `pyuo,vgd…`, with exit 0. Same hazard for
+archive-1843/1846. Silent data loss in the tool this campaign now depends on; workaround is to pass registry NAMES. (b) flagship-c3 is ABSENT from
+`all-gauge-table`, so its `switching_cost` was NEVER computed (trap 19: a metric absent from a published JSON was never computed) — the child
+re-derived it through the SHIPPED constructor with a 7/7 exact control against the published block.
+VALIDATION: 816 passed / 3 skipped, real rc=0 from an explicit sentinel; `sfr` invariance proven DIRECTLY (spread exactly 0.0, not via a std>0
+filter) => 14 live axes; dvorak charset cells render N/A; no poisoned artifact quoted; shared clone verified on main and clean at 10b77e6 before and
+after.
+=> NET: adopt keybo-lsb provisionally, with the not-perceptible caveat stated in the same breath — or keybo-lsb+lm, which the evidence would equally
+support. The scientifically important output is not the pick: it is that **the resolution floor I have been quoting all campaign was the wrong
+statistic for a paired comparison**, which makes the field partly decidable after all, and that **the gap to qwerty is ~25x the gap among the six**.
