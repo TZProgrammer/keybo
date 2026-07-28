@@ -402,6 +402,25 @@ def _bootstrap_rho_ci(
 # --- noise ceiling ----------------------------------------------------------------------
 
 
+def spearman_brown(half_rho: float) -> float:
+    """Lengthen a HALF-sample reliability to the FULL-sample one: ``2r / (1 + r)``.
+
+    A split-half correlation measures how well one half predicts the other, so it is the
+    reliability of a HALF-length instrument. The model's rho, by contrast, is scored on
+    cells aggregated from ALL participants. Comparing the two directly understates the
+    ceiling, and it does so UNEVENLY: ``2r/(1+r) / r`` is decreasing in ``r`` (1.443 at
+    r=0.60, 1.008 at r=0.99), so a noisier arm's ratio is inflated more than a cleaner
+    arm's and a per-arm ``rho/ceiling`` comparison can invert an ordering.
+
+    Domain: ``r <= 0`` is returned unchanged — Spearman-Brown is derived for a reliability
+    (a variance ratio, so non-negative), and lengthening a negative correlation is not
+    meaningful. ``nan`` propagates.
+    """
+    if not np.isfinite(half_rho) or half_rho <= 0.0:
+        return float(half_rho)
+    return float(2.0 * half_rho / (1.0 + half_rho))
+
+
 def split_half_ceiling(
     test_rows: list[StrokeRow],
     wpm_lo: int = 40,
@@ -410,14 +429,24 @@ def split_half_ceiling(
     min_cell_samples: int = 10,
     n_boot: int = 50,
     seed: int = 0,
+    correct_length: bool = True,
 ) -> float:
     """Split-half reliability of the held-out layout's per-cell mean times.
 
     Participants (not samples) are bisected — samples within a participant are correlated,
     so a sample-level split would overstate the ceiling. Each half re-aggregates its own
     cells (floor = half the cell floor, min 2); cells present in both halves are correlated
-    with the same bucket-centered Spearman the model metric uses. The mean over ``n_boot``
-    random bisections is the ceiling: the rho a perfect model would score on this data.
+    with the same bucket-centered Spearman the model metric uses.
+
+    Each bisection's rho is then lengthened by :func:`spearman_brown` (``correct_length``,
+    default on) BEFORE averaging, because the raw split-half value is a half-length
+    reliability while the model's rho is scored on full-sample cells. Pass
+    ``correct_length=False`` to reproduce a pre-2026-07-28 number; it is the wrong
+    denominator for a ``rho/ceiling`` ratio and exists only for artifact reconciliation.
+
+    The correction is applied PER BISECTION rather than to the mean: Spearman-Brown is
+    non-linear, so ``mean(f(r)) != f(mean(r))``, and the per-bisection form is the one
+    whose every term is a full-length reliability estimate.
     """
     per_key: dict[tuple[str, int], list[tuple[int, int]]] = defaultdict(list)
     pids: set[int] = set()
@@ -456,7 +485,7 @@ def split_half_ceiling(
         ]  # only .bucket is read by the centering
         rho = _centered_spearman(fake_cells, np.array(pairs_a), np.array(pairs_b))
         if np.isfinite(rho):
-            rhos.append(rho)
+            rhos.append(spearman_brown(rho) if correct_length else rho)
     return float(np.mean(rhos)) if rhos else float("nan")
 
 

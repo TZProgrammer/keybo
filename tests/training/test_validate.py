@@ -303,8 +303,20 @@ def test_validate_reports_no_transfer_for_a_lawless_holdout():
     m = report["folds"]["layD"]["seeds"][0]
     # The held-out layout's times are random: no model can predict them.
     assert m["rho"] < 0.5
-    # And the harness must say so via the ceiling too (unpredictable data, low ceiling).
-    assert report["ceilings"]["layD"] < 0.6
+    # And the harness must say so via the CONCLUSION every consumer reads — the fraction of
+    # ceiling attained, not the ceiling itself.
+    #
+    # This used to assert ``ceilings["layD"] < 0.6`` and broke when split_half_ceiling
+    # gained its Spearman-Brown length correction (0.4971 -> 0.6228 on this fixture). That
+    # rise is the correction working, not a regression: the raw split-half value is a
+    # half-length reliability, and lengthening it is what makes it comparable to the
+    # full-sample rho in the numerator. Pinning the intermediate ceiling pinned an
+    # artifact of the old scale; pinning the ratio pins the claim ("no transfer"), which
+    # gets STRONGER under the fix (frac 0.5172 -> 0.4129) because the denominator grew
+    # while the unpredictable rho did not.
+    assert m["rho_frac_ceiling"] < 0.5
+    # the ceiling stays a correlation, and well under a lawful layout's
+    assert 0.0 < report["ceilings"]["layD"] < 0.8
 
 
 def test_validate_defaults_to_bigram_and_rejects_trigram_rows_without_flag():
