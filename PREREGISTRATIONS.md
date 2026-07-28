@@ -8207,3 +8207,68 @@ per-term divergences documented.
 VALIDATION NOTE: `price_many`'s shape-invariance fix (79cb175) is verified — suite **rc=0, 886 collected, 0 failed** (883 passed / 3 skipped), count
 reconciling as 884 prior + 2 new, from an out-of-tree sentinel. So `price` and `price_many` are now ONE elementwise implementation with 0 mismatches
 across both fitted weight sets at all domain edges and n in {1,2,3,7,64}.
+
+### ARME-1 ADDENDUM (reflection pass) — 🔴 THE WRONG RULER: I judged every arm gap against the PAIRED TIMING floor when the SEARCH-RUN spread is up to 19x larger; and the 72% is a BUNDLED attribution (2026-07-28)
+The reflection self-audit I sent `arme` before reaping. It invalidates PRECISION across the whole arm line, mine included, and changes one verdict.
+Branch `arm-e` @ a1f16d1, 6 commits, gate logs + BOTH runs' epoch traces + all five rc sentinels now committed so they survive `--destroy`. Nothing
+pushed; PREREGISTRATIONS.md untouched by the child.
+🔴 **THE DECISIVE FINDING, WHICH I VERIFIED MYSELF.** It ran a SECOND seed of arm E, all else identical:
+    seed 20260728  ev -2.690226  **258.1803** ms/char  n_ood 6/14   (the registered champion)
+    seed 20260729  ev -2.677732  **267.6096** ms/char  n_ood 9/14   champion `,qkbw'juzxastgphnieromdfc.v-yl`
+I re-scored both through the shipped CLI: **267.6096 exactly, a 9.4293 ms/char spread, and 2 of 30 shared key
+positions.** Two runs of the SAME objective whose scores differ by **0.46%** land **9.4 ms/char** apart. **Every per-pair gap I published for these
+arms was judged against the PAIRED TIMING floor (0.4964) — which measures the ms/char model's SEED-TABLE noise, NOT run-to-run variation of the
+SEARCH. The search spread is 19x that ruler.** Against ~9.43: arm E vs arm B is **0.5x** where I reported **8.62x**; vs keybo-lsb 0.4x; vs arm A 0.1x;
+only vs arm D does it clear, at 1.2x.
+🟢 BUT THE PICTURE IS RESCUED IN PART, AND THE FIX IS SHARPER THAN "EVERYTHING IS NOISE" — I found a 6-seed placebo already in
+`optevidence/artifacts/search-noise-placebo.json` that nobody had promoted to a ruler, and **search-run noise is OBJECTIVE-SPECIFIC, not one
+constant**:
+    BASELINE objective (arm B):    6 seeds, sd **0.0617**, range 0.1760  -> highly reproducible
+    random400 EVIDENCE objective:  6 seeds, sd **0.3440**, range 0.8811
+    archive EVIDENCE objective:    2 seeds,                range **9.4293**  (10.7x the r400 range)
+=> **THE ERROR WAS BORROWING ONE FLOOR ACROSS OBJECTIVES WHOSE STABILITY DIFFERS BY ~150x.** Consequences, and they cut both ways:
+**arm B's 0.73 ms/char lead over keybo-lsb, judged against ITS OWN noise sd of 0.0617, is 11.8x and STILL RESOLVES** — the fastest-layout claim is
+unaffected and is now better supported than before, because it is measured against the right ruler. **Arm E's gaps do not resolve.** The
+arm-LEVEL conclusion also survives: both seeds are far above arm B (+4.28, +13.71) and above every incumbent, and both satisfy E3 — so "an evidence
+objective, even the best-posed one, does not beat arm B" stands. What is retracted is every specific GAP SIZE for the evidence arms.
+⚠ **AND THE 11.0959 THAT "72% RECOVERED" RESTS ON IS ONLY ~1.2x THE SPREAD** — so **"72%" is NOT QUOTABLE without n>=3 seeds per arm.** My registered
+narrowing (dec1c3f) must be read with that caveat.
+⚠ **THE 72% IS A BUNDLED ATTRIBUTION, AND I NAMED THE WRONG MECHANISM.** Arms D/E differ in **coeffs 14/14, valid_domain 14/14, knot 13/14, form
+2/14 SIMULTANEOUSLY**. I asked whether the archive curves are simply better-shaped; the child tested it and the answer is **NO — they are marginally
+WORSE**: 8/14 mechanism-correct minima vs random400's 9/14, and **42.5% of collectable units mis-signed vs 17.5%**. The surviving candidate is
+**OBJECTIVE SCALE**: total in-domain signal **6.4349 vs 48.8090 units (7.6x smaller)**, with `comfort` alone collapsing from a 24.82-unit range
+(43.55% of attribution) to 0.95. A separable sum of mis-signed curves pays damage in proportion to ABSOLUTE collectable units, **so a proportionally
+WORSE fit searches BETTER if it is SMALLER.** Scale and coverage are ALSO mutually non-identifiable (a narrower pool yields both narrower domains and
+smaller ranges). Policy-only probe, the one factor it COULD vary: mean |clamp-extrap| 12.6910 (r400) vs 1.6381 (archive) while mean n_ood moves only
+6.57 -> 5.73 — a modest coverage gain for an 11.10 ms/char difference. **REGISTER AS: the FIT POOL is worth 11.0959 ms/char BUNDLED; the leading
+candidate mechanism is objective SCALE, not coverage; this arm cannot decompose it.**
+⚠ THE IN-BAND RHO CELL IS NOT A MEASUREMENT — I was right to push and the child confirmed it. Bootstrap 2000: all [+0.7103,+0.7437] · <=257
+[+0.3676,+0.4696] · <=256 [+0.1767,+0.3321] · <=255.5 [+0.0450,+0.2755] all exclude zero, but **<=255.0 is [-0.1473,+0.2604], p=0.558, n=104 —
+INDISTINGUISHABLE FROM ZERO.** The DECAY is real; that cell's VALUE is not. And on comparability: OPTEVIDENCE-1's +0.9111 -> -0.0455 is the RAW
+random400 objective, NOT arm E's clamped archive one — **not the same measurement**. The like-for-like column is arm E's own r400-extrap
+(+0.9017 -> +0.0809), which tracks the sibling closely; **that agreement is the real corroboration**, and at n=104 no magnitude comparison between the
+campaigns' tightest cells is supportable.
+⚠ **MY PLATEAU REASSURANCE WAS BACKWARDS — the child says so of its own result.** Pooling both final populations (n=5120), layouts within 0.010 ev
+units span **4.1554** ms/char, and within 0.020 (less than the two seeds' champion gap) span **12.2353**. So the objective is non-degenerate in ITS
+OWN units and **near-degenerate with respect to SPEED**. "Zero plateaus" answers "can the objective distinguish these layouts?" — which is not the
+question. **My "flat-objective hypothesis refuted twice" was a sharper CONFIRMATION of the sibling's warning, dressed as a refutation.**
+🟢 "MECHANISM-RIGHT" IS NOT CIRCULAR — I challenged it and it survived a real test. `EXPECTED_SIGN` (evidence_scorer.py:121-136) IS a hardcoded
+hand-authored prior, but it is independently testable and **passes**: each raw gauge's rank correlation with predicted ms/char agrees with the table
+on **14/14 in-band** (<=257.0, n=1010) and 13/14 over 4000 random perms (sole disagreement `sfs` at rho -0.0218 ~ 0). Cite the corroboration, not the
+table.
+⚠ THE PROBE BOUNDED **NOTHING** — the child accepted the stronger lesson. Its 42,605-eval probe missed on ms/char (268.6092 vs 258.1803, and in the
+WRONG DIRECTION — it OVERSTATED badness), on objective (the search improved 88% past it), and on rank — **because the probe was ONE layout while its
+rank evidence came from a separate 3600-perturbation pool, so its original lesson credited the probe with another artifact's property.** CORRECT
+LESSON: **never use an unconverged run as a point estimate; diagnose convergence by whether best-fitness has STOPPED IMPROVING, not by budget
+fraction** — detectable in ~10s here, since epoch 1 of the real run already had 368,209 unique evals at best -2.204979.
+ARM F — REGISTERED AS NOT RECOMMENDED, in the child's own words: refitting on a pool covering the band's good side **widens the support a maximizer
+can exploit while leaving the sign errors in place**, and since the archive fit is proportionally MORE mis-signed (42.5% vs 17.5%), the one mechanism
+that plausibly produced arm E's improvement — a 7.6x SMALLER objective — is exactly what a wider, better-covering refit would UNDO. If run anyway it
+MUST pre-register a **scale control** (hold total in-domain signal fixed while widening support) and **n>=3 seeds**.
+🟢 MY `price_many` FIX VERIFIED BY THE CHILD, AND MY OWN COUNT STILL UNDERSTATED IT: my 9/14 and its 7/14 were both single-sample probes; on a
+**101-level in-domain grid it is 14 of 14** — **the defect is per-LEVEL, not per-curve.** It confirmed 79cb175 leaves this arm bit-identical (frozen
+champion re-scores to -2.690225544692558, ms/char unchanged, ordering and argmin preserved, worst diff 4.441e-16) and the fixed version is **0/14
+shape-dependent with worst |price_many - price| = 0.000e+00**.
+=> ACTION REGISTERED: **arms A/B/C/D are all n=1 seed** (I confirmed the shared seed 20260728 in their artifacts). Any future arm must report n>=3
+seeds and judge gaps against ITS OWN objective's search-noise spread, not the paired timing floor. The 6-seed placebo that already existed was never
+promoted to a ruler — that is the process failure, and it is now the standing rule.
