@@ -59,16 +59,56 @@ def gilmore_lawler_bound(F: np.ndarray, T: np.ndarray) -> float:
     return float(cost[rows, cols].sum())
 
 
-def certificate(F: np.ndarray, T: np.ndarray, found_fitness: float) -> dict:
-    """Optimality certificate: how far can the found layout possibly be from optimal?"""
+class CertificateScopeError(ValueError):
+    """``certificate`` was handed a fitness it cannot certify against this ``(F, T)``.
+
+    The two reachable cases are both signatures of a real mistake rather than bad luck:
+
+    * a non-finite ``found_fitness`` — the caller's search produced nan/inf and the
+      certificate would otherwise render "within nan% of the best possible layout";
+    * ``found_fitness < lower_bound`` — mathematically impossible for a layout scored on the
+      SAME objective the bound was built from, so it means the fitness and the bound come from
+      DIFFERENT objectives. That is precisely the bigram-vs-combined mismatch this module was
+      audited for, and it is the one check that would have caught it at the call site.
+    """
+
+
+def certificate(
+    F: np.ndarray,
+    T: np.ndarray,
+    found_fitness: float,
+    *,
+    scope: str = "the objective F,T were built from",
+) -> dict:
+    """Optimality certificate: how far can the found layout possibly be from optimal?
+
+    ``scope`` names WHAT was certified and is carried in the returned dict and rendered into
+    ``statement``. It is not cosmetic: this function bounds ``qap_fitness(F, T, ·)`` and
+    nothing else, so a caller passing bigram tensors while its search minimizes a combined or
+    cubic objective has certified a COMPONENT. Callers previously had to re-add that qualifier
+    themselves and two ledger entries lost it, so the API now refuses to discard it.
+    """
     lb = gilmore_lawler_bound(F, T)
+    if not np.isfinite(found_fitness):
+        raise CertificateScopeError(
+            f"found_fitness must be finite to certify, got {found_fitness!r}; a non-finite "
+            f"fitness would render as 'within nan% of the best possible layout'"
+        )
+    if found_fitness < lb:
+        raise CertificateScopeError(
+            f"found_fitness {float(found_fitness)!r} is BELOW the lower bound {lb!r}, which is "
+            f"impossible for a layout scored on the same objective as the bound. The fitness "
+            f"and the bound almost certainly come from different objectives — check that the "
+            f"(F, T) passed here are the ones the search actually minimized."
+        )
     gap = (found_fitness - lb) / lb * 100 if lb > 0 else float("inf")
     return {
         "lower_bound": lb,
         "found_fitness": float(found_fitness),
         "gap_pct": float(gap),
+        "scope": scope,
         "statement": (
-            f"the found layout is within {gap:.2f}% of the best possible layout "
+            f"the found layout is within {gap:.2f}% of the best possible layout ON {scope} "
             "(Gilmore-Lawler certificate; the true optimum lies between the bound and the found value)"
         ),
     }
