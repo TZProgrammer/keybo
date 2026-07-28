@@ -9275,3 +9275,44 @@ adoption). And it **declines to re-rank R2-a down**, correctly: my `tune.py` res
 have killed a real defect and I would never see it."* => **the asymmetry is UNEXAMINED: this campaign has audited its CONFIRMATIONS repeatedly and never once audited its REFUTATIONS.** Given that the
 wrong-constant-behind-a-true-conclusion failure has now been found **three times** (my two, its 0.0282), the prior that at least one of 14 refutations is itself wrong is not small. **Registered as the highest-value
 unrun check in the campaign** — higher than round-4 badscissor, because a false refutation is invisible by construction whereas an unaudited gauge is merely unexamined.
+
+### REFAUDIT-1 — 🟢 THE FIRST AUDIT OF A REFUTATION IN THIS CAMPAIGN: 14 kills of 37 findings, 13 grounds VERIFY, ONE FAILS — and the reason nobody could do this before is that the workflow LOST the finding→verdict join (2026-07-28)
+The check `ultracode-audit`'s self-audit named and could not close. Child `refaudit`, branch `refutation-audit` @ **bda7ac2**, worktree clean, nothing pushed, PREREGISTRATIONS.md untouched (`git diff f4c917a..HEAD`
+touches only `agent-artifacts/`). Deliverables all `ls`-verified non-empty: `refutation-map.json` (733 KB, the rebuilt join), `killed-dossier.md` (255 KB, all 14 kills with every vote), `coverage-ledger.txt`,
+`K10-analysis.md`, `ledger-cites.txt`.
+🔴 **THE ROOT CAUSE OF THE UNAUDITABILITY, AND IT IS A DATA-MODEL DEFECT, NOT NEGLIGENCE: `journal-digest.json` HAD LOST THE FINDING→VERDICT JOIN** — 37 findings and 110 verdicts stored as **two flat lists with no
+key between them.** That is *why* nobody had ever audited a refutation: the question was unanswerable from the artifact. The child rebuilt the join from the **raw per-agent transcripts** (168 `agent-*.jsonl`), where
+each verify agent's first prompt embeds `## THE FINDING UNDER TEST` and its `StructuredOutput` carries the verdict. ⚠ **Those transcripts are NOT durable** — its extract `artifacts/refutation-map.json` is the
+surviving copy.
+🟢 **THE COUNT, PINNED: 37 findings, 23 survived, 14 KILLED.** Kill votes 2/3 ×8 and 3/3 ×6; survivors 0/3 ×12 and 1/3 ×11. => **the callback's "14 REFUTED" was RIGHT and the report's "~19 findings died" is WRONG** —
+the ~19 is the digest's **TRUNCATED TRIAGE COUNT** (23 triage agents ran, only 19 records survived) misread as a kill count, **and a triage count can never be a kill count because triage runs only on SURVIVORS.**
+Two further digest losses found: **111 verdict agents but 110 records** (the dropped vote is non-refuting, so 45/14 is unaffected, but the digest's 65/45 should read **66/45**), and 4 lost triage records. ⚠ **Also
+1 DEAD FINDER** (`gauges-community-ports`, 6 attempts, never returned) **whose remit was examined by nobody** — a coverage hole invisible in every prior count.
+🟢 **13 OF 14 GROUNDS VERIFY. ONE FAILS — K10 IS RESURRECTED, AND I VERIFIED THE REFUTATION'S FALSITY MYSELF.** The killed finding: *"oxey inroll/outroll credit ZERO same-row rolls"*
+(`OxeyStyleScorer.pattern_shares`), killed 2/3. Its **decisive** ground was *"same-row roll credit exists in the frame as the separate TRIGRAM gauge `sr-roll`."* **False as a defence, checked five ways:** `sr-roll`
+occurs **0 times** in `scoring/oxey.py`; `kmstats` is **not imported** by it; `sr-roll` is **not** a `DEFAULT_OXEY_WEIGHTS` term (the 11 are sfb, dsfb, lsb, scissor, inroll, outroll, onehand, redirect, bad_redirect,
+alternate, imbalance); it is a `_TRIGRAM_METRICS` member of `analysis/kmstats.py:102`; and `sr-roll` and `oxey-style` are **separate co-equal `GAUGE_NAMES` entries.** => **the refutation ANSWERS A DIFFERENT QUESTION
+THAN THE FINDING ASKED** — frame-wide coverage vs *this scorer's* coverage.
+ The second refuter's *"already registered verbatim 3×"* also fails **as applied**: those cites are feature-schema / D1-driver / `effect_curves` context, and DIRECTION-1's rename landed in `effect_curves.py` while
+ **the scorer's terms are still `inroll`/`outroll`.** One cite DOES register these terms as known-defective — **but for the WEIGHT RATIO (2× vs oxeylyzer's 4%), not a 108-of-324 population gap.**
+ 🟢 **I REPRODUCED THE CENSUS EXACTLY: 324 eligible same-hand distinct-finger ordered pairs / 108 SAME-ROW / 216 different-row / 0 same-row credited.** ⚠ **Real status: UNSUPPORTED, rank 4 — NOT the finder's
+ "WRONG"**, because nothing establishes what a *correct* same-row credit would be. **Both refuting errors are label-vs-referent — the audit's own bug class, committed by its refuters.**
+🟢 **THE FAILURE MODE I SENT IT TO HUNT: 3 instances found, NONE fatal — and the panel actually lost K10 to a DIFFERENT mechanism.** K9 vote1's "3129 of 3474" is really **3128 of 3473**; K13's two refuters say "38 of
+46" and "43 of 46" derived-trigram columns where the exact count is **42** (19 `bg1_` + 19 `bg2_` + 4 `sg_`) — **neither refuter was right.** All three sit in kills whose conclusions independently verify. => **my
+prior was justified in MECHANISM but wrong about WHERE it would bite: K10 fell to a scope error, not a bad constant.** The generalizable lesson is the child's own top-2 proposal: **add a lens that asks "does this
+refutation answer the finding's OWN question?" — both K10 refuters made the same scope error INDEPENDENTLY, so lens diversity did not catch it.**
+🟢 **AND A GENUINELY GOOD RESULT WORTH BANKING: the refuting votes' citations are HEALTHY where the confirmations' were not.** All **25** ledger cites in refuting votes resolve **ON-TOPIC** at `dec1c3f` — versus the
+23 confirmations, whose citations were **ALL stale (+2..+44 drift)**. All **12** cited traps exist with matching titles. Of 65 cited paths, 10 are missing but **9 are expected-dead** (`/tmp/ua-mut-*`,
+`/tmp/ua-preK31`, `keybo-selmethod`); **the real gap is 3 scratch drivers** whose legs are unrecheckable from the artifact. It also flagged that **K13+K14 share ONE load-bearing structural claim** (`.slots` never
+read by the feature pipeline), predicted they would fall together, **then verified it independently**: grep empty, G30/G31 differ in that one dataclass field, `max|features(G30) - features(G31)| = 0.0` exactly.
+🟢 **THREE SELF-KILLS, and the first is the best thing in the report.** (a) **It drafted a closing claim that 1-of-14 beats "the 4 defects found in the 23 confirmations", concluding the refutation path was MORE
+precise — then WITHDREW it**, on the grounds that those four are **REPORT-level defects (a mislabelled constant, stale citations, an independence caveat, a remit mislabel), not four false confirmations.** Pairing
+the rates *"would have been a number supporting a true-sounding conclusion: exactly what I was hunting, committed by me."* => **registered: there is NO comparable false-CONFIRMATION rate, so 1-of-14 stands bare and
+must not be compared.** (b) **Three of its own controls failed first** and are documented rather than buried: a mutation control aimed at an already-killed finding (a no-op reporting a false "HARNESS BLIND"); a
+uniform `row_offsets` shift that **cancels because offsets enter only inside differences** (false "COMPARISON BLIND"); and a regex reading the SHIFTED-repeat half of the captures (0 registry matches — its own
+control caught it). (c) **K10's resurrection NARROWED under hostile review**: it resurrects the **population/disclosure** claim only. The finder's *"32-63% of eligible MASS"* and *"sparing qwerty most"* are **NOT
+verified** — and the finding's own supporter showed its counterfactual sizes a full finger-order redefinition, not same-row-mass-added. **The magnitude half stays dead.**
+⚠ NOT RE-RUN, named honestly: K4's 23-threshold historical `min_cell` sweep (~14 min rebuild; it verified the ledger basis instead), K11's 200k-pool equivalence test (it verified the decisive leg directly — the
+docstring says *"the maximum achieved by any candidate"* and the code is `max(r[2] for r in results)`), and K10's mass figures.
+=> **TOP IMPROVEMENT PROPOSAL, registered: `wf-ultraaudit.js` must emit a `finding_id` on EVERY verdict.** The missing join is the root cause of *"nobody ever audited a refutation"*, and recovering it required
+**non-durable** raw transcripts — i.e. one session-dir reap away from being permanently unauditable. **A workflow that cannot say which finding a verdict judged has no audit trail, only a vote total.**
