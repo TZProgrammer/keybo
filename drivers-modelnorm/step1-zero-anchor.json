@@ -1,0 +1,657 @@
+{
+ "what": "MODELNORM-1 step 1: the '0' anchor from randomly generated C30M layouts",
+ "identity": {
+  "models": [
+   "AALTO",
+   "COMMUNITY",
+   "POOL"
+  ],
+  "family": "TRI_PS_FREQ_PRIOR",
+  "frame": "native",
+  "frame_note": "geometry-only (g); the layout-independent b(ngram) term is excluded",
+  "baked_wpm": 90.0,
+  "wpm_caveat": "the arrays are BAKED at 90 WPM and cannot be re-evaluated (7 of 8 per-seed models are gone), so a 90-110 WPM objective is NOT honourable on these columns",
+  "corpus": "blend-v1",
+  "corpus_trigrams": "/tmp/modelnorm/data/corpus/blend-v1/trigrams.txt",
+  "corpus_trigrams_sha256": "19806532ee3567f5afe4311e51f346b6c36375030f473fe3f68a6a3dc21beb61",
+  "surface_dir": "/local/home/zegertho/agent/state/keybo-selmethod/artifacts/old-new-layout-comparison/tri_frequency_old_new_surfaces",
+  "surface_sha256": {
+   "AALTO": "0ec6dbff602d79c28b5e9a6307fce41ddb63b68e846cc5f9c80d4a1896654028",
+   "COMMUNITY": "421712f9999ba86e9e6b61c752422a45c25ad3cbc3ead45589185e3fd33ee10b",
+   "POOL": "284b7c97531311e9cc6d3640792fd43fbe76a77806cb553708f13a93ab19a517"
+  },
+  "native_frame_guard": {
+   "AALTO": {
+    "max_abs_std_minus_native": 0.0,
+    "max_variation_of_delta_over_third_slot": 0.0
+   },
+   "COMMUNITY": {
+    "max_abs_std_minus_native": 121.55301558217269,
+    "max_variation_of_delta_over_third_slot": 1.1368683772161603e-13
+   },
+   "POOL": {
+    "max_abs_std_minus_native": 50.7434916920962,
+    "max_variation_of_delta_over_third_slot": 1.1368683772161603e-13
+   }
+  },
+  "n_trigrams": 24478,
+  "total_trigram_freq": 887147352.0
+ },
+ "anchor_of_record": {
+  "n": 100,
+  "seed": 20260728,
+  "statistic": "mean",
+  "why_mean": "the mean is the distribution's centre of mass and its standard error falls as sd/sqrt(n), which makes the n=100-vs-n=1000 sufficiency check a clean sqrt-n comparison; the median is reported alongside and agrees to well under one SE, so the choice does not carry the result",
+  "value": {
+   "AALTO": 243118526775.97125,
+   "COMMUNITY": 254994927415.5801,
+   "POOL": 259027796569.4634
+  },
+  "sd": {
+   "AALTO": 3357543573.175914,
+   "COMMUNITY": 6123204217.854651,
+   "POOL": 3947242328.336462
+  },
+  "se": {
+   "AALTO": 335754357.31759137,
+   "COMMUNITY": 612320421.7854651,
+   "POOL": 394724232.8336462
+  }
+ },
+ "pools": {
+  "100": {
+   "n": 100,
+   "seed": 20260728,
+   "mean": {
+    "AALTO": 243118526775.97125,
+    "COMMUNITY": 254994927415.5801,
+    "POOL": 259027796569.4634
+   },
+   "median": {
+    "AALTO": 243256297359.4499,
+    "COMMUNITY": 255025359007.72018,
+    "POOL": 258890714399.95398
+   },
+   "sd": {
+    "AALTO": 3357543573.175914,
+    "COMMUNITY": 6123204217.854651,
+    "POOL": 3947242328.336462
+   },
+   "se_of_mean": {
+    "AALTO": 335754357.31759137,
+    "COMMUNITY": 612320421.7854651,
+    "POOL": 394724232.8336462
+   },
+   "p05": {
+    "AALTO": 237720327849.49625,
+    "COMMUNITY": 244987552341.3512,
+    "POOL": 252467344944.1956
+   },
+   "p95": {
+    "AALTO": 248465991770.6711,
+    "COMMUNITY": 264678126207.00317,
+    "POOL": 265482780333.72006
+   },
+   "min": {
+    "AALTO": 234596903100.88745,
+    "COMMUNITY": 239717283288.5767,
+    "POOL": 249996291884.41116
+   },
+   "max": {
+    "AALTO": 251035039179.0495,
+    "COMMUNITY": 267163981446.5497,
+    "POOL": 268282238592.42645
+   }
+  },
+  "1000": {
+   "n": 1000,
+   "seed": 20260728,
+   "mean": {
+    "AALTO": 242789769209.58722,
+    "COMMUNITY": 255073528262.7521,
+    "POOL": 258914385448.10376
+   },
+   "median": {
+    "AALTO": 242786635650.88892,
+    "COMMUNITY": 255134397821.0866,
+    "POOL": 258873440905.95068
+   },
+   "sd": {
+    "AALTO": 3559641414.914558,
+    "COMMUNITY": 6002911795.552157,
+    "POOL": 4086664446.19436
+   },
+   "se_of_mean": {
+    "AALTO": 112565745.24594468,
+    "COMMUNITY": 189828738.67035842,
+    "POOL": 129231676.82804807
+   },
+   "p05": {
+    "AALTO": 237106105983.93185,
+    "COMMUNITY": 245426388484.2722,
+    "POOL": 252277220595.63058
+   },
+   "p95": {
+    "AALTO": 248832649948.5293,
+    "COMMUNITY": 264980469424.78555,
+    "POOL": 265820144377.47372
+   },
+   "min": {
+    "AALTO": 233878012814.67407,
+    "COMMUNITY": 238663756246.27765,
+    "POOL": 248817913763.41907
+   },
+   "max": {
+    "AALTO": 253463357276.4478,
+    "COMMUNITY": 273218531505.52744,
+    "POOL": 272074490032.3963
+   }
+  },
+  "10000": {
+   "n": 10000,
+   "seed": 20260728,
+   "mean": {
+    "AALTO": 242699216740.5902,
+    "COMMUNITY": 254831644642.8073,
+    "POOL": 258693886487.15735
+   },
+   "median": {
+    "AALTO": 242577932388.91605,
+    "COMMUNITY": 254853206983.90842,
+    "POOL": 258610794173.59897
+   },
+   "sd": {
+    "AALTO": 3516606599.1281743,
+    "COMMUNITY": 5998228176.611589,
+    "POOL": 4019082781.8824506
+   },
+   "se_of_mean": {
+    "AALTO": 35166065.99128174,
+    "COMMUNITY": 59982281.7661159,
+    "POOL": 40190827.81882451
+   },
+   "p05": {
+    "AALTO": 237126342206.67816,
+    "COMMUNITY": 244935402848.80453,
+    "POOL": 252277748383.47714
+   },
+   "p95": {
+    "AALTO": 248731156016.56354,
+    "COMMUNITY": 264798758381.05273,
+    "POOL": 265504220907.42868
+   },
+   "min": {
+    "AALTO": 232021109786.47073,
+    "COMMUNITY": 234424168934.6485,
+    "POOL": 246536889513.15262
+   },
+   "max": {
+    "AALTO": 256624729033.526,
+    "COMMUNITY": 278605756337.9051,
+    "POOL": 274445306965.84048
+   }
+  }
+ },
+ "seed_replicates": {
+  "100": [
+   {
+    "n": 100,
+    "seed": 20260729,
+    "mean": {
+     "AALTO": 242980126738.4097,
+     "COMMUNITY": 254690276955.97656,
+     "POOL": 258641066402.28268
+    },
+    "median": {
+     "AALTO": 242736335209.1054,
+     "COMMUNITY": 254782680140.49298,
+     "POOL": 258302390437.6557
+    },
+    "sd": {
+     "AALTO": 3787509416.0830617,
+     "COMMUNITY": 5427899335.147762,
+     "POOL": 3793498839.9523144
+    },
+    "se_of_mean": {
+     "AALTO": 378750941.60830617,
+     "COMMUNITY": 542789933.5147762,
+     "POOL": 379349883.99523145
+    },
+    "p05": {
+     "AALTO": 236694714524.12244,
+     "COMMUNITY": 246284851069.8643,
+     "POOL": 252852779936.19107
+    },
+    "p95": {
+     "AALTO": 249170365947.14618,
+     "COMMUNITY": 263003300315.84192,
+     "POOL": 264691884025.1517
+    },
+    "min": {
+     "AALTO": 234894896771.05176,
+     "COMMUNITY": 239307474999.07996,
+     "POOL": 249166545091.32352
+    },
+    "max": {
+     "AALTO": 250385399614.5258,
+     "COMMUNITY": 266821753642.34286,
+     "POOL": 267609044723.12024
+    }
+   },
+   {
+    "n": 100,
+    "seed": 20260730,
+    "mean": {
+     "AALTO": 243245168265.8523,
+     "COMMUNITY": 255813801629.1503,
+     "POOL": 259260613458.04236
+    },
+    "median": {
+     "AALTO": 243088029564.2232,
+     "COMMUNITY": 256008301698.66403,
+     "POOL": 259194924205.5471
+    },
+    "sd": {
+     "AALTO": 3802481227.1587405,
+     "COMMUNITY": 6027349994.015247,
+     "POOL": 4092344596.050378
+    },
+    "se_of_mean": {
+     "AALTO": 380248122.7158741,
+     "COMMUNITY": 602734999.4015248,
+     "POOL": 409234459.6050378
+    },
+    "p05": {
+     "AALTO": 237339899880.79446,
+     "COMMUNITY": 246018752279.128,
+     "POOL": 253206713746.84845
+    },
+    "p95": {
+     "AALTO": 249286688384.0518,
+     "COMMUNITY": 265992618762.1038,
+     "POOL": 265757926152.4464
+    },
+    "min": {
+     "AALTO": 234102799954.90097,
+     "COMMUNITY": 239998373691.36273,
+     "POOL": 247895149618.20535
+    },
+    "max": {
+     "AALTO": 253487322624.32095,
+     "COMMUNITY": 268023756578.09235,
+     "POOL": 268522026359.2943
+    }
+   },
+   {
+    "n": 100,
+    "seed": 20260731,
+    "mean": {
+     "AALTO": 242114422025.1484,
+     "COMMUNITY": 254582565893.68097,
+     "POOL": 258405853819.03568
+    },
+    "median": {
+     "AALTO": 241818820598.6637,
+     "COMMUNITY": 255225707121.7079,
+     "POOL": 258439469802.64307
+    },
+    "sd": {
+     "AALTO": 3399392842.3144913,
+     "COMMUNITY": 6439866029.823331,
+     "POOL": 4130563507.9588523
+    },
+    "se_of_mean": {
+     "AALTO": 339939284.2314491,
+     "COMMUNITY": 643986602.9823331,
+     "POOL": 413056350.7958852
+    },
+    "p05": {
+     "AALTO": 236813775419.45523,
+     "COMMUNITY": 244145139750.7819,
+     "POOL": 251338301569.08557
+    },
+    "p95": {
+     "AALTO": 247760243259.03995,
+     "COMMUNITY": 264751358709.6931,
+     "POOL": 265006196618.1392
+    },
+    "min": {
+     "AALTO": 235730473088.9023,
+     "COMMUNITY": 239483397829.88687,
+     "POOL": 249502029128.01715
+    },
+    "max": {
+     "AALTO": 251559307213.38272,
+     "COMMUNITY": 270736634613.78394,
+     "POOL": 266667835323.89355
+    }
+   }
+  ],
+  "1000": [
+   {
+    "n": 1000,
+    "seed": 20260729,
+    "mean": {
+     "AALTO": 242685303926.29272,
+     "COMMUNITY": 254659051225.5076,
+     "POOL": 258585328811.07855
+    },
+    "median": {
+     "AALTO": 242612742938.87994,
+     "COMMUNITY": 254734774440.49115,
+     "POOL": 258376092200.13995
+    },
+    "sd": {
+     "AALTO": 3580127562.5152316,
+     "COMMUNITY": 5962807440.886933,
+     "POOL": 4084850490.222442
+    },
+    "se_of_mean": {
+     "AALTO": 113213574.1149499,
+     "COMMUNITY": 188560527.62202534,
+     "POOL": 129174314.50358282
+    },
+    "p05": {
+     "AALTO": 236739247631.60812,
+     "COMMUNITY": 244903555918.52393,
+     "POOL": 251875428177.34695
+    },
+    "p95": {
+     "AALTO": 248699446152.15897,
+     "COMMUNITY": 264414182936.7653,
+     "POOL": 265147110413.99814
+    },
+    "min": {
+     "AALTO": 232914487033.48917,
+     "COMMUNITY": 236960707313.36252,
+     "POOL": 247582853462.88385
+    },
+    "max": {
+     "AALTO": 253541072598.24323,
+     "COMMUNITY": 271148145724.55026,
+     "POOL": 270230757270.45135
+    }
+   },
+   {
+    "n": 1000,
+    "seed": 20260730,
+    "mean": {
+     "AALTO": 242889744288.36954,
+     "COMMUNITY": 255312010876.17325,
+     "POOL": 258950348017.1346
+    },
+    "median": {
+     "AALTO": 242805592399.65244,
+     "COMMUNITY": 255242374790.13162,
+     "POOL": 259021225767.01328
+    },
+    "sd": {
+     "AALTO": 3483996163.27269,
+     "COMMUNITY": 5990942994.1638,
+     "POOL": 4043727088.5789557
+    },
+    "se_of_mean": {
+     "AALTO": 110173632.35229573,
+     "COMMUNITY": 189450251.93786448,
+     "POOL": 127873878.36030953
+    },
+    "p05": {
+     "AALTO": 237389319368.23367,
+     "COMMUNITY": 245980055295.23724,
+     "POOL": 252495394270.93668
+    },
+    "p95": {
+     "AALTO": 248715843841.36502,
+     "COMMUNITY": 265226162240.64014,
+     "POOL": 265999051840.51328
+    },
+    "min": {
+     "AALTO": 232547408332.4321,
+     "COMMUNITY": 238637862689.10464,
+     "POOL": 247607822356.1097
+    },
+    "max": {
+     "AALTO": 255163069266.54688,
+     "COMMUNITY": 274096848195.66324,
+     "POOL": 271672257983.86575
+    }
+   },
+   {
+    "n": 1000,
+    "seed": 20260731,
+    "mean": {
+     "AALTO": 242709282274.20947,
+     "COMMUNITY": 254866360049.83575,
+     "POOL": 258711618188.1578
+    },
+    "median": {
+     "AALTO": 242639299795.9275,
+     "COMMUNITY": 254923611820.1603,
+     "POOL": 258769071116.80695
+    },
+    "sd": {
+     "AALTO": 3312817277.7316074,
+     "COMMUNITY": 5746116161.767496,
+     "POOL": 3852330802.8559155
+    },
+    "se_of_mean": {
+     "AALTO": 104760480.69590488,
+     "COMMUNITY": 181708147.71089828,
+     "POOL": 121821396.37449779
+    },
+    "p05": {
+     "AALTO": 237427862593.95163,
+     "COMMUNITY": 245257555034.88483,
+     "POOL": 252417782418.92044
+    },
+    "p95": {
+     "AALTO": 248211283226.7436,
+     "COMMUNITY": 264324021124.92853,
+     "POOL": 264970579023.63034
+    },
+    "min": {
+     "AALTO": 234311825520.50363,
+     "COMMUNITY": 239483397829.88687,
+     "POOL": 248004794585.97214
+    },
+    "max": {
+     "AALTO": 256582865356.8286,
+     "COMMUNITY": 273769580278.7413,
+     "POOL": 271857162552.02444
+    }
+   }
+  ]
+ },
+ "anchor_movement": {
+  "mean_minus_median_over_sd": {
+   "100": {
+    "AALTO": -0.0410331483347869,
+    "COMMUNITY": -0.004969880320395031,
+    "POOL": 0.03472859229476349
+   },
+   "1000": {
+    "AALTO": 0.0008803017869086225,
+    "COMMUNITY": -0.010140005451954887,
+    "POOL": 0.010019061435593302
+   },
+   "10000": {
+    "AALTO": 0.03448903033516238,
+    "COMMUNITY": -0.0035947850708949428,
+    "POOL": 0.020674446899414573
+   }
+  },
+  "n100_to_n1000_shift_in_se_of_n100": {
+   "AALTO": -0.9791609824829768,
+   "COMMUNITY": 0.1283655491071241,
+   "POOL": -0.2873173520295269
+  },
+  "n100_to_n1000_shift_as_fraction_of_span": {
+   "AALTO": -0.017023001137461292,
+   "COMMUNITY": 0.002614512942167121,
+   "POOL": -0.005701378208397046
+  },
+  "seed_spread_of_anchor": {
+   "100": {
+    "AALTO": 511671909.0946881,
+    "COMMUNITY": 557020324.6888396,
+    "POOL": 383009384.6454545
+   },
+   "1000": {
+    "AALTO": 92341539.91543819,
+    "COMMUNITY": 279809719.9894864,
+    "POOL": 172449533.01468283
+   }
+  }
+ },
+ "independence": {
+  "pool_used": "n=10000 random C30M permutations (HOMOGENEOUS; trap 26)",
+  "pearson_raw_fits": [
+   [
+    0.9999999999999999,
+    0.8310428460231508,
+    0.8729002664337756
+   ],
+   [
+    0.8310428460231508,
+    1.0,
+    0.9501544182811406
+   ],
+   [
+    0.8729002664337756,
+    0.9501544182811406,
+    0.9999999999999999
+   ]
+  ],
+  "spearman_raw_fits": [
+   [
+    1.0,
+    0.8253650517456507,
+    0.8674716125027161
+   ],
+   [
+    0.8253650517456507,
+    1.0,
+    0.9476673563726735
+   ],
+   [
+    0.8674716125027161,
+    0.9476673563726735,
+    1.0
+   ]
+  ],
+  "pearson_normalized": [
+   [
+    0.9999999999999999,
+    0.8310428460231509,
+    0.8729002664337754
+   ],
+   [
+    0.8310428460231509,
+    0.9999999999999999,
+    0.9501544182811402
+   ],
+   [
+    0.8729002664337754,
+    0.9501544182811402,
+    1.0
+   ]
+  ],
+  "normalization_is_affine_so_correlation_is_invariant": 3.3306690738754696e-16,
+  "effective_n_models_pearson": {
+   "eigenvalues": [
+    2.770327580177963,
+    0.18437540599147387,
+    0.0452970138305634
+   ],
+   "participation_ratio": 1.1671999672692417,
+   "kaiser_count": 1,
+   "variance_share_of_first_component": 0.9234425267259875
+  },
+  "effective_n_models_spearman": {
+   "eigenvalues": [
+    2.7613244932504717,
+    0.19082137095608726,
+    0.04785413579344176
+   ],
+   "participation_ratio": 1.174380379835129,
+   "kaiser_count": 1,
+   "variance_share_of_first_component": 0.9204414977501569
+  },
+  "note": "POOL is fitted on the union of the AALTO and COMMUNITY sources, so it is not an independent third vote. Equal weights are therefore NOT neutral: they over-weight whatever the correlated pair agrees on."
+ },
+ "sensitivity_of_normalized_scores_to_the_zero_anchor": {
+  "keybo-lsb": {
+   "normalized": [
+    0.9739565821549931,
+    0.9547967565117311,
+    0.9797934997724426
+   ],
+   "shift_if_zero_moves_by_1se_n100": 0.0009023088192119388,
+   "shift_if_zero_moves_by_1se_n1000": 0.0002836360854746589
+  },
+  "keybo-lsb+lm": {
+   "normalized": [
+    0.9715384620102526,
+    0.9595009342760245,
+    0.9661251187442346
+   ],
+   "shift_if_zero_moves_by_1se_n100": 0.0008084080112983338,
+   "shift_if_zero_moves_by_1se_n1000": 0.0002541188547744433
+  },
+  "flagship-c3": {
+   "normalized": [
+    0.9622758060176011,
+    1.0,
+    1.0
+   ],
+   "shift_if_zero_moves_by_1se_n100": 0.0006446389498638849,
+   "shift_if_zero_moves_by_1se_n1000": 0.00021860626165948194
+  },
+  "arm-B": {
+   "normalized": [
+    1.0,
+    0.9102326776752343,
+    0.9648162450498504
+   ],
+   "shift_if_zero_moves_by_1se_n100": 0.0017918591755854418,
+   "shift_if_zero_moves_by_1se_n1000": 0.0005632616144980451
+  },
+  "arm-A": {
+   "normalized": [
+    0.8649148751289784,
+    0.8952670758689483,
+    0.8859474092296741
+   ],
+   "shift_if_zero_moves_by_1se_n100": 0.0023083629852955756,
+   "shift_if_zero_moves_by_1se_n1000": 0.00078279880990062
+  },
+  "graphite": {
+   "normalized": [
+    0.8253987464092579,
+    0.9831067811373405,
+    0.9283272245829927
+   ],
+   "shift_if_zero_moves_by_1se_n100": 0.0029836228923050268,
+   "shift_if_zero_moves_by_1se_n1000": 0.0010117890748407854
+  },
+  "semimak": {
+   "normalized": [
+    0.8477062500629622,
+    0.9471954621379552,
+    0.8957167170711351
+   ],
+   "shift_if_zero_moves_by_1se_n100": 0.0026024275846964207,
+   "shift_if_zero_moves_by_1se_n1000": 0.000882520309470447
+  },
+  "qwerty30m": {
+   "normalized": [
+    0.5645178750127077,
+    0.49894173016378207,
+    0.6156081784016693
+   ],
+   "shift_if_zero_moves_by_1se_n100": 0.010001700341030872,
+   "shift_if_zero_moves_by_1se_n1000": 0.003143982495151132
+  }
+ },
+ "modelled_only": "MODELLED ONLY: fitted-surface predictions on the .native frame at a BAKED 90 WPM; tau saturated at 1.0 and Phase-D cancelled. Not a claim about realized typing speed. No layout is promoted or adopted."
+}

@@ -120,6 +120,75 @@ def test_batch_vs_gather_noise_is_far_below_any_candidate_gap(surf):
     )
 
 
+def test_fit_batch_is_batch_length_invariant(surf):
+    """A layout's score must not depend on how many OTHER layouts share its batch.
+
+    This is the property the zero-padding in ``fit_batch`` buys. Without it, BLAS dispatches a
+    different kernel for a partial final tile and the same row comes back ~1e-15 relative
+    different — so the objective would not be a function of the layout, and a resumed search
+    could not reproduce an uninterrupted one (trap 36: assert the resume reproduces on COUNTS
+    and VALUES, not just conclusions).
+    """
+    perms = MN.random_layouts(200, seed=4242)
+    full = surf.fit_batch(perms)
+    for length in (1, 9, 16, 17, 37, 199, 200):
+        assert np.array_equal(surf.fit_batch(perms[:length]), full[:length]), (
+            f"batch length {length} changed the answer for rows it shares with the full batch"
+        )
+
+
+def test_tile_is_a_frozen_constant_and_only_moves_results_at_ulp_level(surf):
+    """The tile size cannot be made bit-irrelevant — the tile size IS the BLAS operand shape.
+
+    So two things are asserted instead, and both are what the artifacts actually rely on:
+      * changing the tile moves a fit by ~1e-15 RELATIVE (a few ULP at 2.4e11), which is ~9
+        orders below the tightest gap between two random layouts — it can reorder nothing;
+      * ``TILE`` is a frozen constant that :meth:`identity` records, so any published number
+        names the shape that produced it rather than inheriting an undocumented default.
+    """
+    perms = MN.random_layouts(200, seed=4242)
+    reference = surf.fit_batch(perms, tile=200)
+    worst = 0.0
+    for tile in (1, 7, 16, 64, 199):
+        got = surf.fit_batch(perms, tile=tile)
+        worst = max(worst, float((np.abs(got - reference) / np.abs(reference)).max()))
+    assert worst < 1e-13, f"tile choice moves a fit by {worst:.3e} relative — too much"
+    tightest = min(
+        float(np.diff(np.sort(reference[:, column])).min()) for column in range(3)
+    )
+    absolute = worst * float(np.abs(reference).max())
+    assert absolute < 1e-6 * tightest, (
+        f"tile noise {absolute:.3e} is not negligible against the tightest gap {tightest:.3e}"
+    )
+    assert surf.identity()["tile"] == MN.NativeSurfaces.TILE == 16
+
+
+def test_padding_guard_bites_if_the_fixed_shape_is_removed(surf):
+    """Mutation control on the padding. An unpadded tiled implementation MUST fail the
+    batch-length invariance above — otherwise that test is passing for a different reason and
+    would not protect the search."""
+    perms = MN.random_layouts(200, seed=4242)
+
+    def unpadded(rows: np.ndarray, step: int = 16) -> np.ndarray:
+        out = np.empty((rows.shape[0], 3), dtype=np.float64)
+        for lo in range(0, rows.shape[0], step):
+            hi = min(rows.shape[0], lo + step)
+            block = rows[lo:hi]
+            flat_index = (
+                block[:, surf.I] * 31 + block[:, surf.J]
+            ) * 31 + block[:, surf.K]
+            weights = np.empty((hi - lo, 29791), dtype=np.float64)
+            for b in range(hi - lo):
+                weights[b] = np.bincount(flat_index[b], weights=surf.F, minlength=29791)
+            out[lo:hi] = weights @ surf.flat.T
+        return out
+
+    assert not np.array_equal(unpadded(perms)[:9], unpadded(perms[:9])), (
+        "the unpadded path is already batch-length invariant on this BLAS, so the padding "
+        "guard is untested here — re-derive the shape sensitivity before trusting it"
+    )
+
+
 def test_perm_roundtrip_and_permutation_validation():
     for layout in MN.CANDIDATES.values():
         assert MN.layout_of(MN.perm_of(layout)) == layout

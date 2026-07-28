@@ -255,19 +255,42 @@ class NativeSurfaces:
         ]
         return (gathered * self.F).sum(axis=1)
 
-    def fit_batch(self, perms: np.ndarray) -> np.ndarray:
+    #: Rows per histogram tile in :meth:`fit_batch`. The (B, 29791) weight matrix is the hot
+    #: allocation: a 435-row tile is 104 MB and falls out of cache, so the batch is walked in
+    #: small tiles that reuse ONE buffer. Measured 1.5k -> 5.9k evals/s/process at B=435.
+    TILE = 16
+
+    def fit_batch(self, perms: np.ndarray, tile: int | None = None) -> np.ndarray:
         """(B,31) perms -> (B,3) predicted-ms fits.
 
-        Histograms each layout's trigrams into the 29791 flat surface bins, then a single
-        (B,29791)@(29791,3) matmul. Pinned identical to :meth:`fit_one` in the tests.
+        Histograms each layout's trigrams into the 29791 flat surface bins, then one
+        ``(TILE, 29791) @ (29791, 3)`` matmul per tile.
+
+        ⚠ **Every matmul is done at EXACTLY the same shape**, zero-padding the final partial
+        tile. That is not cosmetic: BLAS picks its kernel and blocking from the operand shape,
+        so a `(9, 29791)` product and a `(16, 29791)` product return results differing by
+        ~1e-15 relative on the same rows. Without the padding a layout's score would depend on
+        *how many other layouts happened to be in its batch* — the objective would not be a
+        function of the layout, and neither the search nor its checkpoint-resume would be
+        reproducible. With it, :meth:`fit_batch` is bit-exact across every batch length and
+        tile size (pinned in ``test_fit_batch_is_batch_length_invariant``).
         """
         perms = np.asarray(perms, dtype=np.int32)
         batch = perms.shape[0]
-        flat_index = (perms[:, self.I] * 31 + perms[:, self.J]) * 31 + perms[:, self.K]
-        weights = np.empty((batch, 29791), dtype=np.float64)
-        for b in range(batch):
-            weights[b] = np.bincount(flat_index[b], weights=self.F, minlength=29791)
-        return weights @ self.flat.T
+        step = int(tile or self.TILE)
+        out = np.empty((batch, 3), dtype=np.float64)
+        buffer = np.zeros((step, 29791), dtype=np.float64)
+        for lo in range(0, batch, step):
+            hi = min(batch, lo + step)
+            rows = perms[lo:hi]
+            flat_index = (rows[:, self.I] * 31 + rows[:, self.J]) * 31 + rows[:, self.K]
+            span = hi - lo
+            for b in range(span):
+                buffer[b] = np.bincount(flat_index[b], weights=self.F, minlength=29791)
+            if span < step:  # zero the padding rows so the shape is constant but they add 0
+                buffer[span:] = 0.0
+            out[lo:hi] = (buffer @ self.flat.T)[:span]
+        return out
 
     def fit_of_layout(self, layout: str) -> np.ndarray:
         return self.fit_one(perm_of(layout))
@@ -291,6 +314,10 @@ class NativeSurfaces:
             "native_frame_guard": self.frame_report,
             "n_trigrams": int(self.I.size),
             "total_trigram_freq": self.total_freq,
+            # the BLAS operand shape every published fit was computed at: changing it moves a
+            # fit by ~1e-15 relative, so a number is only reconcilable if the shape is named.
+            "tile": int(self.TILE),
+            "numpy": np.__version__,
         }
 
 
