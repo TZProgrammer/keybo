@@ -41,10 +41,12 @@ Three honesty notes, load-bearing:
    the ``redirect`` term by 432 triples, and double-charged 540. The bad-redirect SUPPORT
    was already right (540 either way): the old ``abs(column) in (1, 2)`` test happens to be
    equivalent to "no index finger" on this geometry, so it was a fragile proxy rather than a
-   live error. Corpus consequence of the whole repair, on blend-v1: ``oxey-style`` moves by
-   -1.15 to -2.34 across the published comparison set with spearman 0.9958 and no published
-   ranking reversed. See ``tests/scoring/test_oxey_trigram_partition.py``, which asserts
-   class membership against ``_v1_pattern`` triple-for-triple rather than eyeballing totals.
+   live error. Corpus consequence of the whole repair, on blend-v1: every ``oxey-style``
+   score drops by 0.42 to 1.50 (−1.6% of |score| on qwerty30m, −152% on the near-zero arm E),
+   spearman(before, after) is 0.997059 over 16 layouts, and the nine layouts of the published
+   adoption tables keep an IDENTICAL ordering (spearman 1.000000, 0 of 36 pairwise
+   inversions). See ``tests/scoring/test_oxey_trigram_partition.py``, which asserts class
+   membership against ``_v1_pattern`` triple-for-triple rather than eyeballing totals.
 
 Units: dimensionless pattern score scaled so qwerty ≈ O(100); the ``--oxey-weight`` knob
 maps it into fitness-comparable magnitude the same way the comfort knob does.
