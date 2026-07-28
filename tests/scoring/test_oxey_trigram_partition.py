@@ -256,6 +256,66 @@ def test_the_three_classes_partition_the_same_hand_reversal_universe(support, v1
     )
 
 
+@pytest.mark.parametrize(
+    "lay30",
+    [
+        QWERTY30M,
+        "bldwz'foujnrtsgyhaeixqmcvkp,.-",  # graphite
+        "pyuo,vgdnlhiea.cstrmkj-z'fwbxq",  # keybo-lsb
+    ],
+)
+def test_redirect_numerator_mass_now_equals_RedirectFamily_on_a_real_corpus(corpora, lay30):
+    """CROSS-MODULE control that only became possible with this fix.
+
+    ``analysis.redirects.RedirectFamily`` reports the same four upstream classes, and
+    ``tests/analysis/test_redirects.py`` pins its total equal to ``kmstats``' ``redir``
+    cell-for-cell. Before this fix, oxey's redirect term could not agree with either: it used
+    a different predicate AND double-counted the bad subset. Now the predicate is literally
+    the same function, so the selected MASS must match exactly.
+
+    ⚠️ Compared on NUMERATOR MASS, not on the share. The two shares differ by ~1.9x because
+    the denominators are different by long-standing convention — ``oxey.pattern_shares``
+    counts space-containing trigrams (``Layout.has_key(" ")`` is True), the
+    kmstats/RedirectFamily convention masks space out (``analysis/redirects.py``'s
+    "Denominator (trap #9)" note). A wrong denominator is invisible to a numerator check and
+    vice versa, so this asserts the numerator — the quantity the *predicate* decides — and
+    leaves the denominator convention exactly as it was.
+    """
+    from keybo.analysis.redirects import RedirectFamily
+
+    _bigrams, _skipgrams, trigrams = corpora
+    geometry = ROW_STAGGERED_30
+    layout = Layout(lay30, geometry)
+
+    oxey_mass = 0
+    for ngram, freq in trigrams.items():
+        if len(ngram) != 3 or not all(layout.has_key(character) for character in ngram):
+            continue
+        positions = [layout.pos(character) for character in ngram]
+        if _trigram_class_name(geometry, positions) in ("redirect", "bad_redirect"):
+            oxey_mass += freq
+
+    slot_of = {character: slot for slot, character in enumerate(lay30)}
+    family_denominator = sum(
+        freq
+        for ngram, freq in trigrams.items()
+        if len(ngram) == 3 and all(character in slot_of for character in ngram)
+    )
+    family_share = RedirectFamily(trigrams).shares(lay30)["redirects_family_total"]
+    family_mass = round(family_share / 100.0 * family_denominator)
+
+    assert oxey_mass == family_mass, (
+        f"oxey selects {oxey_mass} of trigram mass as a redirect, RedirectFamily selects "
+        f"{family_mass} — the two must now be the SAME predicate"
+    )
+
+
+def _trigram_class_name(geometry, positions):
+    from keybo.scoring.oxey import _trigram_class
+
+    return _trigram_class(geometry, *positions)
+
+
 def test_the_fast_support_probe_matches_the_one_share_at_a_time_probe():
     """The module's cheap 3-classes-per-pass probe must equal the per-share probe.
 
