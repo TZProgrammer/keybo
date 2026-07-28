@@ -1,0 +1,425 @@
+{
+ "arm": "archive",
+ "corpus": "blend-v1 (production default)",
+ "budget_requested": 10000000,
+ "unique_evals": 10017839,
+ "islands": 40,
+ "epochs_run": 49,
+ "seed": 20260728,
+ "bounds": null,
+ "objective_unit": "attributed ms/trigram from the fitted SHAP loss curves, priced at the nearest valid_domain edge (CLAMP; lower=better)",
+ "domain_policy": "clamp",
+ "weights_json": "/local/home/zegertho/agent/state/evidence-scorer/artifacts/arm-archive400-native.json",
+ "weights_pool": "archive-400",
+ "pricing_path": "LossCurve.price_many (validated, cf5f731)",
+ "champion": {
+  "layout": "ou-qdbpmlsaiehvgctnr.,y'kfwjzx",
+  "fitness": -2.690225544692558
+ },
+ "top50": [
+  {
+   "layout": "ou-qdbpmlsaiehvgctnr.,y'kfwjzx",
+   "fitness": -2.690225544692558
+  },
+  {
+   "layout": "ouzjdfplyraiehmgctns.,-k'bwvxq",
+   "fitness": -2.6881488246703054
+  },
+  {
+   "layout": "ouqzdfplyraiehmgctns.,-k'bwvxj",
+   "fitness": -2.6874576674818846
+  },
+  {
+   "layout": "'.,vkxfldweaigcnhrts-oubpyqzjm",
+   "fitness": -2.685169351963033
+  },
+  {
+   "layout": "ouqzdbplyraiehmgctns.,-k'fwvxj",
+   "fitness": -2.6846425474302933
+  },
+  {
+   "layout": "ouqjdfplyraiehmgctns.,-k'bwvzx",
+   "fitness": -2.6839242253200415
+  },
+  {
+   "layout": "ouqzdbpylraiehmgctns.,-'kfwvjx",
+   "fitness": -2.6822352044716915
+  },
+  {
+   "layout": "ouqzdbpylraiehmgctns,.-'kfwvjx",
+   "fitness": -2.6812621788692352
+  },
+  {
+   "layout": "oujzdypblraiehmgctns.,-k'fwvqx",
+   "fitness": -2.681048634986235
+  },
+  {
+   "layout": "ouj'dypblraiehmgctns.,-kqfwvzx",
+   "fitness": -2.679434360849717
+  },
+  {
+   "layout": "ou-kdpbmlsaiehvgctnr.,y'qwfzxj",
+   "fitness": -2.6786919995604306
+  },
+  {
+   "layout": "oujzdypblraiehmgctns.,-k'fwvxq",
+   "fitness": -2.6786262847226143
+  },
+  {
+   "layout": "ouqzdpbylraiehmgctns.,-k'fwvjx",
+   "fitness": -2.678595871598058
+  },
+  {
+   "layout": "ou-zdbpmlsaiehvgctnr.,y'kfwjxq",
+   "fitness": -2.678199274005757
+  },
+  {
+   "layout": "ouqzdypblraiehmgctns.,-k'fwvxj",
+   "fitness": -2.6772799482278717
+  },
+  {
+   "layout": "ouqzdbpylraiehmgctns.,-k'fwvjx",
+   "fitness": -2.676879942180036
+  },
+  {
+   "layout": "ouzjdbpflraiehmgctsn.'-yk,wvqx",
+   "fitness": -2.6766653486429894
+  },
+  {
+   "layout": "ou-qdbyplraiehmgctns.,'jkwfvzx",
+   "fitness": -2.6766535426489177
+  },
+  {
+   "layout": "ouj'dypblraiehmgctns.,-kzfwvqx",
+   "fitness": -2.676459210188928
+  },
+  {
+   "layout": "ou-qdbp.lraiehmgctns,'yjkfwvzx",
+   "fitness": -2.675556097228615
+  },
+  {
+   "layout": "ou-kdpbylsaiehmgctnr.,z'qfvwxj",
+   "fitness": -2.6754257825360046
+  },
+  {
+   "layout": "oujzdyfblraiehmgctns.,-k'pwvqx",
+   "fitness": -2.674764536354201
+  },
+  {
+   "layout": "'.,kgfmyldeaiphscnrt-oubvwzqxj",
+   "fitness": -2.674720932656813
+  },
+  {
+   "layout": "ou-qdpyblraiehmgctnsz,.k'fwvxj",
+   "fitness": -2.6743366586855983
+  },
+  {
+   "layout": "oujzdpyblraiehmgctns.,-k'fwvqx",
+   "fitness": -2.6741273051198164
+  },
+  {
+   "layout": "ouzjkfplyraiehmgctns.,-d'bwvxq",
+   "fitness": -2.673418117206541
+  },
+  {
+   "layout": "'.,kgfmyldeaiphscnrt-ouvbwzjxq",
+   "fitness": -2.6731656399686545
+  },
+  {
+   "layout": "oujzdbp.lraiehmgctns,'-ykfwvqx",
+   "fitness": -2.671571490560545
+  },
+  {
+   "layout": "'.,kpmxlfzeaigcnhrst-ouvbyqjwd",
+   "fitness": -2.671536465376796
+  },
+  {
+   "layout": "ouqjdbpylraiehmgctns.,-'kfwvzx",
+   "fitness": -2.671155924258833
+  },
+  {
+   "layout": "oujzdfp,lraiehmgctsn.'-ykbwvqx",
+   "fitness": -2.6711281866580356
+  },
+  {
+   "layout": "-zkjxwv'q,ietsdgcnaru.myfbphol",
+   "fitness": -2.6710292570790486
+  },
+  {
+   "layout": "oujzpywmxqaeihdgctrn.'-kbfv,ls",
+   "fitness": -2.6708326861856224
+  },
+  {
+   "layout": "'.,kvmxlfzeaigcnhrst-oubpyqjwd",
+   "fitness": -2.670555056179135
+  },
+  {
+   "layout": "ou-kdwyblsaiehmgctnr.,zj'fpvxq",
+   "fitness": -2.6700384993731654
+  },
+  {
+   "layout": "ouqjdbpflraiehmgctns',-yk.wvzx",
+   "fitness": -2.6700213451511057
+  },
+  {
+   "layout": "ou-kdwyblsaiehmgctnr.,z'qfpvxj",
+   "fitness": -2.6696367187102004
+  },
+  {
+   "layout": "ouzjdfp,lraiehmgctsn.'-kybwvqx",
+   "fitness": -2.669313057672576
+  },
+  {
+   "layout": ".zjkxwv'q,ietsdgcnaru-myfbphol",
+   "fitness": -2.669295070606747
+  },
+  {
+   "layout": "ou-kdjcvw'aiehmgstnr.,zxqyfbpl",
+   "fitness": -2.6687429320226563
+  },
+  {
+   "layout": "ouq'dypblsaiehmgctnr.,-kzfwvxj",
+   "fitness": -2.668525855193853
+  },
+  {
+   "layout": "ou-kdwp,lraiehmgctsn.'zqyfbvjx",
+   "fitness": -2.6684012910620103
+  },
+  {
+   "layout": "'.,kgfmyldeaihpscnrt-ouvbwzjxq",
+   "fitness": -2.6678907755162293
+  },
+  {
+   "layout": "ouzjdwp.lsaiehmgctnr,'-kyfbvxq",
+   "fitness": -2.667780553496684
+  },
+  {
+   "layout": "ou-xdzwbplaiehmgstnr.'yjkfcvq,",
+   "fitness": -2.66719147779363
+  },
+  {
+   "layout": "ou-kdwp.lsaiehmgctrn,'zjyfbvqx",
+   "fitness": -2.667176515675111
+  },
+  {
+   "layout": "ouj'dwyblsaiehmgctnr.,-qkfpvzx",
+   "fitness": -2.6667639644349808
+  },
+  {
+   "layout": "'.,kpfmyldeaihgscnrt-ouvbwzjxq",
+   "fitness": -2.6663304086849933
+  },
+  {
+   "layout": "ou-xdzwbplaiehmgstnr.'yjkcfvq,",
+   "fitness": -2.666267015145335
+  },
+  {
+   "layout": "ouqzdwyblsaiehmgctnr.,-'kfpvxj",
+   "fitness": -2.6660616864619957
+  }
+ ],
+ "per_island_best": [
+  {
+   "island": 0,
+   "best_fit": -2.690225544692558,
+   "best_layout": "ou-qdbpmlsaiehvgctnr.,y'kfwjzx"
+  },
+  {
+   "island": 1,
+   "best_fit": -2.690225544692558,
+   "best_layout": "ou-qdbpmlsaiehvgctnr.,y'kfwjzx"
+  },
+  {
+   "island": 2,
+   "best_fit": -2.690225544692558,
+   "best_layout": "ou-qdbpmlsaiehvgctnr.,y'kfwjzx"
+  },
+  {
+   "island": 3,
+   "best_fit": -2.690225544692558,
+   "best_layout": "ou-qdbpmlsaiehvgctnr.,y'kfwjzx"
+  },
+  {
+   "island": 4,
+   "best_fit": -2.690225544692558,
+   "best_layout": "ou-qdbpmlsaiehvgctnr.,y'kfwjzx"
+  },
+  {
+   "island": 5,
+   "best_fit": -2.690225544692558,
+   "best_layout": "ou-qdbpmlsaiehvgctnr.,y'kfwjzx"
+  },
+  {
+   "island": 6,
+   "best_fit": -2.690225544692558,
+   "best_layout": "ou-qdbpmlsaiehvgctnr.,y'kfwjzx"
+  },
+  {
+   "island": 7,
+   "best_fit": -2.690225544692558,
+   "best_layout": "ou-qdbpmlsaiehvgctnr.,y'kfwjzx"
+  },
+  {
+   "island": 8,
+   "best_fit": -2.690225544692558,
+   "best_layout": "ou-qdbpmlsaiehvgctnr.,y'kfwjzx"
+  },
+  {
+   "island": 9,
+   "best_fit": -2.690225544692558,
+   "best_layout": "ou-qdbpmlsaiehvgctnr.,y'kfwjzx"
+  },
+  {
+   "island": 10,
+   "best_fit": -2.690225544692558,
+   "best_layout": "ou-qdbpmlsaiehvgctnr.,y'kfwjzx"
+  },
+  {
+   "island": 11,
+   "best_fit": -2.690225544692558,
+   "best_layout": "ou-qdbpmlsaiehvgctnr.,y'kfwjzx"
+  },
+  {
+   "island": 12,
+   "best_fit": -2.690225544692558,
+   "best_layout": "ou-qdbpmlsaiehvgctnr.,y'kfwjzx"
+  },
+  {
+   "island": 13,
+   "best_fit": -2.690225544692558,
+   "best_layout": "ou-qdbpmlsaiehvgctnr.,y'kfwjzx"
+  },
+  {
+   "island": 14,
+   "best_fit": -2.690225544692558,
+   "best_layout": "ou-qdbpmlsaiehvgctnr.,y'kfwjzx"
+  },
+  {
+   "island": 15,
+   "best_fit": -2.690225544692558,
+   "best_layout": "ou-qdbpmlsaiehvgctnr.,y'kfwjzx"
+  },
+  {
+   "island": 16,
+   "best_fit": -2.690225544692558,
+   "best_layout": "ou-qdbpmlsaiehvgctnr.,y'kfwjzx"
+  },
+  {
+   "island": 17,
+   "best_fit": -2.690225544692558,
+   "best_layout": "ou-qdbpmlsaiehvgctnr.,y'kfwjzx"
+  },
+  {
+   "island": 18,
+   "best_fit": -2.690225544692558,
+   "best_layout": "ou-qdbpmlsaiehvgctnr.,y'kfwjzx"
+  },
+  {
+   "island": 19,
+   "best_fit": -2.690225544692558,
+   "best_layout": "ou-qdbpmlsaiehvgctnr.,y'kfwjzx"
+  },
+  {
+   "island": 20,
+   "best_fit": -2.690225544692558,
+   "best_layout": "ou-qdbpmlsaiehvgctnr.,y'kfwjzx"
+  },
+  {
+   "island": 21,
+   "best_fit": -2.690225544692558,
+   "best_layout": "ou-qdbpmlsaiehvgctnr.,y'kfwjzx"
+  },
+  {
+   "island": 22,
+   "best_fit": -2.690225544692558,
+   "best_layout": "ou-qdbpmlsaiehvgctnr.,y'kfwjzx"
+  },
+  {
+   "island": 23,
+   "best_fit": -2.690225544692558,
+   "best_layout": "ou-qdbpmlsaiehvgctnr.,y'kfwjzx"
+  },
+  {
+   "island": 24,
+   "best_fit": -2.690225544692558,
+   "best_layout": "ou-qdbpmlsaiehvgctnr.,y'kfwjzx"
+  },
+  {
+   "island": 25,
+   "best_fit": -2.690225544692558,
+   "best_layout": "ou-qdbpmlsaiehvgctnr.,y'kfwjzx"
+  },
+  {
+   "island": 26,
+   "best_fit": -2.690225544692558,
+   "best_layout": "ou-qdbpmlsaiehvgctnr.,y'kfwjzx"
+  },
+  {
+   "island": 27,
+   "best_fit": -2.690225544692558,
+   "best_layout": "ou-qdbpmlsaiehvgctnr.,y'kfwjzx"
+  },
+  {
+   "island": 28,
+   "best_fit": -2.690225544692558,
+   "best_layout": "ou-qdbpmlsaiehvgctnr.,y'kfwjzx"
+  },
+  {
+   "island": 29,
+   "best_fit": -2.690225544692558,
+   "best_layout": "ou-qdbpmlsaiehvgctnr.,y'kfwjzx"
+  },
+  {
+   "island": 30,
+   "best_fit": -2.690225544692558,
+   "best_layout": "ou-qdbpmlsaiehvgctnr.,y'kfwjzx"
+  },
+  {
+   "island": 31,
+   "best_fit": -2.690225544692558,
+   "best_layout": "ou-qdbpmlsaiehvgctnr.,y'kfwjzx"
+  },
+  {
+   "island": 32,
+   "best_fit": -2.690225544692558,
+   "best_layout": "ou-qdbpmlsaiehvgctnr.,y'kfwjzx"
+  },
+  {
+   "island": 33,
+   "best_fit": -2.690225544692558,
+   "best_layout": "ou-qdbpmlsaiehvgctnr.,y'kfwjzx"
+  },
+  {
+   "island": 34,
+   "best_fit": -2.690225544692558,
+   "best_layout": "ou-qdbpmlsaiehvgctnr.,y'kfwjzx"
+  },
+  {
+   "island": 35,
+   "best_fit": -2.690225544692558,
+   "best_layout": "ou-qdbpmlsaiehvgctnr.,y'kfwjzx"
+  },
+  {
+   "island": 36,
+   "best_fit": -2.690225544692558,
+   "best_layout": "ou-qdbpmlsaiehvgctnr.,y'kfwjzx"
+  },
+  {
+   "island": 37,
+   "best_fit": -2.690225544692558,
+   "best_layout": "ou-qdbpmlsaiehvgctnr.,y'kfwjzx"
+  },
+  {
+   "island": 38,
+   "best_fit": -2.690225544692558,
+   "best_layout": "ou-qdbpmlsaiehvgctnr.,y'kfwjzx"
+  },
+  {
+   "island": 39,
+   "best_fit": -2.690225544692558,
+   "best_layout": "ou-qdbpmlsaiehvgctnr.,y'kfwjzx"
+  }
+ ],
+ "elapsed_s": 543.7182469367981,
+ "modelled_only": "MODELLED ONLY: fitted-surface attribution, not measured typing speed. No layout here is promoted or adopted."
+}
