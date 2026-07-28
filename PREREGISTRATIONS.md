@@ -7737,10 +7737,14 @@ genuinely curved** (so the user's instinct that a scalar weight is insufficient 
 explicit cannot-express list; full method notes. state/evidence-scorer/{report.md, reflection-proposal.md, artifacts/}.
 => NET, AND IT IS A CLEAN NEGATIVE: do NOT ship `score-evidence` as a selection objective. Its wide-pool win is 43.6% one gauge and collapses to
 +0.101 once `comfort` is ablated; on the band where layouts are actually chosen it is indistinguishable from noise. The finding worth keeping is
-the MECHANISM — the cross-source transfer ceiling collapses from 0.835 to 0.265 on near-optimal layouts, which is the SAME instrument-resolution
-wall that NO-ANCHOR-1, THEORY-1, GEOMEAN-1, WSCISSOR-ARMB-1, REHUNT-1 and FLAGSHIP-1 all hit, now reached from a SEVENTH direction: not "our gauges
-cannot separate good layouts" but "our SOURCES cannot agree about good layouts". Deriving weights cannot fix that; only a better instrument or a
-real outcome can.
+the MECHANISM — the cross-source transfer ceiling collapses from 0.835 to 0.265 on near-optimal layouts: not "our gauges cannot separate good
+layouts" but "our SOURCES cannot agree about good layouts". Deriving weights cannot fix that; only a better instrument or a real outcome can.
+⚠⚠ **RETRACTED HERE, 2026-07-27 (POOLSWEEP-1, ledger 873afb7): this paragraph originally called that "a SEVENTH direction" onto the same
+instrument-resolution wall as NO-ANCHOR-1 / THEORY-1 / GEOMEAN-1 / WSCISSOR-ARMB-1 / REHUNT-1 / FLAGSHIP-1. IT IS NOT AN INDEPENDENT WITNESS.**
+POOLSWEEP-1 showed the collapse is a mechanically explained corollary of selecting on the two instruments' CONSENSUS (rho is a near-deterministic
+function of C/D alone, Spearman +0.999), so counting it as corroboration is the trap-27/39 shape — a restatement mistaken for independent evidence.
+**SEVEN ROUTES ARE REALLY SIX.** What survives, and is stronger, is that a Pareto front is BY CONSTRUCTION a set with the consensus direction
+removed, so the restriction is STRUCTURAL and cannot be escaped by choosing a different pool.
 
 ### EVIDENCE-SCORER-1 ADDENDUM (reflection pass) — I WAS WRONG ON CIRCULARITY LAYER 2; and the pro-taste-constant finding is DOWNGRADED by the child's own audit (2026-07-27)
 I sent `evidence-scorer` the reflection self-audit BEFORE reaping, including my own refutation of its layer-2 claim. It refuted my refutation, and
@@ -7858,3 +7862,49 @@ readings). Gauge-cache positive control max|cached - shipped gauge_matrix| = **0
 re-checked 39 cited report numbers programmatically against the artifact JSONs (0 mismatches) — and that check caught one of its own errors ("nine
 cells" written from a partial run where the finished table has eleven). It also re-derived every number I quoted in the brief and all reproduced
 exactly (0.8350, 0.2654, 0.8319, 0.2668, sqrt = 0.5151, AALTO native-vs-std diff EXACTLY 0.0).
+### GUARD-CD-1 — the pool guard was CIRCULAR; C/D replaces the effective-dof floor (2026-07-27)
+STATUS. Fix to shipped guard code, prompted by a watchdog correctly catching my SEVENTH stop-gate failure: I reported the defect
+("it flagged without applying") in a wrap-up sentence and stopped, with no one-way-door noun nameable. LOCAL branch `guard-cd`
+(worktree /tmp/guardfix, base a021a32 = the `evidence-scorer` branch), NOTHING pushed. 3 source files + 1 rewritten test + 1 new
+test file; 134 insertions.
+=> THE DEFECT WAS CIRCULARITY, NOT A MIS-SET THRESHOLD. `NARROW_POOL_DOF = 4.5` justified itself IN ITS OWN DOCSTRING from the
+archive-3.99-vs-random-5.03 contrast — the very contrast it was then used to detect. POOLSWEEP-1 (ledger 873afb7) then measured it
+FALSE-POSITIVING at interp-f0.25: effective dof **2.43** with a perfectly healthy cross-source ceiling of **+0.9244**.
+ROOT CAUSE, and why this needed a different QUANTITY rather than a different number: restriction has **TWO OPPOSITE MODES** —
+removing the sources' CONSENSUS is fatal (ceiling -> -0.9886), removing their DISAGREEMENT is harmless (ceiling -> +0.9999) — and
+**both LOWER effective dof**. So no scalar narrowness statistic can separate a fatal pool from a fine one, at any threshold.
+THE FIX, four parts: (1) new `V.consensus_disagreement_ratio()` computing C/D, z-scored per source over the pool itself so it is
+scale-free and needs no external reference bank; (2) new `NARROW_POOL_CD = 2.0`, above every failing pool measured and below every
+passing one; (3) `transfer_warning(source_agreement, cd_ratio)` now gates on **C/D FIRST** and the **effective-dof branch is RETIRED
+ENTIRELY** — replaced by a comment recording why, with `effective_dof` retained on the artifact as a diagnostic that must never gate
+a verdict; (4) the CLI computes BOTH guards **before anything is ranked** and emits them as `payload["pool_guards"]`, so a bad pool
+is REFUSED rather than annotated after the fact. That last part is the operational half of POOLSWEEP-1's recommendation: C/D is
+computable pre-fit, the ceiling is not.
+🟢 VERIFIED AT THE MEASURED ANCHORS: archive-like (consensus removed) C/D **0.099 -> FIRES**; random-wide-like **3.008 -> silent**;
+archive+1-random-transposition-like **3.819 -> silent**; and **interp-f0.25-like, narrow in BOTH directions, 3.972 -> silent** —
+the exact case the retired floor got wrong.
+⚠⚠ THE FULL SUITE THEN FAILED (rc=1, 1 of 873) AND IT CAUGHT A REAL DESIGN GAP, NOT A STALE ASSERTION. I had already committed
+nothing, gated on the sentinel — which is the only reason this was caught before landing. `test_transfer_warning_travels_in_the
+_serialized_artifact` asserted that `to_dict()` on a dof-3.99 object yields a warning; `to_dict` called `transfer_warning()` with
+**NO ARGUMENTS**. That was harmless only while the retired dof branch could fire from `self` alone. Once the verdict depends on C/D —
+a property of the POOL, not of the weights object — **the serialized artifact would have silently carried NO VERDICT AT ALL**, which
+is strictly worse than the false-positive I set out to fix: a guard that quietly disappears from the JSON consumers read. FIXED
+properly rather than by adjusting the test: added `cd_ratio` / `source_agreement` fields plus an `attach_pool_guards()` method on
+`EvidenceWeights` (separate from the constructor because both quantities describe the POOL, which the fitting routine does not own),
+made `to_dict` serialize a full `pool_guards` block including the floors and an explicit "effective_dof is diagnostic ONLY" note, and
+wired the CLI to attach before serializing. The test now pins BOTH paths: unattached must yield NO verdict (dof alone must never
+manufacture one), attached must yield DO-NOT-TRUST with the ratio and floor present.
+⚠ AN EXISTING TEST FAILED EARLIER TOO, AND THAT WAS ALSO THE CORRECT SIGNAL. `test_narrow_pool_is_flagged_and_a_wide_one_is_not` asserted
+dof 3.99 -> warning and 5.03 -> silence, i.e. it PINNED THE CIRCULAR CONTRAST ITSELF. Replaced by
+`test_effective_dof_alone_no_longer_flags_a_pool` (dof alone must warn at NO value, including 2.43) plus
+`test_cd_ratio_is_what_flags_a_pool_now`. To be explicit: I did NOT weaken a test to fit new code — I replaced a test OF THE DEFECT
+with a test OF THE CONTRACT. Plus 7 new tests in `tests/analysis/test_pool_guard_cd.py`, including a SCALE-FREE test (shrinking both
+directions equally leaves C/D unmoved, where dof fell and fired) and an explicit interp-f0.25 regression.
+⚠ ALSO IN THIS ROUND — A RETRACTION I HAD CLAIMED BUT NOT COMPLETED. I told the user I had retracted the "SEVENTH independent route"
+phrasing. The watchdog told me to verify by grep rather than trust the claim; **grep found one live instance surviving** in the
+EVIDENCE-SCORER-1 body, asserting it as fact with no marker. Now retracted in place, with a pointer to POOLSWEEP-1. Every remaining
+occurrence of "seventh" in the ledger is either the retraction or its marker. LESSON: a claimed retraction is a claim — grep it.
+=> NET: the guard now measures the quantity that actually sets the cross-source ceiling, refuses a bad pool before fitting, and no
+longer fires on healthy narrow pools. COMMITTED LOCALLY as **f883681** on branch `guard-cd` after the suite came back GREEN on the SECOND run: **rc=0, 873 collected, 0 failed**
+(870 passed / 3 skipped, 676s) from an out-of-tree bite-tested sentinel, count reconciling as 869 prior + 3 skipped + 1 net-new. ruff clean.
+Landing this branch remains a USER decision; NOTHING PUSHED.
