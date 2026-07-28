@@ -8383,3 +8383,57 @@ Proposed repo fix (NOT applied): mark that test `slow`.
 **not defects against its stated contract** — they are defects only against a claim nobody made. What IS registered as a defect: the **classifier mismatch (4)**, which makes
 `onehand`/`redirect` shares non-comparable with THEORY-1's prices, and the **band-dependent dof collapse**, which makes 5 of 11 magnitudes unidentifiable where the scorer is
 used. Both are structural and neither is fixed by editing a number.
+
+### PENALTYAUDIT-1 CORRECTION (reflection pass) — 🔴 TWO OF MY OWN REGISTERED CELLS ARE WRONG: the "7.0x" must NOT ship as a point estimate, and the redirect counts were never in conflict — `bad_redirect` is NESTED inside `redirect`, so a bad redirect is charged +6.0, not +4.0 (2026-07-28)
+The reflection self-audit I sent `penaltyaudit` after pushing 45ea276. It corrects that entry twice. Branch `penalty-audit` base 571bfe9, HEAD **6cdd2cb**, artifacts committed in `agent-artifacts/penaltyaudit-1/`
+(43 files, +7268); nothing pushed; PREREGISTRATIONS.md untouched by the child (`git show --name-only | grep -c PREREGISTRATIONS` = 0 — its branch merely predates my three pushes, which is why a naive
+`git diff main..HEAD` shows the ledger as "deleted").
+🟢 **(1) THE REDIRECT COUNT DISCREPANCY WAS NOT A UNIVERSE DISAGREEMENT — IT WAS A NESTED COUNTER, AND MY 3240 IS THE RIGHT NUMBER TO LEDGER.** I verified the whole decomposition myself over the same
+universe (all 30^3 = 27,000 ordered slot triples of ROW_STAGGERED_30, repeats allowed, space excluded):
+    redirect TERM fires (plain + bad) = **3240**   <- what the +2.0 weight actually multiplies  [my count]
+      of which bad_redirect ALSO fires =  **540**   <- so it ALSO pays +4.0
+      redirect EXCLUSIVE of bad        = **2700**   <- the child's prose count, mislabelled "the redirect class"
+      2700 + 540 = 3240 exactly.
+ Mechanism, read off `oxey.py:143-146`: `shares["redirect"] += f` fires **UNCONDITIONALLY** on a reversal, and the `bad_redirect` line is a nested `if` INSIDE that branch — **the two classes are NOT
+ mutually exclusive.** => 🔴 **A CONSEQUENCE NEITHER OF US HAD REGISTERED: a bad redirect is charged +2.0 AND +4.0 = +6.0.** The shipped effective price of the community's self-described worst trigram
+ class is **6.0, not the 4.0 the dict displays** — so PENALTYAUDIT-1's "bad_redirect 5.1x under-priced" was itself computed against the wrong nominal, and every reading of that dict entry as "4.0" is
+ wrong by 1.5x. This is the *name-vs-thing* signature again, one level down: the weight's LABEL is not the price the scorer charges.
+ ⚠ AND IT SHARPENS THE MISMATCH FINDING RATHER THAN WEAKENING IT: my registered **432**-triple gap survives at BOTH levels — family-vs-family 3240 vs 2808, plain-vs-plain 2700 vs 2268, **both = 432** — and
+ `onehand` **1080 vs 756 = 1.4286x** and `bad_redirect` **540 vs 540** are unchanged. I also confirmed WHY only redirect moved: 1080 and 540 are identical under `all 30^3` and under `a!=b, b!=c` (a reversal
+ requires d1,d2 != 0, which already forbids those), so only excluding `a==c` shifts anything. **No share, slope, ratio or verdict changes** — the child's computational path had the nesting right all along
+ (`(M_br & ~M_rd).sum() == 0`, M_rd=3240, M_br=540) and is positive-controlled against `OxeyStyleScorer.pattern_shares` at max |diff| **EXACTLY 0.0**. Only its PROSE was the exclusive subset.
+ 🟢 INDEPENDENT CORROBORATION THAT `oxey.py` IS THE DEVIANT ONE, NOT `kmstats`: `kmstats._is_redirect` tests `a.finger != b.finger and b.finger != c.finger` — **finger**, correctly — while `oxey.py:139-140`
+ tests `abs(column)`. The shipped `redir` gauge and the shipped oxey scorer therefore disagree BY CONSTRUCTION on the index finger's two columns, and the CLI's printed claim that its four redirect classes
+ are "mutually exclusive" is true of `kmstats` and FALSE of `oxey.py`.
+🔴 **(2) SOFTEN MY OWN "scissor 7.0x UNDER-PRICED" — DO NOT SHIP IT AS A POINT ESTIMATE.** I registered it as the audit's largest actionable finding. Its provenance, now recorded: **MARGINAL** OLS of fitted
+ms/char on the single term's share with NOTHING partialled out; pool n=891 (11 C30M-exact registry layouts x 81, 1-5 random swaps); blend-v1; g-frame; baked 90 WPM; valid range [0.0762, 3.0593]%. Slopes
++4.9037 [+4.6033,+5.2521] / +7.3130 [+6.7679,+7.8961] / +4.9032 [+4.5328,+5.3105]; ratios 7.371x / 6.605x / 7.039x with a NEW ratio CI [6.519,8.364] / [5.788,7.571] / [6.118,8.117].
+ 🟢 IT IS **NOT** A COLLINEARITY CASUALTY — I asked the primary question and the answer clears scissor: in-band **VIF 2.78** (vs alternate 46.34, redirect 19.49, sfb 7.54, onehand 6.22), and at K=5/K=6 it
+ sits in its own cluster {scissor, outroll} whose leave-one-cluster-out delta-R2 is **0.1630/0.1247/0.1362 — an order of magnitude above every other cluster.** ⚠ But stated conditionally, per the child's
+ own trap 61: it **MERGES into the big cluster at K<=4**, so "outside the cluster" is true AT K=5/K=6, not unconditionally.
+ ⚠ THE REASON TO SOFTEN IS DIFFERENT, AND TWO VALID CORRECTIONS POINT OPPOSITE WAYS AND DO NOT COMPOSE:
+   **conditioning HALVES it** — conditional ratios **4.397 / 2.249 / 3.763** vs marginal 7.371/6.605/7.039 (direction survives 3/3, all > 1; level does not, and gains a ~2x cross-source spread);
+   **saturation ENLARGES it** — sibling `scissorprice` objected mid-flush that the ratio linearizes a form reported as SATURATING 3/3. Recomputed as a TANGENT at the true operating share it gets BIGGER:
+   curvature NEGATIVE (-0.9676/-1.2815/-0.8326) and the registry-mean share (0.3591%) sits BELOW the form-pool mean (0.6375%) and **3.1x below the random-pool mean (1.7471%)**, so the operating point is on
+   the STEEP part of the concave curve — tangent +6.6175/+9.5828/+6.3778, ratios **8.304x / 8.101x / 8.011x**.
+ => **THE RESOLVING CELL — a CONDITIONAL TANGENT ratio — IS UNCOMPUTED**, and `scissorprice` owns it. **REGISTERED WORDING, replacing my "7.0x under-priced":** *scissor is under-priced relative to sfb in
+ 3/3 sources under every estimator tried — quote the DIRECTION, not a multiplier; the level is unsettled between ~2x and ~8x depending on conditioning and on where the curve is evaluated.* Anyone reading
+ 45ea276's "7.0x" must read this cell with it.
+🟢 (3) THE THREE SIGN FLIPS ARE **NOT THE SAME CASE** — my entry blurred them; full 11 x 3 x {marginal r, marginal rho, conditional beta} x {in-band n=341, random n=400} table persisted to
+`artifacts/sign_table.json` (multivariate R2 0.866/0.892/0.831 in-band), auditable with no re-run:
+    inroll   -2.0: marg +0.501/+0.466/+0.488 | cond +0.236/+0.239/+0.237  -> WRONG SIGN 3/3, **no suppression**
+    outroll  -1.0: marg +0.786/+0.774/+0.728 | cond +0.498/+0.523/+0.437  -> WRONG SIGN 3/3, **no suppression**
+    onehand  -1.5: marg +0.703/+0.641/+0.627 | cond -0.190/-0.293/-0.349  -> WRONG SIGN 3/3 **+ suppression**
+    redirect +2.0: marg +0.760/+0.758/+0.724 | cond -0.258/-0.277/-0.374  -> sign OK **+ suppression**
+ => inroll/outroll are the **CLEANEST** verdicts in the audit (marginal AND conditional agree, and both contradict the shipped reward). **`onehand` is the ONLY term where trap 49 is load-bearing** — its
+ conditional's apparent agreement with -1.5 is the artifact. My blanket "textbook suppression" claim over all three is therefore withdrawn: it holds for onehand only.
+🟢 SELF-AUDIT WORTH COPYING: the child wrote `probes/verify_report.py`, which reads **95 report figures back out of the JSONs** and now passes **95/95** (was 94/95 — the miss was its own 2-dp rounding of
+bad_redirect's AALTO slope, 3.71 vs 3.70). A report-vs-artifact reconciliation harness is a cheap, general defence against exactly the prose-vs-computation split that produced (1).
+NEW TRAPS 59-65 recorded (not written to shared KB): **59** a nested/non-exclusive class counter makes "the class count" ambiguous — and a positive control guards COMPUTATIONS, not LABELS, which is precisely
+why its shares were right and its prose was not; **60** a marginal/marginal RATIO is not a magnitude claim, and low VIF on the numerator does not license one because the ratio inherits the DENOMINATOR's
+collinearity (sfb's in-band VIF is 7.54); **61** cluster membership is a function of the cut — never state it unconditionally; **62** the pytest wedge signature (recorded, NOT applied); **63** persist the full
+cross-product TABLE, not just the conclusion; **64** a saturating form and a linearized ratio disagree, and the DIRECTION of the disagreement depends on where the operating point sits relative to the pool
+mean — "it saturates, so the linear slope overstates" is only true ABOVE the mean; **65** hardcoded scratch paths break isolation in BOTH directions (21 of its 34 probes embed `/tmp/penaudit`, and
+`collin3.py` WRITES there).
+=> STANDING NOTE ON PROCESS: the child replied directly to `scissorprice` (a PEER, not its child) to hand over the contradicting tangent result and de-duplicate who files against the number. That peer-to-peer
+correction is what produced the "two corrections point opposite ways" cell above — neither agent alone had it.
