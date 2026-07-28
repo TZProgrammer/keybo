@@ -8664,3 +8664,53 @@ absorbs scissor's price — all ten controls each take a slice** (POOLSWEEP-1's 
 => REGISTERED WORDING, replacing BOTH my "7.0x under-priced" AND my "unsettled between ~2x and ~8x": **`scissor` is under-priced relative to `sfb` by 5.1x-11.2x (implied weight +32.59, CI95 [+20.49,+44.95],
 cluster-bootstrapped over 11 source layouts, in-domain [0.0548,0.5173]% share, sqrt form, flat across fingers), P(ratio>1)=1.000 in all four specs. It is identified (BKW loading 0.000227, VIF 1.22 in-domain).
 Re-weighting changes no top-of-board pick. The larger defect is the PREDICATE'S SUPPORT, not its price.** MODELLED ONLY: g-frame, baked 90 WPM, blend-v1, tau saturated.
+
+### SPEEDTIE-BUDGET-1 — 🟡 INDETERMINATE BY THE PRE-REGISTERED RULE, but the MECHANISM is the finding: ~7.4M extra evaluations bought ZERO NEW TERRITORY — the 10M champion set is a STRICT SUBSET of the 1M set, and 3 of 5 seeds independently rediscovered arm B (2026-07-28)
+Tests SPEEDTIE-1's open question — does the free gauge headroom survive at full budget, or was 1M under-converged? Child `speedtie`, branch `speedtie-budget` (3 commits, prereg 40ff53c BEFORE any result;
+nothing pushed; PREREGISTRATIONS.md zero diff across all three commits; the shared clone never touched). Artifacts + full epoch logs in `state/speedtie/artifacts/`.
+⚠ **BUDGET REPORTED AS ACHIEVED, NOT REQUESTED — the run stops on the EPOCH schedule, not the unique target.** n=6 completed rc=0 at 7,787,578 / 8,009,098 / 8,252,292 / 8,546,624 / 8,791,523 / 9,216,894 unique
+evals (mean **8,434,001**), i.e. an **~8.4x** increase over the 1M placebo, NOT 10x — labelled that way throughout. Seed 931676 (77.9%) fell below the pre-registered 80% floor and is EXCLUDED from the primary
+n=5; **the sensitivity analysis including it returns the SAME verdict**, so the exclusion did not produce the result. (For scale, the campaign's own arm B also fell short: 9,252,349 of 10M.)
+🔴 **VERDICT: INDETERMINATE**, by the rule registered before any result existed. H-UNDER needed all three legs and got **one**: R_speed 0.7023 (needed <=0.50) · M_gauge **1.0000** — the median per-gauge range
+ratio, with **8 of 14 live gauges at EXACTLY 1.0000** and a 9th at 0.9968 (needed <=0.50) · mean Hamming ratio 0.7328 (needed <=0.75 — **the only leg that fired**). H-REAL got two of three, failing exactly one
+because `imbalance`'s ratio fell 17.70x -> 3.29x. **The child declined to upgrade to H-REAL and gave both reasons honestly: R_speed never reached its registered threshold, and reading that clause as fired would
+be moving the line after seeing the data.** => **H-UNDER is NOT SUPPORTED; the post-hoc lean is H-REAL; the registered verdict stays INDETERMINATE.**
+🟢 **THE MECHANISM, WHICH I VERIFIED MYSELF AND IS WORTH MORE THAN THE VERDICT: THE EXTRA ~7.4M EVALUATIONS BOUGHT NO NEW TERRITORY.** Run-for-run, 2 seeds KEPT their own 1M champion (Hamming 0) and 3 MOVED
+ONTO ANOTHER SEED'S EXISTING 1M CHAMPION. Confirmed directly from the artifact: **the 10M champion set is a STRICT SUBSET of the 1M set — `s10 <= s1` is True and `s10 - s1` is EMPTY, zero new layouts.** Across
+all six seeds exactly one layout appears that was not already in the 1M pool, 7 of 30 positions from that seed's own champion. **The 1M pool already contained every optimum an ~8.4M-eval search could find.**
+🟢 **AND ARM B IS RECOVERED BY 3 OF 5 SEEDS INDEPENDENTLY** (`layouts_by_run.count(armB) == 3`). Combined with SPEEDTIE-1 (1 of 6 at 1M, from a different seed and a 9.3x smaller budget than the campaign's own
+run), **`flmpg-yuo,sntdcireahkxbwv'.jzq` is now the champion of 4 independent cold-start searches across two budgets** — by far the most reproducible layout the campaign has produced. **That is a materially
+stronger statement about arm B than the one I registered**, and it is about the LAYOUT this time, not merely the speed.
+🟢 **THE DECISIVE DISSOCIATION, and quoting only one half would invert the reading.** Mean Hamming over **RUNS** falls 26.20 -> 19.20 — but ENTIRELY because 3 run-pairs became identical (n_zero_pairs 0 -> 3).
+Mean Hamming over **DISTINCT champions** is 26.20 -> **26.00, essentially UNCHANGED** (I verified both figures). **The surviving optima are as far apart as ever; the runs merely stopped disagreeing about WHICH
+to return.** Reporting only the over-runs number would read as convergence OF THE OPTIMA. It is not.
+🟢 **THE FAILING LEG IS A SET-SIZE ARTIFACT AND THE CHILD IDENTIFIED THE DEFECT AS ITS OWN.** The 10M set has **3** distinct champions vs the 1M set's **6**, and a max/min ratio over 3 draws is mechanically
+smaller. Drawing every 3-of-6 subset of the 1M pool, **10 of 20 give an imbalance ratio <= the observed 3.29x (p = 0.50)** — the 10M value is the **MEDIAN outcome of a 3-draw, not a collapse.** Its own prereg
+put every THRESHOLD on `range_g` for exactly this reason and then put the one absolute-magnitude leg on `ratio_g` anyway. **Size-matched on `range_g` instead: 12 of 14 live gauges have 10M spread AT OR ABOVE the
+median same-size 1M draw, 6 at the 100th percentile — H-UNDER predicts the opposite.** (The 2 below-median gauges are the duplicated pair; it MEASURED spearman(lsb, lsb-dist) = 1.0000 here rather than citing
+the known duplication.)
+⚠ CONVERGENCE BY ARME-1'S CRITERION (has best-fitness stopped improving, not budget fraction) — **mixed, and it cuts both ways**: 4 of 6 seeds stopped improving by ~1.8M evals (seed 900000 at **518,313 — half
+the 1M budget** — then flat for 116 epochs) but **2 of 6 were still improving past 5M**. So the 1M runs were PARTLY under-converged, a real point for H-UNDER. **What defeats H-UNDER is WHERE that improvement
+went: onto the other seeds' already-known champions.**
+🟢 **THE SELECTION RULE STILL APPLIES VERBATIM AT ~8.4M.** The three survivors sit within **0.1236 ms/char = 2.00x** arm B's own noise sd of 0.0617 (I registered 2.85x at 1M) while still spanning **5.92x on
+oxey-style, 3.29x on imbalance, 2.88x on scissor**, with **0 dominating pairs of 6 ordered, ZERO ties in 84 cells** (verified). => **SPEEDTIE-1's registered rule — within 2x the objective's OWN search-noise sd,
+choose on the gauge frame — holds at the larger budget, and the free lunch is still on the table.** SPEEDTIE-1's SCOPE line is amended: *"whether the same free headroom exists at 10M is UNTESTED"* becomes
+**"tested at ~8.4M achieved: INDETERMINATE, leaning survive."**
+🟢 **THE STRONGEST CONTROL WAS UNPLANNED, AND I CONFIRMED IT IN THE RAW LOG.** `runs/b10000000-r0.log` reads: `[71.6s] epoch 9/120: unique=1,008,758 (calls this epoch 167,907) best=253.900579
+[flmpg-yuo,sntdcireahkxbwv'.jzq]` — **the 1M placebo's EXACT achieved unique count AND its exact champion.** So this is provably **the same search continued**, not a different experiment — the cleanest possible
+answer to "are these two budgets even comparable?" Four further controls ran BEFORE any result was read: it re-read `search.py:318-323` itself and confirms cold start; worktree isolation POSITIVE
+(`FastEval.corpus_dir` resolved into its own worktree, not merely "no hardcodes found"); all six frozen 1M champions reproduce, worst diff **2.814e-12** and arm B **EXACTLY 0.0**; and its analysis code
+independently reproduces **EVERY** frozen SPEEDTIE-1 number — all 13 published gauge spreads to worst 4.5e-5, 0 dominators, and the five better/worse counts **7/7, 4/10, 9/5, 9/5, 8/6 exactly** — re-verified
+after a mid-run refactor.
+=> WHAT WOULD SETTLE IT, AS A NUMBER: **the blocker is DISTINCT CHAMPIONS, not evals per run.** n=16 seeds (same formula, r=0..15) at >=9.5M ACHIEVED unique evals yields ~9-10 distinct champions at the observed
+~60% survival rate, enough that `ratio_g` is no longer size-limited. Needs **epochs ~= 135** (the 120-epoch schedule tops out at 7.8-9.2M); ~4.5h serial or ~1h at 5-way parallelism. **Pre-register the magnitude
+leg on `range_g` WITH a size-matched subset placebo.**
+THREE NEW TRAPS, all earned: **(1)** a max/min RATIO needs a **SIZE-MATCHED placebo** whenever the item count can differ between the conditions compared — *this is the defect that produced the indeterminate.*
+**(2)** keying a per-run collection on the RESULT silently collapses n — its `profile()` was a `{layout: profile}` dict and 3 seeds returned the same champion string, which would have computed every spread over
+4 entries instead of 6 and **BIASED TOWARD H-UNDER**; report `n_runs` and `n_distinct` side by side. **(3)** *"distinct champions converged"* and *"runs stopped disagreeing"* are different claims — report
+Hamming BOTH ways, because here they diverge sharply and **either one alone supports the opposite verdict.**
+⚠ ALSO FOUND, and it is a live hazard for the next agent reusing these drivers: `search_placebo.py` hardcodes `cwd="/tmp/optev"` (another worktree at another commit), a 3600s timeout, and a write path into
+`state/optevidence` — none inherited. And **`evobj.py:42` imports `keybo.analysis.evidence_scorer`, which is DELETED at ledger HEAD 45ea276**, so the driver cannot import without restoring it (restored
+byte-identically, md5 01f3a95a). ⚠ The six `.keys.npy` dedup sidecars (388MB) were deleted after verifying `unique_evals` is **triply** recorded and agrees across the run JSON, the ckpt `n_unique`, and the
+independent log trace for all six seeds — **`--resume` on these exact runs is consequently no longer possible**, noted in the index.
+MODELLED ONLY: g-frame, baked 90 WPM, blend-v1, skipgrams 1-skip31. No layout adopted or recommended.
