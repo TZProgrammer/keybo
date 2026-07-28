@@ -1,0 +1,2588 @@
+{
+ "arms": {
+  "evidence": {
+   "champion": {
+    "layout": "udy.,fgpmliheaocsntr-k'qjwzbvx",
+    "fitness": -45.43626445195312
+   },
+   "unique_evals": 9434590,
+   "islands": 40,
+   "epochs_run": 55,
+   "seed": 20260728,
+   "bounds": null,
+   "objective_unit": "attributed ms/trigram from the fitted SHAP loss curves (lower=better)",
+   "elapsed_s": 638.4473216533661,
+   "top10": [
+    {
+     "layout": "udy.,fgpmliheaocsntr-k'qjwzbvx",
+     "fitness": -45.43626445195312
+    },
+    {
+     "layout": "plcfm,g.uynrtsdohaiebxwvkqz'-j",
+     "fitness": -45.429527222657526
+    },
+    {
+     "layout": "udy,.fgpmliheaocsntr-k'qjwzbvx",
+     "fitness": -45.429205879468526
+    },
+    {
+     "layout": "udy.,fgpmliheaocsntr-k'jqwzbvx",
+     "fitness": -45.42832341109685
+    },
+    {
+     "layout": "duy.,fgpmlhieaocsntrk-'qjwzbvx",
+     "fitness": -45.42265120863239
+    },
+    {
+     "layout": "dyu.,fgpmlheioacsntrk'-zjwqbvx",
+     "fitness": -45.41561280648111
+    },
+    {
+     "layout": "duy,.fgpmlhieaocsntrk-'qjwzbvx",
+     "fitness": -45.4155926361478
+    },
+    {
+     "layout": "uy.g,mfcplieahodstnr-j'zqkvwbx",
+     "fitness": -45.41254744123697
+    },
+    {
+     "layout": "lmdpf,.yugrtsnhoaeicxvkbqjz'-w",
+     "fitness": -45.390272678631234
+    },
+    {
+     "layout": "lpcgm,.ufyrntsdhoiaexbwvkqz-'j",
+     "fitness": -45.38625469050942
+    }
+   ]
+  },
+  "baseline": {
+   "champion": {
+    "layout": "flmpg-yuo,sntdcireahkxbwv'.jzq",
+    "fitness": 253.90057910352587
+   },
+   "unique_evals": 9252349,
+   "islands": 40,
+   "epochs_run": 55,
+   "seed": 20260728,
+   "bounds": null,
+   "objective_unit": "ms/char on the served K31 surface at 90 WPM (lower=better)",
+   "elapsed_s": 717.4487164020538,
+   "top10": [
+    {
+     "layout": "flmpg-yuo,sntdcireahkxbwv'.jzq",
+     "fitness": 253.90057910352587
+    },
+    {
+     "layout": "flmpg-.uoysntdcireahxqbwvk,'zj",
+     "fitness": 253.9082045702435
+    },
+    {
+     "layout": "flmpg-yo,usntdcireahkxwbv.'qzj",
+     "fitness": 253.9370324122287
+    },
+    {
+     "layout": "flmpg-yo,usnctdireahkxwbv.'qzj",
+     "fitness": 253.93806888877083
+    },
+    {
+     "layout": "flmpg.yo,usnctdireahxvwbk-'qzj",
+     "fitness": 253.93878556029614
+    },
+    {
+     "layout": "flmpg.yo,usntdcireahkxwbv-'qzj",
+     "fitness": 253.94187561310318
+    },
+    {
+     "layout": "flmpg-yo,usnctdireahxvwbk.'qjz",
+     "fitness": 253.9495060249735
+    },
+    {
+     "layout": "flmpg-yo,usntdcireahxvkbw.'qzj",
+     "fitness": 253.95405853759596
+    },
+    {
+     "layout": "flmpg-uokysnctdireahzxwbv.,'qj",
+     "fitness": 253.95469592582666
+    },
+    {
+     "layout": "flmpg.yo,usnctdireahxvwbk'-qzj",
+     "fitness": 253.9567816731753
+    }
+   ]
+  },
+  "constrained": {
+   "champion": {
+    "layout": "clmpf.,yugnrthdoaeiswxvkbqzj'-",
+    "fitness": -45.06643132777601
+   },
+   "unique_evals": 9798889,
+   "islands": 40,
+   "epochs_run": 55,
+   "seed": 20260728,
+   "bounds": {
+    "scissor": 0.1431306284544182,
+    "sfb": 1.9116805725869495,
+    "sfb-dist": 2.1347800154784307,
+    "lsb-dist": 2.0721717561747455,
+    "sfs": 7.648785919530305
+   },
+   "objective_unit": "attributed ms/trigram from the fitted SHAP loss curves (lower=better)",
+   "elapsed_s": 731.7966966629028,
+   "top10": [
+    {
+     "layout": "clmpf.,yugnrthdoaeiswxvkbqzj'-",
+     "fitness": -45.06643132777601
+    },
+    {
+     "layout": "clmpf,.yugnrthdoaeiswxvkbqz'j-",
+     "fitness": -45.05406812754103
+    },
+    {
+     "layout": "clmpf,.yugnrthdoaeiswxvqbjz'-k",
+     "fitness": -45.0116967264085
+    },
+    {
+     "layout": "clmpf.,yugnrthdoaeiswxvqbjz-'k",
+     "fitness": -44.92562028148706
+    },
+    {
+     "layout": "clmpf.,yugnrthdoaeiswxvkbqz-'j",
+     "fitness": -44.91155777419818
+    },
+    {
+     "layout": "clfgm.,yupsrthdoaeinwxvkbqzj'-",
+     "fitness": -44.88192196982314
+    },
+    {
+     "layout": "pclfm,.yugnrthdoaeisbwjvkqz'x-",
+     "fitness": -44.86729789020024
+    },
+    {
+     "layout": "clmpb.,yufnrthdoaeiswxvgkzqj'-",
+     "fitness": -44.709631340979925
+    },
+    {
+     "layout": "clmpf',.ugnrthdoaeiswxvkbqzj-y",
+     "fitness": -44.688451604419924
+    },
+    {
+     "layout": "flmpg.,yucnrthdoaeiswxvkbqzj'-",
+     "fitness": -44.667767218816486
+    }
+   ]
+  }
+ },
+ "modelled_only": "MODELLED ONLY: every number is attribution of a FITTED timing surface, not a measurement of realized typing speed. tau saturated at 1.0 and Phase-D was cancelled. No layout here is promoted or adopted.",
+ "corpus": "/tmp/optev/data/corpus/blend-v1",
+ "corpus_identity": {
+  "corpus": "blend-v1",
+  "path": "/tmp/optev/data/corpus/blend-v1",
+  "sha256": {
+   "bigrams.txt": "13abca624f3ecff211b11df797f0cb9119cbf1924bc2f56ab2a8daf0c590bc24",
+   "trigrams.txt": "19806532ee3567f5afe4311e51f346b6c36375030f473fe3f68a6a3dc21beb61",
+   "1-skip.txt": "df5f2f1aa48f954f5a809d65ad111f8aa4bfcdbc0da1d528776bbc31d5ebe3c8",
+   "1-skip31.txt": "df5f2f1aa48f954f5a809d65ad111f8aa4bfcdbc0da1d528776bbc31d5ebe3c8"
+  },
+  "declared_total": 1000000000,
+  "skipgram_table": "1-skip31.txt"
+ },
+ "per_layout": {
+  "champ-evidence": {
+   "layout": "udy.,fgpmliheaocsntr-k'qjwzbvx",
+   "evidence_score": -45.43626445195312,
+   "ms_per_char": 256.8465706946918,
+   "total_ms": 227860755062.07666,
+   "gauges14": {
+    "sfb": 1.4093263871731363,
+    "sfs": 6.272448707285011,
+    "sfb-dist": 1.6216157388141699,
+    "sfs-dist": 7.24421284374073,
+    "lsb": 1.0711070450922304,
+    "lsb-dist": 2.283654699662536,
+    "alt": 43.79388131823506,
+    "roll": 42.148236274171836,
+    "sr-roll": 17.834326642524836,
+    "redir": 3.8951697159797862,
+    "scissor": 0.175265519848105,
+    "imbalance": 0.665708592909423,
+    "oxey-style": -12.493184339694855,
+    "comfort": 2.959197461
+   },
+   "out_of_domain": [
+    "alt",
+    "comfort",
+    "oxey-style",
+    "redir",
+    "scissor",
+    "sfb",
+    "sfb-dist",
+    "sfs",
+    "sfs-dist",
+    "sr-roll"
+   ],
+   "n_out_of_domain": 10,
+   "out_of_domain_detail": {
+    "alt": {
+     "level": 43.79388131823506,
+     "valid_domain": [
+      19.02517259695323,
+      34.94028584398709
+     ],
+     "distance_outside": 8.853595474247967
+    },
+    "comfort": {
+     "level": 2.959197461,
+     "valid_domain": [
+      6.52363300135,
+      11.56438416831
+     ],
+     "distance_outside": 3.5644355403500003
+    },
+    "oxey-style": {
+     "level": -12.493184339694855,
+     "valid_domain": [
+      44.7196788617668,
+      197.12793711674507
+     ],
+     "distance_outside": 57.21286320146166
+    },
+    "redir": {
+     "level": 3.8951697159797862,
+     "valid_domain": [
+      5.547615062855363,
+      17.349212701521356
+     ],
+     "distance_outside": 1.6524453468755769
+    },
+    "scissor": {
+     "level": 0.175265519848105,
+     "valid_domain": [
+      0.2740373061121816,
+      5.133849067527291
+     ],
+     "distance_outside": 0.09877178626407657
+    },
+    "sfb": {
+     "level": 1.4093263871731363,
+     "valid_domain": [
+      5.202383343329901,
+      17.931597190637934
+     ],
+     "distance_outside": 3.7930569561567644
+    },
+    "sfb-dist": {
+     "level": 1.6216157388141699,
+     "valid_domain": [
+      7.218456057190677,
+      27.239232165633567
+     ],
+     "distance_outside": 5.596840318376507
+    },
+    "sfs": {
+     "level": 6.272448707285011,
+     "valid_domain": [
+      6.745025607632128,
+      16.270610272980885
+     ],
+     "distance_outside": 0.47257690034711697
+    },
+    "sfs-dist": {
+     "level": 7.24421284374073,
+     "valid_domain": [
+      9.368744027958597,
+      23.875255413549304
+     ],
+     "distance_outside": 2.124531184217867
+    },
+    "sr-roll": {
+     "level": 17.834326642524836,
+     "valid_domain": [
+      1.9997226690092427,
+      8.336901547588177
+     ],
+     "distance_outside": 9.49742509493666
+    }
+   },
+   "normfloor": 0.5836191245728004,
+   "mean_saved_pct": 2.8603034837618964,
+   "saved_per_surface": [
+    2.7607994984589213,
+    2.5018306089244047,
+    3.4974366680808,
+    3.6693835419404297,
+    2.437144442763395,
+    2.295226142403428
+   ],
+   "gauges19": {
+    "sfr": 2.6595771026964927,
+    "sfb": 1.4093263871731363,
+    "sfs": 6.272448707285011,
+    "sfb-dist": 1.6216157388141694,
+    "sfs-dist": 7.244212843740728,
+    "lsb": 1.0711070450922304,
+    "lsb-dist": 2.283654699662536,
+    "alt": 43.79388131823506,
+    "roll": 42.148236274171836,
+    "sr-roll": 17.834326642524836,
+    "redir": 3.8951697159797862,
+    "scissor": 0.175265519848105,
+    "imbalance": 0.665708592909423,
+    "oxey-style": -12.493184339694858,
+    "comfort": 2.959197461,
+    "genkey": 33.43407046740172,
+    "oxeylyzer1": 16288964677,
+    "oxeylyzer2": -26044123341100,
+    "wfd": -18090854043100
+   },
+   "community_primed": {
+    "genkey_primed": 1.8626723148839366,
+    "oxey1_primed": -1031966378.0,
+    "oxey2_primed": -7953269298000.0
+   },
+   "analyze_ms_per_char": 256.846570694692
+  },
+  "champ-baseline": {
+   "layout": "flmpg-yuo,sntdcireahkxbwv'.jzq",
+   "evidence_score": -41.3177829685072,
+   "ms_per_char": 253.90057910352587,
+   "total_ms": 225247226422.9595,
+   "gauges14": {
+    "sfb": 2.539124615505356,
+    "sfs": 6.799508454836403,
+    "sfb-dist": 3.042329671850931,
+    "sfs-dist": 8.00562391148118,
+    "lsb": 1.1410913569660872,
+    "lsb-dist": 2.322675604674633,
+    "alt": 37.13733008655502,
+    "roll": 45.442097658599806,
+    "sr-roll": 17.813072191285166,
+    "redir": 4.420586814037255,
+    "scissor": 0.25671106120493087,
+    "imbalance": 4.8753996439391,
+    "oxey-style": 8.611045585392056,
+    "comfort": 3.4140465
+   },
+   "out_of_domain": [
+    "alt",
+    "comfort",
+    "oxey-style",
+    "redir",
+    "roll",
+    "scissor",
+    "sfb",
+    "sfb-dist",
+    "sfs-dist",
+    "sr-roll"
+   ],
+   "n_out_of_domain": 10,
+   "out_of_domain_detail": {
+    "alt": {
+     "level": 37.13733008655502,
+     "valid_domain": [
+      19.02517259695323,
+      34.94028584398709
+     ],
+     "distance_outside": 2.1970442425679266
+    },
+    "comfort": {
+     "level": 3.4140465,
+     "valid_domain": [
+      6.52363300135,
+      11.56438416831
+     ],
+     "distance_outside": 3.1095865013500004
+    },
+    "oxey-style": {
+     "level": 8.611045585392056,
+     "valid_domain": [
+      44.7196788617668,
+      197.12793711674507
+     ],
+     "distance_outside": 36.108633276374746
+    },
+    "redir": {
+     "level": 4.420586814037255,
+     "valid_domain": [
+      5.547615062855363,
+      17.349212701521356
+     ],
+     "distance_outside": 1.1270282488181085
+    },
+    "roll": {
+     "level": 45.442097658599806,
+     "valid_domain": [
+      27.447885277778788,
+      43.50029224121304
+     ],
+     "distance_outside": 1.9418054173867674
+    },
+    "scissor": {
+     "level": 0.25671106120493087,
+     "valid_domain": [
+      0.2740373061121816,
+      5.133849067527291
+     ],
+     "distance_outside": 0.01732624490725071
+    },
+    "sfb": {
+     "level": 2.539124615505356,
+     "valid_domain": [
+      5.202383343329901,
+      17.931597190637934
+     ],
+     "distance_outside": 2.6632587278245445
+    },
+    "sfb-dist": {
+     "level": 3.042329671850931,
+     "valid_domain": [
+      7.218456057190677,
+      27.239232165633567
+     ],
+     "distance_outside": 4.176126385339746
+    },
+    "sfs-dist": {
+     "level": 8.00562391148118,
+     "valid_domain": [
+      9.368744027958597,
+      23.875255413549304
+     ],
+     "distance_outside": 1.3631201164774165
+    },
+    "sr-roll": {
+     "level": 17.813072191285166,
+     "valid_domain": [
+      1.9997226690092427,
+      8.336901547588177
+     ],
+     "distance_outside": 9.476170643696989
+    }
+   },
+   "normfloor": 0.6004504224943086,
+   "mean_saved_pct": 3.427728922958741,
+   "saved_per_surface": [
+    3.8761185242665475,
+    3.6268754665032987,
+    3.59830107783633,
+    3.7315114345365386,
+    2.9215809180620944,
+    2.811986116547638
+   ],
+   "gauges19": {
+    "sfr": 2.6595771026964927,
+    "sfb": 2.539124615505356,
+    "sfs": 6.799508454836403,
+    "sfb-dist": 3.0423296718509327,
+    "sfs-dist": 8.005623911481186,
+    "lsb": 1.1410913569660872,
+    "lsb-dist": 2.322675604674633,
+    "alt": 37.13733008655502,
+    "roll": 45.442097658599806,
+    "sr-roll": 17.813072191285166,
+    "redir": 4.420586814037255,
+    "scissor": 0.25671106120493087,
+    "imbalance": 4.8753996439391,
+    "oxey-style": 8.611045585392063,
+    "comfort": 3.4140465,
+    "genkey": 39.08149315702107,
+    "oxeylyzer1": 14490697126,
+    "oxeylyzer2": -31376333863500,
+    "wfd": -24776829639300
+   },
+   "community_primed": {
+    "genkey_primed": 1.8966095757980304,
+    "oxey1_primed": -701831201.0,
+    "oxey2_primed": -6599504224200.0
+   },
+   "analyze_ms_per_char": 253.90057910352797
+  },
+  "champ-constrained": {
+   "layout": "clmpf.,yugnrthdoaeiswxvkbqzj'-",
+   "evidence_score": -45.06643132777601,
+   "ms_per_char": 256.0219517594239,
+   "total_ms": 227129196557.2447,
+   "gauges14": {
+    "sfb": 1.6926196284872956,
+    "sfs": 6.01167074389111,
+    "sfb-dist": 1.9238578559392923,
+    "sfs-dist": 6.920925573652023,
+    "lsb": 0.6267691281302288,
+    "lsb-dist": 1.425527275792904,
+    "alt": 43.94517212888441,
+    "roll": 40.70627565434204,
+    "sr-roll": 16.454479962504152,
+    "redir": 4.651988498178326,
+    "scissor": 0.13844736512589487,
+    "imbalance": 2.0681958193922516,
+    "oxey-style": -5.296823122057314,
+    "comfort": 2.952380031
+   },
+   "out_of_domain": [
+    "alt",
+    "comfort",
+    "oxey-style",
+    "redir",
+    "scissor",
+    "sfb",
+    "sfb-dist",
+    "sfs",
+    "sfs-dist",
+    "sr-roll"
+   ],
+   "n_out_of_domain": 10,
+   "out_of_domain_detail": {
+    "alt": {
+     "level": 43.94517212888441,
+     "valid_domain": [
+      19.02517259695323,
+      34.94028584398709
+     ],
+     "distance_outside": 9.004886284897317
+    },
+    "comfort": {
+     "level": 2.952380031,
+     "valid_domain": [
+      6.52363300135,
+      11.56438416831
+     ],
+     "distance_outside": 3.5712529703500002
+    },
+    "oxey-style": {
+     "level": -5.296823122057314,
+     "valid_domain": [
+      44.7196788617668,
+      197.12793711674507
+     ],
+     "distance_outside": 50.016501983824114
+    },
+    "redir": {
+     "level": 4.651988498178326,
+     "valid_domain": [
+      5.547615062855363,
+      17.349212701521356
+     ],
+     "distance_outside": 0.8956265646770367
+    },
+    "scissor": {
+     "level": 0.13844736512589487,
+     "valid_domain": [
+      0.2740373061121816,
+      5.133849067527291
+     ],
+     "distance_outside": 0.1355899409862867
+    },
+    "sfb": {
+     "level": 1.6926196284872956,
+     "valid_domain": [
+      5.202383343329901,
+      17.931597190637934
+     ],
+     "distance_outside": 3.509763714842605
+    },
+    "sfb-dist": {
+     "level": 1.9238578559392923,
+     "valid_domain": [
+      7.218456057190677,
+      27.239232165633567
+     ],
+     "distance_outside": 5.294598201251384
+    },
+    "sfs": {
+     "level": 6.01167074389111,
+     "valid_domain": [
+      6.745025607632128,
+      16.270610272980885
+     ],
+     "distance_outside": 0.7333548637410177
+    },
+    "sfs-dist": {
+     "level": 6.920925573652023,
+     "valid_domain": [
+      9.368744027958597,
+      23.875255413549304
+     ],
+     "distance_outside": 2.4478184543065735
+    },
+    "sr-roll": {
+     "level": 16.454479962504152,
+     "valid_domain": [
+      1.9997226690092427,
+      8.336901547588177
+     ],
+     "distance_outside": 8.117578414915975
+    }
+   },
+   "normfloor": 0.5689142877665244,
+   "mean_saved_pct": 2.9742202291907756,
+   "saved_per_surface": [
+    3.07299088091344,
+    2.91132561031634,
+    3.4093154375058776,
+    3.5405201310205525,
+    2.4685997926422454,
+    2.4425695227461963
+   ],
+   "gauges19": {
+    "sfr": 2.6595771026964927,
+    "sfb": 1.6926196284872956,
+    "sfs": 6.01167074389111,
+    "sfb-dist": 1.9238578559392918,
+    "sfs-dist": 6.920925573652024,
+    "lsb": 0.6267691281302288,
+    "lsb-dist": 1.425527275792904,
+    "alt": 43.94517212888441,
+    "roll": 40.70627565434204,
+    "sr-roll": 16.454479962504152,
+    "redir": 4.651988498178326,
+    "scissor": 0.13844736512589487,
+    "imbalance": 2.0681958193922516,
+    "oxey-style": -5.296823122057318,
+    "comfort": 2.952380031,
+    "genkey": 36.85914951372735,
+    "oxeylyzer1": 10785771952,
+    "oxeylyzer2": -34267967643900,
+    "wfd": -25091330193900
+   },
+   "community_primed": {
+    "genkey_primed": 1.9323741177228235,
+    "oxey1_primed": -950181261.0,
+    "oxey2_primed": -9176637450000.0
+   },
+   "analyze_ms_per_char": 256.02195175942387
+  },
+  "keybo-lsb": {
+   "layout": "pyuo,vgdnlhiea.cstrmkj-z'fwbxq",
+   "evidence_score": -37.46176730033572,
+   "ms_per_char": 254.63074959254052,
+   "total_ms": 225894995238.7974,
+   "gauges14": {
+    "sfb": 1.6231451290880634,
+    "sfs": 7.648785919530305,
+    "sfb-dist": 1.903122341697863,
+    "sfs-dist": 8.990578227895021,
+    "lsb": 0.9219164873805757,
+    "lsb-dist": 1.896001842444029,
+    "alt": 45.156072890944024,
+    "roll": 41.62490994630278,
+    "sr-roll": 12.692077364130578,
+    "redir": 3.3584021416404592,
+    "scissor": 0.1428912298103323,
+    "imbalance": 2.077878600654005,
+    "oxey-style": -3.249680324731689,
+    "comfort": 3.710857346
+   },
+   "out_of_domain": [
+    "alt",
+    "comfort",
+    "oxey-style",
+    "redir",
+    "scissor",
+    "sfb",
+    "sfb-dist",
+    "sfs-dist",
+    "sr-roll"
+   ],
+   "n_out_of_domain": 9,
+   "out_of_domain_detail": {
+    "alt": {
+     "level": 45.156072890944024,
+     "valid_domain": [
+      19.02517259695323,
+      34.94028584398709
+     ],
+     "distance_outside": 10.215787046956933
+    },
+    "comfort": {
+     "level": 3.710857346,
+     "valid_domain": [
+      6.52363300135,
+      11.56438416831
+     ],
+     "distance_outside": 2.8127756553500003
+    },
+    "oxey-style": {
+     "level": -3.249680324731689,
+     "valid_domain": [
+      44.7196788617668,
+      197.12793711674507
+     ],
+     "distance_outside": 47.969359186498494
+    },
+    "redir": {
+     "level": 3.3584021416404592,
+     "valid_domain": [
+      5.547615062855363,
+      17.349212701521356
+     ],
+     "distance_outside": 2.189212921214904
+    },
+    "scissor": {
+     "level": 0.1428912298103323,
+     "valid_domain": [
+      0.2740373061121816,
+      5.133849067527291
+     ],
+     "distance_outside": 0.13114607630184927
+    },
+    "sfb": {
+     "level": 1.6231451290880634,
+     "valid_domain": [
+      5.202383343329901,
+      17.931597190637934
+     ],
+     "distance_outside": 3.5792382142418373
+    },
+    "sfb-dist": {
+     "level": 1.903122341697863,
+     "valid_domain": [
+      7.218456057190677,
+      27.239232165633567
+     ],
+     "distance_outside": 5.315333715492814
+    },
+    "sfs-dist": {
+     "level": 8.990578227895021,
+     "valid_domain": [
+      9.368744027958597,
+      23.875255413549304
+     ],
+     "distance_outside": 0.3781658000635755
+    },
+    "sr-roll": {
+     "level": 12.692077364130578,
+     "valid_domain": [
+      1.9997226690092427,
+      8.336901547588177
+     ],
+     "distance_outside": 4.355175816542401
+    }
+   },
+   "normfloor": 0.7269523396590876,
+   "mean_saved_pct": 3.7017114537211016,
+   "saved_per_surface": [
+    3.599684253061153,
+    3.409975098321816,
+    4.3828952061334085,
+    4.413826488925421,
+    3.2246719463988716,
+    3.1792157294859402
+   ],
+   "gauges19": {
+    "sfr": 2.6595771026964927,
+    "sfb": 1.6231451290880634,
+    "sfs": 7.648785919530305,
+    "sfb-dist": 1.9031223416978642,
+    "sfs-dist": 8.990578227895021,
+    "lsb": 0.9219164873805757,
+    "lsb-dist": 1.896001842444029,
+    "alt": 45.156072890944024,
+    "roll": 41.62490994630278,
+    "sr-roll": 12.692077364130578,
+    "redir": 3.3584021416404592,
+    "scissor": 0.1428912298103323,
+    "imbalance": 2.077878600654005,
+    "oxey-style": -3.249680324731691,
+    "comfort": 3.710857346,
+    "genkey": 31.698613915102623,
+    "oxeylyzer1": 18441741862,
+    "oxeylyzer2": -21228279324800,
+    "wfd": -16213995653000
+   },
+   "community_primed": {
+    "genkey_primed": 1.3192528115010698,
+    "oxey1_primed": -478152084.0,
+    "oxey2_primed": -5014283671800.0
+   },
+   "analyze_ms_per_char": 254.6307495925403
+  },
+  "lsb-sib": {
+   "layout": "fyou,vgdnlheaikcstrmzj'.-pwbxq",
+   "evidence_score": -37.5827188462314,
+   "ms_per_char": 254.70576136680035,
+   "total_ms": 225961541735.70084,
+   "gauges14": {
+    "sfb": 1.9116805725869495,
+    "sfs": 6.873709773154185,
+    "sfb-dist": 2.1347800154784307,
+    "sfs-dist": 8.13221447819676,
+    "lsb": 0.9831212025846509,
+    "lsb-dist": 2.0721717561747455,
+    "alt": 44.548633945168575,
+    "roll": 41.92326871696193,
+    "sr-roll": 12.727506158471895,
+    "redir": 2.3968148083653085,
+    "scissor": 0.1066954240312486,
+    "imbalance": 1.884207263632379,
+    "oxey-style": -6.636604844463593,
+    "comfort": 3.809628746
+   },
+   "out_of_domain": [
+    "alt",
+    "comfort",
+    "oxey-style",
+    "redir",
+    "scissor",
+    "sfb",
+    "sfb-dist",
+    "sfs-dist",
+    "sr-roll"
+   ],
+   "n_out_of_domain": 9,
+   "out_of_domain_detail": {
+    "alt": {
+     "level": 44.548633945168575,
+     "valid_domain": [
+      19.02517259695323,
+      34.94028584398709
+     ],
+     "distance_outside": 9.608348101181484
+    },
+    "comfort": {
+     "level": 3.809628746,
+     "valid_domain": [
+      6.52363300135,
+      11.56438416831
+     ],
+     "distance_outside": 2.7140042553500003
+    },
+    "oxey-style": {
+     "level": -6.636604844463593,
+     "valid_domain": [
+      44.7196788617668,
+      197.12793711674507
+     ],
+     "distance_outside": 51.35628370623039
+    },
+    "redir": {
+     "level": 2.3968148083653085,
+     "valid_domain": [
+      5.547615062855363,
+      17.349212701521356
+     ],
+     "distance_outside": 3.1508002544900546
+    },
+    "scissor": {
+     "level": 0.1066954240312486,
+     "valid_domain": [
+      0.2740373061121816,
+      5.133849067527291
+     ],
+     "distance_outside": 0.16734188208093298
+    },
+    "sfb": {
+     "level": 1.9116805725869495,
+     "valid_domain": [
+      5.202383343329901,
+      17.931597190637934
+     ],
+     "distance_outside": 3.2907027707429513
+    },
+    "sfb-dist": {
+     "level": 2.1347800154784307,
+     "valid_domain": [
+      7.218456057190677,
+      27.239232165633567
+     ],
+     "distance_outside": 5.083676041712247
+    },
+    "sfs-dist": {
+     "level": 8.13221447819676,
+     "valid_domain": [
+      9.368744027958597,
+      23.875255413549304
+     ],
+     "distance_outside": 1.236529549761837
+    },
+    "sr-roll": {
+     "level": 12.727506158471895,
+     "valid_domain": [
+      1.9997226690092427,
+      8.336901547588177
+     ],
+     "distance_outside": 4.3906046108837185
+    }
+   },
+   "normfloor": 0.7399138041631993,
+   "mean_saved_pct": 3.73495370184721,
+   "saved_per_surface": [
+    3.5712856455286213,
+    3.407185510806088,
+    4.475557330227476,
+    4.492524434089673,
+    3.250648500618203,
+    3.2125207898132
+   ],
+   "gauges19": {
+    "sfr": 2.6595771026964927,
+    "sfb": 1.9116805725869495,
+    "sfs": 6.873709773154185,
+    "sfb-dist": 2.1347800154784298,
+    "sfs-dist": 8.132214478196763,
+    "lsb": 0.9831212025846509,
+    "lsb-dist": 2.0721717561747455,
+    "alt": 44.548633945168575,
+    "roll": 41.92326871696193,
+    "sr-roll": 12.727506158471895,
+    "redir": 2.3968148083653085,
+    "scissor": 0.1066954240312486,
+    "imbalance": 1.884207263632379,
+    "oxey-style": -6.636604844463594,
+    "comfort": 3.809628746,
+    "genkey": 32.635193249847504,
+    "oxeylyzer1": 19382852963,
+    "oxeylyzer2": -22981138744400,
+    "wfd": -17974982692100
+   },
+   "community_primed": {
+    "genkey_primed": 1.8274423500994659,
+    "oxey1_primed": -610356227.0,
+    "oxey2_primed": -5006156052300.0
+   },
+   "analyze_ms_per_char": 254.70576136679838
+  },
+  "archive-1843": {
+   "layout": "pyou,vgdnmheai.cstlrjz'k-fwbxq",
+   "evidence_score": -38.96239892618069,
+   "ms_per_char": 254.8436301260476,
+   "total_ms": 226083851640.39056,
+   "gauges14": {
+    "sfb": 1.8052559146408456,
+    "sfs": 7.059760125503526,
+    "sfb-dist": 2.0623744850063006,
+    "sfs-dist": 8.287426833260353,
+    "lsb": 0.8247999816845631,
+    "lsb-dist": 1.7414537309559228,
+    "alt": 45.156072890944024,
+    "roll": 41.4104277043283,
+    "sr-roll": 13.005889169650748,
+    "redir": 2.3466558017393693,
+    "scissor": 0.12025689767835637,
+    "imbalance": 2.077878600654005,
+    "oxey-style": -5.8244895367477225,
+    "comfort": 3.590696318
+   },
+   "out_of_domain": [
+    "alt",
+    "comfort",
+    "oxey-style",
+    "redir",
+    "scissor",
+    "sfb",
+    "sfb-dist",
+    "sfs-dist",
+    "sr-roll"
+   ],
+   "n_out_of_domain": 9,
+   "out_of_domain_detail": {
+    "alt": {
+     "level": 45.156072890944024,
+     "valid_domain": [
+      19.02517259695323,
+      34.94028584398709
+     ],
+     "distance_outside": 10.215787046956933
+    },
+    "comfort": {
+     "level": 3.590696318,
+     "valid_domain": [
+      6.52363300135,
+      11.56438416831
+     ],
+     "distance_outside": 2.9329366833500004
+    },
+    "oxey-style": {
+     "level": -5.8244895367477225,
+     "valid_domain": [
+      44.7196788617668,
+      197.12793711674507
+     ],
+     "distance_outside": 50.54416839851452
+    },
+    "redir": {
+     "level": 2.3466558017393693,
+     "valid_domain": [
+      5.547615062855363,
+      17.349212701521356
+     ],
+     "distance_outside": 3.200959261115994
+    },
+    "scissor": {
+     "level": 0.12025689767835637,
+     "valid_domain": [
+      0.2740373061121816,
+      5.133849067527291
+     ],
+     "distance_outside": 0.1537804084338252
+    },
+    "sfb": {
+     "level": 1.8052559146408456,
+     "valid_domain": [
+      5.202383343329901,
+      17.931597190637934
+     ],
+     "distance_outside": 3.397127428689055
+    },
+    "sfb-dist": {
+     "level": 2.0623744850063006,
+     "valid_domain": [
+      7.218456057190677,
+      27.239232165633567
+     ],
+     "distance_outside": 5.156081572184377
+    },
+    "sfs-dist": {
+     "level": 8.287426833260353,
+     "valid_domain": [
+      9.368744027958597,
+      23.875255413549304
+     ],
+     "distance_outside": 1.0813171946982436
+    },
+    "sr-roll": {
+     "level": 13.005889169650748,
+     "valid_domain": [
+      1.9997226690092427,
+      8.336901547588177
+     ],
+     "distance_outside": 4.668987622062572
+    }
+   },
+   "normfloor": 0.7441977428805691,
+   "mean_saved_pct": 3.679688910429576,
+   "saved_per_surface": [
+    3.5190900959167326,
+    3.368097267126202,
+    4.527860228585368,
+    4.518535165682513,
+    3.0912648978813517,
+    3.0532858073852864
+   ],
+   "gauges19": {
+    "sfr": 2.6595771026964927,
+    "sfb": 1.8052559146408456,
+    "sfs": 7.059760125503526,
+    "sfb-dist": 2.0623744850063015,
+    "sfs-dist": 8.287426833260355,
+    "lsb": 0.8247999816845631,
+    "lsb-dist": 1.7414537309559228,
+    "alt": 45.156072890944024,
+    "roll": 41.4104277043283,
+    "sr-roll": 13.005889169650748,
+    "redir": 2.3466558017393693,
+    "scissor": 0.12025689767835637,
+    "imbalance": 2.077878600654005,
+    "oxey-style": -5.824489536747722,
+    "comfort": 3.590696318,
+    "genkey": 35.02602282762412,
+    "oxeylyzer1": 17149401996,
+    "oxeylyzer2": -25720620739400,
+    "wfd": -20928900614900
+   },
+   "community_primed": {
+    "genkey_primed": 1.680824655275127,
+    "oxey1_primed": -579069856.0,
+    "oxey2_primed": -4791720124500.0
+   },
+   "analyze_ms_per_char": 254.8436301260482
+  },
+  "archive-1846": {
+   "layout": "pyou,vgdnmheai.cstrlkq'z-fbwjx",
+   "evidence_score": -39.13388527201534,
+   "ms_per_char": 254.7960707351256,
+   "total_ms": 226041659452.67136,
+   "gauges14": {
+    "sfb": 1.6938917149209416,
+    "sfs": 6.951391307601413,
+    "sfb-dist": 1.9196781090512145,
+    "sfs-dist": 8.284662180156504,
+    "lsb": 0.8083551067238387,
+    "lsb-dist": 1.702398966115948,
+    "alt": 45.14723121046257,
+    "roll": 41.51365434535355,
+    "sr-roll": 13.009991514187098,
+    "redir": 2.631199607178357,
+    "scissor": 0.11041091724691095,
+    "imbalance": 2.053552696182213,
+    "oxey-style": -6.461187347693887,
+    "comfort": 3.563255538
+   },
+   "out_of_domain": [
+    "alt",
+    "comfort",
+    "oxey-style",
+    "redir",
+    "scissor",
+    "sfb",
+    "sfb-dist",
+    "sfs-dist",
+    "sr-roll"
+   ],
+   "n_out_of_domain": 9,
+   "out_of_domain_detail": {
+    "alt": {
+     "level": 45.14723121046257,
+     "valid_domain": [
+      19.02517259695323,
+      34.94028584398709
+     ],
+     "distance_outside": 10.20694536647548
+    },
+    "comfort": {
+     "level": 3.563255538,
+     "valid_domain": [
+      6.52363300135,
+      11.56438416831
+     ],
+     "distance_outside": 2.9603774633500004
+    },
+    "oxey-style": {
+     "level": -6.461187347693887,
+     "valid_domain": [
+      44.7196788617668,
+      197.12793711674507
+     ],
+     "distance_outside": 51.18086620946069
+    },
+    "redir": {
+     "level": 2.631199607178357,
+     "valid_domain": [
+      5.547615062855363,
+      17.349212701521356
+     ],
+     "distance_outside": 2.916415455677006
+    },
+    "scissor": {
+     "level": 0.11041091724691095,
+     "valid_domain": [
+      0.2740373061121816,
+      5.133849067527291
+     ],
+     "distance_outside": 0.16362638886527064
+    },
+    "sfb": {
+     "level": 1.6938917149209416,
+     "valid_domain": [
+      5.202383343329901,
+      17.931597190637934
+     ],
+     "distance_outside": 3.508491628408959
+    },
+    "sfb-dist": {
+     "level": 1.9196781090512145,
+     "valid_domain": [
+      7.218456057190677,
+      27.239232165633567
+     ],
+     "distance_outside": 5.298777948139462
+    },
+    "sfs-dist": {
+     "level": 8.284662180156504,
+     "valid_domain": [
+      9.368744027958597,
+      23.875255413549304
+     ],
+     "distance_outside": 1.0840818478020928
+    },
+    "sr-roll": {
+     "level": 13.009991514187098,
+     "valid_domain": [
+      1.9997226690092427,
+      8.336901547588177
+     ],
+     "distance_outside": 4.673089966598921
+    }
+   },
+   "normfloor": 0.7451864905501908,
+   "mean_saved_pct": 3.7330919282368296,
+   "saved_per_surface": [
+    3.5370955422697525,
+    3.3922439943793514,
+    4.511539061363445,
+    4.524538531263655,
+    3.22245623879035,
+    3.210678201354422
+   ],
+   "gauges19": {
+    "sfr": 2.6595771026964927,
+    "sfb": 1.6938917149209416,
+    "sfs": 6.951391307601413,
+    "sfb-dist": 1.919678109051214,
+    "sfs-dist": 8.284662180156506,
+    "lsb": 0.8083551067238387,
+    "lsb-dist": 1.702398966115948,
+    "alt": 45.14723121046257,
+    "roll": 41.51365434535355,
+    "sr-roll": 13.009991514187098,
+    "redir": 2.631199607178357,
+    "scissor": 0.11041091724691095,
+    "imbalance": 2.053552696182213,
+    "oxey-style": -6.461187347693885,
+    "comfort": 3.563255538,
+    "genkey": 33.201170389366204,
+    "oxeylyzer1": 18099848327,
+    "oxeylyzer2": -23911397817900,
+    "wfd": -18252238492800
+   },
+   "community_primed": {
+    "genkey_primed": 1.7976749499732632,
+    "oxey1_primed": -689461075.0,
+    "oxey2_primed": -5659159325100.0
+   },
+   "analyze_ms_per_char": 254.79607073512582
+  },
+  "keybo-lsb+lm": {
+   "layout": "pyuo,vgdnmhiea.cstrlkj-z'fwbxq",
+   "evidence_score": -38.309006645310944,
+   "ms_per_char": 254.68467763206147,
+   "total_ms": 225942837356.25696,
+   "gauges14": {
+    "sfb": 1.6231451290880634,
+    "sfs": 7.648785919530305,
+    "sfb-dist": 1.902868828399938,
+    "sfs-dist": 8.986972324864816,
+    "lsb": 0.9219164873805757,
+    "lsb-dist": 1.896001842444029,
+    "alt": 45.156072890944024,
+    "roll": 41.62490994630278,
+    "sr-roll": 12.985648853254718,
+    "redir": 3.3584021416404592,
+    "scissor": 0.1431306284544182,
+    "imbalance": 2.077878600654005,
+    "oxey-style": -2.858518039478537,
+    "comfort": 3.595268038
+   },
+   "out_of_domain": [
+    "alt",
+    "comfort",
+    "oxey-style",
+    "redir",
+    "scissor",
+    "sfb",
+    "sfb-dist",
+    "sfs-dist",
+    "sr-roll"
+   ],
+   "n_out_of_domain": 9,
+   "out_of_domain_detail": {
+    "alt": {
+     "level": 45.156072890944024,
+     "valid_domain": [
+      19.02517259695323,
+      34.94028584398709
+     ],
+     "distance_outside": 10.215787046956933
+    },
+    "comfort": {
+     "level": 3.595268038,
+     "valid_domain": [
+      6.52363300135,
+      11.56438416831
+     ],
+     "distance_outside": 2.9283649633500004
+    },
+    "oxey-style": {
+     "level": -2.858518039478537,
+     "valid_domain": [
+      44.7196788617668,
+      197.12793711674507
+     ],
+     "distance_outside": 47.57819690124534
+    },
+    "redir": {
+     "level": 3.3584021416404592,
+     "valid_domain": [
+      5.547615062855363,
+      17.349212701521356
+     ],
+     "distance_outside": 2.189212921214904
+    },
+    "scissor": {
+     "level": 0.1431306284544182,
+     "valid_domain": [
+      0.2740373061121816,
+      5.133849067527291
+     ],
+     "distance_outside": 0.13090667765776337
+    },
+    "sfb": {
+     "level": 1.6231451290880634,
+     "valid_domain": [
+      5.202383343329901,
+      17.931597190637934
+     ],
+     "distance_outside": 3.5792382142418373
+    },
+    "sfb-dist": {
+     "level": 1.902868828399938,
+     "valid_domain": [
+      7.218456057190677,
+      27.239232165633567
+     ],
+     "distance_outside": 5.315587228790739
+    },
+    "sfs-dist": {
+     "level": 8.986972324864816,
+     "valid_domain": [
+      9.368744027958597,
+      23.875255413549304
+     ],
+     "distance_outside": 0.38177170309378106
+    },
+    "sr-roll": {
+     "level": 12.985648853254718,
+     "valid_domain": [
+      1.9997226690092427,
+      8.336901547588177
+     ],
+     "distance_outside": 4.648747305666541
+    }
+   },
+   "normfloor": 0.7301756659349707,
+   "mean_saved_pct": 3.679364902099939,
+   "saved_per_surface": [
+    3.579267708532463,
+    3.389835992432777,
+    4.429552358078759,
+    4.433397514593507,
+    3.1490072955461135,
+    3.0951285434160147
+   ],
+   "gauges19": {
+    "sfr": 2.6595771026964927,
+    "sfb": 1.6231451290880634,
+    "sfs": 7.648785919530305,
+    "sfb-dist": 1.902868828399939,
+    "sfs-dist": 8.986972324864816,
+    "lsb": 0.9219164873805757,
+    "lsb-dist": 1.896001842444029,
+    "alt": 45.156072890944024,
+    "roll": 41.62490994630278,
+    "sr-roll": 12.985648853254718,
+    "redir": 3.3584021416404592,
+    "scissor": 0.1431306284544182,
+    "imbalance": 2.077878600654005,
+    "oxey-style": -2.858518039478539,
+    "comfort": 3.595268038,
+    "genkey": 31.62611787107056,
+    "oxeylyzer1": 18430076058,
+    "oxeylyzer2": -21647119288400,
+    "wfd": -16198743046400
+   },
+   "community_primed": {
+    "genkey_primed": 1.3192528115010698,
+    "oxey1_primed": -501083916.0,
+    "oxey2_primed": -5448376242000.0
+   },
+   "analyze_ms_per_char": 254.68467763206198
+  },
+  "qwerty30m": {
+   "layout": "qwertyuiopasdfghjkl'zxcvbnm,.-",
+   "evidence_score": -6.976383228911235,
+   "ms_per_char": 264.13891657883505,
+   "total_ms": 234330140403.06244,
+   "gauges14": {
+    "sfb": 7.154593528477934,
+    "sfs": 11.369224153441149,
+    "sfb-dist": 10.168258808981372,
+    "sfs-dist": 15.746184896599141,
+    "lsb": 3.1855669963128577,
+    "lsb-dist": 6.958789559608355,
+    "alt": 26.458303537682045,
+    "roll": 37.691778239300696,
+    "sr-roll": 5.031342353185906,
+    "redir": 13.422189596580113,
+    "scissor": 1.5831338237041819,
+    "imbalance": 14.928795371517694,
+    "oxey-style": 88.19717144314424,
+    "comfort": 7.581203825
+   },
+   "out_of_domain": [],
+   "n_out_of_domain": 0,
+   "out_of_domain_detail": {},
+   "normfloor": 0.0,
+   "mean_saved_pct": 0.0,
+   "saved_per_surface": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ],
+   "gauges19": {
+    "sfr": 2.6595771026964927,
+    "sfb": 7.154593528477934,
+    "sfs": 11.369224153441149,
+    "sfb-dist": 10.16825880898138,
+    "sfs-dist": 15.746184896599134,
+    "lsb": 3.1855669963128577,
+    "lsb-dist": 6.958789559608355,
+    "alt": 26.458303537682045,
+    "roll": 37.691778239300696,
+    "sr-roll": 5.031342353185906,
+    "redir": 13.422189596580113,
+    "scissor": 1.5831338237041819,
+    "imbalance": 14.928795371517694,
+    "oxey-style": 88.19717144314424,
+    "comfort": 7.581203825,
+    "genkey": 110.94234027768327,
+    "oxeylyzer1": -20848183371,
+    "oxeylyzer2": -75931277940600,
+    "wfd": -65746277057400
+   },
+   "community_primed": {
+    "genkey_primed": 6.352834065891653,
+    "oxey1_primed": -1622259550.0,
+    "oxey2_primed": -10185000883200.0
+   },
+   "analyze_ms_per_char": 264.13891657883323
+  },
+  "graphite": {
+   "layout": "bldwz'foujnrtsgyhaeixqmcvkp,.-",
+   "evidence_score": -37.25313935585958,
+   "ms_per_char": 258.1695631301581,
+   "total_ms": 229034444297.9166,
+   "gauges14": {
+    "sfb": 1.52566973366407,
+    "sfs": 6.877768232942885,
+    "sfb-dist": 1.8548409076316308,
+    "sfs-dist": 8.22520608200641,
+    "lsb": 0.5593501769822644,
+    "lsb-dist": 1.2424128784224684,
+    "alt": 44.07633884838469,
+    "roll": 42.46568616536896,
+    "sr-roll": 14.341745342846863,
+    "redir": 3.213103459515324,
+    "scissor": 0.5173238388852289,
+    "imbalance": 2.49586541227071,
+    "oxey-style": -7.148220013154659,
+    "comfort": 3.98099314
+   },
+   "out_of_domain": [
+    "alt",
+    "comfort",
+    "oxey-style",
+    "redir",
+    "sfb",
+    "sfb-dist",
+    "sfs-dist",
+    "sr-roll"
+   ],
+   "n_out_of_domain": 8,
+   "out_of_domain_detail": {
+    "alt": {
+     "level": 44.07633884838469,
+     "valid_domain": [
+      19.02517259695323,
+      34.94028584398709
+     ],
+     "distance_outside": 9.136053004397596
+    },
+    "comfort": {
+     "level": 3.98099314,
+     "valid_domain": [
+      6.52363300135,
+      11.56438416831
+     ],
+     "distance_outside": 2.5426398613500005
+    },
+    "oxey-style": {
+     "level": -7.148220013154659,
+     "valid_domain": [
+      44.7196788617668,
+      197.12793711674507
+     ],
+     "distance_outside": 51.86789887492146
+    },
+    "redir": {
+     "level": 3.213103459515324,
+     "valid_domain": [
+      5.547615062855363,
+      17.349212701521356
+     ],
+     "distance_outside": 2.3345116033400393
+    },
+    "sfb": {
+     "level": 1.52566973366407,
+     "valid_domain": [
+      5.202383343329901,
+      17.931597190637934
+     ],
+     "distance_outside": 3.6767136096658306
+    },
+    "sfb-dist": {
+     "level": 1.8548409076316308,
+     "valid_domain": [
+      7.218456057190677,
+      27.239232165633567
+     ],
+     "distance_outside": 5.363615149559046
+    },
+    "sfs-dist": {
+     "level": 8.22520608200641,
+     "valid_domain": [
+      9.368744027958597,
+      23.875255413549304
+     ],
+     "distance_outside": 1.1435379459521862
+    },
+    "sr-roll": {
+     "level": 14.341745342846863,
+     "valid_domain": [
+      1.9997226690092427,
+      8.336901547588177
+     ],
+     "distance_outside": 6.004843795258687
+    }
+   },
+   "normfloor": 0.6010212049737234,
+   "mean_saved_pct": 2.877652087931404,
+   "saved_per_surface": [
+    2.259929557519591,
+    2.172723925637954,
+    4.017611841864133,
+    4.087680553802164,
+    2.382467024824697,
+    2.345499623939884
+   ],
+   "gauges19": {
+    "sfr": 2.6595771026964927,
+    "sfb": 1.52566973366407,
+    "sfs": 6.877768232942885,
+    "sfb-dist": 1.85484090763163,
+    "sfs-dist": 8.22520608200641,
+    "lsb": 0.5593501769822644,
+    "lsb-dist": 1.2424128784224684,
+    "alt": 44.07633884838469,
+    "roll": 42.46568616536896,
+    "sr-roll": 14.341745342846863,
+    "redir": 3.213103459515324,
+    "scissor": 0.5173238388852289,
+    "imbalance": 2.49586541227071,
+    "oxey-style": -7.148220013154661,
+    "comfort": 3.98099314,
+    "genkey": 29.456572857937264,
+    "oxeylyzer1": 19701209932,
+    "oxeylyzer2": -21742347612200,
+    "wfd": -15898878320600
+   },
+   "community_primed": {
+    "genkey_primed": 1.8397628219101516,
+    "oxey1_primed": -505761933.0,
+    "oxey2_primed": -5843469291600.0
+   },
+   "analyze_ms_per_char": 258.1695631301549
+  },
+  "semimak": {
+   "layout": "flhvz'wuoysrntkcdeaixjbmqpg,.-",
+   "evidence_score": -36.706342598369666,
+   "ms_per_char": 257.39153780082034,
+   "total_ms": 228344221187.20566,
+   "gauges14": {
+    "sfb": 1.0666355920099653,
+    "sfs": 6.377568771970209,
+    "sfb-dist": 1.28272007871847,
+    "sfs-dist": 7.372975626259577,
+    "lsb": 1.4177099338706234,
+    "lsb-dist": 2.9121479897863503,
+    "alt": 40.85257134788585,
+    "roll": 42.51968745451457,
+    "sr-roll": 12.246153197966352,
+    "redir": 7.165357965391563,
+    "scissor": 0.4279206997287121,
+    "imbalance": 9.39225651499524,
+    "oxey-style": -0.2980327567439325,
+    "comfort": 3.772047746
+   },
+   "out_of_domain": [
+    "alt",
+    "comfort",
+    "oxey-style",
+    "sfb",
+    "sfb-dist",
+    "sfs",
+    "sfs-dist",
+    "sr-roll"
+   ],
+   "n_out_of_domain": 8,
+   "out_of_domain_detail": {
+    "alt": {
+     "level": 40.85257134788585,
+     "valid_domain": [
+      19.02517259695323,
+      34.94028584398709
+     ],
+     "distance_outside": 5.912285503898758
+    },
+    "comfort": {
+     "level": 3.772047746,
+     "valid_domain": [
+      6.52363300135,
+      11.56438416831
+     ],
+     "distance_outside": 2.75158525535
+    },
+    "oxey-style": {
+     "level": -0.2980327567439325,
+     "valid_domain": [
+      44.7196788617668,
+      197.12793711674507
+     ],
+     "distance_outside": 45.01771161851073
+    },
+    "sfb": {
+     "level": 1.0666355920099653,
+     "valid_domain": [
+      5.202383343329901,
+      17.931597190637934
+     ],
+     "distance_outside": 4.135747751319935
+    },
+    "sfb-dist": {
+     "level": 1.28272007871847,
+     "valid_domain": [
+      7.218456057190677,
+      27.239232165633567
+     ],
+     "distance_outside": 5.935735978472207
+    },
+    "sfs": {
+     "level": 6.377568771970209,
+     "valid_domain": [
+      6.745025607632128,
+      16.270610272980885
+     ],
+     "distance_outside": 0.367456835661919
+    },
+    "sfs-dist": {
+     "level": 7.372975626259577,
+     "valid_domain": [
+      9.368744027958597,
+      23.875255413549304
+     ],
+     "distance_outside": 1.9957684016990198
+    },
+    "sr-roll": {
+     "level": 12.246153197966352,
+     "valid_domain": [
+      1.9997226690092427,
+      8.336901547588177
+     ],
+     "distance_outside": 3.9092516503781756
+    }
+   },
+   "normfloor": 0.5511211329186096,
+   "mean_saved_pct": 2.800226060160085,
+   "saved_per_surface": [
+    2.554481128872532,
+    2.358510053423246,
+    3.648994433988495,
+    3.7825649584797727,
+    2.307750476582937,
+    2.1490553096135234
+   ],
+   "gauges19": {
+    "sfr": 2.6595771026964927,
+    "sfb": 1.0666355920099653,
+    "sfs": 6.377568771970209,
+    "sfb-dist": 1.28272007871847,
+    "sfs-dist": 7.372975626259579,
+    "lsb": 1.4177099338706234,
+    "lsb-dist": 2.9121479897863503,
+    "alt": 40.85257134788585,
+    "roll": 42.51968745451457,
+    "sr-roll": 12.246153197966352,
+    "redir": 7.165357965391563,
+    "scissor": 0.4279206997287121,
+    "imbalance": 9.39225651499524,
+    "oxey-style": -0.29803275674393526,
+    "comfort": 3.772047746,
+    "genkey": 27.68661745609495,
+    "oxeylyzer1": 15796400056,
+    "oxeylyzer2": -19829112428600,
+    "wfd": -14167403918000
+   },
+   "community_primed": {
+    "genkey_primed": 2.0166106914169353,
+    "oxey1_primed": -826102757.0,
+    "oxey2_primed": -5661708510600.0
+   },
+   "analyze_ms_per_char": 257.3915378008198
+  }
+ },
+ "valid_domains": {
+  "sfb": [
+   5.202383343329901,
+   17.931597190637934
+  ],
+  "sfs": [
+   6.745025607632128,
+   16.270610272980885
+  ],
+  "sfb-dist": [
+   7.218456057190677,
+   27.239232165633567
+  ],
+  "sfs-dist": [
+   9.368744027958597,
+   23.875255413549304
+  ],
+  "lsb": [
+   0.29040329177048557,
+   7.659526160565073
+  ],
+  "lsb-dist": [
+   0.6502307047317933,
+   16.72248220996899
+  ],
+  "alt": [
+   19.02517259695323,
+   34.94028584398709
+  ],
+  "roll": [
+   27.447885277778788,
+   43.50029224121304
+  ],
+  "sr-roll": [
+   1.9997226690092427,
+   8.336901547588177
+  ],
+  "redir": [
+   5.547615062855363,
+   17.349212701521356
+  ],
+  "scissor": [
+   0.2740373061121816,
+   5.133849067527291
+  ],
+  "imbalance": [
+   0.21322700954386747,
+   38.98752491675765
+  ],
+  "oxey-style": [
+   44.7196788617668,
+   197.12793711674507
+  ],
+  "comfort": [
+   6.52363300135,
+   11.56438416831
+  ]
+ },
+ "paired": {
+  "per_seed_ms_per_char": {
+   "champ-evidence": [
+    257.1042441495308,
+    256.9493813211752,
+    256.4860866133691
+   ],
+   "champ-baseline": [
+    254.06784209620932,
+    254.25652823963293,
+    253.37736697473446
+   ],
+   "champ-constrained": [
+    256.2831586337449,
+    256.2635369298974,
+    255.51915971463362
+   ],
+   "keybo-lsb": [
+    254.85415162319038,
+    254.75992391685853,
+    254.27817323757284
+   ],
+   "lsb-sib": [
+    254.7850717658505,
+    254.99883838160105,
+    254.3333739529467
+   ],
+   "archive-1843": [
+    254.99289813279182,
+    255.07300300544406,
+    254.4649892399059
+   ],
+   "archive-1846": [
+    254.97411327818617,
+    255.00258530109966,
+    254.41151362609045
+   ],
+   "keybo-lsb+lm": [
+    254.853947135658,
+    254.85841682496766,
+    254.34166893555977
+   ],
+   "qwerty30m": [
+    264.3686760941817,
+    264.4509292800688,
+    263.5971443622609
+   ],
+   "graphite": [
+    258.0394028712569,
+    258.5542315216274,
+    257.91505499758745
+   ],
+   "semimak": [
+    257.4189004993062,
+    257.71723469021236,
+    257.0384782129433
+   ]
+  },
+  "seed_mean_ms_per_char": {
+   "champ-evidence": 256.8465706946917,
+   "champ-baseline": 253.90057910352553,
+   "champ-constrained": 256.0219517594253,
+   "keybo-lsb": 254.63074959254058,
+   "lsb-sib": 254.7057613667994,
+   "archive-1843": 254.84363012604726,
+   "archive-1846": 254.79607073512543,
+   "keybo-lsb+lm": 254.6846776320618,
+   "qwerty30m": 264.13891657883715,
+   "graphite": 258.16956313015726,
+   "semimak": 257.3915378008206
+  },
+  "ss_share_pct": {
+   "layout": 98.84682906928528,
+   "seed": 1.0368304498197014,
+   "residual": 0.11634048089501192
+  },
+  "unpaired_floor_ms_per_char": 0.47098752386616954,
+  "paired_floor_ms_per_char": 0.14057456309583685,
+  "paired_floor_p95": 0.32020037731444617,
+  "n_seeds": 3,
+  "note": "paired floor = median across-seed SD of a within-seed pairwise DIFFERENCE; the unpaired floor is the max within-layout across-seed SD and is the WRONG ruler for a paired comparison (trap 37)"
+ },
+ "ceilings": {
+  "corpus_derived": {
+   "AALTO_BASE": 3.7291685400403063,
+   "AALTO_TRI_PS_FREQ_PRIOR": 3.6150536913800657,
+   "COMMUNITY_FREQ_PRIOR": 5.992669740973389,
+   "COMMUNITY_TRI_PS_FREQ_PRIOR": 6.071686200219584,
+   "POOL_FREQ_PRIOR": 3.8860840727439894,
+   "POOL_TRI_PS_FREQ_PRIOR": 3.899424611487179
+  },
+  "frozen_iweb": {
+   "AALTO_BASE": 3.712957807410422,
+   "AALTO_TRI_PS_FREQ_PRIOR": 3.5790593303072216,
+   "COMMUNITY_FREQ_PRIOR": 5.981893007062644,
+   "COMMUNITY_TRI_PS_FREQ_PRIOR": 6.077605013019449,
+   "POOL_FREQ_PRIOR": 3.8628161129649397,
+   "POOL_TRI_PS_FREQ_PRIOR": 3.8927535164502536
+  },
+  "iweb_rederivation_worst_abs_diff": 4.440892098500626e-14,
+  "positive_control": "PASS"
+ },
+ "analyze_frame": {
+  "gauge_frame": "wscissor-allgauge: kmstats + oxey.pattern_shares + comfort/bigram-mass",
+  "corpus": "blend-v1",
+  "skipgram_table": "1-skip31.txt",
+  "target_wpm": 90.0
+ },
+ "analyze_extra_rows": [
+  "qwertyuiopasdfghjkl;zxcvbnm,./"
+ ],
+ "dominance_axes": {
+  "champ-evidence": {
+   "floor": 0.5836191245728004,
+   "mean": 2.8603034837618964,
+   "wfd": -18090854043100,
+   "genkey": 1.8626723148839366,
+   "oxey1": -1031966378.0,
+   "oxey2": -7953269298000.0,
+   "lsb": 1.0711070450922304,
+   "sfb": 1.4093263871731363,
+   "sfs": 6.272448707285011,
+   "scissor": 0.175265519848105
+  },
+  "champ-baseline": {
+   "floor": 0.6004504224943086,
+   "mean": 3.427728922958741,
+   "wfd": -24776829639300,
+   "genkey": 1.8966095757980304,
+   "oxey1": -701831201.0,
+   "oxey2": -6599504224200.0,
+   "lsb": 1.1410913569660872,
+   "sfb": 2.539124615505356,
+   "sfs": 6.799508454836403,
+   "scissor": 0.25671106120493087
+  },
+  "champ-constrained": {
+   "floor": 0.5689142877665244,
+   "mean": 2.9742202291907756,
+   "wfd": -25091330193900,
+   "genkey": 1.9323741177228235,
+   "oxey1": -950181261.0,
+   "oxey2": -9176637450000.0,
+   "lsb": 0.6267691281302288,
+   "sfb": 1.6926196284872956,
+   "sfs": 6.01167074389111,
+   "scissor": 0.13844736512589487
+  },
+  "keybo-lsb": {
+   "floor": 0.7269523396590876,
+   "mean": 3.7017114537211016,
+   "wfd": -16213995653000,
+   "genkey": 1.3192528115010698,
+   "oxey1": -478152084.0,
+   "oxey2": -5014283671800.0,
+   "lsb": 0.9219164873805757,
+   "sfb": 1.6231451290880634,
+   "sfs": 7.648785919530305,
+   "scissor": 0.1428912298103323
+  },
+  "lsb-sib": {
+   "floor": 0.7399138041631993,
+   "mean": 3.73495370184721,
+   "wfd": -17974982692100,
+   "genkey": 1.8274423500994659,
+   "oxey1": -610356227.0,
+   "oxey2": -5006156052300.0,
+   "lsb": 0.9831212025846509,
+   "sfb": 1.9116805725869495,
+   "sfs": 6.873709773154185,
+   "scissor": 0.1066954240312486
+  },
+  "archive-1843": {
+   "floor": 0.7441977428805691,
+   "mean": 3.679688910429576,
+   "wfd": -20928900614900,
+   "genkey": 1.680824655275127,
+   "oxey1": -579069856.0,
+   "oxey2": -4791720124500.0,
+   "lsb": 0.8247999816845631,
+   "sfb": 1.8052559146408456,
+   "sfs": 7.059760125503526,
+   "scissor": 0.12025689767835637
+  },
+  "archive-1846": {
+   "floor": 0.7451864905501908,
+   "mean": 3.7330919282368296,
+   "wfd": -18252238492800,
+   "genkey": 1.7976749499732632,
+   "oxey1": -689461075.0,
+   "oxey2": -5659159325100.0,
+   "lsb": 0.8083551067238387,
+   "sfb": 1.6938917149209416,
+   "sfs": 6.951391307601413,
+   "scissor": 0.11041091724691095
+  },
+  "keybo-lsb+lm": {
+   "floor": 0.7301756659349707,
+   "mean": 3.679364902099939,
+   "wfd": -16198743046400,
+   "genkey": 1.3192528115010698,
+   "oxey1": -501083916.0,
+   "oxey2": -5448376242000.0,
+   "lsb": 0.9219164873805757,
+   "sfb": 1.6231451290880634,
+   "sfs": 7.648785919530305,
+   "scissor": 0.1431306284544182
+  },
+  "qwerty30m": {
+   "floor": 0.0,
+   "mean": 0.0,
+   "wfd": -65746277057400,
+   "genkey": 6.352834065891653,
+   "oxey1": -1622259550.0,
+   "oxey2": -10185000883200.0,
+   "lsb": 3.1855669963128577,
+   "sfb": 7.154593528477934,
+   "sfs": 11.369224153441149,
+   "scissor": 1.5831338237041819
+  },
+  "graphite": {
+   "floor": 0.6010212049737234,
+   "mean": 2.877652087931404,
+   "wfd": -15898878320600,
+   "genkey": 1.8397628219101516,
+   "oxey1": -505761933.0,
+   "oxey2": -5843469291600.0,
+   "lsb": 0.5593501769822644,
+   "sfb": 1.52566973366407,
+   "sfs": 6.877768232942885,
+   "scissor": 0.5173238388852289
+  },
+  "semimak": {
+   "floor": 0.5511211329186096,
+   "mean": 2.800226060160085,
+   "wfd": -14167403918000,
+   "genkey": 2.0166106914169353,
+   "oxey1": -826102757.0,
+   "oxey2": -5661708510600.0,
+   "lsb": 1.4177099338706234,
+   "sfb": 1.0666355920099653,
+   "sfs": 6.377568771970209,
+   "scissor": 0.4279206997287121
+  }
+ },
+ "dominance_frame": {
+  "axes": [
+   "floor",
+   "mean",
+   "wfd",
+   "genkey",
+   "oxey1",
+   "oxey2",
+   "lsb",
+   "scissor",
+   "sfb",
+   "sfs"
+  ],
+  "sign": {
+   "floor": 1,
+   "mean": 1,
+   "wfd": 1,
+   "oxey1": 1,
+   "oxey2": 1,
+   "genkey": -1,
+   "lsb": -1,
+   "scissor": -1,
+   "sfb": -1,
+   "sfs": -1
+  },
+  "predicate": "n_ge == 10 AND n_strict >= 1 (trap 33)"
+ },
+ "dominance": {
+  "champ-evidence": {
+   "vs_incumbents": {
+    "keybo-lsb": {
+     "dominates": false,
+     "n_ge": 2,
+     "n_strict": 2
+    },
+    "lsb-sib": {
+     "dominates": false,
+     "n_ge": 2,
+     "n_strict": 2
+    },
+    "archive-1843": {
+     "dominates": false,
+     "n_ge": 3,
+     "n_strict": 3
+    },
+    "archive-1846": {
+     "dominates": false,
+     "n_ge": 3,
+     "n_strict": 3
+    },
+    "keybo-lsb+lm": {
+     "dominates": false,
+     "n_ge": 2,
+     "n_strict": 2
+    }
+   },
+   "dominator_exists": false,
+   "best_n_ge": 3
+  },
+  "champ-baseline": {
+   "vs_incumbents": {
+    "keybo-lsb": {
+     "dominates": false,
+     "n_ge": 1,
+     "n_strict": 1
+    },
+    "lsb-sib": {
+     "dominates": false,
+     "n_ge": 1,
+     "n_strict": 1
+    },
+    "archive-1843": {
+     "dominates": false,
+     "n_ge": 1,
+     "n_strict": 1
+    },
+    "archive-1846": {
+     "dominates": false,
+     "n_ge": 1,
+     "n_strict": 1
+    },
+    "keybo-lsb+lm": {
+     "dominates": false,
+     "n_ge": 1,
+     "n_strict": 1
+    }
+   },
+   "dominator_exists": false,
+   "best_n_ge": 1
+  },
+  "champ-constrained": {
+   "vs_incumbents": {
+    "keybo-lsb": {
+     "dominates": false,
+     "n_ge": 3,
+     "n_strict": 3
+    },
+    "lsb-sib": {
+     "dominates": false,
+     "n_ge": 3,
+     "n_strict": 3
+    },
+    "archive-1843": {
+     "dominates": false,
+     "n_ge": 3,
+     "n_strict": 3
+    },
+    "archive-1846": {
+     "dominates": false,
+     "n_ge": 3,
+     "n_strict": 3
+    },
+    "keybo-lsb+lm": {
+     "dominates": false,
+     "n_ge": 3,
+     "n_strict": 3
+    }
+   },
+   "dominator_exists": false,
+   "best_n_ge": 3
+  }
+ },
+ "gauge_direction": {
+  "sfb": true,
+  "sfs": true,
+  "sfb-dist": true,
+  "sfs-dist": true,
+  "lsb": true,
+  "lsb-dist": true,
+  "redir": true,
+  "scissor": true,
+  "imbalance": true,
+  "comfort": true,
+  "oxey-style": true,
+  "alt": false,
+  "roll": false,
+  "sr-roll": false,
+  "genkey": true,
+  "oxeylyzer1": false,
+  "oxeylyzer2": false,
+  "wfd": false
+ },
+ "invariant_excluded": [
+  "sfr"
+ ],
+ "ruler_check": {
+  "champ-evidence": {
+   "per_incumbent": {
+    "keybo-lsb": {
+     "n_gauges_scored": 18,
+     "wins": [
+      "comfort",
+      "imbalance",
+      "oxey-style",
+      "roll",
+      "sfb",
+      "sfb-dist",
+      "sfs",
+      "sfs-dist",
+      "sr-roll"
+     ],
+     "losses": [
+      "alt",
+      "genkey",
+      "lsb",
+      "lsb-dist",
+      "oxeylyzer1",
+      "oxeylyzer2",
+      "redir",
+      "scissor",
+      "wfd"
+     ],
+     "n_win": 9,
+     "n_loss": 9
+    },
+    "lsb-sib": {
+     "n_gauges_scored": 18,
+     "wins": [
+      "comfort",
+      "imbalance",
+      "oxey-style",
+      "roll",
+      "sfb",
+      "sfb-dist",
+      "sfs",
+      "sfs-dist",
+      "sr-roll"
+     ],
+     "losses": [
+      "alt",
+      "genkey",
+      "lsb",
+      "lsb-dist",
+      "oxeylyzer1",
+      "oxeylyzer2",
+      "redir",
+      "scissor",
+      "wfd"
+     ],
+     "n_win": 9,
+     "n_loss": 9
+    },
+    "archive-1843": {
+     "n_gauges_scored": 18,
+     "wins": [
+      "comfort",
+      "genkey",
+      "imbalance",
+      "oxey-style",
+      "roll",
+      "sfb",
+      "sfb-dist",
+      "sfs",
+      "sfs-dist",
+      "sr-roll",
+      "wfd"
+     ],
+     "losses": [
+      "alt",
+      "lsb",
+      "lsb-dist",
+      "oxeylyzer1",
+      "oxeylyzer2",
+      "redir",
+      "scissor"
+     ],
+     "n_win": 11,
+     "n_loss": 7
+    },
+    "archive-1846": {
+     "n_gauges_scored": 18,
+     "wins": [
+      "comfort",
+      "imbalance",
+      "oxey-style",
+      "roll",
+      "sfb",
+      "sfb-dist",
+      "sfs",
+      "sfs-dist",
+      "sr-roll",
+      "wfd"
+     ],
+     "losses": [
+      "alt",
+      "genkey",
+      "lsb",
+      "lsb-dist",
+      "oxeylyzer1",
+      "oxeylyzer2",
+      "redir",
+      "scissor"
+     ],
+     "n_win": 10,
+     "n_loss": 8
+    },
+    "keybo-lsb+lm": {
+     "n_gauges_scored": 18,
+     "wins": [
+      "comfort",
+      "imbalance",
+      "oxey-style",
+      "roll",
+      "sfb",
+      "sfb-dist",
+      "sfs",
+      "sfs-dist",
+      "sr-roll"
+     ],
+     "losses": [
+      "alt",
+      "genkey",
+      "lsb",
+      "lsb-dist",
+      "oxeylyzer1",
+      "oxeylyzer2",
+      "redir",
+      "scissor",
+      "wfd"
+     ],
+     "n_win": 9,
+     "n_loss": 9
+    }
+   },
+   "normfloor": 0.5836191245728004,
+   "normfloor_negative": false,
+   "note": "effective dof over the 19 gauges is ~4-5, so a raw win count over-counts independent evidence ~4x (trap 39); sfr excluded as a permutation invariant (trap 23)"
+  },
+  "champ-baseline": {
+   "per_incumbent": {
+    "keybo-lsb": {
+     "n_gauges_scored": 18,
+     "wins": [
+      "comfort",
+      "roll",
+      "sfs",
+      "sfs-dist",
+      "sr-roll"
+     ],
+     "losses": [
+      "alt",
+      "genkey",
+      "imbalance",
+      "lsb",
+      "lsb-dist",
+      "oxey-style",
+      "oxeylyzer1",
+      "oxeylyzer2",
+      "redir",
+      "scissor",
+      "sfb",
+      "sfb-dist",
+      "wfd"
+     ],
+     "n_win": 5,
+     "n_loss": 13
+    },
+    "lsb-sib": {
+     "n_gauges_scored": 18,
+     "wins": [
+      "comfort",
+      "roll",
+      "sfs",
+      "sfs-dist",
+      "sr-roll"
+     ],
+     "losses": [
+      "alt",
+      "genkey",
+      "imbalance",
+      "lsb",
+      "lsb-dist",
+      "oxey-style",
+      "oxeylyzer1",
+      "oxeylyzer2",
+      "redir",
+      "scissor",
+      "sfb",
+      "sfb-dist",
+      "wfd"
+     ],
+     "n_win": 5,
+     "n_loss": 13
+    },
+    "archive-1843": {
+     "n_gauges_scored": 18,
+     "wins": [
+      "comfort",
+      "roll",
+      "sfs",
+      "sfs-dist",
+      "sr-roll"
+     ],
+     "losses": [
+      "alt",
+      "genkey",
+      "imbalance",
+      "lsb",
+      "lsb-dist",
+      "oxey-style",
+      "oxeylyzer1",
+      "oxeylyzer2",
+      "redir",
+      "scissor",
+      "sfb",
+      "sfb-dist",
+      "wfd"
+     ],
+     "n_win": 5,
+     "n_loss": 13
+    },
+    "archive-1846": {
+     "n_gauges_scored": 18,
+     "wins": [
+      "comfort",
+      "roll",
+      "sfs",
+      "sfs-dist",
+      "sr-roll"
+     ],
+     "losses": [
+      "alt",
+      "genkey",
+      "imbalance",
+      "lsb",
+      "lsb-dist",
+      "oxey-style",
+      "oxeylyzer1",
+      "oxeylyzer2",
+      "redir",
+      "scissor",
+      "sfb",
+      "sfb-dist",
+      "wfd"
+     ],
+     "n_win": 5,
+     "n_loss": 13
+    },
+    "keybo-lsb+lm": {
+     "n_gauges_scored": 18,
+     "wins": [
+      "comfort",
+      "roll",
+      "sfs",
+      "sfs-dist",
+      "sr-roll"
+     ],
+     "losses": [
+      "alt",
+      "genkey",
+      "imbalance",
+      "lsb",
+      "lsb-dist",
+      "oxey-style",
+      "oxeylyzer1",
+      "oxeylyzer2",
+      "redir",
+      "scissor",
+      "sfb",
+      "sfb-dist",
+      "wfd"
+     ],
+     "n_win": 5,
+     "n_loss": 13
+    }
+   },
+   "normfloor": 0.6004504224943086,
+   "normfloor_negative": false,
+   "note": "effective dof over the 19 gauges is ~4-5, so a raw win count over-counts independent evidence ~4x (trap 39); sfr excluded as a permutation invariant (trap 23)"
+  },
+  "champ-constrained": {
+   "per_incumbent": {
+    "keybo-lsb": {
+     "n_gauges_scored": 18,
+     "wins": [
+      "comfort",
+      "imbalance",
+      "lsb",
+      "lsb-dist",
+      "oxey-style",
+      "scissor",
+      "sfs",
+      "sfs-dist",
+      "sr-roll"
+     ],
+     "losses": [
+      "alt",
+      "genkey",
+      "oxeylyzer1",
+      "oxeylyzer2",
+      "redir",
+      "roll",
+      "sfb",
+      "sfb-dist",
+      "wfd"
+     ],
+     "n_win": 9,
+     "n_loss": 9
+    },
+    "lsb-sib": {
+     "n_gauges_scored": 18,
+     "wins": [
+      "comfort",
+      "lsb",
+      "lsb-dist",
+      "sfb",
+      "sfb-dist",
+      "sfs",
+      "sfs-dist",
+      "sr-roll"
+     ],
+     "losses": [
+      "alt",
+      "genkey",
+      "imbalance",
+      "oxey-style",
+      "oxeylyzer1",
+      "oxeylyzer2",
+      "redir",
+      "roll",
+      "scissor",
+      "wfd"
+     ],
+     "n_win": 8,
+     "n_loss": 10
+    },
+    "archive-1843": {
+     "n_gauges_scored": 18,
+     "wins": [
+      "comfort",
+      "imbalance",
+      "lsb",
+      "lsb-dist",
+      "sfb",
+      "sfb-dist",
+      "sfs",
+      "sfs-dist",
+      "sr-roll"
+     ],
+     "losses": [
+      "alt",
+      "genkey",
+      "oxey-style",
+      "oxeylyzer1",
+      "oxeylyzer2",
+      "redir",
+      "roll",
+      "scissor",
+      "wfd"
+     ],
+     "n_win": 9,
+     "n_loss": 9
+    },
+    "archive-1846": {
+     "n_gauges_scored": 18,
+     "wins": [
+      "comfort",
+      "lsb",
+      "lsb-dist",
+      "sfb",
+      "sfs",
+      "sfs-dist",
+      "sr-roll"
+     ],
+     "losses": [
+      "alt",
+      "genkey",
+      "imbalance",
+      "oxey-style",
+      "oxeylyzer1",
+      "oxeylyzer2",
+      "redir",
+      "roll",
+      "scissor",
+      "sfb-dist",
+      "wfd"
+     ],
+     "n_win": 7,
+     "n_loss": 11
+    },
+    "keybo-lsb+lm": {
+     "n_gauges_scored": 18,
+     "wins": [
+      "comfort",
+      "imbalance",
+      "lsb",
+      "lsb-dist",
+      "oxey-style",
+      "scissor",
+      "sfs",
+      "sfs-dist",
+      "sr-roll"
+     ],
+     "losses": [
+      "alt",
+      "genkey",
+      "oxeylyzer1",
+      "oxeylyzer2",
+      "redir",
+      "roll",
+      "sfb",
+      "sfb-dist",
+      "wfd"
+     ],
+     "n_win": 9,
+     "n_loss": 9
+    }
+   },
+   "normfloor": 0.5689142877665244,
+   "normfloor_negative": false,
+   "note": "effective dof over the 19 gauges is ~4-5, so a raw win count over-counts independent evidence ~4x (trap 39); sfr excluded as a permutation invariant (trap 23)"
+  }
+ }
+}

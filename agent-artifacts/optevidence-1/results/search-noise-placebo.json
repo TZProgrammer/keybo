@@ -1,0 +1,145 @@
+{
+ "budget_per_run": 1000000,
+ "repeats": 6,
+ "runs": {
+  "evidence": [
+   {
+    "seed": 900000,
+    "layout": "yu.g,mfclpeiahodstrnj-'zqkvwxb",
+    "trained_fitness": -45.401036090607974,
+    "evidence_score": -45.401036090607974,
+    "ms_per_char": 257.0524931166929,
+    "unique_evals": 1076205
+   },
+   {
+    "seed": 907919,
+    "layout": "ygu.,fpdlmecioahnsrt'w-zjbqkxv",
+    "trained_fitness": -45.4451123593426,
+    "evidence_score": -45.4451123593426,
+    "ms_per_char": 257.52255351589207,
+    "unique_evals": 1066022
+   },
+   {
+    "seed": 915838,
+    "layout": "ygu.,mfcplesioadhtnr'k-zjbqvwx",
+    "trained_fitness": -45.33592182681579,
+    "evidence_score": -45.33592182681579,
+    "ms_per_char": 257.0625216783125,
+    "unique_evals": 991270
+   },
+   {
+    "seed": 923757,
+    "layout": "lmpgf,.udyrtnscaoihexvbwzqj-k'",
+    "trained_fitness": -45.39338386269337,
+    "evidence_score": -45.39338386269337,
+    "ms_per_char": 256.82263783035216,
+    "unique_evals": 1075709
+   },
+   {
+    "seed": 931676,
+    "layout": "ydu.,fgplmehioacsnrt'k-zjwqbxv",
+    "trained_fitness": -45.37905478020851,
+    "evidence_score": -45.37905478020851,
+    "ms_per_char": 257.70374326733435,
+    "unique_evals": 1054250
+   },
+   {
+    "seed": 939595,
+    "layout": "uy.g,fmpdlieahocsntr-j'zqwvbkx",
+    "trained_fitness": -45.35380964970406,
+    "evidence_score": -45.35380964970406,
+    "ms_per_char": 256.97278205185864,
+    "unique_evals": 1070401
+   }
+  ],
+  "baseline": [
+   {
+    "seed": 900000,
+    "layout": "flmpg-yuo,sntdcireahkxbwv'.jzq",
+    "trained_fitness": 253.90057910352587,
+    "evidence_score": -41.3177829685072,
+    "ms_per_char": 253.90057910352604,
+    "unique_evals": 1008758
+   },
+   {
+    "seed": 907919,
+    "layout": "puy.,vdfnlheioamtsrc'jqk-gwbxz",
+    "trained_fitness": 254.07655132081635,
+    "evidence_score": -39.03649515148572,
+    "ms_per_char": 254.07655132081604,
+    "unique_evals": 1022158
+   },
+   {
+    "seed": 915838,
+    "layout": "pyou,vdflrghaeictsnmk'j.-wbzxq",
+    "trained_fitness": 254.02415580657222,
+    "evidence_score": -35.44010642191518,
+    "ms_per_char": 254.0241558065724,
+    "unique_evals": 1032473
+   },
+   {
+    "seed": 923757,
+    "layout": "lcfmk.uoyprnstdiaeghzxwbv-,'qj",
+    "trained_fitness": 254.0055816098848,
+    "evidence_score": -38.869224793951666,
+    "ms_per_char": 254.00558160988533,
+    "unique_evals": 1008294
+   },
+   {
+    "seed": 931676,
+    "layout": "lnfdg.,yehcrstmaoiupxzbwvk-q'j",
+    "trained_fitness": 254.05169846015488,
+    "evidence_score": -33.41235553761845,
+    "ms_per_char": 254.05169846015525,
+    "unique_evals": 1010351
+   },
+   {
+    "seed": 939595,
+    "layout": "pyu.,gdfnlhieaocstrmkj'-qbwzvx",
+    "trained_fitness": 253.98273629552327,
+    "evidence_score": -39.31903099615488,
+    "ms_per_char": 253.98273629552347,
+    "unique_evals": 1009261
+   }
+  ]
+ },
+ "bands": {
+  "evidence": {
+   "n": 6,
+   "ms_per_char": {
+    "mean": 257.1894552434071,
+    "sd": 0.3440405997103437,
+    "min": 256.82263783035216,
+    "max": 257.70374326733435,
+    "range": 0.8811054369821818
+   },
+   "evidence_score": {
+    "mean": -45.38471976156205,
+    "sd": 0.03835966781123497,
+    "min": -45.4451123593426,
+    "max": -45.33592182681579,
+    "range": 0.1091905325268101
+   },
+   "n_distinct_champions": 6
+  },
+  "baseline": {
+   "n": 6,
+   "ms_per_char": {
+    "mean": 254.00688376607977,
+    "sd": 0.06171827216711913,
+    "min": 253.90057910352604,
+    "max": 254.07655132081604,
+    "range": 0.17597221728999557
+   },
+   "evidence_score": {
+    "mean": -37.89916597827219,
+    "sd": 2.9022726398848415,
+    "min": -41.3177829685072,
+    "max": -33.41235553761845,
+    "range": 7.90542743088875
+   },
+   "n_distinct_champions": 6
+  }
+ },
+ "note": "CONSERVATIVE band: each run used 1,000,000 unique evals vs the arms' 10M, so this OVERSTATES the full-budget run-to-run spread. A gap that exceeds this band is real."
+}

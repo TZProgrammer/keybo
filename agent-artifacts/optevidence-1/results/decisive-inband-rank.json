@@ -1,0 +1,53 @@
+{
+ "incumbent-perturbation (UNBIASED)|raw": {
+  "n": 2005,
+  "rho": 0.8966053478921198,
+  "ci95": [
+   0.8862816300323907,
+   0.9053454794683663
+  ],
+  "verdict": "agrees with speed",
+  "inside_noise_band": false
+ },
+ "incumbent-perturbation (UNBIASED)|clamped": {
+  "n": 2005,
+  "rho": 0.5626099327608399,
+  "ci95": [
+   0.528507450575024,
+   0.593228281201356
+  ],
+  "verdict": "agrees with speed",
+  "inside_noise_band": false
+ },
+ "incumbent-perturbation (UNBIASED)|pool": {
+  "ms_min": 254.5568836199209,
+  "ms_max": 280.17015234893,
+  "ms_sd": 3.6946995256431543
+ },
+ "arms top-50 union (objective-SELECTED, biased)|raw": {
+  "n": 150,
+  "rho": -0.7854660207120316,
+  "ci95": [
+   -0.81921272334414,
+   -0.7323051610914524
+  ],
+  "verdict": "ANTI-ranks speed",
+  "inside_noise_band": false
+ },
+ "arms top-50 union (objective-SELECTED, biased)|clamped": {
+  "n": 150,
+  "rho": -0.5731424375801629,
+  "ci95": [
+   -0.654604079361135,
+   -0.45752248774080795
+  ],
+  "verdict": "ANTI-ranks speed",
+  "inside_noise_band": false
+ },
+ "arms top-50 union (objective-SELECTED, biased)|pool": {
+  "ms_min": 253.90057910352587,
+  "ms_max": 258.48565649822,
+  "ms_sd": 1.3710809497582297
+ },
+ "instrument_positive_control_rho": 1.0
+}

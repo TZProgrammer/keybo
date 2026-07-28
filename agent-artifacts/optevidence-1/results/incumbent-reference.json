@@ -1,0 +1,332 @@
+{
+ "gauges": {
+  "sfb": {
+   "keybo-lsb": 1.6231451290880634,
+   "lsb-sib": 1.9116805725869495,
+   "archive-1843": 1.8052559146408456,
+   "archive-1846": 1.6938917149209416,
+   "keybo-lsb+lm": 1.6231451290880634,
+   "qwerty30m": 7.154593528477934,
+   "graphite": 1.52566973366407,
+   "semimak": 1.0666355920099653
+  },
+  "sfs": {
+   "keybo-lsb": 7.648785919530305,
+   "lsb-sib": 6.873709773154185,
+   "archive-1843": 7.059760125503526,
+   "archive-1846": 6.951391307601413,
+   "keybo-lsb+lm": 7.648785919530305,
+   "qwerty30m": 11.369224153441149,
+   "graphite": 6.877768232942885,
+   "semimak": 6.377568771970209
+  },
+  "sfb-dist": {
+   "keybo-lsb": 1.903122341697863,
+   "lsb-sib": 2.1347800154784307,
+   "archive-1843": 2.0623744850063006,
+   "archive-1846": 1.9196781090512145,
+   "keybo-lsb+lm": 1.902868828399938,
+   "qwerty30m": 10.168258808981372,
+   "graphite": 1.8548409076316308,
+   "semimak": 1.28272007871847
+  },
+  "sfs-dist": {
+   "keybo-lsb": 8.990578227895021,
+   "lsb-sib": 8.13221447819676,
+   "archive-1843": 8.287426833260353,
+   "archive-1846": 8.284662180156504,
+   "keybo-lsb+lm": 8.986972324864816,
+   "qwerty30m": 15.746184896599141,
+   "graphite": 8.22520608200641,
+   "semimak": 7.372975626259577
+  },
+  "lsb": {
+   "keybo-lsb": 0.9219164873805757,
+   "lsb-sib": 0.9831212025846509,
+   "archive-1843": 0.8247999816845631,
+   "archive-1846": 0.8083551067238387,
+   "keybo-lsb+lm": 0.9219164873805757,
+   "qwerty30m": 3.1855669963128577,
+   "graphite": 0.5593501769822644,
+   "semimak": 1.4177099338706234
+  },
+  "lsb-dist": {
+   "keybo-lsb": 1.896001842444029,
+   "lsb-sib": 2.0721717561747455,
+   "archive-1843": 1.7414537309559228,
+   "archive-1846": 1.702398966115948,
+   "keybo-lsb+lm": 1.896001842444029,
+   "qwerty30m": 6.958789559608355,
+   "graphite": 1.2424128784224684,
+   "semimak": 2.9121479897863503
+  },
+  "alt": {
+   "keybo-lsb": 45.156072890944024,
+   "lsb-sib": 44.548633945168575,
+   "archive-1843": 45.156072890944024,
+   "archive-1846": 45.14723121046257,
+   "keybo-lsb+lm": 45.156072890944024,
+   "qwerty30m": 26.458303537682045,
+   "graphite": 44.07633884838469,
+   "semimak": 40.85257134788585
+  },
+  "roll": {
+   "keybo-lsb": 41.62490994630278,
+   "lsb-sib": 41.92326871696193,
+   "archive-1843": 41.4104277043283,
+   "archive-1846": 41.51365434535355,
+   "keybo-lsb+lm": 41.62490994630278,
+   "qwerty30m": 37.691778239300696,
+   "graphite": 42.46568616536896,
+   "semimak": 42.51968745451457
+  },
+  "sr-roll": {
+   "keybo-lsb": 12.692077364130578,
+   "lsb-sib": 12.727506158471895,
+   "archive-1843": 13.005889169650748,
+   "archive-1846": 13.009991514187098,
+   "keybo-lsb+lm": 12.985648853254718,
+   "qwerty30m": 5.031342353185906,
+   "graphite": 14.341745342846863,
+   "semimak": 12.246153197966352
+  },
+  "redir": {
+   "keybo-lsb": 3.3584021416404592,
+   "lsb-sib": 2.3968148083653085,
+   "archive-1843": 2.3466558017393693,
+   "archive-1846": 2.631199607178357,
+   "keybo-lsb+lm": 3.3584021416404592,
+   "qwerty30m": 13.422189596580113,
+   "graphite": 3.213103459515324,
+   "semimak": 7.165357965391563
+  },
+  "scissor": {
+   "keybo-lsb": 0.1428912298103323,
+   "lsb-sib": 0.1066954240312486,
+   "archive-1843": 0.12025689767835637,
+   "archive-1846": 0.11041091724691095,
+   "keybo-lsb+lm": 0.1431306284544182,
+   "qwerty30m": 1.5831338237041819,
+   "graphite": 0.5173238388852289,
+   "semimak": 0.4279206997287121
+  },
+  "imbalance": {
+   "keybo-lsb": 2.077878600654005,
+   "lsb-sib": 1.884207263632379,
+   "archive-1843": 2.077878600654005,
+   "archive-1846": 2.053552696182213,
+   "keybo-lsb+lm": 2.077878600654005,
+   "qwerty30m": 14.928795371517694,
+   "graphite": 2.49586541227071,
+   "semimak": 9.39225651499524
+  },
+  "oxey-style": {
+   "keybo-lsb": -3.249680324731689,
+   "lsb-sib": -6.636604844463593,
+   "archive-1843": -5.8244895367477225,
+   "archive-1846": -6.461187347693887,
+   "keybo-lsb+lm": -2.858518039478537,
+   "qwerty30m": 88.19717144314424,
+   "graphite": -7.148220013154659,
+   "semimak": -0.2980327567439325
+  },
+  "comfort": {
+   "keybo-lsb": 3.710857346,
+   "lsb-sib": 3.809628746,
+   "archive-1843": 3.590696318,
+   "archive-1846": 3.563255538,
+   "keybo-lsb+lm": 3.595268038,
+   "qwerty30m": 7.581203825,
+   "graphite": 3.98099314,
+   "semimak": 3.772047746
+  }
+ },
+ "evidence": {
+  "keybo-lsb": -37.46176730033572,
+  "lsb-sib": -37.5827188462314,
+  "archive-1843": -38.96239892618069,
+  "archive-1846": -39.13388527201534,
+  "keybo-lsb+lm": -38.309006645310944,
+  "qwerty30m": -6.976383228911235,
+  "graphite": -37.25313935585958,
+  "semimak": -36.706342598369666
+ },
+ "ms_per_char": {
+  "keybo-lsb": 254.63074959254052,
+  "lsb-sib": 254.70576136680035,
+  "archive-1843": 254.8436301260476,
+  "archive-1846": 254.7960707351256,
+  "keybo-lsb+lm": 254.68467763206147,
+  "qwerty30m": 264.13891657883505,
+  "graphite": 258.1695631301581,
+  "semimak": 257.39153780082034
+ },
+ "total_ms": {
+  "keybo-lsb": 225894995238.7974,
+  "lsb-sib": 225961541735.70084,
+  "archive-1843": 226083851640.39056,
+  "archive-1846": 226041659452.67136,
+  "keybo-lsb+lm": 225942837356.25696,
+  "qwerty30m": 234330140403.06244,
+  "graphite": 229034444297.9166,
+  "semimak": 228344221187.20566
+ },
+ "n_ood": {
+  "keybo-lsb": 9,
+  "lsb-sib": 9,
+  "archive-1843": 9,
+  "archive-1846": 9,
+  "keybo-lsb+lm": 9,
+  "qwerty30m": 0,
+  "graphite": 8,
+  "semimak": 8
+ },
+ "ood_set": {
+  "keybo-lsb": [
+   "alt",
+   "comfort",
+   "oxey-style",
+   "redir",
+   "scissor",
+   "sfb",
+   "sfb-dist",
+   "sfs-dist",
+   "sr-roll"
+  ],
+  "lsb-sib": [
+   "alt",
+   "comfort",
+   "oxey-style",
+   "redir",
+   "scissor",
+   "sfb",
+   "sfb-dist",
+   "sfs-dist",
+   "sr-roll"
+  ],
+  "archive-1843": [
+   "alt",
+   "comfort",
+   "oxey-style",
+   "redir",
+   "scissor",
+   "sfb",
+   "sfb-dist",
+   "sfs-dist",
+   "sr-roll"
+  ],
+  "archive-1846": [
+   "alt",
+   "comfort",
+   "oxey-style",
+   "redir",
+   "scissor",
+   "sfb",
+   "sfb-dist",
+   "sfs-dist",
+   "sr-roll"
+  ],
+  "keybo-lsb+lm": [
+   "alt",
+   "comfort",
+   "oxey-style",
+   "redir",
+   "scissor",
+   "sfb",
+   "sfb-dist",
+   "sfs-dist",
+   "sr-roll"
+  ],
+  "qwerty30m": [],
+  "graphite": [
+   "alt",
+   "comfort",
+   "oxey-style",
+   "redir",
+   "sfb",
+   "sfb-dist",
+   "sfs-dist",
+   "sr-roll"
+  ],
+  "semimak": [
+   "alt",
+   "comfort",
+   "oxey-style",
+   "sfb",
+   "sfb-dist",
+   "sfs",
+   "sfs-dist",
+   "sr-roll"
+  ]
+ },
+ "incumbent_bounds": {
+  "sfb": {
+   "inc_max": 1.9116805725869495,
+   "inc_min": 1.6231451290880634
+  },
+  "sfs": {
+   "inc_max": 7.648785919530305,
+   "inc_min": 6.873709773154185
+  },
+  "sfb-dist": {
+   "inc_max": 2.1347800154784307,
+   "inc_min": 1.902868828399938
+  },
+  "sfs-dist": {
+   "inc_max": 8.990578227895021,
+   "inc_min": 8.13221447819676
+  },
+  "lsb": {
+   "inc_max": 0.9831212025846509,
+   "inc_min": 0.8083551067238387
+  },
+  "lsb-dist": {
+   "inc_max": 2.0721717561747455,
+   "inc_min": 1.702398966115948
+  },
+  "alt": {
+   "inc_max": 45.156072890944024,
+   "inc_min": 44.548633945168575
+  },
+  "roll": {
+   "inc_max": 41.92326871696193,
+   "inc_min": 41.4104277043283
+  },
+  "sr-roll": {
+   "inc_max": 13.009991514187098,
+   "inc_min": 12.692077364130578
+  },
+  "redir": {
+   "inc_max": 3.3584021416404592,
+   "inc_min": 2.3466558017393693
+  },
+  "scissor": {
+   "inc_max": 0.1431306284544182,
+   "inc_min": 0.1066954240312486
+  },
+  "imbalance": {
+   "inc_max": 2.077878600654005,
+   "inc_min": 1.884207263632379
+  },
+  "oxey-style": {
+   "inc_max": -2.858518039478537,
+   "inc_min": -6.636604844463593
+  },
+  "comfort": {
+   "inc_max": 3.809628746,
+   "inc_min": 3.563255538
+  }
+ },
+ "incumbents": {
+  "keybo-lsb": "pyuo,vgdnlhiea.cstrmkj-z'fwbxq",
+  "lsb-sib": "fyou,vgdnlheaikcstrmzj'.-pwbxq",
+  "archive-1843": "pyou,vgdnmheai.cstlrjz'k-fwbxq",
+  "archive-1846": "pyou,vgdnmheai.cstrlkq'z-fbwjx",
+  "keybo-lsb+lm": "pyuo,vgdnmhiea.cstrlkj-z'fwbxq"
+ },
+ "reference": {
+  "qwerty30m": "qwertyuiopasdfghjkl'zxcvbnm,.-",
+  "graphite": "bldwz'foujnrtsgyhaeixqmcvkp,.-",
+  "semimak": "flhvz'wuoysrntkcdeaixjbmqpg,.-"
+ }
+}
