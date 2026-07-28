@@ -8097,7 +8097,9 @@ the code a search actually runs were TWO DIFFERENT IMPLEMENTATIONS. I confirmed 
 **my 7 policy tests could not catch it because they exercise the CURVE, not the SEARCH.** Had the child trusted "the branch already has the code", arm
 D would silently have BEEN arm A — and it would have passed a green gate. FIXED by giving `LossCurve` the vectorized entry point whose ABSENCE caused
 the duplicate: `price_many(levels, policy=)`, plus 4 tests pinning it against the scalar path at **EXACT float equality** (not approximate — anything
-looser lets a reimplementation drift back apart).
+looser lets a reimplementation drift back apart). 🟢 **VERIFIED GREEN AFTER THE FIX: suite rc=0, 884 collected, 0 failed** (881 passed / 3
+skipped, 707s) from an out-of-tree sentinel, with the count reconciling exactly as 880 prior + 4 new, and 11 domain-policy tests at HEAD. The
+callback also fired correctly on first use of the trap-50 fix (fire from the SAME subshell as the work), after three consecutive watcher deaths.
 ⚠ ONE CORRECTION TO THE CHILD'S REPORT: it says the gap is unfixed "on main". **The evidence scorer is not on main at all** — `f0299b5` is a
 LEDGER-ONLY commit and the scorer lives solely on the unpushed `domain-hard` branch. So the library gap was real; the *exposure* was not.
 ⚠ THREE CORRECTIONS TO MY OWN BRIEF, artifact-wins (trap 20): the dominance frame is **10 axes, not 12** (my quoted 3/10, 3/10, 1/10 were already the
