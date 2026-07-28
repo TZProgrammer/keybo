@@ -60,10 +60,24 @@ blend-v1, 90 WPM, skipgram `1-skip31.txt`), exact to 4 dp against the fast evalu
 Set-containment asserted, **not** row count — `analyze` legitimately added its `--ref` row
 (`qwertyuiopasdfghjkl;zxcvbnm,./`), so 2 requested → 3 returned, 0 missing (trap 38).
 
-## Git
+## Git — everything below survives `ticket --destroy`
 Branch **`arm-e`** in worktree `/tmp/arme` (own branch off `cf5f731`; `domain-hard` was already
-checked out at `/tmp/domainfix` so it could not be reused).
-`414f2a6` = pre-registration + gates (before the run) · `29af7d7` = the result + drivers.
+checked out at `/tmp/domainfix` so it could not be reused). Working tree **clean**.
+
+| commit | contents |
+|---|---|
+| `414f2a6` | pre-registration + gate drivers — **committed BEFORE the search ran**, so priority is verifiable |
+| `29af7d7` | the arm E result + all drivers |
+| `1374f1c` | the writeup + reflection proposal |
+| `4b6b7b1` | **the self-audit** — second seed, bundled-attribution correction, ρ CI, probe-lesson correction |
+| `668fd1f` | gate logs, both runs' epoch traces, judge output, and a transcription of all five rc sentinels (`logs/rc-sentinels.txt`: gate1=0 gate2=0 arme=0 report=0 seed2=0) |
+
+Durable pointers under `agent-artifacts/arme/`: `PREDICTION.md` · `REPORT.md` ·
+`reflection-proposal.md` · `profiles-and-artifacts-index.md` · `arm-archive.json` ·
+`arm-archive-seed2.json` · `drivers/` (9 files) · `logs/` (8 files + sentinels).
+The large `.keys.npy` sidecars (77–80 MB each) stay in `state/…/runs/` only — deliberately not
+committed; they are reproducible from the checkpoints.
+
 **Not pushed, no CR** — per the brief's scope.
 
 ## Scratch (NOT durable — recorded so nothing is cited from it)
