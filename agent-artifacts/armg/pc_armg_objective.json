@@ -1,0 +1,16 @@
+{
+ "ref_worst": 5.329070518200751e-15,
+ "scale_worst": 0.0,
+ "ref_ms_diff": 0.0,
+ "D_armB": 0.0,
+ "F_armB": 0.0,
+ "prereg_D_worst": 4.696856672392613e-05,
+ "F_qwerty": 6718923.407441257,
+ "mutation_delta": 1.3824387203192643,
+ "constants_check": {
+  "worst_ref": 5.329070518200751e-15,
+  "worst_scale": 0.0,
+  "worst_ms": 0.0,
+  "D_reference": 0.0
+ }
+}

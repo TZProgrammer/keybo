@@ -1,0 +1,114 @@
+{
+ "sfb": {
+  "rho_random4000": 0.11041749183859323,
+  "expected_sign": 1.0,
+  "rho_agrees": true,
+  "qwerty": 7.154593528477934,
+  "best_of_six": 1.8652301042108363,
+  "qwerty_is_worse_than_best_of_six": true
+ },
+ "sfs": {
+  "rho_random4000": -0.015716141295495523,
+  "expected_sign": 1.0,
+  "rho_agrees": false,
+  "qwerty": 11.369224153441149,
+  "best_of_six": 6.799508454836403,
+  "qwerty_is_worse_than_best_of_six": true
+ },
+ "sfb-dist": {
+  "rho_random4000": 0.1950437615652351,
+  "expected_sign": 1.0,
+  "rho_agrees": true,
+  "qwerty": 10.16825880898137,
+  "best_of_six": 2.17629039114618,
+  "qwerty_is_worse_than_best_of_six": true
+ },
+ "sfs-dist": {
+  "rho_random4000": 0.09498837481177341,
+  "expected_sign": 1.0,
+  "rho_agrees": true,
+  "qwerty": 15.746184896599141,
+  "best_of_six": 8.00562391148118,
+  "qwerty_is_worse_than_best_of_six": true
+ },
+ "lsb": {
+  "rho_random4000": 0.037171346510709156,
+  "expected_sign": 1.0,
+  "rho_agrees": true,
+  "qwerty": 3.1855669963128577,
+  "best_of_six": 0.7916577702787173,
+  "qwerty_is_worse_than_best_of_six": true
+ },
+ "lsb-dist": {
+  "rho_random4000": 0.04599968106248006,
+  "expected_sign": 1.0,
+  "rho_agrees": true,
+  "qwerty": 6.958789559608355,
+  "best_of_six": 1.6146952073489234,
+  "qwerty_is_worse_than_best_of_six": true
+ },
+ "alt": {
+  "rho_random4000": -0.17992267180766697,
+  "expected_sign": -1.0,
+  "rho_agrees": true,
+  "qwerty": 26.458303537682045,
+  "best_of_six": 45.41981901250433,
+  "qwerty_is_worse_than_best_of_six": true
+ },
+ "roll": {
+  "rho_random4000": -0.07330879939429996,
+  "expected_sign": -1.0,
+  "rho_agrees": true,
+  "qwerty": 37.691778239300696,
+  "best_of_six": 45.442097658599806,
+  "qwerty_is_worse_than_best_of_six": true
+ },
+ "sr-roll": {
+  "rho_random4000": -0.058755978956252855,
+  "expected_sign": -1.0,
+  "rho_agrees": true,
+  "qwerty": 5.031342353185906,
+  "best_of_six": 17.813072191285166,
+  "qwerty_is_worse_than_best_of_six": true
+ },
+ "redir": {
+  "rho_random4000": 0.10899698893731179,
+  "expected_sign": 1.0,
+  "rho_agrees": true,
+  "qwerty": 13.422189596580113,
+  "best_of_six": 3.3901061629659384,
+  "qwerty_is_worse_than_best_of_six": true
+ },
+ "scissor": {
+  "rho_random4000": 0.35312135413258455,
+  "expected_sign": 1.0,
+  "rho_agrees": true,
+  "qwerty": 1.5831338237041819,
+  "best_of_six": 0.06819436686631208,
+  "qwerty_is_worse_than_best_of_six": true
+ },
+ "imbalance": {
+  "rho_random4000": 0.12684794011549624,
+  "expected_sign": 1.0,
+  "rho_agrees": true,
+  "qwerty": 14.928795371517694,
+  "best_of_six": 0.27548895981563226,
+  "qwerty_is_worse_than_best_of_six": true
+ },
+ "oxey-style": {
+  "rho_random4000": 0.20227188139199256,
+  "expected_sign": 1.0,
+  "rho_agrees": true,
+  "qwerty": 88.19717144314424,
+  "best_of_six": 1.0078329486767226,
+  "qwerty_is_worse_than_best_of_six": true
+ },
+ "comfort": {
+  "rho_random4000": 0.7031974489498405,
+  "expected_sign": 1.0,
+  "rho_agrees": true,
+  "qwerty": 7.581203825,
+  "best_of_six": 3.374851915,
+  "qwerty_is_worse_than_best_of_six": true
+ }
+}
