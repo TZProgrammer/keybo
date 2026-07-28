@@ -9108,3 +9108,30 @@ gives `sfr` std = 1.9e-14) — **and assert it on a NON-REFERENCE layout, with S
 have caught `sfr` before it shipped, and generalizes to `Genkey.index_imbalance_pct` (also a partition invariant, but harmless: one 0.3-weighted leg of a live sum, all 9 registry scores stay distinct).
 => **AND THE DEEPEST LESSON OF THE WHOLE CAMPAIGN, which the 52x asymmetry and `test_kmstats.py` pinning qwerty ALONE both point at: A FROZEN BOARD THAT PINS ONE REFERENCE LAYOUT IS NOT A POSITIVE CONTROL ON A
 METRIC — IT IS A POSITIVE CONTROL ON THAT LAYOUT.** Every qwerty-flattering defect this campaign found survived because the check that should have caught it was anchored to qwerty.
+
+### MARGIN-GATE-1 — 🟢 THE MINIMUM-MARGIN RULE, DERIVED NOT CHOSEN — and it immediately caught a FOURTH tie-credit defect: a shipped test whose docstring claimed a preference it never checked, because BOTH candidates score EXACTLY 1.000000 (2026-07-28)
+Closes the caveat left open by ULTRAAUDIT-FINAL's robustness result. The shipped hyperparameter selection clears the ceiling-reweighting flip bound comfortably (documented margin ~0.06 vs my measured 0.0056 worst
+flip), but `tune_lolo` had **no rule preventing a FUTURE selection inside it.** Branch `ceiling-sb` @ **824039e**, local, **NOT pushed**. Full suite **rc=0**, ruff clean, mutation-proven three ways.
+🟢 **THE THRESHOLD IS DERIVED IN CLOSED FORM, WHICH IS THE POINT — a guard whose constant is sampled is a guard whose constant is a guess.** `reweighting_margin_bound()` returns the largest RELATIVE shift a
+per-fold reweighting can induce in a mean-of-ratios score: **the weights' relative half-range `(max - min) / (max + min)`**, attained when two candidates put their advantage on opposite extremes of the weight
+range. For the Spearman-Brown weight `(1 + c) / 2` over this ledger's registered ceilings `[0.709, 0.815]` that is **0.0301**; over the wider `[0.50, 0.95]` the audit assumed, **0.1304**. A 400k-pair random
+search found **no ordering flip at a margin above 0.0056** — so **the closed form is the CONSERVATIVE side of the empirical one**, which is the direction a guard must err in. Shipped `LOLO_MIN_MARGIN = 0.03`,
+pinned by a test asserting it is **<= the bound it derives from**, so the gate can never drift looser than its own justification.
+🟢 `require_margin()` **refuses rather than returning a winner**, for the identical reason `tune_lolo` now raises rather than tie-breaking on `-inf`: a champion chosen inside the resolvable margin is
+**indistinguishable from a real one in the output**. Relative by default (matching the bound), absolute on request. Wired into `tune_lolo` and exposed as `--min-margin` / `--allow-unresolvable-margin`, with the
+CLI refusing **before writing `--output`**. `min_margin=0.0` disables it for reproducing a historical selection.
+🔴 **AND THE GATE PAID FOR ITSELF ON FIRST RUN — A FOURTH INSTANCE OF THE TIE-CREDIT DEFECT, THIS TIME IN A SHIPPED TEST.** `test_tune_lolo_prefers_transfer_over_memorization` (tests/training/test_validate.py)
+asserted `leaderboard[0][1] >= leaderboard[1][1]` — **which a TIE satisfies** — while its docstring claimed *"the LOLO tuner must rank a shallow (transfer-friendly) candidate above a deep (memorization-prone)
+one."* **Measured: it is an exact tie.** The `_lawful_rows` fixture is geometry-lawful with sigma=4 noise, so **BOTH depth-2 and depth-8 reach `rho = 1.0` against a ceiling of `1.0` on EVERY fold** —
+`rho_frac_ceiling` saturates at **exactly 1.000000** for both, and the gap is **0.000000**. So *"shallow ranks above deep"* was a **stable-sort artifact**, never a measurement.
+ => **THE TIE-CREDIT DEFECT IS NOW AT FOUR INDEPENDENT SITES**: `readjudicate.py` (REHUNT-1, 12 of 42 rows), `board_iweb_vs_blend.py` (SELECT-MAXIMIN-1's "8 of 45 field-best" = 0 strict wins), the `alt`/`imbalance`
+ gauge ties (ULTRAAUDIT R2-b), and now **a test gate**. **The common mechanism is a `>=` or a stable sort standing in for a strict comparison, and in every instance the tie flattered the incumbent/first-listed
+ option.** Registered as a class, not four incidents.
+ 🟢 Fixed per the trap-13 procedure rather than by loosening: the test is **renamed** to
+ `test_tune_lolo_scores_both_depths_and_this_fixture_CANNOT_separate_them`, its docstring states what was measured, and it now **asserts the tie EXPLICITLY** (`== approx(1.0)` on both) so a future fixture change
+ creating real separation **fails here rather than passing silently**. ⚠ **OPEN WORK THIS EXPOSES: a genuine transfer-over-memorization test needs a fixture with UNLAWFUL per-layout idiosyncrasy the deep model can
+ overfit and the shallow one cannot absorb. That fixture does not exist, so the LOLO tuner's central claimed virtue is currently UNTESTED.** That is a more useful finding than the margin rule itself.
+🟢 MUTATION-PROVEN THREE WAYS: making the gate never raise fails **5** tests; using the wrong bound formula (`(hi-lo)/hi` instead of the half-range) fails **1**; making `tune_lolo` skip the gate fails **3**;
+restoring passes **34/34**. Combined with the earlier `-inf` refusal work (`5e4bcd0`), branch `ceiling-sb` now carries: the Spearman-Brown correction, `keybo/verdicts.py`
+(`require_finite`/`compare_finite`/`argmax_finite`/`all_distinct`/`require_margin`/`reweighting_margin_bound`), the `ObjectiveNotEvaluated` refusal, and this gate — all local, all unpushed, **three user gates
+untouched.**
