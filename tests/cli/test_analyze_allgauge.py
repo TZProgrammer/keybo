@@ -141,6 +141,53 @@ FROZEN_FITS = {
 
 SCISSOR_FAMILY = ("scissor", "scissor-pinky-share")
 
+#: ``oxey-style`` is the ONE frozen cell the trigram-partition fix legitimately moves, so the
+#: three frozen-board controls below compare 14 of 15 gauges against the frozen value and this
+#: cell against the corrected one. BOTH numbers are kept, deliberately: the frozen artifacts
+#: stay reconcilable (a reader can still see what they contained and why it changed) while the
+#: value that SHIPS is the corrected one. Recording only the new number would silently rewrite
+#: the audit trail; recording only the old one would pin a defect.
+#:
+#: What moved: ``oxey.pattern_shares`` used to classify trigrams with its own predicates,
+#: which nested ``bad_redirect`` inside ``redirect`` (charging a bad redirect 2.0 + 4.0) and
+#: computed the direction step on ``abs(column)`` rather than on the finger. It now delegates
+#: to the parity-gated ``community._v1_pattern``. See
+#: ``tests/scoring/test_oxey_trigram_partition.py`` and ``keybo.scoring.oxey``'s honesty
+#: note 3. The other 14 gauges are untouched and still compared EXACTLY, which is what keeps
+#: these controls controls: a change that moved anything else would still fail here.
+#:
+#: layout key -> (frozen oxey-style, corrected oxey-style), on iWeb.
+#:
+#: ⚠️ The corrected values are read from a ONE-LAYOUT ``analyze`` invocation, matching how the
+#: controls below call it. ``oxey-style`` is a sum over corpus-share terms and is sensitive to
+#: summation order in the last few digits: flagship-c3 is ...373956 from a single-layout run
+#: but ...373587 when three layouts are scored in one call. That is float addition, not drift
+#: — but it means these pins are only exact against a single-layout run, which is what makes
+#: the ``!=`` comparisons below safe to keep exact.
+FROZEN_VS_CORRECTED_OXEY_STYLE = {
+    "keybo-lsb": (-10.643631222236356, -11.528520501787971),
+    ARCHIVE_1843: (-10.231210014482816, -11.052924355810946),
+    FLAGSHIP_C3: (-13.807063168667037, -14.852685688373956),
+}
+
+
+def _frozen_board_mismatches(frozen: dict, got: dict, layout_key: str) -> dict:
+    """Compare a frozen board to ``analyze``'s output, EXACTLY, with one substitution.
+
+    ``oxey-style`` is compared against its corrected value rather than the frozen one (see
+    :data:`FROZEN_VS_CORRECTED_OXEY_STYLE`); every other gauge is compared against the frozen
+    value with ``!=``, no tolerance. Also asserts the frozen value is genuinely no longer
+    produced, so the substitution cannot outlive the change that justified it: if a future
+    edit restored the old classifier, this fires rather than passing quietly.
+    """
+    frozen_oxey, corrected_oxey = FROZEN_VS_CORRECTED_OXEY_STYLE[layout_key]
+    assert got["oxey-style"] != frozen_oxey, (
+        "oxey-style reproduced its FROZEN value, so the trigram-partition fix is no longer "
+        "in effect — this substitution should be deleted, not kept"
+    )
+    expected = {**frozen, "oxey-style": corrected_oxey}
+    return {name: (value, got[name]) for name, value in expected.items() if got[name] != value}
+
 
 def _run(capsys, argv: list[str]) -> dict:
     """Run `analyze` on iWeb — the corpus every frozen board here was computed on.
@@ -164,10 +211,14 @@ def _run(capsys, argv: list[str]) -> dict:
 
 @pytest.mark.slow
 def test_every_frozen_gauge_reproduces_exactly_for_keybo_lsb(capsys):
-    """POSITIVE CONTROL 1: all 15 corpus-sensitive gauges, EXACT, vs wscissor-allgauge."""
+    """POSITIVE CONTROL 1: all 15 corpus-sensitive gauges, EXACT, vs wscissor-allgauge.
+
+    14 against the frozen value; ``oxey-style`` against its corrected value — see
+    :data:`FROZEN_VS_CORRECTED_OXEY_STYLE`.
+    """
     out = _run(capsys, ["analyze", "keybo-lsb", "--json"])
     got = out["rows"]["keybo-lsb"]["gauges"]
-    mismatched = {k: (v, got[k]) for k, v in FROZEN_KEYBO_LSB.items() if got[k] != v}
+    mismatched = _frozen_board_mismatches(FROZEN_KEYBO_LSB, got, "keybo-lsb")
     assert not mismatched, f"frozen-board mismatch (exact compare): {mismatched}"
 
 
@@ -177,7 +228,7 @@ def test_every_frozen_gauge_reproduces_exactly_for_archive_1843(capsys):
     out = _run(capsys, ["analyze", ARCHIVE_1843, "--json"])
     row = next(r for r in out["rows"].values() if r["layout"] == ARCHIVE_1843)
     got = row["gauges"]
-    mismatched = {k: (v, got[k]) for k, v in FROZEN_ARCHIVE_1843.items() if got[k] != v}
+    mismatched = _frozen_board_mismatches(FROZEN_ARCHIVE_1843, got, ARCHIVE_1843)
     assert not mismatched, f"frozen-board mismatch (exact compare): {mismatched}"
 
 
@@ -187,8 +238,30 @@ def test_frozen_gauges_reproduce_for_flagship_c3_on_the_second_board(capsys):
     out = _run(capsys, ["analyze", FLAGSHIP_C3, "--json"])
     row = next(r for r in out["rows"].values() if r["layout"] == FLAGSHIP_C3)
     got = row["gauges"]
-    mismatched = {k: (v, got[k]) for k, v in FROZEN_FLAGSHIP_C3.items() if got[k] != v}
+    mismatched = _frozen_board_mismatches(FROZEN_FLAGSHIP_C3, got, FLAGSHIP_C3)
     assert not mismatched, f"second-board mismatch (exact compare): {mismatched}"
+
+
+@pytest.mark.slow
+def test_the_frozen_boards_differ_from_the_shipped_values_ONLY_on_oxey_style(capsys):
+    """The substitution above is BOUNDED: exactly one of 15 gauges moved, on all 3 boards.
+
+    Without this, ``_frozen_board_mismatches`` would be an unfalsifiable escape hatch — it
+    could hide a second regression inside the one cell it is allowed to excuse. Here the
+    frozen boards are compared with NO substitution and the mismatch set must be exactly
+    ``{"oxey-style"}``, so any additional drift shows up as a failure naming the gauge.
+    """
+    boards = {
+        "keybo-lsb": (KEYBO_LSB, FROZEN_KEYBO_LSB),
+        ARCHIVE_1843: (ARCHIVE_1843, FROZEN_ARCHIVE_1843),
+        FLAGSHIP_C3: (FLAGSHIP_C3, FROZEN_FLAGSHIP_C3),
+    }
+    for key, (lay30, frozen) in boards.items():
+        out = _run(capsys, ["analyze", key, "--json"])
+        got = next(r for r in out["rows"].values() if r["layout"] == lay30)["gauges"]
+        moved = {name for name, value in frozen.items() if got[name] != value}
+        assert moved == {"oxey-style"}, f"{key}: gauges that moved off the frozen board: {moved}"
+        assert got["oxey-style"] == FROZEN_VS_CORRECTED_OXEY_STYLE[key][1]
 
 
 @pytest.mark.slow

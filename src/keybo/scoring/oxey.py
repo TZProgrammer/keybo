@@ -6,7 +6,7 @@ same-finger bigrams, disjoint SFBs (skipgrams), lateral stretches, scissors, rol
 (rewarded), onehands (rewarded), redirects, and finger imbalance — combined with signed
 weights into one scalar (lower = better, matching our fitness convention).
 
-Two honesty notes, load-bearing:
+Three honesty notes, load-bearing:
 
 1. This is a PREFERENCE term, not a measurement. Our own data measured redirects as
    time-NEUTRAL (roll_error_probe: redirect contrast == roll contrast at every skill
@@ -19,6 +19,34 @@ Two honesty notes, load-bearing:
    specific analyzer's exact numbers. For the roadmap-7.2 crosswalk (score our layouts
    under THEIR judges), run the real analyzers; this scorer is for optimization and
    directional agreement checks.
+3. The WEIGHTS are ours; the trigram CLASSES are upstream's. The approximation in note 2
+   is a licence to choose prices, not to invent a partition: which trigrams count as a
+   redirect is a definition the community owns. So the trigram classifier is not written
+   here — :func:`_trigram_class` delegates to :func:`keybo.analysis.community._v1_pattern`,
+   the oxeylyzer-1 port pinned integer-exact to the real repl by
+   ``tests/analysis/test_kan1_parity.py``. Its four redirect classes are rolled onto this
+   scorer's two weight keys (``redirects``/``redirects_sfs`` -> ``redirect``,
+   ``bad_redirects``/``bad_redirects_sfs`` -> ``bad_redirect``); the roll-up is the same one
+   :mod:`keybo.analysis.redirects` publishes as ``bad_redirects_total``, and that module
+   remains the place to read upstream's four classes separately.
+
+   ⚠️ This scorer previously carried its OWN trigram predicates, and they were wrong three
+   ways against the port one module away: the ``bad_redirect`` counter was NESTED inside
+   ``redirect`` (so a bad redirect paid 2.0 + 4.0 = 6.0, not the 4.0 the dict displays,
+   where upstream dispatches exactly one class per trigram); the direction step was
+   ``abs(b.column) - abs(a.column)``, which reads the index finger's two columns as a
+   direction STEP even though :meth:`keybo.geometry.Geometry.same_finger` calls them one
+   finger; and Sft/Sfb triples were not excluded at all. Over the 27,000 ordered slot
+   triples of ``ROW_STAGGERED_30`` that inflated ``onehand`` by 1.4286x (1080 vs 756) and
+   the ``redirect`` term by 432 triples, and double-charged 540. The bad-redirect SUPPORT
+   was already right (540 either way): the old ``abs(column) in (1, 2)`` test happens to be
+   equivalent to "no index finger" on this geometry, so it was a fragile proxy rather than a
+   live error. Corpus consequence of the whole repair, on blend-v1: every ``oxey-style``
+   score drops by 0.42 to 1.50 (−1.6% of |score| on qwerty30m, −152% on the near-zero arm E),
+   spearman(before, after) is 0.997059 over 16 layouts, and the nine layouts of the published
+   adoption tables keep an IDENTICAL ordering (spearman 1.000000, 0 of 36 pairwise
+   inversions). See ``tests/scoring/test_oxey_trigram_partition.py``, which asserts class
+   membership against ``_v1_pattern`` triple-for-triple rather than eyeballing totals.
 
 Units: dimensionless pattern score scaled so qwerty ≈ O(100); the ``--oxey-weight`` knob
 maps it into fitness-comparable magnitude the same way the comfort knob does.
@@ -28,9 +56,38 @@ from __future__ import annotations
 
 from collections.abc import Mapping
 
+from keybo.analysis.community import _v1_pattern
 from keybo.features import classify as C
+from keybo.geometry import Finger, Geometry, Position
 from keybo.layout import Layout
 from keybo.scoring.base import IScorer
+
+#: :class:`keybo.geometry.Finger` -> the libdof finger enum ``_v1_pattern`` speaks
+#: (LP=0 LR=1 LM=2 LI=3 RI=6 RM=7 RR=8 RP=9). The thumb has no libdof letter-key value and
+#: cannot appear in a same-hand letter trigram, so it maps to ``None`` and short-circuits.
+_LIBDOF_FINGER: dict[Finger, int] = {
+    Finger.LP: 0,
+    Finger.LR: 1,
+    Finger.LM: 2,
+    Finger.LI: 3,
+    Finger.RI: 6,
+    Finger.RM: 7,
+    Finger.RR: 8,
+    Finger.RP: 9,
+}
+
+#: ``_v1_pattern``'s four redirect labels rolled onto this scorer's two weight keys, plus
+#: its one-hand label. The classes are MUTUALLY EXCLUSIVE (``_v1_pattern`` returns one label
+#: per trigram), so this dict is a partition, not a set of overlapping tests — see the
+#: module docstring's honesty note 3. Every other ``_v1_pattern`` label (rolls, alternation,
+#: Sft/Sfb -> ``None``) is not a class this scorer weighs and is dropped.
+_TRIGRAM_CLASS: dict[str, str] = {
+    "onehands": "onehand",
+    "redirects": "redirect",
+    "redirects_sfs": "redirect",
+    "bad_redirects": "bad_redirect",
+    "bad_redirects_sfs": "bad_redirect",
+}
 
 #: name -> (signed weight per corpus-share PERCENT, why). Positive = penalty, negative =
 #: reward, mirroring community analyzers' sign conventions. Opinions, documented.
@@ -60,13 +117,41 @@ DEFAULT_OXEY_WEIGHTS: dict[str, tuple[float, str]] = {
         "same-hand direction reversal: penalized by all community analyzers; our data "
         "measured it time-NEUTRAL beyond its bigrams — kept as community judgment",
     ),
-    "bad_redirect": (4.0, "redirect with no index finger involved — community's worst trigram"),
+    "bad_redirect": (
+        4.0,
+        "redirect with no index finger involved — community's worst trigram; EXCLUSIVE of "
+        "`redirect` (upstream assigns one class per trigram), so 4.0 is the whole price",
+    ),
     "alternate": (-0.5, "hand alternation mildly rewarded (dvorak-school value)"),
     "imbalance": (
         1.5,
         "hand-load imbalance percent (|left-right| share): balanced hands preferred",
     ),
 }
+
+
+def _trigram_class(g: Geometry, a: Position, b: Position, c: Position) -> str | None:
+    """This scorer's trigram class for three key positions, or ``None`` for no class.
+
+    Delegates the classification to :func:`keybo.analysis.community._v1_pattern` — the
+    oxeylyzer-1 port that ``tests/analysis/test_kan1_parity.py`` gates integer-exact against
+    the real upstream repl — and rolls its four redirect labels onto this scorer's two
+    redirect weights via :data:`_TRIGRAM_CLASS`.
+
+    Delegating rather than re-deriving is the point: this module used to carry its own
+    predicates, and they disagreed with the parity-gated ones three ways (nested rather than
+    exclusive redirect counters; a direction step computed on ``abs(column)``, which reads the
+    index finger's two columns as a step; and no Sft/Sfb exclusion). A hand-rolled
+    reimplementation of a validated classifier loses the validation, so there is deliberately
+    only one classifier in the repo and this is a translation layer into it.
+    """
+    fingers = []
+    for position in (a, b, c):
+        finger = _LIBDOF_FINGER.get(g.finger(position[0]))
+        if finger is None:  # thumb/space: not a letter-key trigram upstream classifies
+            return None
+        fingers.append(finger)
+    return _TRIGRAM_CLASS.get(_v1_pattern(*fingers))
 
 
 class OxeyStyleScorer(IScorer):
@@ -134,16 +219,9 @@ class OxeyStyleScorer(IScorer):
                 continue
             a, b, c3 = (layout.pos(ch) for ch in tg)
             tg_total += f
-            ha, hb, hc = g.hand(a[0]), g.hand(b[0]), g.hand(c3[0])
-            if ha == hb == hc and ha != 0:
-                d1 = abs(b[0]) - abs(a[0])
-                d2 = abs(c3[0]) - abs(b[0])
-                if d1 and d2 and (d1 > 0) == (d2 > 0):
-                    shares["onehand"] += f
-                elif d1 and d2:
-                    shares["redirect"] += f
-                    if not any(abs(p[0]) in (1, 2) for p in (a, b, c3)):
-                        shares["bad_redirect"] += f
+            name = _trigram_class(g, a, b, c3)
+            if name is not None:
+                shares[name] += f
         # normalize to percents of their own corpus
         for k in ("sfb", "alternate", "lsb", "scissor", "inroll", "outroll"):
             shares[k] = 100.0 * shares[k] / bg_total if bg_total else 0.0
