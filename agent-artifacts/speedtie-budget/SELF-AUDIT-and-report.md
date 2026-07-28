@@ -122,10 +122,11 @@ and the strongest confirmation the design worked) · ms/char code path **0 diff 
 commit the 1M run used · `sfr` invariance tested **directly** (1 distinct value), excluded
 everywhere.
 
-## 5b. HOSTILE SELF-AUDIT (reflection pass, before reaping) — branch `speedtie-budget` @ `b36b8d8`
+## 5b. HOSTILE SELF-AUDIT (reflection pass, before reaping) — branch `speedtie-budget`
 
 Four findings, all of which cut against my own writeup. Worktree verified clean (`git status
---short` empty). Commits: `40ff53c` → `23584ea` → `b36b8d8` → **`d2f612e` (this audit) = tip**.
+--short` empty). The audit itself is committed at `d2f612e`; resolve the current tip with
+`git rev-parse speedtie-budget`.
 
 **(a) WEAKEST CLAIM — the size-matched test in §3 is PARTLY CIRCULAR, and it is the one I leaned
 on hardest.** I wrote "12 of 14 live gauges have 10M spread at or above the median same-size 1M
