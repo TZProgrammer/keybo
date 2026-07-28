@@ -9411,3 +9411,62 @@ directory — and this is the first arm in the campaign to state which of its ow
 NEW TRAP CANDIDATES it banked (NOT written to the shared KB — that stays user-gated): a borrowed search region LOOSER than the verdict region; a range-normalized sum makes the WIDEST axis cheapest, with a
 share-of-deficit detector; a sharpening of trap 51 — **a soft/summed penalty IS a flag; a price is negotiable, a constraint is not**; and the hand-transcription trap plus its near-miss — ⚠ **its first diagnosis
 reached for a DOCUMENTED BLAS class and it measured that to refutation at ~1e-15, i.e. A KNOWN TRAP MAKES AN ATTRACTIVE WRONG ANSWER.**
+
+### ARMH-1 — 🟢 **THE LEVER IS COLLECTABLE: the campaign's FIRST STRICT DOMINANCE over arm B on the gauge frame — 12 contested axes, 12 better, 0 WORSE** — but only ~30% of the headroom is reachable, and the reason is the other 13 axes, not the speed tie (2026-07-28)
+The arm ARM G specified after diagnosing its own failure: minimize `oxey-style` ALONE under HARD constraints (`ms <= armB + 2*sd_measured`, `g <= g_armB` on the other 13 axes), hard rather than summed. Child `armh`,
+branch `optimize-arm-h`, **6 commits in causal order** — prereg `491138b` **ALONE before any result**, drivers `a078611`, **judge `2b90b47` committed WHILE PHASE 1 WAS EXECUTING (138 workers live, 0 rc sentinels, 0
+result JSONs, verified at commit time)**, result `c85623d`, index `835493e`, addendum `ba6819d`. Nothing pushed, PREREGISTRATIONS.md **zero-diff across all 6 commits**, `oxey-partition-fix` NOT merged, **no layout
+adopted or recommended.**
+🟢 **THE RESULT, WHICH I VERIFIED THROUGH THE SHIPPED CLI TO 6 DECIMALS AND THEN CHECKED AXIS-BY-AXIS MYSELF:**
+    layout                              ms/char      vs armB    oxey-style    vs armB
+    BALL-1   flmpg-yuo,sntcdireahkxbwv'.jzq  253.966426   +0.065847     7.577429   -1.033616
+    MID      flmpg.yuo,sntcdireahkxbwv'-jzq  253.988534   +0.087955     7.769027   -0.842019
+    HEADLINE flmpg-,uoysntcdireahkxvwb.'jzq  254.039627   +0.139048     4.446491   -4.164554
+    arm B    flmpg-yuo,sntdcireahkxbwv'.jzq  253.900579    —            8.611046    —
+ **My own per-axis check of HEADLINE vs arm B: 12 CONTESTED, 12 BETTER, 0 WORSE**, with `alt` and `imbalance` tying **BY CONSTRUCTION** (it shares arm B's hand partition — exactly the ULTRAAUDIT R2-b invariance) and
+ `sfr` never counted. **BALL-1 likewise: 6 contested, 6 better, 0 worse.** 6 of 6 clusters better; Hamming 8/30. => **`HEADLINE` STRICTLY DOMINATES ARM B ON THE FRAME. That is the first strict gauge-frame improvement
+ this campaign has produced at a speed cost inside a measured band, and it settles SPEEDTIE-1's lever as REAL AND PARTLY COLLECTABLE.**
+🟢 **THE LEVER, NOW MEASURED RATHER THAN ASSERTED — and this is the number to quote.** Unconstrained, the cold arm drove `oxey-style` to **-5.273023, i.e. 13.8841 below arm B** — while violating 4-5 hard axes at
++0.24..+0.30 ms/char. **The constrained arm collects 4.1646 of 13.8841 = 30.0%; the other 70% is priced in axis violations.** ⚠ **At `sd_H` the SPEED band is NOT the binding constraint (relaxation needed: 0.0) — the
+AXIS legs are, with `sfs` and `sr-roll` having solo violators.** => **SPEEDTIE-1's headroom is real, large, and MOSTLY UNCOLLECTABLE, and the reason is the other 13 axes rather than the speed tie.** That is a
+materially different statement from either outcome I had pre-authorized.
+🔴 **AND THE SELF-KILL IS AGAIN THE MOST VALUABLE PART — IT DEMOTED ITS OWN HEADLINE.** (1) **The HEADLINE's speed-tie is NOT ruler-robust:** in-band only under its own `sd_H = 0.09952542` — **the LARGEST of the three
+rulers ever measured on this objective** — and the gate returns rc=1/OUT at arm G's `sd_G = 0.049171` and at the borrowed 0.0617. ⚠ **So the ruler-independent result is BALL-1, not the headline.** Its prereg argued
+residual bias would be TIGHTER; it came out LOOSER — **the same anti-conservative direction arm G was caught in.** 🟢 What the structural fix DID buy: **search-band == verdict-band by construction, so a looser sd
+cannot open a gap between them** — it just cannot make the headline ruler-independent. (2) **3 of the 12 wins are under 0.3% of BOTH independent yardsticks** (six-champion range AND 1-swap-ball range): `sfs`,
+`sfs-dist`, `sr-roll` — **three of the four axes arm B is best-of-six on, i.e. the constraint BINDING, not a win.** Honest restatement, registered: **9 substantive + 3 negligible + 2 construction-ties, spanning at
+most 8 INDEPENDENT axes** (lsb/lsb-dist are duplicates). (3) **The headline is WARM-ONLY** — all 5 cold seeds infeasible — **so it is a constrained local improvement ON arm B, not a cold-start discovery**; warm
+n_distinct=2 over 5 runs, so *"found THE best feasible layout"* is unsupported. (4) **Its own F2 was MIS-SPECIFIED in its prereg**: it conflated "an infeasible champion was returned" with "the construction is broken",
+so it fires on the EXPECTED output of a correctly-working arm (a run finding nothing feasible must still return its least-infeasible archive entry); measured **0 of 10 cross-path disagreements**. It reports both
+readings and **lets the strict one keep the FAILURE label.**
+🔴 **IT REFUTED ARM G'S LEADING HYPOTHESIS — and did it at ARM G'S OWN cap so the refutation cannot be an artifact of its larger sd.** Tested at 253.99892068: **BALL-1 AND MID both satisfy all 13 caps AND sit inside
+arm G's own speed cap.** => **arm G's "0 of 273 feasible / still 0 after dropping any single cap" is a property of ITS ARCHIVE, not of the feasible set, and BALL-1 is ABSENT from that archive.** 🟢 **The cause is the
+mechanism ARM G ITSELF DIAGNOSED: its `D` traded `oxey-style` away, so it never searched the region where oxey improves while the other 13 hold. Its self-kill predicted this blind spot; its false-empty warning
+inherited it.** => **this refutes arm G's HYPOTHESIS, not its WARNING.**
+🟢 **AND ARM G'S WARNING AND BOTH DEFENSES ARE CONFIRMED — the relay paid off exactly as intended.** Defense 1 (seed from arm B) was already implemented as `armh-warm`, fail-loud 20/20 with V=0, and **was DECISIVE
+precisely as predicted: warm 5/5 feasible, cold 0/5.** Defense 2 computed in arm G's own format over a 723-layout archive: `joint_13caps` **5 vs its 0**, `min_caps_violated` **0 vs its 3** — and **`min_caps_violated=0`
+is what settles EMPTY-vs-UNREACHABLE, so it never had to distinguish them.** ⚠ **Caveat that cuts against reading the rate difference: its archive contains arm-B-seeded WARM runs, so the difference is about the two
+SEARCHES, not the geometry.** 🟢 **Arm G's `sfs`/`sfs-dist` diagnosis SURVIVES as the local binder** — those plus roll/sr-roll are scarcest in BOTH archives, are the axes arm B is best-of-six on, and are exactly where
+the headline's wins are negligible. **Three independent routes to the same geometry.**
+🟢 **TWO TRANSFERABLE FINDINGS, and the first amends this ledger's own standing rule.** ⚠ **A SEARCH-NOISE SD IS NOT TRANSFERABLE EVEN WHEN 3 OF THE 4 QUADRUPLE LEGS MATCH: `sd_H` is 2.024× arm G's `sd_G` on the same
+engine, budget, config and statistic, differing ONLY in the seed family.** Attributable to the family and NOT to its engine because its repro control is **BIT-EXACT vs arm G's baseline-r0** — same layout, same fitness
+to all 16 digits, same 1,044,667 unique evals. => **the (pool × replicate-structure × scale × statistic) quadruple is NECESSARY BUT NOT SUFFICIENT; the SEED FAMILY is a fifth leg.** And: **0 of 435 one-swap
+neighbours of arm B are FASTER than it** (min +0.00944898, exhaustive) => **arm B is a strict 1-swap speed local minimum.**
+🟢 **IT CONCEDED ARM G'S SHARPEST POINT AS A REAL GAP IN ITS OWN PREREG, AND THE CONCESSION WEAKENS ITS OWN HEADLINE FURTHER.** It pre-registered sensitivity over ruler VALUES (3 rulers, decisive) but **NOT over
+alternative STATISTICS.** Post-hoc over 9 defensible statistics: **BALL-1 in-band 9/9, MID 9/9, HEADLINE 6/9** — and its registered statistic is the **THIRD-LOOSEST of nine, with all three that exclude the headline
+being the ROBUST outlier-resistant ones.** ⚠ **Arm G found this gap in arm H's prereg AFTER finding it in its own, so it is a CLASS: pre-register sensitivity over BOTH the ruler's VALUE and its STATISTIC.**
+🟢 **AND IT VERIFIED ARM G'S "same Python objects" DISCIPLINE RATHER THAN ADOPTING IT ON FAITH:** `search.AH is judge.AH` → True, `ARMH_REF` identity → True — *"already in place, but I had not CHECKED it, which is
+a-label-is-not-its-referent one level up."* ⚠ **And it draws the right boundary: object identity does NOT prove the two paths compute the same FUNCTION** — that is the cross-path control's job (1.233e-14,
+mutation-proven). **Both checks are needed.**
+🟢 METHOD, the strongest in the campaign: **16/16 runs rc=0 read from `.rc` SENTINELS, never a callback**; `unique_evals` **TRIPLY reconciled 16/16 with 0 mismatches**, all clearing the 80% floor; all 16 `.keys.npy`
+**RETAINED (129 MB)** so `--resume` works; **7 controls C1-C7 ALL ran BEFORE the prereg was written** (worktree isolation POSITIVE, arm B reproduces at absdiff **EXACTLY 0.0**, cross-path worst rel 1.233e-14 with 11/15
+bit-exact over 13 layouts, MUTATION-CONTROLLED, directions DERIVED two ways with `sfs` the sole rank-corr miss at rho -0.0157 **independently matching ARME-1 and arm G**, objective floor 7.105e-15). **The champion gate
+is PROVEN TO BITE FOUR WAYS, three of them before phase 1 launched.** Every constant **GENERATED never retyped** and re-derived at run start by `armh_assert_constants()`, which refuses to run on drift. **EMPTY was
+tested over a 676-layout archive sweep, not just champions.**
+🟢 THREE DEFECTS ITS OWN HARNESS CAUGHT IN ITSELF, ALL PRE-RESULT: shipped `analyze` **ALWAYS injects a qwerty reference row** (its row-count assert fired on first run); splitting `--layouts` on `,` shipped `.-` to the
+CLI as a layout name **because a C30M layout CONTAINS `,` `.` `-`**; and a vestigial import of a nonexistent symbol.
+⚠ SCOPE: MODELLED ONLY — g-frame, baked 90 WPM, blend-v1, 1-skip31, and **the as-shipped NESTED `bad_redirect` convention (bad redirect charged +6.0), the SAME convention SPEEDTIE-1's 14.05× and every arm G number
+were measured on** — so these numbers are comparable to those and **NOT to a post-OXEYFIX board.** **No claim that any gauge difference is PERCEPTIBLE.**
+=> **WHAT IS NOW AVAILABLE TO THE USER, and it is a genuinely new option: `BALL-1` (253.966426, +0.0658 over arm B, oxey-style 7.5774) dominates arm B on 6 of 6 contested axes with 0 worse and is IN-BAND UNDER ALL
+NINE STATISTICS AND ALL THREE RULERS — the ruler-independent result. `HEADLINE` (254.039627, oxey-style 4.4465) dominates on 12 of 12 but its speed-tie holds only under the loosest ruler.** Adoption remains
+USER-GATED; nothing is recommended here.
