@@ -100,9 +100,22 @@ ARM G  baseline-r0  : pyu.,vdfnlhieaocstrmkj'-qgwbzx  253.9997247816586  1,044,6
 Identical layout, identical fitness **to all 16 digits**, identical unique-eval count. So the
 `armh` arm and the repointed worktree literal changed **nothing** on the baseline path.
 
-=> **REGISTERED: a search-noise sd is not transferable even when three of the four quadruple
-legs match. The seed family alone moves it 2×.** That is a stronger statement of the standing
-floor rule than either arm registered before, and it is measured, not argued.
+🔴 **WITHDRAWN IN THE REFLECTION PASS — my own over-read of a control's scope.** I
+originally registered: *"a search-noise sd is not transferable even when three of the four
+quadruple legs match; the seed family alone moves it 2×."* **The attribution to the seed family
+is UNSUPPORTED and I withdraw it.** Bit-exactness on ONE run establishes **engine identity**,
+which it does cleanly — it does NOT establish that a 2.024× sd difference across FIVE runs is a
+family effect. Measured (`reflect-ratio-and-sd.json`): two-sided **F test on the variance ratio
+p = 0.201**; **95% CI on the sd ratio [0.653, 6.273], containing 1.0**; at n=5 vs n=5 the ratio
+must exceed **3.099** for α=0.05; and two samples from **one** population reach a ratio ≥ 2.0 in
+**10.3%** of 200,000 simulated draws.
+
+=> **WHAT SURVIVES, weaker but more useful:** `sd_H` and `sd_G` are two estimates of the *same*
+unknown quantity that differ 2× — unremarkable at n=5, which means **neither is a usable ruler on
+its own.** That argues the standing floor rule from the **precision** side rather than the
+seed-family side: **a 2×-uncertain ruler cannot adjudicate a 1.4× band question**, which is
+exactly what my headline turned on. This *reinforces* my self-demotion of the headline rather
+than rescuing it.
 
 ---
 
@@ -169,9 +182,25 @@ other axes while doing so:** every cold champion violates **4–5** hard axes an
 **+0.24 to +0.30 ms/char** out of band.
 
 => **The headroom SPEEDTIE-1 found is genuine and much larger than the collectable part. What
-makes most of it uncollectable is not the speed band — it is the other 13 axes.** The
-constrained arm collects **4.1646 of the 13.8841 available** = **30.0%**; the remaining 70% is
-priced in axis violations.
+makes most of it uncollectable is not the speed band — it is the other 13 axes.**
+
+🔴 **THE 30.0% RATIO IS RE-STATED IN THE REFLECTION PASS — as originally written it is
+MIXED-FRAME.** The numerator (4.1646) is **WARM / FEASIBLE / IN-BAND**; the denominator (13.8841)
+is **COLD / INFEASIBLE (5 caps violated) / OUT OF BAND (+0.3043)**. Convention, corpus, seed
+family and budget all match, so it is not a convention artifact — but *"collects 30.0% **of** the
+available headroom"* reads as a fraction of a comparable total, and **the denominator is a
+quantity no feasible layout could ever attain.** Canonical form instead (two numbers, no ratio):
+
+> Under full non-inferiority the arm collected **4.1646** oxey-style units. **Abandoning the 13
+> caps and the speed band** reached **13.8841**. So the **caps**, not the speed tie, are what
+> withhold the rest.
+
+If a ratio is wanted it must carry its cross-frame label: *"30.0% of what an unconstrained,
+INFEASIBLE, out-of-band cold champion reached"* — a cross-frame comparison, not a fraction of
+available headroom. (Two alternative denominators checked and rejected: the within-feasible-frame
+ratio is **1.0 by construction** and carries no information about the lever; the band-only
+relaxation is **empty in my archive** — 0 layouts hold all 13 caps while out of band.) **The
+conclusion survives unchanged; the word "of" does not.**
 
 **The binding constraint, per leg** (speed in ms/char, axes relative to arm B — reported side
 by side, never compared on one scale, since the units differ):
@@ -195,7 +224,22 @@ invariant; `alt`/`imbalance` are **construction-ties** because the headline **sh
 hand partition**, which I computed from live `Geometry`):
 
 > **12 better / 0 worse of 12 CONTESTED, + 2 construction-ties, 0 genuine ties. Hamming 8/30.
-> Cluster-corrected: 6 of 6 clusters better, 0 worse.** It **DOMINATES** arm B on the frame.
+> Cluster-corrected: 6 of 6 clusters better, 0 worse.** It **DOMINATES** arm B on the frame —
+> **of which 9 wins are substantive and 3 (`sfs`, `sfs-dist`, `sr-roll`) are the CONSTRAINT
+> BINDING, not wins** (margin table below; this qualifier must travel with the count wherever it
+> appears). `lsb`/`lsb-dist` are near-duplicates, so the 12 span at most 11 independent axes and
+> the 9 at most 8.
+
+🟢 **AND IT SURVIVES THE UN-NESTED `bad_redirect` CONVENTION — the gap GROWS.**
+Reflection-pass probe (`reflect-unnested-oxey.json`; `oxey-partition-fix` **not merged** — its
+delegation into `community._v1_pattern` reimplemented in a scratch probe), with four positive
+controls run FIRST: my nested recompute matches shipped `analyze` at **absdiff exactly 0.0**;
+OXEYFIX-1's published BEFORE values reproduce (88.197171 / −7.148220 / 8.611046) and its
+registered **0.42–1.50 drop** holds (mine 0.432–1.429); the 27,000-triple census gives `onehand`
+**1080 → 756**, double-charged **540 → 0**, `bad_redirect` support **540 both ways**; and a
+planted +10% moves the census. Result: **HEADLINE 12/0 of 12, BALL-1 6/0 of 6, MID 8/0 of 8 — all
+still DOMINATE**, with the HEADLINE's oxey gap **growing −4.164554 → −4.335672** and BALL-1's
+**−1.033616 → −1.038083**. **The dominance claim is NOT convention-dependent.**
 
 🔴 **BUT I KILLED THREE OF THE TWELVE.** A strict win above a 7.1e-15 numerical floor can still
 be negligible. Scaled against **two yardsticks that share no pool** — the range over the six
