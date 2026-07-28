@@ -8272,3 +8272,51 @@ shape-dependent with worst |price_many - price| = 0.000e+00**.
 => ACTION REGISTERED: **arms A/B/C/D are all n=1 seed** (I confirmed the shared seed 20260728 in their artifacts). Any future arm must report n>=3
 seeds and judge gaps against ITS OWN objective's search-noise spread, not the paired timing floor. The 6-seed placebo that already existed was never
 promoted to a ruler — that is the process failure, and it is now the standing rule.
+
+### SPEEDTIE-1 — 🟢 A FREE LUNCH THE CAMPAIGN ALREADY PAID FOR AND NEVER READ: six cold-start runs of arm B's objective are SPEED-TIED to 2.85x sd yet span 14.05x on oxey-style and 17.70x on imbalance (2026-07-28)
+Found while verifying — not assuming — the ARME-1 ADDENDUM claim that the 6-seed placebo band is arm B's OWN objective. It is, and the file
+(`state/keybo-optimization/artifacts/optevidence-1/search-noise-placebo.json`, written 2026-07-27) contains a natural experiment nobody read: **six
+independent cold-start searches of the identical baseline-served objective.**
+🟢 PROVENANCE VERIFIED, NOT INHERITED. Placebo baseline seed 900000 lands on `flmpg-yuo,sntdcireahkxbwv'.jzq` at **253.90057910352604** — the exact
+30-key permutation and value registered as arm B (253.9006), from a DIFFERENT seed (900000 vs 20260728) and a 9.3x SMALLER budget (1M vs 9.25M unique
+evals). Cold start confirmed by reading the driver, not the docstring: `drivers/search.py:318-323` seeds `islands x 64` UNIFORMLY RANDOM C30M
+permutations from `np.random.default_rng(args.seed)`; **no incumbent, no warm start, no injected layout.** So arm B is reproducible from scratch.
+⚠ BUT SHARPEN IT AGAINST MY OWN ENTHUSIASM — arm B is reproducible as a **SPEED, NOT AS A LAYOUT.** Only **1 of 6** seeds recovers arm B's exact
+permutation; the other five sit at Hamming **24, 26, 28, 29, 30** of 30 from it (i.e. up to ZERO shared key positions) while landing within
+**0.1760 ms/char** — 6/6 distinct champions. Two runs can agree on speed to 0.07% and share nothing.
+🟢 **THE RESULT THAT MATTERS.** Scored all six on the 15-gauge frame (blend-v1, `skipgrams=1-skip31`, `trigrams.sha256=19806532ee35`, shipped
+`keybo analyze`; artifact `artifacts/speedtie-1/`). Predicted-time spread is **0.1760 ms/char = 2.85x arm B's own 6-seed sd (0.0617)** — i.e. barely
+above its own noise — while the gauges spread ENORMOUSLY:
+    gauge          min       max     spread   ratio        gauge          min       max     spread   ratio
+    imbalance   0.2755    4.8754     4.5999  **17.70x**    lsb-dist    1.6147    3.8847     2.2700   2.41x
+    oxey-style  1.0078   14.1613    13.1534  **14.05x**    lsb         0.7917    1.7637     0.9720   2.23x
+    scissor     0.0682    0.2567     0.1885   **3.76x**    sr-roll    10.3405   17.8131     7.4726   1.72x
+    sfs         6.7995   10.5063     3.7068   1.55x        sfs-dist    8.0056   12.4145     4.4089   1.55x
+    sfb         1.8652    2.6272     0.7619   1.41x        redir       3.3901    4.4206     1.0305   1.30x
+    alt        37.1373   45.4198     8.2825   1.22x        roll       38.1759   45.4421     7.2662   1.19x
+    comfort     3.3749    4.0083     0.6334   1.19x        sfr           CONSTANT (permutation invariant, as registered)
+=> **THE SERVED OBJECTIVE IS NEARLY INDIFFERENT ACROSS A SET OF LAYOUTS THE GAUGES RANK 14x APART.** This is the CONSTRUCTIVE dual of arme's
+near-degeneracy finding (layouts within 0.020 ev units span 12.2353 ms/char): there, objective agreement hid speed disagreement; here, speed agreement
+hides GAUGE disagreement. Same phenomenon, opposite projection.
+🟢 THE TIE IS GENUINE AND THE OBJECTIVE CANNOT BREAK IT — I tested dominance rather than asserting indifference. **No sibling dominates arm B**: all
+five comparisons are strictly mixed (better/worse = 7/7, 4/10, 9/5, 9/5, 8/6; **zero ties in 70 cells**). So the choice among them is NOT resolvable by
+the served objective and IS resolvable on the gauge frame — a lexicographic rule is available FOR FREE.
+=> **ADOPTION CONSEQUENCE, AND IT IS ACTIONABLE.** Against keybo-lsb (FLAGSHIP-1's provisional pick, 254.6307): all six are FASTER (253.9006-254.0766,
+a 0.55-0.73 ms/char lead = 8.9-11.8x arm B's own noise sd, so it RESOLVES) but every one is worse than keybo-lsb on more gauges than it is better
+(best case `lcfmk.uoyprnstdiaeghzxwbv-,'qj` at 6 better / 8 worse). **So the honest statement is: the speed lead is real, the gauge cost is real, and
+the campaign never had to pay the WORST gauge profile for that speed — it just took whichever seed it happened to run.** Arm B (seed 20260728 / 900000)
+is the **WORST of the six on scissor (0.2567, 3.76x the best), imbalance (4.8754, 17.70x), redir (4.4206) and sr-roll**, and best only on
+sfs/sfs-dist/alt. `lcfmk.uoyprnstdiaeghzxwbv-,'qj` (254.0056, +0.1050 over arm B = 1.70x sd, INDISTINGUISHABLE) is best-of-six on scissor AND
+imbalance and beats arm B on 9 of 14 gauges.
+=> **REGISTERED DECISION RULE FOR ANY FUTURE ARM (pre-registered here, before running it): a search must report n>=3 seeds; among champions whose
+predicted time is within 2x that objective's OWN search-noise sd, the winner is chosen on the pre-declared gauge frame, NOT on the objective.** The
+campaign's practice of publishing seed-1's champion silently threw this away. NOTE this is a SELECTION rule over already-computed champions — it is not
+a claim that the gauge differences are perceptible (FLAGSHIP-1's caveat still binds), only that they are FREE.
+⚠ SCOPE. n=6 at 1M evals, one objective (baseline served), one corpus (blend-v1). The 2.85x is measured against the 1M-budget sd; the placebo's own
+note says 1M OVERSTATES full-budget spread, which makes the tie CONSERVATIVE (a smaller true sd would make 0.1760 a LARGER multiple — the honest
+caveat is that this cuts against me, so the rule's "within 2x sd" band must be recomputed per objective, not borrowed). Whether the same free headroom
+exists at 10M evals is UNTESTED.
+=> PROCESS FINDING, and it is the ninth-defect pattern in a new dress: **the artifact was 20 hours old, sat in a directory I had already read, and its
+`bands` block was quoted as a NOISE RULER while its `runs` block — six fully-scored champions — was never opened.** A file consulted for one purpose is
+not a file that has been read. The defect class here is not a wrong number; it is **an unexamined artifact whose headline field crowded out its
+richest field.**
