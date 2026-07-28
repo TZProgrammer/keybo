@@ -9316,3 +9316,16 @@ verified** — and the finding's own supporter showed its counterfactual sizes a
 docstring says *"the maximum achieved by any candidate"* and the code is `max(r[2] for r in results)`), and K10's mass figures.
 => **TOP IMPROVEMENT PROPOSAL, registered: `wf-ultraaudit.js` must emit a `finding_id` on EVERY verdict.** The missing join is the root cause of *"nobody ever audited a refutation"*, and recovering it required
 **non-durable** raw transcripts — i.e. one session-dir reap away from being permanently unauditable. **A workflow that cannot say which finding a verdict judged has no audit trail, only a vote total.**
+
+### REFAUDIT-1 ADDENDUM — 🟢 THE NON-DURABLE EVIDENCE IS NOW DURABLE: 168 agent transcripts archived, because the ONLY path to auditing this campaign's refutations ran through files a session reap would have deleted (2026-07-28)
+Acting on REFAUDIT-1's explicit warning rather than registering it. The rebuilt finding→verdict join exists **only** because 168 per-agent `.jsonl` transcripts still happened to be on disk under
+`~/.claude/projects/.../subagents/workflows/wf_32ff2687-938/` — **337 files / 106 MB, outside any state dir, one session-dir reap from gone.**
+🟢 **ARCHIVED AND VERIFIED, not merely copied:** `artifacts/refaudit-1/raw-transcripts/wf_32ff2687-938-agent-jsonl.tar.gz` (**52 MB compressed**), with a README recording *why* it exists and what to read first.
+Verified by reading back **out of the archive**: **168 `agent-*.jsonl` transcripts** present and `journal.jsonl` at **326 lines** — so the archive is not just a file of the right size. The small durable extract is
+banked alongside it: `refutation-map.json` (720 KB — the rebuilt join, and the thing to read FIRST), `killed-dossier.md` (252 KB), `coverage-ledger.txt`, `K10-analysis.md`, `ledger-cites.txt`,
+`refutation-claims.json`.
+=> **WHY THIS IS WORTH AN ENTRY RATHER THAN A LINE: the campaign's ability to audit its own refutations was, until today, a property of a temp directory.** The K10 resurrection — the one wrong kill in 14 — was
+recoverable only from these files, because the shipped digest had dropped the join. Had that directory been reaped first, the finding would have stayed dead and **no reader would ever have had anything to check**,
+which is the precise sense in which a false refutation is invisible by construction.
+⚠ **AND IT GENERALIZES BEYOND THIS RUN: "durable" is a property of a LOCATION, not of an artifact.** The digest was in the right place and was useless (join lost); the transcripts were complete and in the wrong
+place. Both halves have to hold. The standing fix stays as registered — **emit a `finding_id` on every verdict** — so that no future run's audit trail depends on where its scratch files happened to live.
