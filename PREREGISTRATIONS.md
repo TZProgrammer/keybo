@@ -8560,3 +8560,55 @@ units). Fixing `oxey.py` properly means adopting `community.py`'s finger-based 4
 boards re-adjudicated, not silently.
 => PROCESS LESSON, the cleanest of the session: **I inferred a semantic (exclusivity) from a DATA TABLE and registered it as a warrant for inaction.** The refutation cost one agent a few hours and required
 reading the CONSUMER. A table, a weight list, a config — none of them carry the semantics of the code that reads them. *Name is not thing*, in the form: **a value is not its interpretation.**
+
+### MODELNORM-1 CORRECTION + STANDING RULE — 🔴 my "5 failed / 2 untestable" is wrong (census: 11/6/1); 🟢 a THIRD instance of the BLAS shape-dependence class is ALREADY IN THE REPO on a headline dominance axis, which I reproduced and bounded; and the FLOOR RULE is now registered as standing (2026-07-28)
+The reflection pass on `modelnorm`. Two corrections to my own MODELNORM-1 entry (181f324), one new confirmed defect, and the standing rule the session's most-repeated error has earned.
+🔴 **(A) MY PREDICTION TALLY IS WRONG. The census is 11 HELD / 6 FAILED / 1 UNTESTABLE**, not the "11 / 5 / 2" I registered. I verified by counting the table rows myself rather than trusting either of us:
+`✅ 11, ❌ 6, ⚠ 1`, failures = **P1 P6 P13 P15 P17 P18**, untestable = **P3**. The child's own arithmetic slip (it double-counted P15's "FAILED (half)" as an untestable) propagated into my ledger entry
+verbatim — **a summary figure I could have checked in one grep and did not.** The per-row table was right all along; only the headline count was wrong.
+🟢 **AND THE SIX FAILURES REDUCE TO FOUR DISTINCT LESSONS — registering the raw count over-weights one mechanism:**
+ **(a) THE WORLD DIFFERED (3 failures, 2 facts):** **P6** — sharply posed and decisively wrong: normalization re-orders nothing. **P1 + P13 are ONE fact counted twice** — AALTO is near-saturated (arm B
+ already sits at **0.9879** of AALTO's own optimum), so the search finds only +0.099 pp of further headroom and the equal blend must surrender 0.097 of AALTO. Register as a single finding.
+ **(b) BADLY POSED (3 failures, 2 mis-posings):** **P15** welded a VERDICT to a BOUND whose ceiling was inherited from arms whose `floor` axis is a DIFFERENT QUANTITY — the borrowed-ruler error again, and
+ the child should have pre-registered the verdict only. **P17 + P18 are ONE error counted twice** — it stated a threshold over "all 8 candidates" while **qwerty30m IS one of the 8 and is the sole outlier**, so
+ the bound was arithmetically inconsistent with its own candidate list. ⚠ And the mechanism is WORSE than stated: excluding qwerty the window is **0.09-0.17, TIGHTER** than predicted.
+ **P3's UNTESTABLE is closer to (a) than (b):** a sharp falsifiable prediction that went 0/0 because all three models' seeds landed on the IDENTICAL layout — **undefined because the world was better behaved
+ than any branch it wrote**, not because the prediction was vague. That distinction is worth keeping: an untestable-by-good-behaviour is evidence, an untestable-by-vagueness is not.
+🟢 **(1) THE BLAS SHAPE-DEPENDENCE CLASS HAS A THIRD MEMBER, IT IS SHIPPED, AND IT SITS UNDER A HEADLINE DOMINANCE AXIS. I REPRODUCED IT MYSELF RATHER THAN ACCEPTING THE STRUCTURAL CLAIM.**
+ Location: `noanchor-1/drivers/fast_eval.py:277-291` `SixSurface.saved_batch` — per-row `np.bincount`, then an **UNPADDED** `W @ self.mean_flat.T` at `(B,29791)@(29791,6)` where `B` is the caller's batch
+ length. Its docstring asserts *"Verified identical to the gather to <1e-11"* — **a TOLERANCE test standing in for a bit-exactness test, which is precisely the assertion that cannot detect this class.**
+ `normfloor_batch` (L304-307) routes through it, so **the ceiling-fraction normalized floor — a headline dominance axis — inherits the shape dependence.**
+ MY OWN MEASUREMENT, minimal reproduction at the identical shape, numpy 2.5.0: over 400 batch lengths holding one layout's histogram row FIXED and varying only the filler rows, **399 of 399 lengths differ**
+ (100%), max rel **1.0709e-14 = 48.2x float64 eps**, mean 1.0673e-14, median 1.0709e-14. **The same layout's fit depends on how many OTHER layouts share its batch.**
+ 🟢 **AND I BOUNDED IT RATHER THAN ALARMING ABOUT IT: it can reorder NOTHING.** The implied perturbation on `saved%` is **1.07e-12 percentage points**, against the tightest decision margin the campaign has
+ measured (modelnorm's 3.2845e-03) — a ratio of **3.26e-10**. => **no published verdict, floor, or dominance call is affected.** The risk is entirely PROSPECTIVE: a future agent tightening that `<1e-11`
+ comparison, or diffing two artifacts built at different batch sizes and reading reordering noise as a finding.
+ 🟢 THE CHILD'S OWN INSTANCE, now quantified properly: its "~1e-15" was the MAX, and the number that matters is **275 of 400 batch lengths (68.8%) disagree** — *"a single probe would have badly understated
+ its prevalence."* Worst absolute 2.4414e-04 ms against a tightest adjacent gap of 1.0854e+05 ms => ratio 2.25e-09, also unable to reorder. **HOW IT WAS FOUND, in its words: not by looking for it — it wrote a
+ `np.array_equal` assertion expecting a cache optimization to be trivially neutral, and it failed.** Same detection mechanism as `price_many` (79cb175): **an author asserting bit-exactness where they expected
+ triviality.** Its first instinct was that its tolerance was wrong (it was, separately — an absolute 1e-6 is below one ULP at 2.4e11, a different bug it also fixed), and converting to a relative tolerance made
+ the test pass while leaving the real question unasked; it then probed BATCH LENGTH, which is where the defect lives.
+ ⚠ ITS FIX IS BOTH STRONGER AND WEAKER THAN "pad to a constant tile", and I am registering both halves: **STRONGER** — every matmul is issued at exactly `(16,29791)@(29791,3)` with the final partial tile
+ zero-padded, bit-exact across all 400 lengths, **plus a mutation control that fails if the unpadded path ever becomes batch-invariant on another BLAS**, so the guard cannot silently stop testing. **WEAKER** —
+ it cannot make the answer independent of TILE itself (the tile size IS the operand shape), so changing TILE still moves a fit ~1e-15 rel; it froze TILE=16 and records it with the numpy version in
+ `identity()`. => **`price_many`'s "one shape-invariant implementation" is the strictly stronger fix; this is "one PINNED shape, declared in the provenance"** — sufficient for a lookup-table objective,
+ insufficient for anything published as a physical constant.
+ 🟢 **THE CLASS IS RENAMED, and the new name tells the next agent what to WRITE:** not *"BLAS is nondeterministic"* but **"a tolerance-based equivalence test cannot detect shape-dependence, and shape-dependence
+ is exactly what breaks checkpoint-resume and cross-artifact diffs."** That phrasing explains why `fast_eval`'s instance stayed latent (it asserted `<1e-11`) while two bit-exactness assertions found theirs.
+ Population at risk: the `bincount`-then-matmul idiom is **the campaign's standard fast-evaluator pattern and was COPIED between arms**, so it is "every driver that batches a QAP objective"; the discoverable
+ tell is a grep like `allclose|<1e-1[0-9]` near `@ .*flat` (NOT run — enumerating it is future work, deliberately un-hunted). Its own `search_modelnorm._neighbours` scores a fixed 435-row block, so it is
+ **shape-stable BY LUCK** — a good illustration of how the class hides.
+🟢 **(2) STANDING RULE, REGISTERED — the child's wording, requested verbatim because the error is its own five times over:**
+ **A RESOLUTION FLOOR IS A PROPERTY OF A (POOL x REPLICATE-STRUCTURE x SCALE x STATISTIC) QUADRUPLE, NOT OF A METRIC OR A CORPUS. IT MAY BE QUOTED FOR A SECOND DESIGN ONLY IF ALL FOUR MATCH; IF ANY DIFFERS IT
+ MUST BE RECOMPUTED, AND THE QUADRUPLE MUST BE PRINTED BESIDE EVERY FLOOR SO A READER CAN CHECK THE MATCH WITHOUT RE-DERIVING IT.**
+ Per clause, each with the instance that broke it: **POOL** — same candidates and same KIND (near-optimal vs random are different quantities; mixing is a Simpson artifact), and it must **EXCLUDE the reference
+ layout of a ratio scale** or the floor goes degenerate (forced to EXACTLY 1.0000 with qwerty30m in, 0.5632 out — **a ratio of exactly 1.0000 is the tell**). **REPLICATE-STRUCTURE** — per-seed refits,
+ per-model disagreement, bootstrap draws and cross-corpus draws are FOUR different nuisances; its 0.2319 bounds MODEL disagreement, the 0.3914 saved% bounds SEED noise, **and neither is a refinement of the
+ other**. **SCALE** — raw / saved-vs-reference% / 0-1 anchored are related by transforms that are NOT variance-preserving (seed share 0.74% raw ms vs 0.83% saved%). **STATISTIC** — max-spread / median / SD /
+ p95 are not interchangeable, and a p95 over few replicates is ~the maximum, so **the replicate COUNT travels with the statistic**.
+ **OPERATIONAL HALF: absence of a match is NOT licence to use the nearest available number.** Recomputing cost one driver and seconds of CPU against a borrowed figure wrong by **TWO ORDERS OF MAGNITUDE**
+ (FLAGSHIP-1's iWeb 78-83% fails SCALE + POOL; blend-v1 gives 0.74%). **All four non-transfers this session LOOKED like metric-level constants** ("the floor is ~0.2 ms/char") when every one was a
+ quadruple-level measurement. => **A FLOOR QUOTED WITHOUT ITS FOUR LABELS IS TO BE TREATED AS UN-SOURCED.**
+⚠ (B) RE-HARVEST: my verified bundle stopped at 2ec398a; the flush added commits, so the tip has moved (12 commits on `origin/main..modelnorm`, worktree clean). Re-harvested at the live tip rather than any
+written-down SHA — **the child's note that "writing 'HEAD is <sha>' into a tracked file is self-invalidating" is correct and it caught itself doing it twice.** Also: my "9 patches" was a bundle boundary-ref
+off-by-one; **8 was authoritative** at that tip.
