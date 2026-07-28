@@ -139,3 +139,63 @@ def test_price_many_refuses_an_unknown_policy():
     curve = _hinge("comfort", COMFORT_DOMAIN, knot=9.2622)
     with pytest.raises(ValueError, match="unknown domain policy"):
         curve.price_many(np.array([7.0]), policy="soft")
+
+
+def test_price_many_is_shape_invariant_and_bit_exact_with_price():
+    """ARM E found the previous version was NOT: `_design(...) @ coeffs` dispatches to a
+    different BLAS kernel by array SHAPE, so the same level priced at n=1 and n>=2 differed in
+    the last ULP on 9 of 14 real archive curves. The original test could not see it because
+    both sides used ONE fixed-length array — so this asserts across SEVERAL batch shapes, which
+    is the property that was actually broken.
+    """
+    import numpy as np
+
+    for curve in (
+        _hinge("comfort", COMFORT_DOMAIN, knot=9.2622),
+        _hinge("sr-roll", SR_ROLL_DOMAIN, knot=5.0),
+    ):
+        for level in (curve.domain[0], curve.domain[1], curve.knot, 0.0, 1e4):
+            scalar = curve.price(float(level), policy=CLAMP)
+            for n in (1, 2, 3, 7, 64):
+                batch = curve.price_many(np.full(n, float(level)), policy=CLAMP)
+                assert all(float(v) == scalar for v in batch), (curve.metric, level, n)
+
+
+def test_price_many_matches_price_on_real_fitted_curves():
+    """The synthetic hinges above cannot catch a form-specific defect; the shipped curves can.
+
+    ARM E's finding was on REAL archive curves (linear/quadratic/hinge mixed), which is why the
+    synthetic-only suite missed it. Skips cleanly if the artifact is not present.
+    """
+    import json
+    import pathlib
+
+    import numpy as np
+
+    from keybo.analysis.evidence_scorer import LossCurve
+
+    path = pathlib.Path(
+        "/local/home/zegertho/agent/state/evidence-scorer/artifacts/arm-archive400-native.json"
+    )
+    if not path.exists():
+        pytest.skip("fitted-weight artifact not available")
+    for row in json.loads(path.read_text())["weights"]["weights"]:
+        curve = LossCurve(
+            metric=row["metric"],
+            form=row["form"],
+            coeffs=row["coeffs"],
+            knot=row["knot"],
+            domain=tuple(row["valid_domain"]),
+            observed_range=tuple(row["observed_range"]),
+            weight=row["weight_ms_per_unit"],
+            weight_ci=(0.0, 0.0),
+            r2=0.0,
+            r2_linear=0.0,
+            mean_abs_shap=0.0,
+            shap_share_pct=0.0,
+        )
+        for level in (curve.domain[0], curve.domain[1]):
+            scalar = curve.price(float(level), policy=CLAMP)
+            for n in (1, 2, 5):
+                got = curve.price_many(np.full(n, float(level)), policy=CLAMP)
+                assert all(float(v) == scalar for v in got), (curve.metric, level, n)

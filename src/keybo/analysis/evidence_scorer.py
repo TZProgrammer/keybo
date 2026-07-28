@@ -464,8 +464,8 @@ class LossCurve:
                 )
             if policy == CLAMP:
                 value = min(max(value, self.domain[0]), self.domain[1])
-        design = _design(self.form, np.array([value]), self.knot)
-        return float((design @ np.array(self.coeffs))[0])
+        # Elementwise, matching price_many exactly at every batch shape (see its comment).
+        return float(self.price_many(np.array([value]), policy=EXTRAPOLATE)[0])
 
     def price_many(self, levels: np.ndarray, policy: str = EXTRAPOLATE) -> np.ndarray:
         """Vectorized :meth:`price` — the entry point a SEARCH must call.
@@ -493,8 +493,20 @@ class LossCurve:
             )
         if policy == CLAMP:
             values = np.clip(values, self.domain[0], self.domain[1])
-        design = _design(self.form, values, self.knot)
-        return design @ np.array(self.coeffs)
+        # ⚠ Compute the form ELEMENTWISE rather than as `_design(...) @ coeffs`. A matmul
+        # dispatches to a different BLAS kernel depending on the array's SHAPE, so the same
+        # level priced in a length-1 batch and a length-n batch differed in the last ULP on
+        # 9 of 14 archive curves (e.g. comfort at its floor: 0.069389400121559 at n=1 vs
+        # 0.06938940012155903 at n>=2). That made the "pin the fast path at EXACT float
+        # equality" instruction UNSATISFIABLE BY CONSTRUCTION, and the first version of the
+        # tests could not see it because both sides used one fixed-length array. ARM E found
+        # it. Elementwise arithmetic is shape-invariant and matches the scalar path exactly.
+        c = self.coeffs
+        if self.form == "linear":
+            return c[0] + c[1] * values
+        if self.form == "quadratic":
+            return c[0] + c[1] * values + c[2] * values * values
+        return c[0] + c[1] * values + c[2] * np.maximum(values - self.knot, 0.0)
 
     def in_domain(self, level: float) -> bool:
         return self.domain[0] <= float(level) <= self.domain[1]
