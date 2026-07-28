@@ -8855,3 +8855,31 @@ JSON compares EQUAL). **Trap 35 turned inward: scissorprice repointed penaltyaud
 I had ALREADY PUSHED.** Reading a child's report does not substitute — every one of these came from the child re-reading ITSELF as a stranger while still loaded. **Two of the three defects are the SAME failure
 mode (a control that shares the component under test), independently, in two agents that had both READ the trap about it** — recognising a trap in prose is not the same as detecting it in your own harness, which
 is why the four-question audit (which NAMES the failure mode) works where "reflect" would not.
+
+### ULTRAAUDIT-FP1 — 🟢 THE ALLGAUGE-1 SKIPGRAM FIX WAS INCOMPLETE: it fixed the ANALYSIS path and left the SEARCH path on `1-skip.txt` — and BOTH a test AND a docstring now PIN the divergence as a convention (2026-07-28)
+Interim finding from `ultracode-audit` (the user-requested workflow, still running: 125/137 agents, 18 finders, 32 defects raised, 87 verdicts, 37% refuted). **Registered now rather than at completion because I
+verified every cell of it myself against the shipped tree — including the cells that LIMIT the claim.**
+🟢 **THE DEFECT.** `src/keybo/cli/optimize.py:122` (the `--comfort-weight` path) and `:142` (the `--oxey-weight` path) both hardcode **`1-skip.txt`** — the table ALLGAUGE-1 identified as "a different,
+unreproducible pass" and fixed in `analyze`. Verified side by side: `analyze.py:501,505` imports and uses **`PRODUCTION_SKIPGRAMS`**, and `data/corpus.py:71` defines `PRODUCTION_SKIPGRAMS = "1-skip31.txt"` —
+**so the correct constant exists, is used by the analysis path, and is simply ignored by the search path.** => **the fix I registered as complete covered the path that MEASURES layouts and not the path that
+PRODUCES them.**
+🟢 **AND THE DIVERGENCE IS PINNED IN TWO PLACES, WHICH IS WHY IT SURVIVED A FIX AIMED AT IT:**
+ (1) **A TEST PINS THE BUG.** `tests/cli/test_optimize_fastpath.py:139` writes `1-skip.txt` and asserts the loader read it (verified: `Path(corpus_path).with_name("1-skip.txt").write_text("de\t7\n")` feeding a
+ capturing scorer). **A green gate therefore ENFORCES the wrong table** — trap 13's shape exactly: a defect shipped as a convention, protected by the test written to protect it.
+ (2) **A DOCSTRING PROMOTES IT TO A REQUIREMENT.** `data/corpus.py:65-68`: *"``1-skip.txt`` and ``1-skip31.txt`` are BOTH required: different call sites load different ones, and a directory that supplies only one
+ silently changes the skipgram convention per gauge"*, with `REQUIRED_TABLES` listing both and `resolve_corpus_dir` raising `SystemExit` if either is absent. **The comment states the divergence accurately and then
+ institutionalises it instead of removing it** — a corpus is now REQUIRED to ship both conventions in order to be usable.
+🟢 **BUT THE SCOPE IS NARROW, AND THE CHILD BOUNDED IT CORRECTLY BEFORE I ASKED — I RE-VERIFIED EACH LIMIT:** on **blend-v1 the two files are BYTE-IDENTICAL** (`md5 44959093…` for both; `diff` of the sorted
+tables gives **0** differing lines), and blend-v1 is the production default. **=> AT THE DEFAULT CORPUS THE DEFECT IS INERT: no published number, board, or adoption verdict is affected.** It bites only on
+`--corpus iweb` (where the tables genuinely differ, 3474 vs 4087 keys) and on any future corpus that writes the two conventions differently.
+⚠ **AND ON iWEB IT IS THE QWERTY-FLATTERING ASYMMETRY AGAIN — the signature that has now appeared four times in this campaign.** `oxey-style` d% by layout: qwerty **0.083%**, dvorak 0.263, colemak 0.281,
+graphite 0.343, flagship-c3 1.774, semimak 2.044, **keybo-lsb 4.327, keybo-lsb+lm 4.426, archive-1843 4.571** — **~52x larger on the optimized layouts than on qwerty.** A defect that barely touches the reference
+point and lands hardest on the candidates is exactly the kind that survives review, because every eyeball checks it against qwerty first. (Same shape as `wfd` sparing qwerty for a whole campaign.)
+🟢 VERDICT AS THE CHILD ASSIGNED IT, AND I AGREE: **UNSUPPORTED, NOT WRONG** — rankings over the 9 registry layouts are UNCHANGED for both affected gauges. The searches the campaign ran were on blend-v1, where
+the tables are identical, so **no registered search result is retracted by this.** What is retracted is the CLAIM of completeness in the ALLGAUGE-1 fix.
+=> ACTION: **the one-line fix (both `optimize.py` branches use `PRODUCTION_SKIPGRAMS`) is NOT applied by me here**, and the test that pins the bug must be rewritten to write BOTH tables with DIFFERENT contents and
+assert the production one is read — otherwise the fix cannot be proven. That is a code change to the search path, so it lands with the oxey partition fix as **user-gated**. Recording the shape of the required test
+because it is the part a future agent will get wrong: *a test that writes only one table cannot distinguish "reads the right one" from "reads the only one".*
+=> **THE GENERALIZABLE LESSON, and it is the most useful thing in this entry: A FIX'S SCOPE IS A CLAIM, NOT A CONSEQUENCE OF THE FIX.** ALLGAUGE-1 corrected the call site it was looking at; nothing verified that
+it was the ONLY call site. **The check that would have caught it is one grep** (`grep -rn '1-skip\.txt' src/`), and the reason nobody ran it is that the fix's own test went green. **When fixing a
+wrong-constant/wrong-file/wrong-flag defect, enumerate ALL call sites and assert the count — the fix is not "the site I changed is right", it is "no site is wrong".**
