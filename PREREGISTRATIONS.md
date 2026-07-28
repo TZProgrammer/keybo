@@ -8168,3 +8168,42 @@ tests/analysis 300 passed / 1 skipped of 301 collected, reconciled against `--co
 => NET FOR THE USER'S QUESTION: the evidence-weight line is now fully mapped. Best evidence-weight layout is **258.18** against a baseline search's
 **253.90** and the best incumbent's **254.63** — so on predicted time the SHAP weights remain worse than both, and the reason is no longer domain
 coverage (72% recovered) but the curves' in-band ranking, which is ~0 to negative exactly where layouts are chosen. Adoption remains the USER's gate.
+
+### ARMD-1 NARROWING + PENALTY-AUDIT LAUNCH — in-domain mis-specification is general to these curves, its SEVERITY is a property of the FIT (2026-07-28)
+NARROWING OWED TO ARME-1, now registered. ARMD-1 concluded "the curves are MIS-SPECIFIED WHERE THEY ARE SUPPORTED" and I framed that as closing the
+evidence-weight line. ARME-1 refutes the strong form FROM ITS OWN DATA: changing ONLY the weights JSON (random400 -> archive400, same seeds, same
+budget, same clamp) recovered **72% of arm D's 15.3756 ms/char excess** over arm B — 269.2762 -> 258.1803. A fit pool worth **11.0959 ms/char (22x the
+resolution floor)** cannot be a second-order term. **CORRECTED CLAIM: in-domain mis-specification is a property of THESE CURVES GENERALLY; its
+SEVERITY is a property of the FIT POOL.** Domain coverage is FIRST-ORDER and NOT SUFFICIENT. The evidence-weight line is NOT closed at 258.18 — what
+remains is a BAND-LOCAL RANKING defect, which is testable.
+🔴 THE REMAINING DEFECT, STATED SO IT CAN BE ATTACKED: the objective's rank agreement with predicted time DECAYS as the band tightens —
++0.7272 (all) -> +0.4195 (<=257) -> +0.2568 (<=256) -> +0.1609 (<=255.5) -> **+0.0580 (<=255.0)** over 3600 perturbations chosen by neither objective —
+and over the six incumbents alone it is **-0.6000**. Concretely it ranks **arm B, the fastest layout the campaign has produced, 12th of 14 on its own
+scale.** So the weights are fitted where layouts are NOT chosen and applied where they ARE. Both prior fits share this: the pool that covers the band
+(archive400) fails as a SCORER, and the pool that ranks (random400) does not cover the band.
+=> LAUNCHED `penaltyaudit` (local, reversible): audit the CORRECT PENALTY FUNCTION for each of the 10 terms in `DEFAULT_OXEY_WEIGHTS`
+(oxey.py:37) using the fitted surfaces, `keybo shap-report`, `keybo effect-curves`, and the raw Aalto data. Deliverable is a per-term dossier —
+functional form (constant / linear-in-share / saturating / threshold / **ZERO**), magnitude with CI, per-source agreement, confidence, and explicitly
+whether the term should exist at all.
+⚠ THE FOUR KNOWN-DEFECTIVE TERMS, each defective for a DIFFERENT reason (which is why one fix will not serve): **`onehand` -1.5 is BACKWARDS** — we
+reward it and oxeylyzer pays +90 (above alternates +40), but THEORY-1 measured a one-hand run **+37.2/+89.5/+52.6 ms SLOWER** than alternating (caveat
+carried: `onehands` and `alternates` can never share a stratum, so no context-controlled version exists and it is weaker than the matched results).
+**`dsfb` +5.0** penalizes what our lag-2 probe measured SPEED-NEUTRAL. **`redirect` +2.0** penalizes what roll_error_probe measured TIME-NEUTRAL
+(nuance: THEORY-1 has redirects SUPPORTED class-level / UNDERDETERMINED context-level, +4.17/-6.71/-3.34, a SIGN SPLIT). **`inroll` -2.0 vs `outroll`
+-1.0 asserts a 2x preference where oxeylyzer-1's REAL ported weights assert 4%** (+250 vs +240) and our measurement is a coin flip
+(-0.22/-3.08/-1.24 ms, 51-54% strata) — AND the served BIGRAM vector has NO direction channel (max non-landing feature diff under swap EXACTLY 0.0), so
+that distinction is UNREPRESENTABLE there, though it IS representable in the community TRIGRAM classes (9720/9720). DIRECTION-1 then ADDED a real
+direction channel and still found no cross-source signal.
+THE AUDIT MUST DISTINGUISH THREE VERDICTS and not blur them: **WRONG SIGN** / **WRONG MAGNITUDE** / **UNIDENTIFIED** (data cannot separate it from
+zero, so any nonzero weight is a PRIOR). The four above are roughly one of each. ⚠ AND THE BIGGEST THREAT TO THE TASK: per-term weights are NOT
+separately identified — effective dof over the 19 gauges is ~4-5, `oxey-style` is itself R2=0.9937 on {sfb,lsb,scissor,imbalance,redir,alt}, `redir`
+EQUALS the oxeylyzer redirect family, `sr-roll` is a strict SUBSET of `roll`, lsb|lsb-dist rho=1.00. Per-CLUSTER attribution must accompany per-term or
+the dossier over-claims. Also relayed: a wrong fitted sign may be collinearity SUPPRESSION rather than an inverted mechanism (5 of 5 such signs were
+sign-correct MARGINALLY at VIF 12.8-119), so check the marginal relation before declaring a sign error.
+⚠ SCOPE CONSTRAINT I IMPOSED: the audit must NOT edit `DEFAULT_OXEY_WEIGHTS` or ship a corrected scorer. That table is DELIBERATELY a community-
+PREFERENCE term — its own docstring states it reproduces community judgment, NOT our measurements, and two weights are knowingly contrary to our data.
+Silently "fixing" it would destroy what it is for. If the dossier supports a measurement-calibrated scorer, it must be a SEPARATE variant with the
+per-term divergences documented.
+VALIDATION NOTE: `price_many`'s shape-invariance fix (79cb175) is verified — suite **rc=0, 886 collected, 0 failed** (883 passed / 3 skipped), count
+reconciling as 884 prior + 2 new, from an out-of-tree sentinel. So `price` and `price_many` are now ONE elementwise implementation with 0 mismatches
+across both fitted weight sets at all domain edges and n in {1,2,3,7,64}.
