@@ -10,7 +10,7 @@ evidence leans H-REAL and against H-UNDER; that reading is labelled post-hoc in 
 claim about realized human typing speed. **No layout is adopted or recommended for adoption.**
 
 > ## ⚠ READ THE SELF-AUDIT BEFORE REUSING ANY OF THIS — `report.md` §5b (also committed as
-> `agent-artifacts/speedtie-budget/SELF-AUDIT-and-report.md` on branch `speedtie-budget` @ `b36b8d8`)
+> `agent-artifacts/speedtie-budget/SELF-AUDIT-and-report.md` on branch `speedtie-budget` @ `d2f612e`)
 > 1. **Do NOT merge/cherry-pick branch `speedtie-budget` into `main` expecting artifacts only.**
 >    `git diff 45ea276 b36b8d8 -- src/ tests/` = **+912 lines resurrecting
 >    `src/keybo/analysis/evidence_scorer.py`**, a module the ledger deliberately deleted, with no
@@ -30,9 +30,10 @@ claim about realized human typing speed. **No layout is adopted or recommended f
 >    deterministic and equivalent.
 
 The `/tmp/speedtie` worktree (branch `speedtie-budget`) is EPHEMERAL. Everything needed to read
-or reproduce this result is copied here. Commits on that branch: `40ff53c` (pre-registration),
-`23584ea` (drivers), `b36b8d8` (result + addendum) — unpushed, and they die with the worktree, so
-**this directory is the durable record.**
+or reproduce this result is copied here. Commits on that branch: `40ff53c` (pre-registration), `23584ea` (drivers),
+`b36b8d8` (result + addendum), **`d2f612e` (self-audit) = the tip**. The commits SURVIVE workspace
+destruction in the shared `.git` (verified empirically by the parent on two earlier children); the
+`/tmp/speedtie` checkout does not, so **this directory is the durable copy.**
 
 ---
 
@@ -91,7 +92,7 @@ champion set is a strict **subset** of the 1M set.
 ### `drivers/` — everything needed to re-run
 | file | what it is |
 |---|---|
-| `run_budget.py` | **Mine.** Replaces `search_placebo.py`. Correct `cwd`, no subprocess timeout, writes only into my own state dir, islands/epochs as args. |
+| `run_budget.py` | **Mine.** Replaces `search_placebo.py`: no subprocess timeout, writes only into my own state dir, islands/epochs as args. ⚠ its `cwd` is correct **for me only** — `WORKTREE` is hardcoded to `/tmp/speedtie` (line 35). See hazard 2 above before reuse. |
 | `analyze_budget.py` | **Mine.** Scores champions via the shipped CLI and evaluates the pre-registered rule mechanically. |
 | `convergence.py` | **Mine.** Convergence diagnostic from the epoch traces. |
 | `search.py`, `evobj.py` | Copied **UNMODIFIED** from `optevidence-1/drivers/` (md5-verified: `2e499152489dbdc7e7f6c1a69a8c71a8`, `dc45ef503792576157a872a996d9e9d7`). |

@@ -1,8 +1,9 @@
 # SPEEDTIE-BUDGET — does the free gauge headroom survive at the full budget?
 
 Subagent `speedtie` of `keybo-optimization`. Worktree `/tmp/speedtie`, branch `speedtie-budget`
-(commits `40ff53c` prereg → `23584ea` drivers → `b36b8d8` result; **nothing pushed**,
-`PREREGISTRATIONS.md` untouched). Durable record: `state/speedtie/artifacts/` +
+(commits `40ff53c` prereg → `23584ea` drivers → `b36b8d8` result → `d2f612e` self-audit **= tip**;
+**nothing pushed**, `PREREGISTRATIONS.md` untouched). ⚠ **Do not merge this branch expecting
+artifacts only — see §5b(d)2.** Durable record: `state/speedtie/artifacts/` +
 `profiles-and-artifacts-index.md`.
 
 **MODELLED ONLY** — g-frame, baked 90 WPM, blend-v1, `skipgrams=1-skip31`. Nothing below is a
@@ -124,7 +125,7 @@ everywhere.
 ## 5b. HOSTILE SELF-AUDIT (reflection pass, before reaping) — branch `speedtie-budget` @ `b36b8d8`
 
 Four findings, all of which cut against my own writeup. Worktree verified clean (`git status
---short` empty) at tip `b36b8d8`; the 3 commits are `40ff53c` → `23584ea` → `b36b8d8`.
+--short` empty). Commits: `40ff53c` → `23584ea` → `b36b8d8` → **`d2f612e` (this audit) = tip**.
 
 **(a) WEAKEST CLAIM — the size-matched test in §3 is PARTLY CIRCULAR, and it is the one I leaned
 on hardest.** I wrote "12 of 14 live gauges have 10M spread at or above the median same-size 1M
@@ -189,7 +190,9 @@ verdict toward H-UNDER.
   another workspace's state dir, and islands/epochs. Trap 35 wearing a subprocess's clothes.
 - **`evobj.py:42` imports `keybo.analysis.evidence_scorer`, which is DELETED at ledger HEAD
   `45ea276`.** The driver cannot import without restoring it (byte-identical copy kept in
-  `artifacts/drivers/evidence_scorer.RESTORED.py`, md5 `01f3a95a`).
+  `artifacts/drivers/evidence_scorer.RESTORED.py`, md5 `01f3a95a`). ⚠ **I restored it INTO the
+  committed tree** at `40ff53c`, so my branch carries a +912-line resurrection of a deliberately
+  deleted module — see §5b(d)2 before merging or cherry-picking this branch.
 - **Three CLI shapes that silently corrupt numbers:** ms/char is `row["time"]["ms_per_char"]` (the
   top-level key doesn't exist and yields **None** for every layout); `blob["gauge_frame"]` is a
   **description string**, not a list of names; and the CLI emits an extra `--ref` row, so
