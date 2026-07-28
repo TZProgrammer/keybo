@@ -1,0 +1,89 @@
+{
+ "n_archive": 273,
+ "per_constraint_n_ok": {
+  "sfb": 187,
+  "sfs": 7,
+  "sfb-dist": 219,
+  "sfs-dist": 1,
+  "lsb": 210,
+  "lsb-dist": 205,
+  "alt": 264,
+  "roll": 3,
+  "sr-roll": 6,
+  "redir": 193,
+  "scissor": 236,
+  "imbalance": 225,
+  "comfort": 28
+ },
+ "speed_cap": 253.99892068405563,
+ "n_speed_ok": 7,
+ "joint_13caps": 0,
+ "joint_13caps_plus_speed": 0,
+ "leave_one_out": [
+  {
+   "dropped": "sr-roll",
+   "n_feasible": 0
+  },
+  {
+   "dropped": "sfs-dist",
+   "n_feasible": 0
+  },
+  {
+   "dropped": "sfs",
+   "n_feasible": 0
+  },
+  {
+   "dropped": "sfb-dist",
+   "n_feasible": 0
+  },
+  {
+   "dropped": "sfb",
+   "n_feasible": 0
+  },
+  {
+   "dropped": "scissor",
+   "n_feasible": 0
+  },
+  {
+   "dropped": "roll",
+   "n_feasible": 0
+  },
+  {
+   "dropped": "redir",
+   "n_feasible": 0
+  },
+  {
+   "dropped": "lsb-dist",
+   "n_feasible": 0
+  },
+  {
+   "dropped": "lsb",
+   "n_feasible": 0
+  },
+  {
+   "dropped": "imbalance",
+   "n_feasible": 0
+  },
+  {
+   "dropped": "comfort",
+   "n_feasible": 0
+  },
+  {
+   "dropped": "alt",
+   "n_feasible": 0
+  }
+ ],
+ "min_caps_violated": 3,
+ "n_at_min": 2,
+ "closest": {
+  "layout": "flmpg.yo,usnctdireahvxwbk-'qjz",
+  "n_violated": 3,
+  "violations": [
+   "sfs",
+   "sfs-dist",
+   "redir"
+  ],
+  "ms": 254.0006716998283,
+  "oxey": 12.111555468837956
+ }
+}

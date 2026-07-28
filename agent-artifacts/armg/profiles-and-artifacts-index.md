@@ -218,3 +218,46 @@ The next arm to register (NOT run here): minimize `oxey-style` **alone**, subjec
 constraints `ms <= armB + 2*sd_measured` and `g <= g_armB` on the other 13 axes. Hard, not
 summed — trap 51's lesson is that a maximizer does not read flags, and *a summed penalty is a
 flag*.
+
+---
+
+## ⚠ WHICH FILES ARE LOAD-BEARING — read these, ignore the rest
+
+The artifact set is **82 MB**, but **the ARM G verdict is re-derivable from 6 files totalling
+~180 KB.** Everything else is bulk run output kept for reproducibility, not for reading.
+
+### LOAD-BEARING (open these first — the verdict rests on them)
+
+| File | ~size | Why it is load-bearing |
+|---|---|---|
+| `PREREGISTRATION.md` | 20 KB | the registered objective, ruler rule, 4 failure conditions, 6 predictions. **Nothing in the verdict is legitimate except by reference to this.** |
+| `runs/armg-summary.json` | 54 KB | all 10 runs: champion layouts, ACHIEVED `unique_evals`, rc, and the **top-50 archives** that the 273-layout sweep is computed from. **This one file is sufficient input to re-derive every number below.** |
+| `armg-judgement.json` | 39 KB | the pre-committed judge's output: verdict, measured `sd_G` + quadruple, per-pair CONTESTED counts, placebo, Hamming both ways |
+| `armg-archive-analysis.json` | 5 KB | the 273-layout sweep — the evidence that the premise fails *independently* of the band defect |
+| `armg-self-separation.json` | 4 KB | the hostile re-read, incl. the axis-win test (7.80 vs 7.80) that shows the null is not an artifact of judging D by D |
+| `drivers/search.py` + `drivers/judge_armg.py` | 55 KB | the objective and the judge. `ARMG_REF`/`ARMG_SCALE`/`ARMG_DIR` live in `search.py` and the judge **imports them**, so the two cannot diverge. |
+
+**Re-derivation recipe (verified 2026-07-28, 0 mismatches on 24 numbers):**
+`drivers/audit_reproduce.py` recomputes `sd_G`, the band edges and gap, min/mean D per arm,
+the 273 count, the 7-in-band count, the axis-win means, and the headline self-kill figures
+**from `runs/*-r?.json` alone** — not from any summary or judgement file. Run it to confirm the
+verdict before trusting any prose.
+
+### SUPPORTING (open only if auditing a specific control)
+
+`pc_fasteval.json` (cross-path control) · `pc_armg_objective.json` (9 objective controls) ·
+`shape-dependence.json` (the refuted BLAS hypothesis) · `gauge-directions.json` (directions
+derived two ways) · `D-prereg-input.json` (the reference/scale constants) ·
+`prereg-inputs.json`, `headroom-probe.json` · `armh-feasibility-warning.json` (the arm H
+warning) · `armg-ruler-robustness.json` (the ddof/statistic sensitivity)
+
+### BULK ARCHIVE — 82 MB, ~99.8% of the bytes, needed by NO claim
+
+| File | Size | Purpose |
+|---|---|---|
+| `runs/*.keys.npy` (10 files) | **~82 MB total** | dedup sidecars. Their **only** use is enabling `--resume` on these exact runs. `unique_evals` is *triply* recorded (run JSON == ckpt `n_unique` == sidecar length, verified 10/10), so **no reported number depends on them.** Safe to delete if space is needed — that only forfeits `--resume`. |
+| `runs/*.ckpt.json` (10 files) | ~1.7 MB | per-epoch island state (trap 7 insurance). Redundant with the run JSONs for every published figure. |
+| `runs/*.log` (10 files) | small | per-epoch traces — useful for convergence questions, no claim depends on them |
+
+**One-line summary for a future reader:** to check ARM G, read `PREREGISTRATION.md`, then run
+`drivers/audit_reproduce.py` against `runs/armg-summary.json`. Do not open the 82 MB.

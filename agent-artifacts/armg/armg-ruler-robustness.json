@@ -1,0 +1,74 @@
+{
+ "min_armg_ms": 254.0136761931428,
+ "armB": 253.90057910352604,
+ "variants": {
+  "sd_ddof1_baseline_REGISTERED": {
+   "value": 0.04917079026480171,
+   "two_sd": 0.09834158052960341,
+   "F1_edge": 253.99892068405563,
+   "F1_fires": true,
+   "FASTER_threshold": 253.80223752299645,
+   "n_faster": 0
+  },
+  "sd_ddof0_baseline": {
+   "value": 0.0439796918157926,
+   "two_sd": 0.0879593836315852,
+   "F1_edge": 253.98853848715763,
+   "F1_fires": true,
+   "FASTER_threshold": 253.81261971989446,
+   "n_faster": 0
+  },
+  "sd_ddof1_all10": {
+   "value": 0.0397118819234532,
+   "two_sd": 0.0794237638469064,
+   "F1_edge": 253.98000286737295,
+   "F1_fires": true,
+   "FASTER_threshold": 253.82115533967914,
+   "n_faster": 0
+  },
+  "sd_ddof1_armg_only": {
+   "value": 0.026279944227251554,
+   "two_sd": 0.05255988845450311,
+   "F1_edge": 253.95313899198055,
+   "F1_fires": true,
+   "FASTER_threshold": 253.84801921507153,
+   "n_faster": 0
+  },
+  "half_range_baseline": {
+   "value": 0.06924121602344258,
+   "two_sd": 0.13848243204688515,
+   "F1_edge": 254.03906153557293,
+   "F1_fires": false,
+   "FASTER_threshold": 253.76209667147916,
+   "n_faster": 0
+  },
+  "full_range_baseline": {
+   "value": 0.13848243204688515,
+   "two_sd": 0.2769648640937703,
+   "F1_edge": 254.1775439676198,
+   "F1_fires": false,
+   "FASTER_threshold": 253.62361423943227,
+   "n_faster": 0
+  },
+  "BORROWED_speedtie_sd": {
+   "value": 0.06171827216711913,
+   "two_sd": 0.12343654433423826,
+   "F1_edge": 254.02401564786027,
+   "F1_fires": false,
+   "FASTER_threshold": 253.77714255919182,
+   "n_faster": 0
+  },
+  "BORROWED_speedtie_range": {
+   "value": 0.17597221728999557,
+   "two_sd": 0.35194443457999114,
+   "F1_edge": 254.25252353810603,
+   "F1_fires": false,
+   "FASTER_threshold": 253.54863466894605,
+   "n_faster": 0
+  }
+ },
+ "F1_fires_count": 4,
+ "F1_fires_of_OWN_replicate_rulers": "4/6",
+ "n_faster_under_every_ruler": 0,
+ "finding": "F1 fires under 4 of 8 defensible rulers -- ALL FOUR being sd-family rulers computed from MY OWN replicates; it does NOT fire under a RANGE statistic or under either BORROWED SPEEDTIE-1 figure. The Q1 \"not faster\" answer is ruler-INVARIANT (0 champions faster under all 8). So the FAILURE verdict is statistic-contingent in a way the prereg did not test, while the headline NO is not."
+}
