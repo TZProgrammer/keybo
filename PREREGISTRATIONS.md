@@ -8800,3 +8800,58 @@ CAN fix it.** Also unsettled: whether `bad_scissor` works in a frame BUILT for i
 GAUGE**, and on the best-supported source **the gauge is not tracking the objective there at all.**
 => REGISTERED: **no change to `is_scissor`.** The predicate is 11.1% of its plausible neighbourhood by design and that scoping is **defensible on the best-supported source**. The re-scoping thread is CLOSED;
 the PRICE (SCISSORPRICE-1's 5.1x-11.2x) stands and remains user-gated. MODELLED ONLY: g-frame, 90 WPM baked, blend-v1, tau saturated.
+
+### SELF-AUDIT SWEEP (scissorprice / oxeyfix / speedtie) — 🔴 THREE WARM SELF-AUDITS, THREE REAL DEFECTS IN TEXT I HAD ALREADY PUSHED: a 2.6x swing on one discretionary exclusion, TWO "independent" controls that shared the component under test, and a branch that silently RESURRECTS a deleted module (2026-07-28)
+Before reaping three done+idle children I sent each the reflection + hostile-stranger self-audit (four fixed questions: weakest claim / shared-component verification / missing pre-use control / hazard left behind).
+**All three found defects their own callbacks had not reported, and all three defects land in ledger text I had already pushed.** None overturns a primary verdict; all three change PRECISION or SAFETY.
+🔴 **(1) SCISSORPRICE — THE `+32.59` RESTS ON ONE DISCRETIONARY EXCLUSION, AND THE SWING IS 2.6x. AMEND SCISSORPRICE-1.** The in-domain conditional was computed with `qwerty30m` dropped from the reference set
+that defines "the domain of use" — justified in prose, never quantified. Measured in the audit: **ex-qwerty (as published) +32.59 (n=503); INCLUDING qwerty30m +12.68 (n=809); full pool +13.29.** Since **+12.68
+sits BELOW the full-pool +13.29, the entire "domain restriction pushes UP" axis is contingent on dropping that one layout** — and `qwerty30m` IS a real C30M-exact registry layout, so the warrant ("no optimizer
+would target it") is **a judgment, not a measurement.** => **REGISTERED AMENDMENT to SCISSORPRICE-1: quote the in-domain conditional as `+12.7 to +32.6 depending on the reference set`. The DIRECTION (ratio > 1,
+P = 1.000 in every spec) survives either way; the LEVEL does not.** The 2.6x reference-set swing is **wider than the cross-source spread I named as the binding uncertainty** — so the binding uncertainty was
+misidentified. The primary OUTSIDE-the-cluster verdict (BKW load 0.000227, last of 11) is untouched.
+🔴 **(2) SCISSORPRICE — TWO OF ITS SIX POSITIVE CONTROLS WERE TRANSCRIPTION CHECKS WEARING A CORROBORATION LABEL, AND I REGISTERED THE LABEL.** Its callback said it reproduced penaltyaudit's conditional and
+tangent tables "from an INDEPENDENT pool build". **I verified the retraction myself: `diff` of its `collin3.py` against penaltyaudit's copy, after reversing only the path rewrite, is EMPTY — byte-for-byte the
+same instrument — and both use the SAME seed `random.Random(20260728)`.** (The child misremembered the seed as 31337; immaterial, since being the *same* seed is precisely its point.) So the digit-for-digit
+agreement is **near-tautological** — it evidences correct TRANSCRIPTION, not corroboration. => **the SCISSORPRICE-1 line "penaltyaudit's conditional AND tangent tables reproduced to all printed digits from an
+INDEPENDENT pool build" is DOWNGRADED to "reproduced its METHOD"**, and the `_X_random.npy` md5 match offered as a bonus control is **the same artifact restated, not a second check.** 🟢 What IS independent and
+therefore still standing: the BKW/eigen route (different mathematics from clustering), the matched-estimator controls (against frozen THEORY-1 *artifacts*, not its code), the cluster bootstrap,
+leave-one-source-out, the radius sweep, the same-size placebo, the domain-coverage finding, and the matched decomposition.
+🔴 **(3) SPEEDTIE — ITS OWN "DISCRIMINATING" TEST IS PARTLY CIRCULAR, BY ITS OWN ADMISSION.** The size-matched subset test I registered as the answer to the failing leg draws its placebo subsets from the 1M pool
+— **and all 3 of the 10M distinct champions are MEMBERS of that pool** (it verified the 10M triple is literally one of the C(5,3) subsets it is compared against). So "12 of 14 gauges at/above the size-matched
+median" answers *"is the selected triple a typical triple of this pool?"*, **not** *"did the extra budget shrink the spread?"* — **it cannot fall far below its own median by construction.** The COUNT is
+pool-robust (12/14 under both pools) so the number stands; **the INFERENCE is weaker than I registered — treat it as CONSISTENT-WITH H-REAL, not evidence FOR it.** 🟢 **This does NOT rescue H-UNDER:** the two
+NON-circular legs — `M_gauge = 1.0000` with 8 of 14 gauges EXACTLY unchanged, and Hamming-over-distinct 26.20 -> 26.00 — are computed on the 10M champions directly and still fail every H-UNDER prediction.
+Overturned by a pool the 10M champions are not drawn from (16 fresh seeds, or the ~5,120-layout final populations rather than champions only).
+🔴 **(4) SPEEDTIE — EVERY ms/char FIGURE IT PUBLISHED RESTS ON ONE TIMING IMPLEMENTATION.** Its driver-vs-CLI cross-check (worst |diff| 2.98e-12) reads as independent corroboration and is not: `evobj.py:306-308`
+imports **the same `TimeSurface` class the CLI's time card uses**, on the same corpus. So **253.9006, the 0.1236 range, and the "2.00x sd" all share the component under test** — as does the 2.814e-12
+frozen-champion reproduction (same code, different commit). 🟢 Genuinely multi-path in that arm: only `unique_evals` (run JSON + ckpt `n_unique` + independent log trace, all 6 seeds agreeing) and the 1M gauge
+spreads (its code vs my frozen SPEEDTIE-1 table at 4.5e-5).
+🔴 **(5) SPEEDTIE — ITS BRANCH SILENTLY RESURRECTS A DELETED MODULE. I VERIFIED THIS AND IT MAKES A MERGE UNSAFE.** `git diff 45ea276..speedtie-budget -- src/ tests/` is **+912 lines, ONE file:
+`src/keybo/analysis/evidence_scorer.py`** — added because `evobj.py:42` imports `LIVE_GAUGES` from it — and **that module is ABSENT from `main`** (confirmed: `git ls-tree main` finds 0, and it is not in the
+working tree), **with NO test covering it at this HEAD.** => **DO NOT merge or cherry-pick `speedtie-budget` wholesale: take the `agent-artifacts/` commits and LEAVE the `src/` change** (or restore the module
+locally per its index recipe, md5 01f3a95a). Recorded here because the branch outlives the child that knew this.
+🔴 **(6) OXEYFIX — "EXACTLY ONE FLIP" IS AN OVERSTATEMENT OF ITS OWN SCOPE.** The `archive-1846` vs `lsb-sib` inversion was measured on a **16-layout pool it chose itself**. => **register as "no flip inside the
+pools scored", NEVER as "exactly one flip exists"** — the two flipped margins are +-0.12 to 0.18 against a 96.07 span, so **this gauge does not resolve near-ties and more near-tied pairs almost certainly
+exist.** 🟢 My nine at spearman 1.000000 / 0-of-36 is unaffected — that is the strong part.
+🟢 **(7) OXEYFIX — IT RAN THE SHARED-COMPONENT CHECK ON ITSELF AND PASSED ON AN EXTERNAL ANCHOR.** Its headline positive control derives its expectation from `_v1_pattern`, **which the fix also CALLS** — so it
+could have been circular. It is not: `Oxeylyzer1.score` reproduces the **frozen golden `oxey1` for qwerty30M exactly (-20,848,183,371)**, and the trigram term is **62.32% of |score|**, so a mis-partitioned
+`_v1_pattern` could not leave that golden intact. **An external anchor, not a self-consistency check** — the right answer to the failure mode that bit the other two.
+⚠ **(8) OXEYFIX — A POOL DESCRIPTION OVERSTATED, caught only because it audited a generator it had already used.** Its near-optimal perturbation pool draws `i, j = rng.randrange(30)` twice **without excluding
+i == j**, so it is **381 unique of 400, with 19 duplicate rows and 5 rows that are EXACT COPIES of arm B**, and Hamming reaches 8 — so the "(1-4 swaps)" label describes the swap COUNT, not the distance.
+Re-measured on a cleaned pool (n=380): spearman **0.999268** vs published 0.999260, **top-10 10/10 UNCHANGED** => immaterial to every headline, but **quote that pool as "381-unique, Hamming <= 8"**. (`random400`
+is clean, 400/400 unique.) The missing test: **a pool-sanity assert run BEFORE the comparison.**
+🟢 **(9) OXEYFIX — A MISLABELLED-CORPUS ARTIFACT, FIXED, AND I CONFIRMED THE FIX.** `shipped-analyze-json-AFTER-fix-iweb.json` was produced by a `--corpus blend-v1` run; its own `corpus` field said so. Renamed
+to `...-BLEND-V1.json` (verified on disk: the file now carries that name and its `corpus` field reads `blend-v1`) and 3 stale index references fixed. **Label-vs-thing, inside the directory whose entire job is
+provenance** — anyone reconciling the iWeb frozen boards against that filename would have compared two corpora.
+🟢 **(10) THE PENALTYAUDIT-1 WEDGE CELL IS AMENDED, now independently reported twice.** "The full suite WEDGES AGAIN after deselecting the shap test" **did not reproduce**; the mechanism is **xgboost thread
+oversubscription** (3h28m CPU in 6m25s wall, ~32x, ~2 progress-chars/min). With `OMP_NUM_THREADS=8 OPENBLAS_NUM_THREADS=8 MKL_NUM_THREADS=8` the identical suite finishes in **~2 min, rc=0, 834 collected / 831
+passed / 3 skipped / 0 F / 0 E.** => that cell reads **"pathologically slow without thread caps"**, and the proposed repo fix changes from "mark it `slow`" to **"cap the thread env"**.
+⚠ HAZARDS LEFT BY THE CHILDREN, all now recorded in their own artifact indices AND here (because the artifacts outlive the agents): **11 of scissorprice's 13 durable drivers hardcode `/tmp/scissorprice/probe`**
+(only `matched_prices.py` clean) — recovery is `git worktree add /tmp/<new> scissor-price` then `sed -i 's#/tmp/scissorprice#/tmp/<new>#g'`; **speedtie's `run_budget.py:35` / `analyze_budget.py:26` hardcode
+`/tmp/speedtie`** (a successor copying them launches into a dead path); oxeyfix's two headline probes were similarly hardcoded and are **now fixed AND re-run to prove behaviour-preservation** (rc=0, regenerated
+JSON compares EQUAL). **Trap 35 turned inward: scissorprice repointed penaltyaudit's `/tmp/penaudit` literals and left its own.**
+=> **PROCESS FINDING, and it is the strongest argument yet for the reflection gate: the warm self-audit is 3-for-3 at finding defects the same agent's own callback missed, and 6 of the 10 items above land in text
+I had ALREADY PUSHED.** Reading a child's report does not substitute — every one of these came from the child re-reading ITSELF as a stranger while still loaded. **Two of the three defects are the SAME failure
+mode (a control that shares the component under test), independently, in two agents that had both READ the trap about it** — recognising a trap in prose is not the same as detecting it in your own harness, which
+is why the four-question audit (which NAMES the failure mode) works where "reflect" would not.
