@@ -1,0 +1,87 @@
+{
+ "sd_G": 0.04917079026480171,
+ "measured_band_edge": 253.99892068405563,
+ "search_band_edge": 254.02397910352605,
+ "band_looser_by": 0.02505841947039658,
+ "n_archive": 273,
+ "n_inband": 7,
+ "inband_sorted_by_D": [
+  {
+   "layout": "flmpg-yo,usnctdireahkxwbv.'qzj",
+   "ms": 253.93806888877083,
+   "D": 1.2414747448672836,
+   "found_by": [
+    "baseline"
+   ]
+  },
+  {
+   "layout": "flmpg.yokusnctdireahqxwbv-,'jz",
+   "ms": 253.99488831245245,
+   "D": 2.031860488517817,
+   "found_by": [
+    "armg"
+   ]
+  },
+  {
+   "layout": "flmpg.yokusnctdireahzxwbv-,q'j",
+   "ms": 253.99784539104567,
+   "D": 2.214441541180568,
+   "found_by": [
+    "armg"
+   ]
+  },
+  {
+   "layout": "flmpg-yokusnctdireahzxwbv.,q'j",
+   "ms": 253.9952005819732,
+   "D": 2.283315427735224,
+   "found_by": [
+    "baseline"
+   ]
+  },
+  {
+   "layout": "flmpg-uo,ysnctdireahxvwbk.'zqj",
+   "ms": 253.99863573479945,
+   "D": 3.037849408977227,
+   "found_by": [
+    "baseline"
+   ]
+  },
+  {
+   "layout": "lmfbg.uoyprnstdieahcxzwkv-,'qj",
+   "ms": 253.99760462105667,
+   "D": 3.1191486442318777,
+   "found_by": [
+    "baseline"
+   ]
+  },
+  {
+   "layout": "flmpg-uokysnctdireahzxwbv.,'qj",
+   "ms": 253.95469592582666,
+   "D": 3.789155048897304,
+   "found_by": [
+    "baseline"
+   ]
+  }
+ ],
+ "best_inband": {
+  "layout": "flmpg-yo,usnctdireahkxwbv.'qzj",
+  "ms": 253.93806888877083,
+  "D": 1.2414747448672836,
+  "found_by": [
+   "baseline"
+  ]
+ },
+ "n_armg_only": 2,
+ "n_baseline_only": 5,
+ "n_both": 0,
+ "global_min_D": 1.0593604005475603,
+ "zero_D_layouts_excl_armB": [],
+ "constants_check": {
+  "worst_ref": 5.329070518200751e-15,
+  "worst_scale": 0.0,
+  "worst_ms": 0.0,
+  "D_reference": 0.0
+ },
+ "why": "Separates 'my EPS was mis-set' from 'the headroom is not collectable'. Uses ONLY data already collected by the registered runs; the registered verdict (FAILURE by F1) is unchanged by this analysis.",
+ "modelled_only": "g-frame, baked 90 WPM, blend-v1, 1-skip31."
+}

@@ -1,0 +1,133 @@
+{
+ "A1": {
+  "claim": "F1 is not merely an EPS artifact",
+  "min_D_archive": 1.0593604005475603,
+  "zero_D": [],
+  "refuted_by": "a D=0 layout appearing in the archive, or at a tighter EPS"
+ },
+ "A2": {
+  "D_armg": 2.497253119334298,
+  "D_ctrl": 2.5771034564042123,
+  "wins_armg": [
+   7,
+   7,
+   8,
+   8,
+   9
+  ],
+  "wins_ctrl": [
+   8,
+   7,
+   7,
+   8,
+   9
+  ],
+  "shared_component": "D is BOTH objective and selection statistic -- so the axis-win count is the honest test"
+ },
+ "A3": {
+  "post_hoc_controls": "none",
+  "ordering_constraint": "EPS necessarily preceded sd_G"
+ },
+ "A4": {
+  "better": 8,
+  "worse": 4,
+  "tie": 2,
+  "n_contested": 12,
+  "frame_size": 14,
+  "better_axes": [
+   "sfb",
+   "sfb-dist",
+   "lsb",
+   "lsb-dist",
+   "roll",
+   "sr-roll",
+   "scissor",
+   "comfort"
+  ],
+  "worse_axes": [
+   "sfs",
+   "sfs-dist",
+   "redir",
+   "oxey-style"
+  ],
+  "tied_axes": [
+   "alt",
+   "imbalance"
+  ],
+  "dominates": false,
+  "sfr_tie_by_construction": true,
+  "cluster_corrected": {
+   "clusters_better": 5,
+   "clusters_worse": 3,
+   "clusters_tie_or_mixed": 1,
+   "n_clusters": 9,
+   "per_cluster": {
+    "sf-bigram": "better",
+    "sf-skip": "worse",
+    "lsb": "better",
+    "hand-flow": "better",
+    "redirect": "worse",
+    "scissor": "better",
+    "balance": "tie",
+    "comfort": "better",
+    "oxey-composite": "worse"
+   },
+   "note": "oxey-composite RESTATES sf/lsb/scissor/balance/redirect/hand-flow (R2=0.9937), so it is NOT independent evidence alongside them."
+  },
+  "ms_delta_vs_them": 0.11642525598895759,
+  "resolves_on_my_ruler": true
+ },
+ "A5": {
+  "hamming_sel_vs_armB": 16,
+  "armg": {
+   "n_runs": 5,
+   "n_distinct": 5,
+   "mean_over_runs": 23.8,
+   "mean_over_distinct": 23.8,
+   "n_zero_pairs": 0,
+   "vs_armB": {
+    "flmpg.yo,usnctdireahvxwkb-'qjz": 16,
+    "lcfmk.uoyprnstdiaeghqxwbv-,'zj": 23,
+    "lmfbg.uoyprnstdieahcxqwkv-,'zj": 25,
+    "puy.,vdfnlheioamtsrc'jqk-gwbxz": 30,
+    "pyu.,vdfnlhieaocstrmkj'q-gwbzx": 28
+   }
+  },
+  "baseline": {
+   "n_runs": 5,
+   "n_distinct": 5,
+   "mean_over_runs": 24.1,
+   "mean_over_distinct": 24.1,
+   "n_zero_pairs": 0,
+   "vs_armB": {
+    "flmpg-yo,usnctdireahkxwbv.'qzj": 12,
+    "lcfmk.uoyprnstdiaeghzxwbv-,'qj": 24,
+    "lmfbg.uoyprnstdieahcxzwkv-,'qj": 26,
+    "puy.,vdfnlheioamtsrc'jqk-gwbxz": 30,
+    "pyu.,vdfnlhieaocstrmkj'-qgwbzx": 28
+   }
+  }
+ },
+ "A6": [
+  {
+   "seed": 20260728,
+   "hamming": 2
+  },
+  {
+   "seed": 20268647,
+   "hamming": 0
+  },
+  {
+   "seed": 20276566,
+   "hamming": 7
+  },
+  {
+   "seed": 20284485,
+   "hamming": 2
+  },
+  {
+   "seed": 20292404,
+   "hamming": 2
+  }
+ ]
+}

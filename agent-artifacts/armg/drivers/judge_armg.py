@@ -203,9 +203,12 @@ def main() -> int:
     # ---- profiles + D for every champion and incumbent ----
     def block(name: str, spec: str) -> dict:
         p = prof[spec]
+        # `gauges` carries the INVARIANT axes too, so it is a complete profile that
+        # contested() can consume. The invariants are reported, never COUNTED -- the
+        # counting loop iterates GAUGES only.
         return {"name": name, "layout": spec, "ms_per_char": p["ms_per_char"],
                 "D_vs_armB": deficit(p),
-                "gauges": {g: p[g] for g in GAUGES}, "sfr": p["sfr"]}
+                "gauges": {g: p[g] for g in (*GAUGES, *INVARIANT)}, "sfr": p["sfr"]}
 
     champs = []
     for r in runs:
