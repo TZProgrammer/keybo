@@ -9185,3 +9185,22 @@ because an expected symbol was missing.)
 => SIX RECOMMENDED EDITS, **none made** (all local-code changes on a certificate path, so they land with the other unpushed fixes): qualify `:2423`/`:2463`; add a scope key + qualified statement to `certificate()`;
 guard `found_fitness` (non-finite, and `found < lb`); fix the docstring; raise the seed count + add an asymmetric-T case to close the `t_in`/`f_in` blind spot; record the ~2.34% resolution floor beside any quoted
 certificate. **HEADLINE: the file's MATHEMATICS is the strongest thing in it — the defect is entirely in SCOPE LABELLING.**
+
+### MUTATION-HARNESS-CONTROL-1 — 🟢 I APPLIED QAPBOUND-1's NEW TRAP TO MY OWN CLAIMS: my harness PASSES its positive control and my probes did test the worktree — but I had verified NEITHER until asked (2026-07-28)
+QAPBOUND-1 registered a trap with retroactive reach: **"a mutation-test harness needs its OWN positive control"**, because its child's v1 harness judged mutants by a case-sensitive grep on pytest prose and
+therefore reported **all 24 SURVIVED**, nearly publishing *"the gate catches nothing"* instead of 18/24. **Every "mutation-proven" claim in this ledger rests on a harness that was never itself controlled — including
+the four I made today** (`79cb175` price_many, `b5a147e` oxeyfix, `89e6b59` the ceiling correction, `824039e` the margin gate). So I controlled mine.
+🟢 **POSITIVE CONTROL: PASSED.** Injected a guaranteed-fatal mutant (`require_finite`'s non-finite detector rewritten to `bad = []`, i.e. the guard accepts everything) into `keybo/verdicts.py` and ran the suite:
+**rc=1 with 10 failures**; restoring gives **rc=0**. So my harness DOES report CAUGHT for a mutant that must be caught — my mutation method gates on the **exit code**, not on parsing pytest prose, which is exactly
+the property the child's v1 lacked. **The four "mutation-proven" claims above therefore stand.**
+🟢 **TRAP 35 CHECK: CLEAN, and this one I had been at genuine risk on.** The child warns that the shared clone's `.venv` carries an editable `.pth` into `repos/keybo/src`, so a worktree probe run with that
+interpreter **silently tests the WRONG TREE while every path looks right** — and I ran every one of today's suites with `UV_PROJECT_ENVIRONMENT` pointed at that very venv. Verified by asking the modules where they
+live: `verdicts` -> `/tmp/ceilingsb/src/...`, `tune` -> `/tmp/ceilingsb/src/...`, `validate` -> `/tmp/ceilingsb/src/...`, and the worktree-only symbol `spearman_brown` **is present**. So `PYTHONPATH` won, and my
+results are from the branch I think they are from.
+⚠ **BUT NOTE HOW THIN THAT WAS.** I only discovered the hazard EARLIER TODAY by accident: an `ImportError` on `spearman_brown` when the shared clone's copy resolved first. **Had my edit not happened to add a NEW
+SYMBOL, the wrong-tree run would have produced plausible passing output and I would have reported it.** The positive signal (`keybo.__file__` + a symbol that exists only on the branch) is the check; the accident is
+not repeatable.
+=> **REGISTERED AS A STANDING PRE-FLIGHT for any claim of the form "mutation-proven" or "the suite passes on my branch":** (1) print `<module>.__file__` and assert it is under the worktree; (2) assert a
+**branch-only symbol** is importable; (3) inject one guaranteed-fatal mutant and confirm the harness reports it CAUGHT — **before** trusting any SURVIVED. All three are seconds of work and each one has already
+produced a false result somewhere in this campaign. **The general principle, which is the campaign's own most-repeated finding turned on the tools: an instrument that reports "no problem" must be shown capable of
+reporting a problem.**
