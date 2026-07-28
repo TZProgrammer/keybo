@@ -6,7 +6,7 @@
   reported. The current pass was the **reflection state-flush only** (agent-reflection-step steps
   0 and 1); the knowledge pass (steps 2-6) is explicitly the parent's job and was NOT done.
 - **Next action:** none — flush complete, callback sent. **If anything resumes here: the parent
-  must RE-HARVEST at `a3c96de`; its verified bundle stops at `2ec398a`** (see below).
+  must RE-HARVEST at `d1eb5fe`; its verified bundle stops at `2ec398a`** (see below).
 - **Blocked on:** nothing
 
 ## Setup (🟢 VERIFIED)
@@ -30,7 +30,7 @@ Arm E's `search_arme.py` (island memetic, mixed operators, 2-opt polish, multi-s
 s1. Runners `drivers/run_anchors.sh` and `drivers/run_sweep.sh`, both detached with a callback
 fired from the same subshell as the work (trap 50) and gated on an rc sentinel.
 
-## Commits on branch `modelnorm` (worktree /tmp/modelnorm) — 9, HEAD `a3c96de`
+## Commits on branch `modelnorm` (worktree /tmp/modelnorm) — 10, HEAD `d1eb5fe`
 - 762ac06 evaluator + normalization + 18 unit tests
 - d50a0a7 step 1 zero anchor + 4x evaluator speedup (padding load-bearing)
 - 49942c1 search engine + verified resume + resume-identity guard
@@ -41,6 +41,7 @@ fired from the same subshell as the work (trap 50) and gated on an rc sentinel.
 - 2ec398a report, artifacts index, reflection proposal  ← **the parent's verified bundle stops here**
 - a3c96de reflection flush: corrected tally, (a)/(b) classification, 400-length BLAS
   quantification, third-instance citation, floor-quadruple rule
+- d1eb5fe reflection flush: snapshot memory.md / summary.md / events.log onto the branch
 
 ## RESULTS (all 🟢 VERIFIED, corpus blend-v1, .native frame, 90 WPM BAKED)
 
@@ -118,9 +119,9 @@ arm is local CPU only); no watcher subshell or deadman is still armed. Nothing t
   bundle-header off-by-one (a bundle records a boundary ref) rather than a missing commit — but
   **the authoritative count at `2ec398a` was 8**, and if the harvest really held 9 objects one
   was not mine.
-- ⚠⚠ **RE-HARVEST NEEDED: HEAD is now `a3c96de`, NOT `2ec398a`.** The reflection flush added one
-  commit (`a3c96de`, "reflection flush: correct my own prediction tally, quantify the BLAS defect
-  properly, and cite a THIRD instance"), so the branch is now **9 commits** on `origin/main..HEAD`
+- ⚠⚠ **RE-HARVEST NEEDED: HEAD is now `d1eb5fe`, NOT `2ec398a`.** The reflection flush added TWO
+  commits (`a3c96de` content flush + `d1eb5fe` state-file snapshot), so the branch is now
+  **10 commits** on `origin/main..HEAD`
   and the parent's verified bundle at `2ec398a` **does not contain it**. That commit carries the
   corrected prediction tally, the (a)/(b) failure classification, the 400-batch-length BLAS
   measurement, the third-instance citation, and the floor-quadruple rule — i.e. exactly the three
