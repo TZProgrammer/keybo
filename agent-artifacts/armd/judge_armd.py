@@ -31,16 +31,37 @@ from keybo.analysis.evidence_scorer import LIVE_GAUGES  # noqa: E402
 from keybo.data.corpus import load_frequencies, production_corpus_dir  # noqa: E402
 
 ARM = "/local/home/zegertho/agent/state/evidence-scorer/artifacts/arm-random400-native.json"
-STATE = Path("/local/home/zegertho/agent/state/optevidence/artifacts")
-REPO = Path("/tmp/optev")
+STATE = Path("/local/home/zegertho/agent/state/armd/artifacts")
+REPO = Path("/tmp/domainfix")
 
+#: The SIX incumbents arm D is judged against. OPTEVIDENCE-1 used five; `flagship-c3` is the
+#: sixth on the brief's board (254.9761) and was NOT in its `incumbent-reference.json`, so it
+#: comes from the CLI registry — the authoritative source `analyze` and `score-evidence` both
+#: name their boards from. `_assert_registry_agrees` pins the five that appear in both against
+#: that registry, so two layouts can never hide under one name (trap 13).
 INCUMBENTS = {
     "keybo-lsb": "pyuo,vgdnlhiea.cstrmkj-z'fwbxq",
     "lsb-sib": "fyou,vgdnlheaikcstrmzj'.-pwbxq",
     "archive-1843": "pyou,vgdnmheai.cstlrjz'k-fwbxq",
     "archive-1846": "pyou,vgdnmheai.cstrlkq'z-fbwjx",
     "keybo-lsb+lm": "pyuo,vgdnmhiea.cstrlkj-z'fwbxq",
+    "flagship-c3": "pyou'vgdnmheai.cstrlkjz,-wfbxq",
 }
+
+
+def _assert_registry_agrees() -> None:
+    """Every incumbent string here must equal the shipped registry's."""
+    from keybo.cli.score_evidence import _EXTRA_NAMED
+    for name, lay in INCUMBENTS.items():
+        if name in _EXTRA_NAMED and _EXTRA_NAMED[name] != lay:
+            raise AssertionError(
+                f"{name}: judge has {lay!r} but the CLI registry has {_EXTRA_NAMED[name]!r}"
+            )
+        if len(lay) != 30 or set(lay) != set(EV.C30M):
+            raise AssertionError(f"{name}: {lay!r} is not a C30M permutation")
+
+
+_assert_registry_agrees()
 REFERENCE = {
     "qwerty30m": EV.C30M,
     "graphite": "bldwz'foujnrtsgyhaeixqmcvkp,.-",
@@ -130,7 +151,7 @@ class SixSurface:
 # paired ms/char resolution (judgement 2)
 # --------------------------------------------------------------------------------------
 def paired_resolution(layouts: dict[str, str], trigrams: dict[str, int],
-                      target_wpm: float = 90.0) -> dict:
+                      target_wpm: float = 90.0, pool: list[str] | None = None) -> dict:
     """Per-seed ms/char for every layout, and the PAIRED resolution.
 
     trap 37: all candidates share the same three seed tables, so the seed main effect is
@@ -141,7 +162,17 @@ def paired_resolution(layouts: dict[str, str], trigrams: dict[str, int],
     from keybo.analysis.timecard import TimeSurface
 
     surface = TimeSurface(trigrams, target_wpm=target_wpm, keep_seed_tables=True)
-    names = list(layouts)
+    # ⚠ WHICH POOL is load-bearing, and OPTEVIDENCE-1's two figures differ because of it.
+    # Its report quotes "median 0.1131, max 0.2222" over the NEAR-OPTIMAL pool and uses the
+    # conservative 0.2222; its `judgement.json` recorded 0.1406 over a pool that also contains
+    # qwerty30m/graphite/semimak. Including qwerty (+9.5 ms/char from everything else) inflates
+    # the layout main effect and so shrinks the seed share, which is why that file reports the
+    # seed at 1.04% of SS. A resolution floor must be computed over the pool it will be applied
+    # to — the near-optimal band — so `pool` selects it explicitly instead of defaulting.
+    names = list(pool) if pool is not None else list(layouts)
+    missing = [n for n in names if n not in layouts]
+    if missing:
+        raise KeyError(f"paired pool names not in layouts: {missing}")
     per_seed = {}
     for name in names:
         totals = surface.seed_totals(layouts[name])
@@ -177,9 +208,16 @@ def paired_resolution(layouts: dict[str, str], trigrams: dict[str, int],
         "paired_floor_ms_per_char": paired,
         "paired_floor_p95": paired_p95,
         "n_seeds": M.shape[1],
+        "pool": names,
+        "n_pool": len(names),
+        "paired_floor_max": float(np.max(diffs)),
+        "paired_floor_median": paired,
         "note": ("paired floor = median across-seed SD of a within-seed pairwise DIFFERENCE; "
                  "the unpaired floor is the max within-layout across-seed SD and is the "
-                 "WRONG ruler for a paired comparison (trap 37)"),
+                 "WRONG ruler for a paired comparison (trap 37). `paired_floor_max` is the "
+                 "CONSERVATIVE threshold OPTEVIDENCE-1 reported as 0.2222 on the n=8 "
+                 "near-optimal pool; quoting a floor without naming its pool is what made "
+                 "that campaign's two figures look contradictory."),
     }
 
 

@@ -103,3 +103,64 @@ I do not predict arm D's *layout*. I do not claim any layout should be promoted 
 that is the user's gate alone. Every number here is **MODELLED ONLY** (fitted-surface
 attribution at 90 WPM on blend-v1), not measured typing speed; tau is saturated and Phase-D is
 cancelled.
+
+---
+
+# ADDENDUM — registered mid-run, against the sibling's pre-registered decision rule
+
+**Written while arm D was at epoch 41/55 (8.55M unique evals).** What I knew when writing this:
+the running champion's **clamped fitness** (−23.315730) and its layout string, from the progress
+log. What I had **not** done, deliberately, and which is the quantity this addendum predicts:
+**computed its ms/char.** No arm D layout had been priced on the served surface at the time of
+writing. I wrote this before running the judge specifically so the prediction stays blind.
+
+## The sibling's rule, and my number against it
+
+> REFUTES "weights are uninformative" if the clamped champion lands **≤ 254.85** ms/char (inside
+> the incumbent band); CONFIRMS at **≥ ~255.5**. Sibling's own prior: **255.3–256.3**, uncertain.
+
+**My independent point prediction: 255.2–255.4 ms/char, point estimate ≈ 255.26.**
+
+That is not adopted from the sibling — it is forced by the two predictions I registered *before*
+the run and before receiving their number. P4 says arm D recovers **>28%** of arm A's 2.9460
+deficit (so **< 256.0217**) and **<100%** (so **> 253.9006**); P2 says **> 254.5**. The
+intersection is **(254.5, 256.02)**, midpoint **255.26**. The convergence with their 255.3–256.3
+is agreement between two independent estimates, which is worth more than either alone.
+
+**So I predict arm D lands in the sibling's AMBIGUOUS ZONE** — above their refute line 254.85,
+below their confirm line 255.5. That is itself a falsifiable claim about their rule: I expect it
+**not to discriminate cleanly**, and I will say so if it doesn't rather than rounding my result
+into whichever verdict it is nearest. If forced to one side, I lean CONFIRMS, because the
+mechanism (a flat in-band objective) is confirmed independently of where the champion lands.
+
+## P13–P16, added from the sibling's two verified warnings
+
+| # | Prediction | Resolves if |
+|---|---|---|
+| P13 | The clamped objective **anti-ranks** in the band: `spearman(ev_clamp, ms/char)` over my near-optimal pool including arm D stays **negative**. (Restates P12; the sibling's 36,005-perturbation pool measured −0.0884 at ≤255.0, decaying monotonically from +0.6258 pool-wide. My own 9-layout band gave −0.4435 pre-run. Three independent pools, same sign.) | judge |
+| P14 | **A plateau exists.** Arm D's final population (40 islands × 64) holds **< 50%** as many distinct objective values as layouts, and the champion is one of **≥ 2** exact ties | checkpoint |
+| P15 | Arm D's clamped score **beats** arm A's champion's clamped score (−18.6413) — it optimized that ruler, so it must — while being **slower** than arm A is fast, i.e. the clamped ruler and ms/char disagree in sign on the A-vs-D pair. This is the cleanest single-pair demonstration of P13 | judge |
+| P16 | Because the clamped objective anti-ranks in-band, arm D's **ms/char is NOT predictable from its clamped score**; I therefore expect arm D to land *worse* than the 255.26 midpoint if anything, since a search maximizing an anti-correlated ruler is weakly *selecting for slowness* | judge |
+
+**P16 is the one that could embarrass me**: it argues against my own P3 (arm D beats arm A). Both
+can hold only if the clamp's removal of the unbounded exploit is worth more than the anti-ranking
+costs. I keep both and will report whichever fails.
+
+## What I am NOT changing
+
+I am not touching the objective, the seed, the budget, or the pool in response to these warnings.
+The run in flight is the pre-registered arm D. The sibling's point 4 (its arm-C warrant was
+circular with the extrapolation it had diagnosed, so arm D is now the clean test) **raises the
+stakes on arm D but changes none of its parameters** — and it is exactly why I will report a
+negative result as a negative result.
+
+## Follow-up noted, deliberately NOT run (sibling's point 5)
+
+Under the **archive**-fitted weights (`arm-archive400-native.json`), `keybo-lsb` is reportedly
+out-of-domain on **0 of 14** gauges vs 9 of 14 under `random400` — i.e. the pool that failed as a
+*scorer* has domains that actually **cover** the near-optimal band, and it has never been tried
+as a *search* objective. If arm D lands in (ii) or (iii), that is the natural next arm — **arm
+E** — and it is a materially better-posed experiment than arm D, because a clamp only bounds a
+bad domain whereas archive-fitted curves might not need clamping in the band at all. I am not
+running it: it is a new arm, needs its own pre-registration, and my brief scopes me to arm D.
+I have verified none of its numbers.
