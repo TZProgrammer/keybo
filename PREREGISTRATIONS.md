@@ -7962,3 +7962,55 @@ and the level-vs-spread limit (no random permutation reaches 255 ms/char — tra
 TWO PROCESS FAILURES THE CHILD SURFACED ABOUT ITSELF, both worth propagating: its own artifact recorded `P1_verdict = "INCONCLUSIVE"` while its
 headline claimed equality — **it emitted the caution and did not propagate it**; and it quoted a test from one cell beside a headline from another.
 Both argue for handing a reviewer the RAW JSONs, which is how I caught C1 before it did.
+
+### OPTEVIDENCE-1 — ⚠ POST-HOC: searching the SHAP weights yields the SLOWEST layout on the board; the baseline arm yields the FASTEST — and the pathology is UNBOUNDED EXTRAPOLATION, not the sign errors (2026-07-27)
+STATUS. USER-REQUESTED ("can we optimize a layout now... what happens if we optimize with the results of the agent responsible for weights and loss
+curves?"). Three arms, IDENTICAL island seeds, 9.43M / 9.25M / 9.80M unique evals. Local commit 11a6889 on branch `optevidence`, NOT pushed; shared
+clone verified still main @ 45b5347 clean; NO LAYOUT PROMOTED OR ADOPTED. MODELLED ONLY — tau saturated, Phase-D cancelled.
+=> THE ANSWER TO THE USER, AND I VERIFIED BOTH CHAMPIONS MYSELF on blend-v1 @ 90 WPM: searching against the evidence weights produces the SLOWEST
+layout on the board.
+  arm A (evidence weights)  `udy.,fgpmliheaocsntr-k'qjwzbvx`  **256.8466 ms/char** — worse than EVERY incumbent
+  arm B (baseline served)   `flmpg-yuo,sntdcireahkxbwv'.jzq`  **253.9006 ms/char** — BEATS all five incumbents
+  keybo-lsb 254.6307 · keybo-lsb+lm 254.6847 · lsb-sib 254.7058 · archive-1846 254.7961 · archive-1843 254.8436 · flagship-c3 254.9761
+A is **+2.95 worse than B** and +2.22 worse than the best incumbent; at a paired resolution of **0.2222** (n=8 near-optimal pool, consistent with
+FLAGSHIP-1's 0.17-0.24) that is **13.3x**, and 8.6x the larger of two search-noise placebo SDs. All 15 champion-x-incumbent paired gaps RESOLVE.
+⚠ MY ADVANCE PREDICTION HELD IN DIRECTION BUT THE MECHANISM IS DIFFERENT, AND THAT IS THE REAL FINDING. The child pre-registered PREDICTION.md
+before any run and scored 6 of 8, reporting both failures as prominently as the hits: P6 was OUTRIGHT FALSIFIED — the normalized six-surface floor
+is POSITIVE for all three arms (+0.5836 / +0.6005 / +0.5689), NOT negative as WSCISSOR-GEN-1's precedent predicted. **The pathology is NOT the sign
+errors.** Decomposing arm A's 6.3024-unit win over the best incumbent: `comfort` -3.6139 (57.3%) + `sr-roll` -2.4734 (39.2%) = **96.5%**. The five
+wrong-signed gauges net only -0.6204 = **9.8%**, and TWO of them move AGAINST the win (sfb +0.0595, sfb-dist +0.0490). `sfb` actually went DOWN to
+1.409 — below every incumbent — and `scissor` rose only to 0.175, because `comfort` prices sfb at 25.0 and scissor at 15.0 and OVERWHELMED the wrong
+signs, exactly as the brief predicted it might.
+=> **THE ACTUAL MECHANISM IS UNBOUNDED EXTRAPOLATION ON TWO CORRECTLY-SIGNED GAUGES.** `comfort` = 2.9592 against a `valid_domain` of
+[6.5236, 11.5644] — BELOW the floor and below the fitting pool's observed minimum; `sr-roll` = 17.8343 against [1.9997, 8.3369] = **2.14x the
+ceiling** and 56% past the pool max, in a region where its hinge slope has turned -0.5127 and PAYS FOREVER. `sr-roll` delivers 39.2% of the win from
+4.90% of the fitted attribution: **8x amplification.** Champions sit out-of-domain on **10 of 14** gauges.
+🔴 ROOT CAUSE, and it indicts the fitting design rather than the search: **the incumbents are ALREADY out-of-domain on 9 of 14 gauges, and qwerty is
+the ONLY layout in-domain on 14/14.** The weights were fitted on 400 RANDOM permutations, so a near-optimal search extrapolates from evaluation #1 —
+and penalty gauges leave the domain DOWNWARD, which is precisely why the wrong signs could never reach their extremes.
+⚠ TWO CORRECTIONS TO MY BRIEF, both re-derived by the child (trap 20). (1) Only **3 of the 5** wrong signs are exploitable by a maximizer, not 5:
+`sfb-dist` SELF-LIMITS (hinge slope ABOVE the knot is +0.0013, interior argmin at 18.40) and `sfs` is pushed the mechanism-CORRECT way (slope below
+knot +0.7259, argmin at the range bottom). The LINEARIZED weights are all five wrong-signed as I stated; **the CURVES are not** — I read the
+linearization and inferred the curve. (2) The domain problem, above, is the root cause I had not identified.
+🟢 ARM C ISOLATES THE DIAGNOSIS — this is the part that answers "are the weights wrong, or uninformative?" Bounding ALL five wrong-signed gauges
+still finds ev = -45.0664 (better than every incumbent's evidence score) yet is STILL +1.39 worse than keybo-lsb and +2.12 worse than arm B.
+**Removing the sign errors recovers 28% of the deficit and leaves 72%.** So **the weights are UNINFORMATIVE about predicted time, not merely
+wrong-signed — the sign errors are a symptom, not the disease.**
+⚠ ARM B IS THE MOST INTERESTING RESULT AND ALSO THE MOST DANGEROUS TO OVER-READ. It is the FASTEST layout the campaign has produced (253.9006,
+beating keybo-lsb by 0.73 and flagship-c3 by 1.08, all resolving against the paired floor) — but I checked its gauge frame myself and it **beats the
+best incumbent on only 4 of 14 gauges and loses 10** (sfb, sfs, sfb-dist, lsb, lsb-dist, alt, redir, scissor, imbalance, oxey-style). It dominates
+NOTHING (best n_ge 1/10 with the strict-win term). **A single-axis win.** And the exact inversion is the campaign's central tension in one table:
+**arm A is the SLOWEST layout yet wins 9 of 14 gauges; arm B is the FASTEST yet wins 4.** Gauge count and predicted time point in OPPOSITE
+directions here — consistent with REHUNT-1 (0 of 19 strict dominators was faster than what it dominated) and GEOMEAN-1 (every surviving aggregate
+ranked the slowest of six first). NO champion is admissible: 0 dominators, best n_ge A 3/10, C 3/10, B 1/10.
+TWO PROPOSALS THE CHILD MAKES AND I ENDORSE: (a) **a fitted-curve objective needs its domain as a HARD CONSTRAINT, not an `extrapolating: true`
+flag a maximizer ignores** — that flag is exactly how 96.5% of arm A's "win" was manufactured; (b) **validate a weight set IN THE BAND WHERE IT WILL
+BE USED** — 12/12 cross-source ranking wins on the random pool bought NOTHING in the near-optimal band, which is EVIDENCE-SCORER-1's finding arrived
+at from the search side.
+VALIDATION: positive control rc=0 and exact against three independent paths — `GaugeContext.vector` (9.3e-15), `EvidenceWeights.score_layout`
+including the out_of_domain SET (7.1e-15), and `TimeSurface.card().ms_per_char` (1.2e-14) — plus it reproduces the arm JSON's own scored block, and a
+mutation check BITES so the gate can fail. Ceilings re-derived under iWeb reproduce the frozen constant to 4.4e-14 (judgement uses blend-v1-derived
+ceilings — trap 36). Frame asserted `native`; corpus sha256 matched on all 4 tables; `sfr` = 2.66 for every layout (trap 23 reproduced independently).
+⚠ ONE SELF-INFLICTED BUG WORTH BANKING: the child's own trap-38 row-drop assertion read `blob.get("layouts", blob)`, fell through to the whole JSON
+and compared against its 10 top-level KEYS — and `analyze` legitimately adds a `--ref` row, so **a bare COUNT check is wrong in BOTH directions**.
+Assert SET-CONTAINMENT of the requested layout strings instead. My own trap 38 said "assert len(rows) == len(layouts)"; that is now corrected.
