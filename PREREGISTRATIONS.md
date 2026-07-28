@@ -8062,3 +8062,55 @@ search verdicts can genuinely diverge. Registered as the natural next arm if arm
 ⚠ A PROCESS ERROR OF MINE WORTH BANKING: I spawned `armd` pointing at **/tmp/domainfix — the same worktree I was still editing**. The child committed
 MY staged changes as `3a3df7f` and built `e0b7a1b` on top. I verified NOTHING WAS LOST (3a3df7f carries both files; all 7 tests present at HEAD) — but
 that was luck, not design. A child must get its OWN worktree, or the parent must commit before spawning.
+
+### ARMD-1 — ⚠ POST-HOC: clamping the evidence objective makes the search WORSE THAN QWERTY; the curves are mis-specified WHERE THEY ARE SUPPORTED (2026-07-27)
+STATUS. The sharp form of the user's question, run after DOMAIN-HARD-1 made `valid_domain` enforceable. Commits 3a3df7f (my plumbing, committed
+verbatim by the child before it touched anything) / e0b7a1b / 4033d81 on branch `domain-hard`, NOTHING pushed. 10,099,380 unique evals (MORE than arm
+A's 9,434,590), blend-v1 @ 90 WPM, `.native`, identical seed / islands / overshoot / ga-share / polish-sweeps to arm A — differing ONLY in the CLAMP
+policy. MODELLED ONLY; no layout promoted or adopted.
+=> 🔴 **I VERIFIED THE HEADLINE MYSELF via the shipped `keybo analyze --json`: arm D = 269.2762 ms/char — SLOWER THAN QWERTY30M (264.1389) and the
+worst layout on the board.** Full board: arm B (baseline) **253.9006** < keybo-lsb 254.6307 < arm A (extrapolating) 256.8466 < qwerty 263.7141 <
+qwerty30m 264.1389 < **arm D (clamped) 269.2762**. Behind arm B by **+15.3756 = 30.98x** the child's conservative paired floor (0.4964 over a NAMED
+n=10 near-optimal pool); all 9 arm-D pairs resolve at 25-31x. It verified twice — fast evaluator and the shipped CLI both give 269.2762 exactly.
+=> **OUTCOME (iii) IN ITS STRONGEST FORM, BUT BY A MECHANISM NOBODY PREDICTED — AND THAT IS THE FINDING. The clamp did NOT flatten the objective; it
+RELOCATED THE OPTIMUM.** Plateau census over the entire final population: 2560 slots -> 1730 distinct layouts -> **1730 distinct objective values, 0
+plateaus, champion tied with 0 others**, with **11 of 14 gauges strictly INSIDE their domains** (out-of-domain fell 10 -> 3). The clamped objective is
+SHARP and WELL-CONDITIONED; it simply points somewhere bad. **This REFUTES the plateau warning I relayed** (from the sibling and my own reasoning) and
+the child's own P11/P14.
+The clamp is verified BINDING, so this is not broken wiring: worst |reward 50 domain-widths outside| = **0.000e+00** across all 14 gauges, measured
+through the search's own objective (the child's pre-registered abort condition). And with extrapolation removed, all five mechanism-WRONG gauges moved
+in the predicted direction: **oxey-style +120.37, sfb-dist +16.48, sfb +10.85 (same-finger bigrams 1.41% -> 12.26%), scissor +3.07, lsb-dist +0.60.**
+=> SO THE DEFECT IS NEITHER EXTRAPOLATION NOR FLATNESS: **the curves are MIS-SPECIFIED WHERE THEY ARE SUPPORTED, and bounding a wrong objective makes
+it honestly wrong.** COROLLARY WORTH REGISTERING: **arm A's unbounded objective was ACCIDENTALLY LESS BAD**, because the two gauges it exploited
+(comfort, sr-roll) happened to be CORRECTLY signed — the extrapolation was masking the sign errors.
+🟢 OUTCOME (ii) CONFIRMED AND STRENGTHENED, NOT SOFTENED — the weights are not merely uninformative in-band but ACTIVELY ANTI-INFORMATIVE. The child's
+INDEPENDENT 3600-perturbation pool (selected by neither objective, instrument control rho = 1.0000) reproduced the banded decay I had verified from the
+sibling: clamped rho all **+0.5586**, <=257.0 +0.1237, <=256.0 +0.0416, <=255.5 **-0.0692**. The sibling's pre-registered decision rule resolves to
+**CONFIRMS**, far outside the ambiguous zone. Outcome (i) REFUTED.
+Also: the normalized floor is **NEGATIVE (-0.563179)** where arms A/B/C were all POSITIVE — which **restores the WSCISSOR-GEN-1 precedent** that arm A
+had appeared to falsify. Mean saved -1.6931%. NOT admissible: 0 dominators, best n_ge **1/10** (the weakest champion on the frame), winning only 1-2 of
+18 independent gauges. The champion IS comfort-driven: comfort pinned at 6.5110 against its clamped floor of 6.5236.
+⚠⚠ **A LIVE DEFECT IN MY OWN FIX, WHICH THE CHILD CAUGHT AND I HAVE NOW CLOSED (commit cf5f731).** Making `LossCurve.price(policy=)` policy-aware
+**clamped no search at all**: the optimizer's fast path had a HAND-ROLLED vectorized `price` that never touched `LossCurve`, so the policy plumbing and
+the code a search actually runs were TWO DIFFERENT IMPLEMENTATIONS. I confirmed both halves — two independent `def price` bodies (scalar at
+`evidence_scorer.py:436`, vectorized in the search driver) and **zero occurrences of `np.clip` under `src/`**. This is TOOLING-TRAPS #28 exactly, and
+**my 7 policy tests could not catch it because they exercise the CURVE, not the SEARCH.** Had the child trusted "the branch already has the code", arm
+D would silently have BEEN arm A — and it would have passed a green gate. FIXED by giving `LossCurve` the vectorized entry point whose ABSENCE caused
+the duplicate: `price_many(levels, policy=)`, plus 4 tests pinning it against the scalar path at **EXACT float equality** (not approximate — anything
+looser lets a reimplementation drift back apart).
+⚠ ONE CORRECTION TO THE CHILD'S REPORT: it says the gap is unfixed "on main". **The evidence scorer is not on main at all** — `f0299b5` is a
+LEDGER-ONLY commit and the scorer lives solely on the unpushed `domain-hard` branch. So the library gap was real; the *exposure* was not.
+⚠ THREE CORRECTIONS TO MY OWN BRIEF, artifact-wins (trap 20): the dominance frame is **10 axes, not 12** (my quoted 3/10, 3/10, 1/10 were already the
+10-axis figures); **a paired floor must NAME ITS POOL** — my 0.2222 is the max over an n=8 near-optimal pool while `judgement.json`'s 0.1406 is a
+different n=11 pool, and the "seed = 78-83% of SS" I quoted is FLAGSHIP-1's **iWeb** figure whereas here the seed is **0.36%**; and `flagship-c3` is
+absent from `incumbent-reference.json`, so it had to come from the CLI registry.
+PREDICTIONS: 16 pre-registered (P1-P12 before launch, P13-P16 mid-run while blind to any arm D ms/char), **11 scored**, and it reports all **5**
+failures. The instructive one: **P2 — its 255.2-255.4 and my 255.3-256.3 were BOTH wrong by ~14 ms/char. Two independent estimates agreeing was not
+evidence; we shared a false premise** (that removing the extrapolation would leave a roughly arm-A-shaped objective). Also failed: P3 (it predicted
+arm D would BEAT arm A; it is 12.43 worse), P4-as-stated (recovery is **-421.9%**, not >28%), P5 (n_ood 3, not >=6), and P11/P14 — the plateau
+prediction whose failure RELOCATED the whole pathology.
+=> NET: the answer to the user's question is now complete and negative in a specific, useful way. Searching the SHAP weights produces the slowest
+layout on the board; the fault is not the unbounded domain (fixed, and the fix made things *worse* by removing the mask) but the fitted curves
+themselves in the region where they are supported. **The natural next arm is ARM E — the ARCHIVE-fitted weights as a SEARCH objective**, since
+keybo-lsb is out-of-domain on 0 of 14 gauges there versus 9 of 14 under random400; the pool rejected as a SCORER is the only one whose domains cover
+the band a search operates in. The child recommends it but verified none of its numbers.
