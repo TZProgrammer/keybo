@@ -1,0 +1,177 @@
+{
+ "armB_ms": 253.90057910352604,
+ "armB_oxey": 8.611045585392063,
+ "feasible_in_1swap_ball": [
+  {
+   "layout": "flmpg-yuo,sntcdireahkxbwv'.jzq",
+   "ms": 253.9664262616864,
+   "ms_minus_armB": 0.06584715816035214,
+   "oxey": 7.577429131770819,
+   "oxey_minus_armB": -1.033616453621244,
+   "per_axis_excess": {
+    "alt": -0.0,
+    "comfort": -0.031625430000000065,
+    "imbalance": 0.0,
+    "lsb": -0.5154424146216943,
+    "lsb-dist": -1.0280466748380197,
+    "redir": 0.0,
+    "roll": -0.0,
+    "scissor": 0.0,
+    "sfb": 0.0,
+    "sfb-dist": -0.01618631565688622,
+    "sfs": 0.0,
+    "sfs-dist": -0.12067113738130608,
+    "sr-roll": -0.0
+   },
+   "shares_armB_hand_partition": true,
+   "swap": [
+    12,
+    22
+   ]
+  }
+ ],
+ "hand_partition": {
+  "n_ball_sharing_armB_partition": 210,
+  "note": "`alt` and `imbalance` are HAND-PARTITION INVARIANTS (ULTRAAUDIT-INTERIM); for any candidate sharing arm B's partition they are ties BY CONSTRUCTION and must be reported as such, never counted as earned."
+ },
+ "joint_feasibility_by_speed_band": {
+  "0": {
+   "best_oxey": null,
+   "n_ms_ok": 0,
+   "n_ms_ok_and_13ax": 0,
+   "n_ms_ok_and_13ax_and_oxey_better": 0
+  },
+  "0.02": {
+   "best_oxey": null,
+   "n_ms_ok": 2,
+   "n_ms_ok_and_13ax": 0,
+   "n_ms_ok_and_13ax_and_oxey_better": 0
+  },
+  "0.05": {
+   "best_oxey": null,
+   "n_ms_ok": 7,
+   "n_ms_ok_and_13ax": 0,
+   "n_ms_ok_and_13ax_and_oxey_better": 0
+  },
+  "0.0617": {
+   "best_oxey": null,
+   "n_ms_ok": 8,
+   "n_ms_ok_and_13ax": 0,
+   "n_ms_ok_and_13ax_and_oxey_better": 0
+  },
+  "0.1": {
+   "best_oxey": 7.577429131770819,
+   "n_ms_ok": 14,
+   "n_ms_ok_and_13ax": 1,
+   "n_ms_ok_and_13ax_and_oxey_better": 1
+  },
+  "0.1234": {
+   "best_oxey": 7.577429131770819,
+   "n_ms_ok": 18,
+   "n_ms_ok_and_13ax": 1,
+   "n_ms_ok_and_13ax_and_oxey_better": 1
+  },
+  "0.2": {
+   "best_oxey": 7.577429131770819,
+   "n_ms_ok": 28,
+   "n_ms_ok_and_13ax": 1,
+   "n_ms_ok_and_13ax_and_oxey_better": 1
+  },
+  "0.5": {
+   "best_oxey": 7.577429131770819,
+   "n_ms_ok": 82,
+   "n_ms_ok_and_13ax": 1,
+   "n_ms_ok_and_13ax_and_oxey_better": 1
+  },
+  "1": {
+   "best_oxey": 7.577429131770819,
+   "n_ms_ok": 156,
+   "n_ms_ok_and_13ax": 1,
+   "n_ms_ok_and_13ax_and_oxey_better": 1
+  },
+  "1e+09": {
+   "best_oxey": 7.577429131770819,
+   "n_ms_ok": 435,
+   "n_ms_ok_and_13ax": 1,
+   "n_ms_ok_and_13ax_and_oxey_better": 1
+  }
+ },
+ "ms_range_in_ball": {
+  "max": 266.8575980197579,
+  "min": 253.91002808368867,
+  "min_minus_armB": 0.00944898016263096
+ },
+ "n_ball": 435,
+ "oxey_range_in_ball": {
+  "max": 81.65213788690113,
+  "min": 1.6328613331643957,
+  "span": 80.01927655373673
+ },
+ "per_axis_binding": {
+  "alt": {
+   "min_excess_when_only_violator": null,
+   "n_violating_ONLY_this_axis": 0,
+   "n_violating_axis": 206
+  },
+  "comfort": {
+   "min_excess_when_only_violator": null,
+   "n_violating_ONLY_this_axis": 0,
+   "n_violating_axis": 412
+  },
+  "imbalance": {
+   "min_excess_when_only_violator": null,
+   "n_violating_ONLY_this_axis": 0,
+   "n_violating_axis": 162
+  },
+  "lsb": {
+   "min_excess_when_only_violator": null,
+   "n_violating_ONLY_this_axis": 0,
+   "n_violating_axis": 180
+  },
+  "lsb-dist": {
+   "min_excess_when_only_violator": null,
+   "n_violating_ONLY_this_axis": 0,
+   "n_violating_axis": 177
+  },
+  "redir": {
+   "min_excess_when_only_violator": null,
+   "n_violating_ONLY_this_axis": 0,
+   "n_violating_axis": 264
+  },
+  "roll": {
+   "min_excess_when_only_violator": null,
+   "n_violating_ONLY_this_axis": 0,
+   "n_violating_axis": 305
+  },
+  "scissor": {
+   "min_excess_when_only_violator": null,
+   "n_violating_ONLY_this_axis": 0,
+   "n_violating_axis": 248
+  },
+  "sfb": {
+   "min_excess_when_only_violator": null,
+   "n_violating_ONLY_this_axis": 0,
+   "n_violating_axis": 346
+  },
+  "sfb-dist": {
+   "min_excess_when_only_violator": null,
+   "n_violating_ONLY_this_axis": 0,
+   "n_violating_axis": 373
+  },
+  "sfs": {
+   "min_excess_when_only_violator": null,
+   "n_violating_ONLY_this_axis": 0,
+   "n_violating_axis": 287
+  },
+  "sfs-dist": {
+   "min_excess_when_only_violator": null,
+   "n_violating_ONLY_this_axis": 0,
+   "n_violating_axis": 334
+  },
+  "sr-roll": {
+   "min_excess_when_only_violator": null,
+   "n_violating_ONLY_this_axis": 0,
+   "n_violating_axis": 358
+  }
+ }
+}

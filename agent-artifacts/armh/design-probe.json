@@ -1,0 +1,122 @@
+{
+ "batch_shape_sensitivity": {
+  "max_abs_dev_from_alone": {
+   "_ms_per_char": 1.0231815394945443e-12,
+   "comfort": 0.0,
+   "oxey-style": 7.105427357601002e-15,
+   "roll": 0.0,
+   "sfb": 0.0
+  },
+  "per_shape": {
+   "alone": {
+    "_ms_per_char": 253.90057910352604,
+    "comfort": 3.4140465,
+    "oxey-style": 8.611045585392063,
+    "roll": 45.442097658599806,
+    "sfb": 2.539124615505356
+   },
+   "in_20000": {
+    "_ms_per_char": 253.90057910352587,
+    "comfort": 3.4140465,
+    "oxey-style": 8.611045585392056,
+    "roll": 45.442097658599806,
+    "sfb": 2.539124615505356
+   },
+   "in_435": {
+    "_ms_per_char": 253.90057910352587,
+    "comfort": 3.4140465,
+    "oxey-style": 8.611045585392056,
+    "roll": 45.442097658599806,
+    "sfb": 2.539124615505356
+   },
+   "with_1_other": {
+    "_ms_per_char": 253.90057910352706,
+    "comfort": 3.4140465,
+    "oxey-style": 8.611045585392056,
+    "roll": 45.442097658599806,
+    "sfb": 2.539124615505356
+   }
+  }
+ },
+ "one_swap_ball": {
+  "among_oxey_improvers": {
+   "min_n_violated_axes": 0,
+   "min_violation_sum": 0.0,
+   "n": 61
+  },
+  "armB_oxey": 8.611045585392063,
+  "best_oxey_in_ball": 1.6328613331643957,
+  "hist_n_violated_axes": {
+   "0": 1,
+   "2": 8,
+   "3": 14,
+   "4": 22,
+   "5": 27,
+   "6": 33,
+   "7": 45,
+   "8": 61,
+   "9": 61,
+   "10": 47,
+   "11": 63,
+   "12": 31,
+   "13": 22
+  },
+  "min_n_violated_axes": 0,
+  "n": 435,
+  "n_satisfying_13_axes_AND_ms_le_armB": 0,
+  "n_satisfying_all_13_axes": 1,
+  "n_with_ms_le_armB": 0,
+  "n_with_oxey_below_armB": 61,
+  "per_axis_violation_count_of_435": {
+   "alt": 206,
+   "comfort": 412,
+   "imbalance": 162,
+   "lsb": 180,
+   "lsb-dist": 177,
+   "redir": 264,
+   "roll": 305,
+   "scissor": 248,
+   "sfb": 346,
+   "sfb-dist": 373,
+   "sfs": 287,
+   "sfs-dist": 334,
+   "sr-roll": 358
+  }
+ },
+ "repeat_same_batch_max_abs_diff": {
+  "_ms_per_char": 0.0,
+  "oxey-style": 0.0
+ },
+ "structural_headroom_random_pool": {
+  "armB_oxey": 8.611045585392063,
+  "n_holding_6_oxey_components": 0,
+  "n_holding_all_13": 0,
+  "n_pool": 200000,
+  "note": "a RANDOM pool is far from the near-optimal band; this bounds nothing about the search, it only shows whether holding oxey's own components pins oxey.",
+  "oxey_min_holding_13": null,
+  "oxey_min_holding_6": null,
+  "oxey_min_unconstrained": 13.979902465979304
+ },
+ "throughput_single_process": {
+  "64": {
+   "evals_per_s": 1832.098827447822,
+   "wall_s": 0.034932613372802734
+  },
+  "435": {
+   "evals_per_s": 1435.8221978789911,
+   "wall_s": 0.3029623031616211
+  },
+  "4096": {
+   "evals_per_s": 1218.2783697921395,
+   "wall_s": 3.36212158203125
+  },
+  "32768": {
+   "evals_per_s": 1165.8795150372541,
+   "wall_s": 28.105820178985596
+  },
+  "131072": {
+   "evals_per_s": 938.1359058839384,
+   "wall_s": 139.71536445617676
+  }
+ }
+}

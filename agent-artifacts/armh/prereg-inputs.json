@@ -1,0 +1,469 @@
+{
+ "C1_isolation": {
+  "FastEval.corpus_dir": "/tmp/armh/data/corpus/blend-v1",
+  "keybo.__file__": "/tmp/armh/src/keybo/__init__.py",
+  "sys.prefix": "/tmp/armh/.venv",
+  "trigrams_md5": "c5066fa7bcc46dea1ecbc987fb465b4a"
+ },
+ "armB_best_of_six_on": [
+  "roll",
+  "sfs",
+  "sfs-dist",
+  "sr-roll"
+ ],
+ "armB_gauges": {
+  "alt": 37.13733008655502,
+  "comfort": 3.4140465,
+  "imbalance": 4.8753996439391,
+  "lsb": 1.1410913569660872,
+  "lsb-dist": 2.322675604674633,
+  "oxey-style": 8.611045585392063,
+  "redir": 4.420586814037255,
+  "roll": 45.442097658599806,
+  "scissor": 0.25671106120493087,
+  "sfb": 2.539124615505356,
+  "sfb-dist": 3.0423296718509323,
+  "sfs": 6.799508454836403,
+  "sfs-dist": 8.00562391148118,
+  "sr-roll": 17.813072191285166
+ },
+ "armB_ms_absdiff": 0.0,
+ "armB_ms_frozen": 253.90057910352604,
+ "armB_ms_rederived": 253.90057910352604,
+ "axes_violated_by_all_six_siblings": [
+  "roll"
+ ],
+ "axes_violated_by_any_sibling": [
+  "comfort",
+  "imbalance",
+  "lsb",
+  "lsb-dist",
+  "redir",
+  "roll",
+  "scissor",
+  "sfb",
+  "sfb-dist",
+  "sfs",
+  "sfs-dist",
+  "sr-roll"
+ ],
+ "constrained_axes": [
+  "sfb",
+  "sfs",
+  "sfb-dist",
+  "sfs-dist",
+  "lsb",
+  "lsb-dist",
+  "alt",
+  "roll",
+  "sr-roll",
+  "redir",
+  "scissor",
+  "imbalance",
+  "comfort"
+ ],
+ "direction_agreement": {
+  "n": 14,
+  "qwerty_n_agree": 14,
+  "rho_n_agree": 13
+ },
+ "direction_derivation": {
+  "alt": {
+   "dir_from_qwerty": -1.0,
+   "dir_from_rho": -1.0,
+   "dir_shipped_EXPECTED_SIGN": -1.0,
+   "qwerty_agrees": true,
+   "rho_agrees": true,
+   "rho_with_ms": -0.17992267180766697
+  },
+  "comfort": {
+   "dir_from_qwerty": 1.0,
+   "dir_from_rho": 1.0,
+   "dir_shipped_EXPECTED_SIGN": 1.0,
+   "qwerty_agrees": true,
+   "rho_agrees": true,
+   "rho_with_ms": 0.7031974489498405
+  },
+  "imbalance": {
+   "dir_from_qwerty": 1.0,
+   "dir_from_rho": 1.0,
+   "dir_shipped_EXPECTED_SIGN": 1.0,
+   "qwerty_agrees": true,
+   "rho_agrees": true,
+   "rho_with_ms": 0.12684794011549624
+  },
+  "lsb": {
+   "dir_from_qwerty": 1.0,
+   "dir_from_rho": 1.0,
+   "dir_shipped_EXPECTED_SIGN": 1.0,
+   "qwerty_agrees": true,
+   "rho_agrees": true,
+   "rho_with_ms": 0.037171346510709156
+  },
+  "lsb-dist": {
+   "dir_from_qwerty": 1.0,
+   "dir_from_rho": 1.0,
+   "dir_shipped_EXPECTED_SIGN": 1.0,
+   "qwerty_agrees": true,
+   "rho_agrees": true,
+   "rho_with_ms": 0.04599968106248006
+  },
+  "oxey-style": {
+   "dir_from_qwerty": 1.0,
+   "dir_from_rho": 1.0,
+   "dir_shipped_EXPECTED_SIGN": 1.0,
+   "qwerty_agrees": true,
+   "rho_agrees": true,
+   "rho_with_ms": 0.20227188139199256
+  },
+  "redir": {
+   "dir_from_qwerty": 1.0,
+   "dir_from_rho": 1.0,
+   "dir_shipped_EXPECTED_SIGN": 1.0,
+   "qwerty_agrees": true,
+   "rho_agrees": true,
+   "rho_with_ms": 0.10899698893731179
+  },
+  "roll": {
+   "dir_from_qwerty": -1.0,
+   "dir_from_rho": -1.0,
+   "dir_shipped_EXPECTED_SIGN": -1.0,
+   "qwerty_agrees": true,
+   "rho_agrees": true,
+   "rho_with_ms": -0.07330879939429996
+  },
+  "scissor": {
+   "dir_from_qwerty": 1.0,
+   "dir_from_rho": 1.0,
+   "dir_shipped_EXPECTED_SIGN": 1.0,
+   "qwerty_agrees": true,
+   "rho_agrees": true,
+   "rho_with_ms": 0.35312135413258455
+  },
+  "sfb": {
+   "dir_from_qwerty": 1.0,
+   "dir_from_rho": 1.0,
+   "dir_shipped_EXPECTED_SIGN": 1.0,
+   "qwerty_agrees": true,
+   "rho_agrees": true,
+   "rho_with_ms": 0.11041749183859323
+  },
+  "sfb-dist": {
+   "dir_from_qwerty": 1.0,
+   "dir_from_rho": 1.0,
+   "dir_shipped_EXPECTED_SIGN": 1.0,
+   "qwerty_agrees": true,
+   "rho_agrees": true,
+   "rho_with_ms": 0.1950437615652351
+  },
+  "sfs": {
+   "dir_from_qwerty": 1.0,
+   "dir_from_rho": -1.0,
+   "dir_shipped_EXPECTED_SIGN": 1.0,
+   "qwerty_agrees": true,
+   "rho_agrees": false,
+   "rho_with_ms": -0.015716141295495523
+  },
+  "sfs-dist": {
+   "dir_from_qwerty": 1.0,
+   "dir_from_rho": 1.0,
+   "dir_shipped_EXPECTED_SIGN": 1.0,
+   "qwerty_agrees": true,
+   "rho_agrees": true,
+   "rho_with_ms": 0.09498837481177341
+  },
+  "sr-roll": {
+   "dir_from_qwerty": -1.0,
+   "dir_from_rho": -1.0,
+   "dir_shipped_EXPECTED_SIGN": -1.0,
+   "qwerty_agrees": true,
+   "rho_agrees": true,
+   "rho_with_ms": -0.058755978956252855
+  }
+ },
+ "directions": {
+  "alt": -1.0,
+  "comfort": 1.0,
+  "imbalance": 1.0,
+  "lsb": 1.0,
+  "lsb-dist": 1.0,
+  "oxey-style": 1.0,
+  "redir": 1.0,
+  "roll": -1.0,
+  "scissor": 1.0,
+  "sfb": 1.0,
+  "sfb-dist": 1.0,
+  "sfs": 1.0,
+  "sfs-dist": 1.0,
+  "sr-roll": -1.0
+ },
+ "frozen_feasibility_table": {
+  "arm-A": {
+   "layout": "udy.,fgpmliheaocsntr-k'qjwzbvx",
+   "ms": 256.8465706946916,
+   "n_sat_of_13": 12,
+   "oxey": -12.493184339694864,
+   "violated": {
+    "roll": 3.29386138442797
+   }
+  },
+  "armB": {
+   "layout": "flmpg-yuo,sntdcireahkxbwv'.jzq",
+   "ms": 253.90057910352604,
+   "n_sat_of_13": 13,
+   "oxey": 8.611045585392063,
+   "violated": {}
+  },
+  "flagship-c3": {
+   "layout": "pyou'vgdnmheai.cstrlkjz,-wfbxq",
+   "ms": 254.9761188060981,
+   "n_sat_of_13": 9,
+   "oxey": -7.874864180076728,
+   "violated": {
+    "comfort": 0.1915052730000002,
+    "roll": 3.6812979241053583,
+    "sfs-dist": 0.12540215974461866,
+    "sr-roll": 4.859871372170721
+   }
+  },
+  "graphite": {
+   "layout": "bldwz'foujnrtsgyhaeixqmcvkp,.-",
+   "ms": 258.169563130158,
+   "n_sat_of_13": 7,
+   "oxey": -7.148220013154666,
+   "violated": {
+    "comfort": 0.5669466399999998,
+    "roll": 2.9764114932308487,
+    "scissor": 0.26061277768029806,
+    "sfs": 0.07825977810648244,
+    "sfs-dist": 0.21958217052523032,
+    "sr-roll": 3.471326848438302
+   }
+  },
+  "keybo-lsb": {
+   "layout": "pyuo,vgdnlhiea.cstrmkj-z'fwbxq",
+   "ms": 254.6307495925407,
+   "n_sat_of_13": 8,
+   "oxey": -3.249680324731689,
+   "violated": {
+    "comfort": 0.2968108460000001,
+    "roll": 3.8171877122970272,
+    "sfs": 0.8492774646939028,
+    "sfs-dist": 0.9849543164138375,
+    "sr-roll": 5.120994827154588
+   }
+  },
+  "keybo-lsb+lm": {
+   "layout": "pyuo,vgdnmhiea.cstrlkj-z'fwbxq",
+   "ms": 254.68467763206127,
+   "n_sat_of_13": 8,
+   "oxey": -2.858518039478544,
+   "violated": {
+    "comfort": 0.18122153799999996,
+    "roll": 3.8171877122970272,
+    "sfs": 0.8492774646939028,
+    "sfs-dist": 0.9813484133836337,
+    "sr-roll": 4.827423338030448
+   }
+  },
+  "semimak": {
+   "layout": "flhvz'wuoysrntkcdeaixjbmqpg,.-",
+   "ms": 257.3915378008203,
+   "n_sat_of_13": 5,
+   "oxey": -0.2980327567439396,
+   "violated": {
+    "comfort": 0.35800124600000016,
+    "imbalance": 4.516856871056141,
+    "lsb": 0.2766185769045362,
+    "lsb-dist": 0.5894723851117174,
+    "redir": 2.7447711513543087,
+    "roll": 2.9224102040852387,
+    "scissor": 0.17120963852378124,
+    "sr-roll": 5.566918993318813
+   }
+  },
+  "six-s907919": {
+   "layout": "puy.,vdfnlheioamtsrc'jqk-gwbxz",
+   "ms": 254.07655132081604,
+   "n_sat_of_13": 6,
+   "oxey": 1.0078329486767155,
+   "violated": {
+    "comfort": 0.005602055000000217,
+    "lsb": 0.05641071772050488,
+    "lsb-dist": 0.23619980292129616,
+    "roll": 4.6542543553870175,
+    "sfs": 2.238348611553837,
+    "sfs-dist": 2.59512500086546,
+    "sr-roll": 3.665684571178092
+   }
+  },
+  "six-s915838": {
+   "layout": "pyou,vdflrghaeictsnmk'j.-wbzxq",
+   "ms": 254.0241558065724,
+   "n_sat_of_13": 4,
+   "oxey": 14.161267012020716,
+   "violated": {
+    "comfort": 0.4556128300000002,
+    "lsb": 0.5243918401273324,
+    "lsb-dist": 1.285185460512655,
+    "roll": 7.266205092474905,
+    "sfb": 0.08805087293512903,
+    "sfb-dist": 0.033446737508305624,
+    "sfs": 3.7067685207163077,
+    "sfs-dist": 4.408887627329467,
+    "sr-roll": 5.208111107842917
+   }
+  },
+  "six-s923757": {
+   "layout": "lcfmk.uoyprnstdiaeghzxwbv-,'qj",
+   "ms": 254.00558160988533,
+   "n_sat_of_13": 8,
+   "oxey": 6.716351474656998,
+   "violated": {
+    "comfort": 0.11923087700000012,
+    "roll": 6.441744072716816,
+    "sfs": 2.754050627854731,
+    "sfs-dist": 3.164546176931326,
+    "sr-roll": 2.5169551124012237
+   }
+  },
+  "six-s931676": {
+   "layout": "lnfdg.,yehcrstmaoiupxzbwvk-q'j",
+   "ms": 254.05169846015525,
+   "n_sat_of_13": 8,
+   "oxey": 3.720477625554879,
+   "violated": {
+    "comfort": 0.5942125959999998,
+    "roll": 4.670655813948372,
+    "sfs": 2.4356956445355724,
+    "sfs-dist": 3.265511617728219,
+    "sr-roll": 7.472619632776423
+   }
+  },
+  "six-s939595": {
+   "layout": "pyu.,gdfnlhieaocstrmkj'-qbwzvx",
+   "ms": 253.98273629552347,
+   "n_sat_of_13": 7,
+   "oxey": 2.391558124725762,
+   "violated": {
+    "lsb": 0.6225933271671993,
+    "lsb-dist": 1.5620303400453932,
+    "roll": 4.722504474532883,
+    "sfs": 1.698916435080358,
+    "sfs-dist": 2.303340256651669,
+    "sr-roll": 3.7558751487763438
+   }
+  }
+ },
+ "incumbent_source": {
+  "note": "layout STRINGS borrowed; every gauge value re-derived here.",
+  "strings_from": "state/armg/artifacts/D-prereg-input.json (+ live NAMED_LAYOUTS)"
+ },
+ "live_gauges": [
+  "sfb",
+  "sfs",
+  "sfb-dist",
+  "sfs-dist",
+  "lsb",
+  "lsb-dist",
+  "alt",
+  "roll",
+  "sr-roll",
+  "redir",
+  "scissor",
+  "imbalance",
+  "oxey-style",
+  "comfort"
+ ],
+ "oxey_restates_components": {
+  "R2_in_fastest_2pct_of_4000_random": 0.908202535772183,
+  "components": [
+   "sfb",
+   "lsb",
+   "scissor",
+   "imbalance",
+   "redir",
+   "alt"
+  ],
+  "n": 80
+ },
+ "scale_range_over_six": {
+  "alt": 8.282488925949309,
+  "comfort": 0.6334071809999999,
+  "imbalance": 4.599910684123468,
+  "lsb": 0.9720269138545692,
+  "lsb-dist": 2.270010737371103,
+  "oxey-style": 13.153434063343994,
+  "redir": 1.0304806510713163,
+  "roll": 7.266205092474905,
+  "scissor": 0.18851669433861878,
+  "sfb": 0.7619453842296489,
+  "sfb-dist": 0.8994860182130573,
+  "sfs": 3.7067685207163077,
+  "sfs-dist": 4.408887627329467,
+  "sr-roll": 7.472619632776423
+ },
+ "seeds": {
+  "disjoint_from_armg_family": true,
+  "disjoint_from_placebo_family": true,
+  "formula": "31337 + 104729*r, r=0..4",
+  "repro_control_note": "ONE extra baseline run at ARM G's r=0 seed, as a bit-exact reproduction control against ARM G's own baseline-r0 champion. It is NOT in the sd_H pool (that would share a draw with ARM G).",
+  "repro_control_seed": 20260728,
+  "values": [
+   31337,
+   136066,
+   240795,
+   345524,
+   450253
+  ]
+ },
+ "six_frozen_champions": [
+  "flmpg-yuo,sntdcireahkxbwv'.jzq",
+  "puy.,vdfnlheioamtsrc'jqk-gwbxz",
+  "pyou,vdflrghaeictsnmk'j.-wbzxq",
+  "lcfmk.uoyprnstdiaeghzxwbv-,'qj",
+  "lnfdg.,yehcrstmaoiupxzbwvk-q'j",
+  "pyu.,gdfnlhieaocstrmkj'-qbwzvx"
+ ],
+ "six_ms": [
+  253.90057910352587,
+  254.07655132081635,
+  254.02415580657222,
+  254.0055816098848,
+  254.05169846015488,
+  253.98273629552327
+ ],
+ "six_ms_range": 0.17597221729047874,
+ "six_ms_sd_ddof1": 0.06171827216720297,
+ "six_oxey": [
+  8.611045585392056,
+  1.0078329486767226,
+  14.161267012020716,
+  6.716351474656998,
+  3.720477625554886,
+  2.391558124725763
+ ],
+ "six_oxey_ratio": 14.051204647173282,
+ "six_source": {
+  "artifact_seeds": [
+   900000,
+   907919,
+   915838,
+   923757,
+   931676,
+   939595
+  ],
+  "artifact_unique_evals": [
+   1008758,
+   1022158,
+   1032473,
+   1008294,
+   1010351,
+   1009261
+  ],
+  "borrowed_range_in_artifact": 0.17597221728999557,
+  "borrowed_sd_in_artifact": 0.06171827216711913,
+  "md5": "f5d78de67bf1c3c0f8e18a6b675942e0",
+  "path": "/local/home/zegertho/agent/state/keybo-optimization/artifacts/optevidence-1/search-noise-placebo.json"
+ }
+}
