@@ -284,7 +284,7 @@ bar) ⇒ TRI-CORRECTED-ONLY is the canonical objective (the earlier borderline k
 'combined' is superseded — the double-count is gone by construction). Final search:
 best `bhaievlnsdpyo.utmrfcq;/,jgkwxz` +2.07% vs qwerty, 13 distinct near-optima/0
 consensus slots (plateau as always), E5 clean (home 31.9%, sfb 1.47%), bigram-component
-certificate within 2.54% of optimal.**
+certificate within 2.54% of optimal.** [FLOOR-APPLIED 2026-07-28 per QAPBOUND-1: the GL bound's own resolution floor is ~2.3410%, so this certificate is +0.20 pp above it — INDISTINGUISHABLE from the floor. It is TRUE but carries essentially no information about search quality.]
 **Outcome: architecture flat; PREV HURTS — the local-context null now holds for trigram
 targets too.** [See also the EWMA entry below — the null is now four-deep.] Scoreboard (τ +1.0 everywhere): C-D4 1.0254 ≈ C-D2 1.0250 ≈ C-BASE 1.0223
 ≫ C-PREV 1.0075 > C-PREV-D2 1.0044. The actual previous interval — the sharpest local
@@ -1192,7 +1192,7 @@ runs/p8b_final.json (v5 BUF2-BOTH bigrams + join cand-4 trigrams, T3c(90), rng 8
   w=0.5 gyou,lntscdeaipmrbfwj;/.xhkvqz  +2.29% | sfb 1.50% (P6-family shape recurs)
   w=1.0 gyou,ldntcseai.mfrpwj/;zxhkbvq  +2.12% | sfb 1.09%
   w=2.0 hsndv.geoilcrtmwpuayjqxbkf,z;/  +1.76% | sfb 0.70% | inroll 10.5%
-  Bigram-component GL certificate: within 3.64% of optimal. Scoreboard: best +2.23%,
+  Bigram-component GL certificate: within 3.64% of optimal. [FLOOR-APPLIED 2026-07-28 per QAPBOUND-1: the GL bound's own resolution floor is ~2.3410%, so this certificate is +1.30 pp above it — mostly bound looseness. It is TRUE but LOOSE.] Scoreboard: best +2.23%,
   colemak +0.64%, qwerty 0.
 Note the family's plateau: w=0.5 scoring +2.29 vs w=0's +2.23 on the speed axis is
 within search noise (different anneal trajectories; own-fitness ordering is correct by
@@ -1208,7 +1208,7 @@ runs/p9_final.json (same pipeline as P8b, objective = fastest-fifth mean, rng 88
   w=0.5 coeainrtswpgy.umbldfq;j/,hkvxz  +1.94% | sfb 1.93%
   w=1.0 waedilstnb.oupymfcrkq;zj,hgvx/  +1.90% | sfb 2.30%
   w=2.0 coeuinrtswgayp,lbmdfq;/.khxvzj  +1.93% | sfb 1.56%
-  Bigram-component certificate: within 4.38%. Scoreboard ON THE F5M OBJECTIVE:
+  Bigram-component certificate: within 4.38%. [FLOOR-APPLIED 2026-07-28 per QAPBOUND-1: the GL bound's own resolution floor is ~2.3410%, so this certificate is +2.04 pp above it — the largest genuine gap of the six. It is TRUE but still LOOSE.] Scoreboard ON THE F5M OBJECTIVE:
   P9-best +2.01%, qwerty 0, colemak -1.90% (colemak is SLOWER than qwerty at quality
   execution per this model — a substantive, falsifiable claim of the quality view).
 Family notes: consonant core nrts/stn + right-hand w placement recurs across weights;
@@ -1881,7 +1881,7 @@ trigram_cond_lograt_join x3, wpm 90, rng 880333, 12 restarts x 12k + 2opt):
   w=2    hrfkv.y,oulnstdgciaezxbmqwpj;/  +3.68%            sfb 0.59%  inroll 8.5%
   (*) w=0.5 scoring 0.038% better on SPEED than w=0 = search noise; the family
   plateau is ~0.2% wide, consistent with every prior round.
-  Bigram-component certificate: within 3.35% of optimal (GL bound).
+  Bigram-component certificate: within 3.35% of optimal (GL bound). [FLOOR-APPLIED 2026-07-28 per QAPBOUND-1: the GL bound's own resolution floor is ~2.3410%, so this certificate is +1.01 pp above it — mostly bound looseness. It is TRUE but LOOSE.]
   Scoreboard under the LOGRAT objective: P10 +3.87% > p8b +2.74% > colemak +2.09%.
 CROSS-OBJECTIVE A/B (the user's same-ordering != same-argmax standard, both directions):
   p8b-w0 regret under the LOGRAT objective: +1.18%
@@ -2420,7 +2420,7 @@ runs/p11_final.json (bigram_cal group-mean-era models + join trigram, rng 881333
   w=0.5 hcgkm.,ouylrstdpnaiezxwbvfjq;/  +3.95%            sfb 0.98%  outer-first 0.57%
   w=1   gnldk.,yousrthmpcieaqxzbvfwj;/  +3.90%            sfb 0.76%  outer-first 0.48%
   w=2   uoy,.kdlnvaeicpmhtrs;/jwbgfzxq  +3.86%            sfb 0.83%  outer-first 0.44%
-  GL BIGRAM-COMPONENT certificate 3.40% (qualifier added 2026-07-28 per QAPBOUND-1: `certificate()` is called on F2,T2 so it bounds `fit_bi` = 34.48% of the objective's mass, NOT the cubic objective the search minimizes; and the bound's own resolution floor is ~2.34%, so this number is mostly bound looseness — it is TRUE but LOOSE, not a measure of search quality). Scoreboard: P11 +4.02% > P10 +3.95% > colemak +2.07%.
+  GL BIGRAM-COMPONENT certificate 3.40% [+1.06 pp above the ~2.3410% resolution floor: mostly bound looseness] (qualifier added 2026-07-28 per QAPBOUND-1: `certificate()` is called on F2,T2 so it bounds `fit_bi` = 34.48% of the objective's mass, NOT the cubic objective the search minimizes; and the bound's own resolution floor is ~2.34%, so this number is mostly bound looseness — it is TRUE but LOOSE, not a measure of search quality). Scoreboard: P11 +4.02% > P10 +3.95% > colemak +2.07%.
 THE CALIBRATION'S SIGNATURE, measured: the family's outer-first (calibrated-class)
 corpus share collapses to 0.44-0.57% vs P10's 1.22% and qwerty's 1.08% — the optimizer
 now actively avoids the pinky/ring-initiated same-row rolls it can finally price.
@@ -2460,7 +2460,7 @@ runs/p11F_final.json (bigram_cal + join-LOGRAT trigram, rng 882333):
   w=0.5 cgldk.,yousrthmpnieaqxwbvfzj;/  +4.00%  sfb 1.09%  outer-first 0.42%  <= the pick
   w=1   uoy,.kdlnbaeicpmhtrs;/jwqgfvxz  +3.89%  sfb 0.87%
   w=2   uoy,.kdlnvaeicpmhtrs;/jwbgfzxq  +3.86%  sfb 0.83%
-  GL BIGRAM-COMPONENT certificate 3.41% (qualifier added 2026-07-28 per QAPBOUND-1: bounds `fit_bi` only, 34.48% of the mass, against a ~2.34% resolution floor). Cross-family: P10-w0 regret +0.042% (plateau), outer-first
+  GL BIGRAM-COMPONENT certificate 3.41% [+1.07 pp above the ~2.3410% resolution floor: mostly bound looseness] (qualifier added 2026-07-28 per QAPBOUND-1: bounds `fit_bi` only, 34.48% of the mass, against a ~2.34% resolution floor). Cross-family: P10-w0 regret +0.042% (plateau), outer-first
   1.22% -> 0.50%. The w=0.5 member is speed-TIED with w=0 (+4.00 vs +3.99 = noise)
   at sfb 1.09% and the family's lowest outer-first share — the recommended pick.
 MULTI-WPM ARGMAX (brainstorm #3, the registered stage): the wpm-90 champion carries
@@ -9572,3 +9572,35 @@ on the post-merge `main` for the adoption set:
 (:1052 Q-OBJ, :1101, :1196 "CAMPAIGN COMPLETE", :12-18 OQ-5) carry their `SUPERSEDED IN PART` annotations but **the F5M family's standing was never re-decided** — the refuted gate is annotated, not replaced;
 (3) `qap_bound`'s docstring still describes an outgoing-only relaxation while the code does halved outgoing+incoming, and the **~2.34% resolution floor is a reporting convention nobody has applied to the six
 certificates**; (4) the round-4 worklist is unrun, including **`badscissor` — the gauge the user caught — still unaudited after three rounds.**
+
+### F5M-REDECISION-1 + CERT-FLOOR-APPLIED — 🟠 THE F5M FAMILY'S STANDING IS NOW RE-DECIDED, NOT MERELY FLAGGED: it survives as a CO-EQUAL OPTION on two intact supports, but its ADOPT-CANDIDATE label is WITHDRAWN; and the ~2.34% resolution floor is applied to all six certificates in place (2026-07-28)
+Closing the two loose ends I named after landing the fixes. Both are ledger work I own; neither is user-gated. The third (`badscissor`) is spawned as `bsaudit`.
+## (1) THE F5M RE-DECISION — what I owed after refuting its gate
+CEILING-SB-1 refuted the Q-OBJ gate that licensed the F5M family (`delta -0.0199, inside the -0.02 gate BY A HAIR` becomes **-0.0698**, failing under all four correction forms), and I annotated the affected cells. ⚠ **But
+an annotation is not a decision — I flagged a refuted gate and left the FAMILY's standing untouched, which is the same "the qualifier exists somewhere but not where it matters" failure this campaign keeps finding.** So
+I read what actually licensed it, and **it rests on THREE supports, of which only ONE is refuted:**
+ 🔴 **(a) THE Q-OBJ GATE — REFUTED.** The `-0.02` rho-fraction gate was the *"razor-thin"* one, and it fails by 2.4-4.8x under every candidate ceiling correction. **Gone.**
+ 🟢 **(b) D1' ATTAINABILITY — INTACT, AND IT IS NOT A rho/ceiling QUANTITY AT ALL.** *"quality execution rises 30.6% -> 67.6% with skill"* is a measured share of executions, not a model-vs-ceiling ratio, so **the
+ Spearman-Brown correction cannot touch it.** The registered rule named D1' as what "decides FOR the quality objective at wpm 90" — and that decision procedure still runs.
+ 🟢 **(c) THE CROSS-REGRET SEPARATION — INTACT.** *"incumbent layout under the F5M objective +0.343%; F5M layout under the incumbent objective +0.182% — both above the 0.15% moot bar"*, so **the two objectives
+ genuinely prefer different layouts.** Pure objective-vs-objective regret, no ceiling in it. And the trigram gate at :1205 (*"F5M cond-tri raw rho 0.632 > 0.55"*) is a **RAW rho** — also untouched.
+=> **REGISTERED RE-DECISION: "BOTH families ship, user chooses" STANDS, because it was decided by D1' attainability + cross-regret separation, NOT by the Q-OBJ gate.** ⚠ **WHAT IS WITHDRAWN is the ADOPT-CANDIDATE
+LABEL and everything that rested on it:** the entry at :1052 says *"dp-tau 1.0 => ADOPT-CANDIDATE"* on the strength of a gate that fails, so **F5M is a CO-EQUAL SHIPPED OPTION, not an adopt-candidate.** The practical
+difference: **it may no longer be cited as having PASSED a transfer-quality gate — because it did not.** ⚠ And the caveat inverts: the original entry hedged *"F5M's Q-OBJ gates were razor-thin"*; the honest form is
+now **"F5M FAILED its Q-OBJ transfer gate and ships on attainability + objective-separation alone."** 🔴 **AND ITS ARM ORDERING IS WORSE THAN "REFUTED" SUGGESTS: under Spearman-Brown, F5M (0.8323) falls BELOW Q25
+(0.8483) and Q20 (0.8410) — the two arms the SAME ENTRY "refuted as objectives."** Registered as the sharpest consequence: **the entry refuted two arms for being -5pp of own ceiling, using a ceiling that flattered
+F5M more than it flattered them.** ⚠ **NOT re-decided here, and named so this is not read as complete: whether Q25/Q20 should now be RE-ADMITTED as objectives.** That needs the D4 cross-regret run redone under the
+corrected ceiling, which is a compute task, not a ledger edit — **and it is the one part of this loose end that is genuinely blocked on work nobody has done, not on the human.**
+## (2) THE CERTIFICATE FLOOR — applied to all six, in place
+QAPBOUND-1 measured the GL bound's own **resolution floor at ~2.3410%** (a deep search on the certified objective ITSELF still certifies there) and registered *"quote the floor next to any certificate"* — a convention
+nobody had applied. Applied now, computed per entry:
+    entry    quoted    floor    above floor   reading
+    :287      2.54%    2.34%        **+0.20**  INDISTINGUISHABLE from the floor — carries essentially no information about search quality
+    :1884     3.35%    2.34%          +1.01    mostly bound looseness
+    :2423     3.40%    2.34%          +1.06    mostly bound looseness
+    :2463     3.41%    2.34%          +1.07    mostly bound looseness
+    :1195     3.64%    2.34%          +1.30    mostly bound looseness
+    :1211     4.38%    2.34%        **+2.04**  the largest genuine gap of the six — still LOOSE
+ => **all six now carry their excess-over-floor inline**, so no reader takes a bare "within 2.54% of optimal" as a measure of search quality. 🔴 **THE ONE THAT MATTERS: `:287`'s 2.54% is only 0.20 pp above the floor —
+ it is INDISTINGUISHABLE from what the bound certifies for a layout found by searching the certified objective directly.** Every certificate remains mathematically TRUE (`OPT >= lb` makes the quoted gap an upper
+ bound); what changes is that **none of them is evidence the search did well**, and the tightest-looking one is the least informative.
