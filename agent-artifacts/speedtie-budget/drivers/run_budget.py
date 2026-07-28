@@ -77,15 +77,21 @@ def main() -> int:
     repeats = int(sys.argv[2])
     islands = int(sys.argv[3]) if len(sys.argv) > 3 else 20
     epochs = int(sys.argv[4]) if len(sys.argv) > 4 else 120
+    # `first` lets a later invocation launch only the seeds not yet run (the timing seed r=0 is
+    # already complete and its JSON must not be overwritten). The harvest below still reads
+    # ALL of r in [0, repeats), so the summary covers every seed regardless of who ran it.
+    first = int(sys.argv[5]) if len(sys.argv) > 5 else 0
 
     OUTDIR.mkdir(parents=True, exist_ok=True)
     per_epoch = int(budget * 1.95) // (epochs * islands)
     print(f"budget={budget:,} repeats={repeats} islands={islands} epochs={epochs} "
           f"=> {per_epoch:,} calls/island/epoch  (placebo 1M was 8,125)", flush=True)
     print(f"seeds: {[seed_of(r) for r in range(repeats)]}  (formula {SEED_FORMULA})", flush=True)
+    print(f"launching r={first}..{repeats-1}; r<{first} assumed already complete on disk",
+          flush=True)
 
     t0 = time.time()
-    procs = {r: launch(r, budget, islands, epochs) for r in range(repeats)}
+    procs = {r: launch(r, budget, islands, epochs) for r in range(first, repeats)}
     rcs: dict[int, int] = {}
     for r, p in procs.items():
         rcs[r] = p.wait()
@@ -96,7 +102,13 @@ def main() -> int:
     rows = []
     for r in range(repeats):
         out = OUTDIR / f"b{budget}-r{r}.json"
-        row: dict = {"r": r, "seed": seed_of(r), "rc": rcs[r], "out": str(out)}
+        # A seed launched by an EARLIER invocation has no rc here; its own sentinel already
+        # recorded rc=0 and its JSON exists. Absence of an rc in THIS process is not a failure
+        # (trap 1: absence is not disproof) — but it is also not a pass, so the JSON must exist.
+        if r not in rcs:
+            rcs[r] = 0 if out.exists() else 99
+        row: dict = {"r": r, "seed": seed_of(r), "rc": rcs[r], "out": str(out),
+                     "launched_by_this_invocation": r >= first}
         if rcs[r] == 0 and out.exists():
             blob = json.load(open(out))
             row.update({
