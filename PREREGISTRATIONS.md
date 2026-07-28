@@ -7908,3 +7908,57 @@ occurrence of "seventh" in the ledger is either the retraction or its marker. LE
 longer fires on healthy narrow pools. COMMITTED LOCALLY as **f883681** on branch `guard-cd` after the suite came back GREEN on the SECOND run: **rc=0, 873 collected, 0 failed**
 (870 passed / 3 skipped, 676s) from an out-of-tree bite-tested sentinel, count reconciling as 869 prior + 3 skipped + 1 net-new. ruff clean.
 Landing this branch remains a USER decision; NOTHING PUSHED.
+
+### GUARD-CD-1 ADDENDUM + POOLSWEEP-1 REVISION (reflection pass) — the "+0.999 identification" IS ALGEBRA, so my guard's WARRANT was wrong (the fix is not); and a genuinely new route replaces the demoted one (2026-07-27)
+I sent `poolsweep` the reflection self-audit BEFORE reaping, including my own narrowing of its necessity claim. It ACCEPTED the narrowing without
+reservation, then found that the headline it had given me — and which I cited as the WARRANT for the guard I had just committed and pushed — is an
+ALGEBRAIC IDENTITY. Branch `poolsweep` @ 0e1464b (2 commits, drivers only), nothing pushed; shared clone untouched by it.
+🔴 **I VERIFIED THE IDENTITY MYSELF TO MACHINE PRECISION.** With per-pool z-scoring — which is exactly what my shipped
+`consensus_disagreement_ratio()` does — `var(zA) = var(zB) = 1` forces `cov(C, D) = 0` identically, so the closed form is exact and inverts:
+**k = sqrt((1 + r) / (1 - r))**. Measured over 14 synthetic pools: max |k_measured - sqrt((1+r)/(1-r))| = **4.263e-14**, max
+|r_measured - (k^2-1)/(k^2+1)| = **3.331e-16**, cov(C,D) = -2.226e-18. Also `cov(zA, zB) = var(C) - var(D)` EXACTLY (the child measured 3.331e-16
+over its 13 real pools), so `sign(rho) = sign(C/D - 1)` is FORCED.
+=> **CONSEQUENCE 1 — POOLSWEEP-1's "Spearman(rho, log C/D) = +0.999 over 49 cells x 3 corpora" IS NOT EVIDENCE.** It is a re-derivation of algebra:
+the "predictor" was built from the OUTCOME's own two variance components. This is trap 11/30 in its purest form and I registered it as an empirical
+finding. **RETRACTED as evidence.** What IS empirical and survives: the archive lands at k = 1.058, essentially the crossover where rho must be ~0;
+and the closed form's SLACK is largest for the ARCHIVE ALONE (+0.0634 Pearson, +0.1626 Spearman) precisely because it is the only ASYMMETRICALLY
+restricted pool (u_A/u_B = 0.249 vs ~1.0 for every constructed cell) — that slack, not the correlation, is the archive's real signature.
+=> **CONSEQUENCE 2 — MY OWN GUARD (GUARD-CD-1, code f883681, ledger 00a1f66) IS REDUNDANT WITH ITS SIBLING.** `cd_ratio` and
+`NARROW_POOL_SOURCE_AGREEMENT` gate ONE quantity in two coordinate systems, differing only Pearson-vs-Spearman (gap <= 0.0992). **THE FIX IS STILL
+RIGHT** — retiring `effective_dof` was correct (it false-positives at interp-f0.25: dof 2.43 at ceiling +0.9244), gating BEFORE ranking was correct,
+and serializing the verdict was correct (that gap would have made the artifact carry no verdict at all). But three things must be corrected in how it
+is DESCRIBED and configured: (a) reframe "C/D measures the quantity that sets the ceiling" as **"C/D IS cross-source agreement, reparameterized"** —
+otherwise the entry re-invites the very trap-27/39 double-count that POOLSWEEP-1 retracts; (b) decide which guard is AUTHORITATIVE, and it should be
+the RANK-based one, since every downstream verdict is a rank correlation; (c) my `test_cd_is_scale_free` passes because **r** is scale-free — inherited,
+not evidence that C/D adds information. The one REAL advantage survives and is ergonomic, not informational: k on (0, inf) in log space is a better
+threshold axis than r compressed near +/-1.
+⚠ NECESSITY — THE CHILD ACCEPTED MY NARROWING AND THEN STRENGTHENED THE CASE FOR IT, three ways. (i) The "-0.0130, p = 0.8715" it had quoted was
+computed on the WRONG CELL (`jointband`, u_A = 0.2205 = 5.2x the archive's 0.0421) while the headline came from `boxmatch`. Re-run on the properly
+matched cell with 8000 bootstrap: archive +0.2184 - boxmatch +0.1078 = **+0.1106, CI [-0.0185, +0.2400], two-sided p = 0.098** — NOT an equality
+result. (ii) `boxmatch` matches C and D but NOT the archive's restriction ASYMMETRY (u_A/u_B 1.025 vs 0.249): the Pareto objective is AALTO-derived,
+so it squeezes AALTO ~4x harder, and NO arm reproduces that. (iii) `boxmatch`'s own WITHIN-COMMUNITY seed reliability is only +0.4605 (archive
++0.9647), i.e. it sits near the seed-noise floor, so its low cross-source rho is partly refit attenuation in a way the archive's is not. **HONEST
+QUANTITATIVE FORM: a spread-matched random pool reproduces ~86% of the drop (0.797 -> 0.108 vs 0.797 -> 0.218); a ~0.1-in-rho near-optimality
+contribution is NOT excluded.**
+⚠ THE P4 CURVE WAS MISSPECIFIED AND MUST NOT BE READ AS A NULL. I challenged why the RANDOM group misses a parameter-free curve by -0.091; the cause
+is that Thorndike case-2 takes ONE u while every cell is restricted in both sources UNEQUALLY, and it fed `sqrt(u_A u_B)` — discarding exactly the
+asymmetry that turned out to matter. So **"optimized residual +0.0061, p = 0.470" means only "no stable effect DETECTED", NEVER evidence FOR the
+null.** The curve-INDEPENDENT leg is the residual SIGN FLIP across corpora (+0.157 / +0.164 / -0.123), which needs no curve. Recursive lesson the
+child drew: in an earlier phase it fixed one misspecification (a linear fit to a saturating relation) and a second sat underneath it IN THE
+PREDICTOR — **fixing a functional form does not certify the covariate.**
+⚠ SUFFICIENCY IS SCOPED TO ms/trigram, NOT GAUGE SPACE. kswap1 has ALREADY LEFT THE BAND by the gauges: layouts inside the archive's own 1-99pct band
+on ALL 14 gauges are archive **328/400** vs kswap1 **89/400** (random 0/400, mean 10.54/14 in band), with the biggest moves comfort +3.73, sfb-dist
++2.84, sfb +2.72, oxey-style +2.48 archive-sd. In ms/trigram it is only **9.1%** of the way to random (254.83 -> 256.90 -> 277.50). So the
+sufficiency refutation STANDS in the ms/trigram sense the frontier is defined in, but the stronger gauge-band-preserving form is UNTESTED.
+🟢 **A GENUINELY NEW ROUTE, INDEPENDENT OF EVERY C/D CLAIM, REPLACING THE ONE I DEMOTED.** COMMUNITY ships 3 per-seed parts; **AALTO ships NONE**, so
+there is no second independent PAIR and the two-source limit is STRUCTURAL, not a sampling gap. But the per-seed parts give a WITHIN-source
+reliability floor, and it is decisive: on the archive pool **the instrument agrees with ITSELF at rho +0.9647 while the two instruments agree at only
++0.2184** (random pool: +0.9872 vs +0.7970). **So the ceiling collapse is genuine INSTRUMENT DISAGREEMENT, not refit noise or attenuation.** That is
+a cleaner witness than the one being demoted and it depends on none of the corrected claims. REGISTER THIS IN PLACE OF THE WITHDRAWN "seventh route".
+THE SINGLE EXPERIMENT THAT WOULD SETTLE NECESSITY, named and NOT run: an **ASYMMETRICALLY-restricted random pool matching u_A/u_B ~ 0.25**, buildable
+with the existing `box_match` by targeting u_A and u_B directly instead of C and D. Highest-value follow-up. Also untested: a gauge-band-PRESERVING
+perturbation (for the strong sufficiency form); whether a DIFFERENT frontier's ceiling follows its own k (everything rests on ONE NSGA-II archive);
+and the level-vs-spread limit (no random permutation reaches 255 ms/char — trap 16 structural disjointness).
+TWO PROCESS FAILURES THE CHILD SURFACED ABOUT ITSELF, both worth propagating: its own artifact recorded `P1_verdict = "INCONCLUSIVE"` while its
+headline claimed equality — **it emitted the caution and did not propagate it**; and it quoted a test from one cell beside a headline from another.
+Both argue for handing a reviewer the RAW JSONs, which is how I caught C1 before it did.
