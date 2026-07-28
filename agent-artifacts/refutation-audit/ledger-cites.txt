@@ -1,0 +1,117 @@
+PREREGISTRATIONS.md @ dec1c3f: 8209 lines
+PREREGISTRATIONS.md @ f4c917a: 9277 lines
+
+====================================================================================================
+K1 vote3 (a503a887b301ccc25) — blend-v1's "prose" register is 63-71% ONE machine-written file: the campaign's o
+  --- cited line 50023 ---
+      @dec1c3f: OUT OF RANGE (file is 8209 lines)
+      @f4c917a: OUT OF RANGE (file is 9277 lines)
+====================================================================================================
+K2 vote2 (a7930281a0a92d739) — manifest.json asserts a skipgram marginalization identity that the committed ble
+  --- cited line 6333 ---
+      @dec1c3f: 'Skipgrams by marginalization verified BYTE-EXACT vs committed 1-skip31.txt (4,087 entries, 0 mismatches).'
+      @f4c917a: 'loudly). Child commit add1bbe, cherry-picked to canonical. I VERIFIED the load-bearing claims myself.'
+====================================================================================================
+K4 vote2 (a3bf2db901210d587) — SELECT-1's raw-support flagship tiebreak holds at exactly 2 of 23 min_cell thres
+  --- cited line 5236 ---
+      @dec1c3f: "- SELECT-1's registered h2h semantics used the historical (buggy) support axis;"
+      @f4c917a: '  corrected numbers keybo-lsb (38.51) and lsb-sib (38.50) are ~tied, and'
+====================================================================================================
+K4 vote3 (ab3f325f59046e2cf) — SELECT-1's raw-support flagship tiebreak holds at exactly 2 of 23 min_cell thres
+  --- cited line 5068 ---
+      @dec1c3f: 'position-ngram cells (serve = bucket 80 with >=10 samples, production cell'
+      @f4c917a: 'must be robust to the +R swap or say so. EXACTNESS GATE: score() is now'
+  --- cited line 5227 ---
+      @dec1c3f: '  headline "keybo-lsb has the HIGHEST raw support on the board" is RETRACTED: on'
+      @f4c917a: 'space], so index 30 = the pinned quote-slot coord (6,2) and space is index 31'
+====================================================================================================
+K5 vote3 (ae8c7df8b9c0f3205) — `--model-family FREQ_PRIOR` ships a 2-of-3 panel as available=True/reason=None; 
+  --- cited line 218 ---
+      @dec1c3f: 'than the 0.2% "free lunch" bar but far under the 1% "fights speed" bar. Per the rule:'
+      @f4c917a: '(a) PASS: spread shrinks monotonically 17.5%→5.4% — the term is wired right. (b) The big'
+  --- cited line 223 ---
+      @dec1c3f: 'capacity-weighted balance target does; a user who mainly wants LOW PINKY LOAD should'
+      @f4c917a: 'percent of predicted speed). One surprise worth flagging: balancing RAISES pinky load'
+  --- cited line 239 ---
+      @dec1c3f: 'B (oxey frontier): sweep community-judgment weight w ∈ {0, 0.5, 1, 2, 4} (w=1 ≈ 1% of'
+      @f4c917a: 'noise), SIMPLIFY to trigram-only as the canonical objective; else keep combined with the'
+  --- cited line 7123 ---
+      @dec1c3f: 'plausible-looking-constant failure. Also corrected: there is NO `AALTO_FREQ_PRIOR` — 8 surfaces exist, not 9. NOTE this collides with the'
+      @f4c917a: "found `effect_curves`' inroll/outroll are 0/900 order-dependent -> RENAMED `outer_high`/`outer_low`; the COMMUNITY trigram inrolls/outrolls are"
+  --- cited line 7724 ---
+      @dec1c3f: 'is NO `AALTO_FREQ_PRIOR` — 8 surfaces, not 9.)'
+      @f4c917a: 'demonstrably wrong (onehands, redirects_sfs) while the ENSEMBLE is more transferable. An oracle bound (a surrogate fitted directly on the test'
+====================================================================================================
+K6 vote2 (a435bd44db2c7692e) — `comfort` divides a two-population numerator by the FULL corpus mass; the commen
+  --- cited line 7063 ---
+      @dec1c3f: 'convention inflates every share by a near-constant 1.4961-1.4999x with a BIT-IDENTICAL numerator. Attribution sends all mass to the lower'
+      @f4c917a: 'STRONG finger (ring) on bottom-row `x`. The spec text itself is careful and says the effect "is a statement about a few qwerty-era letter'
+  --- cited line 7135 ---
+      @dec1c3f: 'bigrams are 33.8% of mass, so the wrong (oxey) denominator DEFLATES rather than inflates the share; the 1.4961-1.4999x magnitude is exact and'
+      @f4c917a: 'IT KEPT RERUNNING WAS THE ONE IT WROTE. Fixed by RESTORING the contract (both keys ship, agreement pinned by test) rather than editing the'
+  --- cited line 7373 ---
+      @dec1c3f: '(0.02-0.21% margin) and `comfort` (0.16-1.87%), which flip in the 4th decimal.'
+      @f4c917a: "(kmstats oracle, KAN-1 G4 gate, `test_analyze_allgauge`'s `_run`, which also asserts the corpus back out of the JSON) — a test that relied on the"
+====================================================================================================
+K7 vote1 (a2977707a098f9e96) — effect-curves' default WPM axis runs 2 of 9 columns outside the models' declared
+  --- cited line 4486 ---
+      @dec1c3f: 'one global affine cannot fix. Support census: 8.3M/9.9M/6.2M/2.7M/0.9M samples per'
+      @f4c917a: '## BEFORE results; user hypothesis)'
+====================================================================================================
+K9 vote1 (a0db688340a1c5ea5) — iWeb 1-skip.txt is charset-TRUNCATED (59 of 64 chars), not "a different marginal
+  --- cited line 4162 ---
+      @dec1c3f: ' C. Corpus: 1-skip31 derived from trigrams.txt (skipgram(a,c) = sum_b trigram(abc));'
+      @f4c917a: "    31-char maps — qwerty +' , dvorak +'-', azerty +'ù', qwertz +'ä' (each national"
+====================================================================================================
+K9 vote3 (ad8771f8aa335547e) — iWeb 1-skip.txt is charset-TRUNCATED (59 of 64 chars), not "a different marginal
+  --- cited line 4195 ---
+      @dec1c3f: 'C (97e7588): 1-skip31 derived from trigrams; non-quote spearman 0.9993 vs existing.'
+      @f4c917a: 'A (3cb1009): golden regression — all 30-key feature values bit-identical after the'
+====================================================================================================
+K10 vote1 (a291eb80585bf2b33) — oxey `inroll`/`outroll` credit ZERO same-row rolls — 32–63% of eligible mass sil
+  --- cited line 8192 ---
+      @dec1c3f: '(nuance: THEORY-1 has redirects SUPPORTED class-level / UNDERDETERMINED context-level, +4.17/-6.71/-3.34, a SIGN SPLIT). **`inroll` -2.0 vs `outroll`'
+      @f4c917a: '=> LAUNCHED `penaltyaudit` (local, reversible): audit the CORRECT PENALTY FUNCTION for each of the 10 terms in `DEFAULT_OXEY_WEIGHTS`'
+====================================================================================================
+K10 vote3 (ac2533d649eb82993) — oxey `inroll`/`outroll` credit ZERO same-row rolls — 32–63% of eligible mass sil
+  --- cited line 755 ---
+      @dec1c3f: '*roll* — none exist; inwards/outwards fire only on cross-row rolls, so 0 cells were'
+      @f4c917a: 'within-cell mixture is real and pervasive; median mode separation 1.26x, p90 2.02x).'
+====================================================================================================
+K12 vote1 (a6c3c51089f5c8f4c) — Registered hard pinky guard (total<=17/L<=9/R<=9) is evaluated on a space-exclud
+  --- cited line 5252 ---
+      @dec1c3f: 'plateau layouts (dedup by string). Inputs: tb_objective sha 03cb072e, tb_verify sha e610b2e @ 0f1cb99.'
+      @f4c917a: 'l<->m around keybo-lsb / lsb-sib) that hold the Aalto plateau (+3.492/+3.418pp) and cut the'
+  --- cited line 5407 ---
+      @dec1c3f: 'OBJECTIVE: search [Aalto x tb_objective_v2 comfort] using the frozen v2 objective (tb_objective_v2'
+      @f4c917a: 'by manager; promotion + epsilon policy = user.'
+====================================================================================================
+K12 vote2 (a7447d709307b81d3) — Registered hard pinky guard (total<=17/L<=9/R<=9) is evaluated on a space-exclud
+  --- cited line 5307 ---
+      @dec1c3f: 'cells short of 80%) + corrected SELECT-1 1296/1296, but FAILS pinky guards (total 17.46% > 17%,'
+      @f4c917a: 'REGISTERED POLICY GAP (does NOT affect this null; register before it can bite): the SWEEP-1 charter'
+====================================================================================================
+K12 vote3 (ab43ed1ba0b6d2bb8) — Registered hard pinky guard (total<=17/L<=9/R<=9) is evaluated on a space-exclud
+  --- cited line 5353 ---
+      @dec1c3f: '   z_f=[load_f/c_f-1]_+, c_f=kappa*m_f/sum(m), m=(.6,.85,1,1,1,1,.85,.6), kappa in {1,1.10,1.25}'
+      @f4c917a: '1. SCISSOR -> a first-class FAMILY of 6 pair-specific leaves (index-middle ... ring-pinky,'
+====================================================================================================
+K13 vote2 (a1cdc00f0241b5e48) — golden_k30_features.npz's trigram half pins c to (3,3) — one of only 4 of 31 pos
+  --- cited line 4149 ---
+      @dec1c3f: '    pinky-ring pair. FEATURE_VERSION is NOT bumped: the extension is domain-only —'
+      @f4c917a: 'of our oxeylyzer-2 score and every apostrophe contraction in every community corpus.'
+====================================================================================================
+K13 vote3 (ae6ab4d7a9f1086af) — golden_k30_features.npz's trigram half pins c to (3,3) — one of only 4 of 31 pos
+  --- cited line 4146 ---
+      @dec1c3f: ' A. Geometry/feature extension: ROW_STAGGERED_31 (30 slots + (6,2) APPENDED — every'
+      @f4c917a: 'DELIVERABLE CHANGE: the search space becomes 31 movable keys = the 30-key block +'
+  --- cited line 4150 ---
+      @dec1c3f: '    GATE: a regression test proves every feature value on every 30-key position'
+      @f4c917a: "Charsets still differ at the margin (graphite/semimak keep '-', drop ';'); the"
+
+---TIMING---
+command: python3 agent-artifacts/refutation-audit/check_ledger_cites.py
+elapsed_ms: 64
+exit_code: 0
+timed_out: false
+---/TIMING---
