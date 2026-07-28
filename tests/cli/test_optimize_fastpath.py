@@ -14,6 +14,7 @@ import numpy as np
 import pytest
 
 from keybo.cli.__main__ import main
+from keybo.data.corpus import PRODUCTION_SKIPGRAMS
 from keybo.data.strokes import StrokeRow
 from keybo.training.train import train_bigram_model
 
@@ -136,7 +137,11 @@ def test_comfort_weight_loads_the_adjacent_skipgram_corpus(
 
     corpus_path = tmp_path / "bigrams.txt"
     corpus_path.write_text("")
+    # Both conventions on disk with DIFFERENT contents, so the assertion below identifies
+    # WHICH table was loaded instead of merely proving something was. This test used to
+    # write only `1-skip.txt` and assert it was read -- pinning the pre-ALLGAUGE-1 bug.
     Path(corpus_path).with_name("1-skip.txt").write_text("de\t7\n")
+    Path(corpus_path).with_name(PRODUCTION_SKIPGRAMS).write_text("de\t31\n")
     captured = {}
     real_scorer = comfort_module.ComfortBigramScorer
 
@@ -184,7 +189,105 @@ def test_comfort_weight_loads_the_adjacent_skipgram_corpus(
 
     assert optimize.run(args) == 0
 
-    assert captured == {"de": 7}
+    # 31, not 7: the search objective must load the SAME skipgram convention the gauge that
+    # reports on it does (`1-skip31.txt` == the trigram marginalization). Loading `1-skip.txt`
+    # here is a silent 4.3-4.6% objective shift on iWeb's optimized layouts (0.08% on qwerty).
+    assert captured == {"de": 31}
+
+
+def test_no_search_objective_reads_the_unreproducible_skipgram_pass():
+    """No `optimize` scorer may hardcode ``1-skip.txt``.
+
+    ALLGAUGE-1 fixed `analyze` to load ``1-skip31.txt`` -- the true trigram marginalization
+    -- but left BOTH search-objective branches here on ``1-skip.txt``, the "different,
+    unreproducible pass". The two files are byte-identical in ``blend-v1``, so the divergence
+    was invisible at the default corpus; on iWeb they differ (3474 vs 4087 keys) and the
+    resulting oxey-style shift is **0.083% on qwerty but 4.33-4.57% on keybo-lsb /
+    keybo-lsb+lm / archive-1843** -- a defect that all but spares the reference layout, which
+    is exactly why nothing caught it. This test is a source-level grep because the two tables
+    agree at the default corpus, so a value assertion there cannot fail.
+    """
+    import inspect
+
+    from keybo.cli import optimize
+
+    src = inspect.getsource(optimize)
+    offenders = [
+        line.strip()
+        for line in src.splitlines()
+        if '"1-skip.txt"' in line and not line.lstrip().startswith("#")
+    ]
+    assert not offenders, (
+        "an `optimize` scorer hardcodes the unreproducible skipgram pass; use "
+        f"keybo.data.corpus.PRODUCTION_SKIPGRAMS instead: {offenders}"
+    )
+
+
+def test_oxey_weight_loads_the_production_skipgram_convention(tmp_path, monkeypatch):
+    """The ``--oxey-weight`` branch loads ``PRODUCTION_SKIPGRAMS``, not ``1-skip.txt``.
+
+    Sibling of :func:`test_comfort_weight_loads_the_adjacent_skipgram_corpus` -- that one only
+    ever covered the comfort branch, so the oxey branch carried the same bug untested.
+    """
+    from keybo.cli import optimize
+    from keybo.geometry import ROW_STAGGERED_30
+    from keybo.layout import Layout
+    from keybo.layouts import NAMED_LAYOUTS
+    from keybo.scoring import oxey as oxey_module
+
+    corpus_path = tmp_path / "bigrams.txt"
+    corpus_path.write_text("")
+    Path(corpus_path).with_name("trigrams.txt").write_text("the\t5\n")
+    Path(corpus_path).with_name("1-skip.txt").write_text("de\t7\n")
+    Path(corpus_path).with_name(PRODUCTION_SKIPGRAMS).write_text("de\t31\n")
+
+    captured: dict[str, int] = {}
+    real_scorer = oxey_module.OxeyStyleScorer
+
+    class CapturingOxeyScorer(real_scorer):
+        def __init__(self, bigram_freqs, skipgram_freqs, trigram_freqs, *args, **kwargs):
+            captured.update(skipgram_freqs or {})
+            super().__init__(bigram_freqs, skipgram_freqs, trigram_freqs, *args, **kwargs)
+
+    class ZeroScorer:
+        @staticmethod
+        def fitness(_layout):
+            return 0.0
+
+    monkeypatch.setattr(oxey_module, "OxeyStyleScorer", CapturingOxeyScorer)
+    monkeypatch.setattr(optimize, "build_scorer", lambda _args: ZeroScorer())
+    monkeypatch.setattr(optimize, "load_freqs", lambda _args: {})
+    monkeypatch.setattr(
+        optimize,
+        "_one_attempt",
+        lambda _args, _scorer, seed: Layout(NAMED_LAYOUTS["qwerty"], ROW_STAGGERED_30),
+    )
+    monkeypatch.setattr(
+        optimize,
+        "layout_diagnostics",
+        lambda _layout, _freqs: {
+            "row_share": {"home": 0.0},
+            "sfb_share": 0.0,
+            "finger_load": {},
+        },
+    )
+    args = SimpleNamespace(
+        attempts=1,
+        out=None,
+        comfort_weight=0.0,
+        finger_load_weight=0.0,
+        oxey_weight=1.0,
+        ngram="bigram",
+        comfort_config=None,
+        bigram_freqs=str(corpus_path),
+        no_table=False,
+        seed=0,
+        target_wpm=90.0,
+        model="unused",
+    )
+
+    assert optimize.run(args) == 0
+    assert captured == {"de": 31}
 
 
 def test_finger_load_weight_changes_the_objective(model_path, corpus_path, capsys):
