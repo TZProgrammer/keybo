@@ -303,8 +303,20 @@ def test_validate_reports_no_transfer_for_a_lawless_holdout():
     m = report["folds"]["layD"]["seeds"][0]
     # The held-out layout's times are random: no model can predict them.
     assert m["rho"] < 0.5
-    # And the harness must say so via the ceiling too (unpredictable data, low ceiling).
-    assert report["ceilings"]["layD"] < 0.6
+    # And the harness must say so via the CONCLUSION every consumer reads — the fraction of
+    # ceiling attained, not the ceiling itself.
+    #
+    # This used to assert ``ceilings["layD"] < 0.6`` and broke when split_half_ceiling
+    # gained its Spearman-Brown length correction (0.4971 -> 0.6228 on this fixture). That
+    # rise is the correction working, not a regression: the raw split-half value is a
+    # half-length reliability, and lengthening it is what makes it comparable to the
+    # full-sample rho in the numerator. Pinning the intermediate ceiling pinned an
+    # artifact of the old scale; pinning the ratio pins the claim ("no transfer"), which
+    # gets STRONGER under the fix (frac 0.5172 -> 0.4129) because the denominator grew
+    # while the unpredictable rho did not.
+    assert m["rho_frac_ceiling"] < 0.5
+    # the ceiling stays a correlation, and well under a lawful layout's
+    assert 0.0 < report["ceilings"]["layD"] < 0.8
 
 
 def test_validate_defaults_to_bigram_and_rejects_trigram_rows_without_flag():
@@ -739,10 +751,27 @@ def test_validate_rejects_mismatched_ngram_length():
 # --- C1: tune retargeted at the harness --------------------------------------------------
 
 
-def test_tune_lolo_prefers_transfer_over_memorization():
-    """The LOLO tuner must rank a shallow (transfer-friendly) candidate above a deep
-    (memorization-prone) one in the lawful world — the exact preference the CV-MAE tuner
-    gets wrong. Small n keeps it fast; candidates passed explicitly for determinism."""
+def test_tune_lolo_scores_both_depths_and_this_fixture_CANNOT_separate_them():
+    """The LOLO tuner's mechanics, and an honest statement of what this fixture can show.
+
+    RENAMED from ``test_tune_lolo_prefers_transfer_over_memorization`` (2026-07-28), because
+    it never demonstrated that preference. Measured: this fixture is geometry-lawful with
+    sigma=4 noise, so BOTH depth-2 and depth-8 reach rho == 1.0 against a ceiling of 1.0 on
+    every fold — ``rho_frac_ceiling`` saturates at exactly 1.000000 for both, and the gap is
+    0.000000. The old ``leaderboard[0][1] >= leaderboard[1][1]`` assertion is satisfied by a
+    TIE, so "shallow ranks above deep" was a stable-sort artifact, not a preference — the same
+    tie-credit defect found in ``readjudicate.py`` and ``board_iweb_vs_blend.py``.
+
+    So this test now asserts only what it can establish (both candidates score, finitely, and
+    the leaderboard is ordered), and asserts the tie EXPLICITLY so a future fixture change
+    that creates real separation shows up here rather than passing silently. The
+    minimum-margin gate is disabled for the same reason it would otherwise fire: there is no
+    margin to resolve.
+
+    A real transfer-over-memorization test needs a fixture where the deep model can actually
+    overfit — unlawful per-layout idiosyncrasy the shallow model cannot absorb. That fixture
+    does not exist yet; writing it is the open work this rename exposes.
+    """
     from keybo.training.tune import tune_lolo
 
     rows = _lawful_rows(n_pids=8, samples_per_pid=6)
@@ -759,12 +788,16 @@ def test_tune_lolo_prefers_transfer_over_memorization():
         wpm_hi=100,
         bucket_width=40,
         min_cell_samples=4,
+        min_margin=0.0,  # nothing to resolve: see the docstring
     )
     assert best in candidates
     # Leaderboard is (params, score) sorted best-first, scores finite.
     assert len(leaderboard) == 2
     assert leaderboard[0][1] >= leaderboard[1][1]
     assert all(np.isfinite(s) for _, s in leaderboard)
+    # The tie is the measured fact, pinned so a change in either direction is visible.
+    assert leaderboard[0][1] == pytest.approx(leaderboard[1][1], abs=1e-12)
+    assert leaderboard[0][1] == pytest.approx(1.0, abs=1e-12), "saturated ceiling"
 
 
 # --- magnitude metrics (user directive: ordering is not enough) --------------------------

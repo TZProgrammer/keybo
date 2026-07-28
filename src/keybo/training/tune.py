@@ -7,11 +7,17 @@ parameter, not the removed ``gpu_hist``/``gpu_id`` (bug #12).
 
 from __future__ import annotations
 
+import math
+import warnings
+from collections import defaultdict
+
 import numpy as np
 from scipy.stats import randint, uniform
 from sklearn.metrics import make_scorer, mean_absolute_error
 from sklearn.model_selection import RandomizedSearchCV
 from xgboost import XGBRegressor
+
+from keybo.verdicts import MarginTooSmall, require_margin
 
 _PARAM_DISTRIBUTIONS = {
     "max_depth": randint(3, 8),
@@ -55,6 +61,61 @@ def tune_hyperparameters(
     return dict(search.best_params_)
 
 
+#: Smallest RELATIVE margin a lolo selection must clear to be reported as a winner.
+#:
+#: Derived, not chosen: the score is a mean over folds of ``rho / ceiling``, so a change in the
+#: ceiling convention reweights each fold by ``(1 + c) / 2``. Over this ledger's registered
+#: ceilings ([0.709, 0.815]) ``reweighting_margin_bound`` gives **0.0301**, and a 400k-pair
+#: random search found no ordering flip at a margin above 0.0056 — so the closed form is the
+#: conservative side of the empirical one. Rounded to 0.03.
+#:
+#: The one documented shipped margin (the depth-5-vs-depth-3 comparison in ``tune_lolo``'s
+#: docstring, ~0.06 rho/ceiling) is 2.0x this, which is why the shipped selection is robust and
+#: this gate is a guard on FUTURE selections rather than a retraction of a past one.
+LOLO_MIN_MARGIN = 0.03
+
+
+class ObjectiveNotEvaluated(RuntimeError):
+    """No candidate produced a finite score, so the stated objective never ran.
+
+    ``tune_lolo`` scores candidates by mean held-out rho/ceiling and uses ``-inf`` as the
+    "loses the tau gate" sentinel. When the ceiling itself is unobtainable — e.g. every
+    layout has one participant, so ``split_half_ceiling`` bisects nothing and returns nan —
+    EVERY candidate scores ``-inf`` too, the two states become indistinguishable, and the
+    tie-break silently promotes a champion whose objective was never measured.
+
+    Refusing is the right default because the failure is invisible in the output: the
+    returned params look like any other recommendation. A caller who genuinely wants the
+    tie-broken result can ask for it explicitly.
+    """
+
+
+class UnevaluatedObjectiveWarning(UserWarning):
+    """The lolo objective was not evaluable and the refusal was explicitly downgraded."""
+
+
+def _ceiling_diagnosis(rows, ngram: str) -> str:
+    """One sentence naming WHY the ceiling is unobtainable, so the error is actionable.
+
+    ``split_half_ceiling`` needs >= 2 distinct participants per held-out layout. That is the
+    dominant cause of an all-nan ceiling column, and it is cheap to check directly, so the
+    message states the counts rather than making the reader guess.
+    """
+    per_layout: dict[str, set[int]] = defaultdict(set)
+    for row in rows:
+        for _wpm, _duration, pid, _hold in row.samples:
+            per_layout[row.layout].add(pid)
+    if not per_layout:
+        return f"No {ngram} rows were supplied at all."
+    counts = sorted(len(pids) for pids in per_layout.values())
+    n_ok = sum(1 for c in counts if c >= 2)
+    return (
+        f"split_half_ceiling bisects PARTICIPANTS and returns nan below 2 of them; "
+        f"{n_ok} of {len(counts)} layouts have >= 2 (participants per layout: "
+        f"min {counts[0]}, max {counts[-1]})."
+    )
+
+
 def tune_lolo(
     rows,
     candidates: list[dict],
@@ -64,6 +125,9 @@ def tune_lolo(
     wpm_hi: int = 140,
     bucket_width: int = 20,
     min_cell_samples: int = 10,
+    allow_unevaluated_objective: bool = False,
+    min_margin: float = LOLO_MIN_MARGIN,
+    allow_unresolvable_margin: bool = False,
 ) -> tuple[dict, list[tuple[dict, float]]]:
     """Hyperparameter selection scored by TRANSFER, not fit (backlog C1).
 
@@ -78,10 +142,18 @@ def tune_lolo(
     Returns (best_params, leaderboard) with the leaderboard sorted best-first as
     (params, gated_score) pairs. Candidates are explicit — reproducible and testable;
     callers wanting a random search generate the candidate list themselves.
+
+    Raises ``ObjectiveNotEvaluated`` if NO candidate produced a finite rho/ceiling — see
+    that exception's docstring for why refusing beats returning a tie-broken champion.
+    Pass ``allow_unevaluated_objective=True`` to downgrade the refusal to a warning; the
+    returned leaderboard then carries ``-inf`` scores and the caller MUST treat the
+    champion as unselected.
     """
     from keybo.training.validate import validate
 
     results: list[tuple[dict, float, float]] = []  # (params, mean_frac, min_tau)
+    n_folds_seen = 0
+    n_fracs_finite = 0
     for params in candidates:
         report = validate(
             rows,
@@ -94,19 +166,55 @@ def tune_lolo(
             n_boot=10,  # ceilings are shared context here, not the contest
             train_params=params,
         )
+        # A fold contributes only if its rho/ceiling is present AND finite. `None` means the
+        # harness could not form the ratio; a non-finite float means it formed one from a nan
+        # ceiling. Both are "not measured" and must not average into a score.
         fracs = [
-            m["rho_frac_ceiling"]
+            float(m["rho_frac_ceiling"])
             for fold in report["folds"].values()
             for m in fold["seeds"]
-            if m["rho_frac_ceiling"] is not None
+            if m["rho_frac_ceiling"] is not None and math.isfinite(float(m["rho_frac_ceiling"]))
         ]
+        n_folds_seen += sum(len(f["seeds"]) for f in report["folds"].values())
+        n_fracs_finite += len(fracs)
         taus = [p["tau_heldout"] for p in report["pooled"]]
         mean_frac = float(np.mean(fracs)) if fracs else float("-inf")
         min_tau = float(min(taus)) if taus else float("-inf")
         results.append((params, mean_frac, min_tau))
 
+    if n_fracs_finite == 0:
+        ceilings = _ceiling_diagnosis(rows, ngram)
+        message = (
+            f"the lolo objective was never evaluated: 0 of {n_folds_seen} "
+            f"(fold x seed) cells across {len(candidates)} candidates produced a finite "
+            f"rho/ceiling, so every candidate scored -inf and the tau gate alone would "
+            f"decide the champion. {ceilings} Fix the data or lower --min-samples; do not "
+            f"read the returned params as selected by transfer."
+        )
+        if not allow_unevaluated_objective:
+            raise ObjectiveNotEvaluated(message)
+        warnings.warn(message, UnevaluatedObjectiveWarning, stacklevel=2)
+
     best_tau = max(r[2] for r in results)
     # tau gate: only candidates achieving the best observed ranking quality compete on rho.
+    # NOTE the gate deliberately reuses -inf, so a gated-out candidate and an unevaluable
+    # objective look identical HERE — which is why the n_fracs_finite check above must run
+    # BEFORE this point rather than trying to distinguish them from the leaderboard.
     gated = [(p, f if t >= best_tau - 1e-9 else float("-inf")) for p, f, t in results]
     leaderboard = sorted(gated, key=lambda pf: -pf[1])
+
+    # Minimum-margin gate. The score is a mean over folds of rho/ceiling, so a change in how
+    # the ceiling is computed reweights the folds; a win decided by less than that reweighting
+    # can move is a convention artifact, not a measurement. The default bound is derived from
+    # THIS ledger's registered ceilings via reweighting_margin_bound; pass min_margin=0.0 to
+    # disable (e.g. reproducing a historical selection).
+    finite = [s for _p, s in leaderboard if math.isfinite(s)]
+    if len(finite) >= 2 and min_margin > 0.0:
+        try:
+            require_margin(finite, "lolo hyperparameter selection", min_margin=min_margin)
+        except MarginTooSmall as exc:
+            if not allow_unresolvable_margin:
+                raise
+            warnings.warn(str(exc), UnevaluatedObjectiveWarning, stacklevel=2)
+
     return leaderboard[0][0], leaderboard
