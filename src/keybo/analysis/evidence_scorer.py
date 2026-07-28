@@ -135,6 +135,24 @@ EXPECTED_SIGN: dict[str, float] = {
     "oxey-style": +1.0,
 }
 
+#: Domain policies for reading a fitted loss curve outside its supported band. The default for
+#: DIAGNOSTICS is EXTRAPOLATE (so qwerty remains scorable); the default for SEARCH is CLAMP,
+#: because OPTEVIDENCE-1 measured an unclamped curve manufacturing 96.5% of a champion's win by
+#: leaving the domain — an `extrapolating: True` flag cannot stop that, since a maximizer does
+#: not read flags. An unclamped fitted curve is an UNBOUNDED objective by construction.
+EXTRAPOLATE = "extrapolate"
+CLAMP = "clamp"
+REJECT = "reject"
+DOMAIN_POLICIES = (EXTRAPOLATE, CLAMP, REJECT)
+
+#: The policy any OPTIMIZER must use. Named so a search cannot silently pick the diagnostic one.
+SEARCH_DOMAIN_POLICY = CLAMP
+
+
+class OutOfDomainError(ValueError):
+    """A gauge level fell outside its curve's fitted domain under the REJECT policy."""
+
+
 #: ⚠ DEPRECATED AS A GUARD — retained for diagnostics only, never to gate a verdict.
 #: It was calibrated on the SAME archive-vs-random contrast it was then used to detect
 #: (archive 3.99 / random 5.03), which is circular, and POOLSWEEP-1 (ledger 873afb7) measured
@@ -415,9 +433,38 @@ class LossCurve:
     mean_abs_shap: float  # attribution magnitude, ms/trigram
     shap_share_pct: float  # share of total mean |SHAP| across gauges
 
-    def price(self, level: float) -> float:
-        """Attributed ms/trigram at a gauge level (no domain check — see ``score``)."""
-        design = _design(self.form, np.array([float(level)]), self.knot)
+    def price(self, level: float, policy: str = EXTRAPOLATE) -> float:
+        """Attributed ms/trigram at a gauge level, under a domain ``policy``.
+
+        ``policy`` decides what happens OUTSIDE ``domain``, and the choice is load-bearing
+        rather than cosmetic — OPTEVIDENCE-1 (ledger 9fd5c7b) measured a search manufacturing
+        **96.5%** of its apparent win by walking two CORRECTLY-signed gauges far outside their
+        fitted bands (``comfort`` to 2.96 against [6.52, 11.56]; ``sr-roll`` to 17.83 against
+        [2.00, 8.34] = 2.14x the ceiling, where the hinge slope has turned and pays without
+        limit). Flagging that on the artifact was useless because **a maximizer does not read
+        flags**: an unclamped fitted curve is an UNBOUNDED objective by construction.
+
+        * ``EXTRAPOLATE`` — evaluate the curve as fitted. Diagnostics only. Keeps the tool
+          usable on qwerty, which sits outside most domains and is the most interesting
+          comparison, but must never be an optimizer's objective.
+        * ``CLAMP`` — evaluate at the nearest domain edge, so the price SATURATES instead of
+          paying forever. This is the right default for SEARCH: it bounds the objective while
+          leaving in-domain behaviour bit-identical.
+        * ``REJECT`` — raise. For a caller that must not silently accept an unsupported level.
+        """
+        value = float(level)
+        if policy not in DOMAIN_POLICIES:
+            raise ValueError(f"unknown domain policy {policy!r}: not one of {DOMAIN_POLICIES}")
+        if not self.in_domain(value):
+            if policy == REJECT:
+                raise OutOfDomainError(
+                    f"{self.metric} level {value:.4f} is outside the fitted domain "
+                    f"[{self.domain[0]:.4f}, {self.domain[1]:.4f}]; the price there is "
+                    f"extrapolation, not a measurement"
+                )
+            if policy == CLAMP:
+                value = min(max(value, self.domain[0]), self.domain[1])
+        design = _design(self.form, np.array([value]), self.knot)
         return float((design @ np.array(self.coeffs))[0])
 
     def in_domain(self, level: float) -> bool:
@@ -673,20 +720,26 @@ class EvidenceWeights:
 
     # -- scoring ----------------------------------------------------------------------
 
-    def score(self, gauges: dict[str, float]) -> dict:
+    def score(self, gauges: dict[str, float], policy: str = EXTRAPOLATE) -> dict:
         """Score one layout's gauge vector. Lower = faster (it is a predicted-time loss).
 
         Returns the total, the per-gauge price, and — load-bearing — every gauge whose
-        level falls outside the curve's fitted domain. An out-of-domain gauge is still
-        priced (refusing outright would make the tool useless on qwerty, which is the most
-        interesting comparison), but the total carries the flag so a caller cannot quote it
-        as an in-domain number by accident.
+        level falls outside the curve's fitted domain.
+
+        ``policy`` decides how out-of-domain levels are PRICED, and an optimizer must pass
+        ``SEARCH_DOMAIN_POLICY`` (= ``CLAMP``). Under the default ``EXTRAPOLATE`` the curve is
+        evaluated as fitted and the total merely carries a flag — which is correct for
+        diagnostics (qwerty is outside most domains and is the most interesting comparison) and
+        WRONG for search: OPTEVIDENCE-1 measured a champion drawing 96.5% of its win from two
+        gauges walked outside their bands, because a maximizer does not read flags. Under
+        ``CLAMP`` the price saturates at the domain edge, so the objective is bounded and
+        in-domain behaviour is bit-identical.
         """
         per_gauge: dict[str, float] = {}
         out_of_domain: dict[str, dict] = {}
         for name, curve in self.curves.items():
             level = float(gauges[name])
-            per_gauge[name] = curve.price(level)
+            per_gauge[name] = curve.price(level, policy=policy)
             if not curve.in_domain(level):
                 out_of_domain[name] = {
                     "level": level,
@@ -705,15 +758,24 @@ class EvidenceWeights:
             "per_gauge": per_gauge,
             "per_cluster": clusters,
             "out_of_domain": out_of_domain,
+            # Both fields are required: `extrapolating` says a level LEFT the domain, and
+            # `domain_policy` says what was DONE about it. Without the second, a clamped total
+            # and an extrapolated one are indistinguishable in the artifact.
             "extrapolating": bool(out_of_domain),
+            "domain_policy": policy,
+            "domain_policy_note": (
+                "clamp = priced at the nearest domain edge (bounded; required for SEARCH); "
+                "extrapolate = priced as fitted (diagnostics only, UNBOUNDED); reject = raises"
+            ),
             "source": self.source,
             "surface_frame": self.frame,
             "corpus": self.corpus,
             "modelled_only": MODELLED_ONLY_NOTE,
         }
 
-    def score_layout(self, lay30: str, context: GaugeContext) -> dict:
-        return self.score(context.vector(lay30))
+    def score_layout(self, lay30: str, context: GaugeContext, policy: str = EXTRAPOLATE) -> dict:
+        """Score a layout string. Pass ``SEARCH_DOMAIN_POLICY`` from any optimizer."""
+        return self.score(context.vector(lay30), policy=policy)
 
     def transfer_warning(
         self, source_agreement: float | None = None, cd_ratio: float | None = None
