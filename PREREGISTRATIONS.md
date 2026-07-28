@@ -9038,3 +9038,73 @@ full suite still rc=0, 14/14 new tests, mutation-proven — **this entry retract
 => METHOD NOTE: this is the third time in two days that a headline verdict line was true-but-empty (`analyze --help` exiting 0 with no output; `is_running` reporting done for a process that never existed; and now
 `ARGMAX MOVES: False` over two all-`-inf` arms). **The common shape: a comparison whose operands were never computed returns the answer that means "no difference".** Guard by asserting the operands are FINITE
 before comparing them, not by reading the verdict.
+
+### ULTRAAUDIT-FINAL — 🟢 THE USER'S QUESTION IS ANSWERED AND THE ANSWER IS STRUCTURAL: the count CANNOT be bounded, because the reference source is not vendored, the driver surface is 5x the audited surface, and a 74-line file behind EIGHT registered certificates was opened by NONE of 159 agents (2026-07-28)
+Completion of the user-requested workflow: **159 agents (158 done, 1 errored), 3 rounds, 25.0M subagent tokens, 8689 tool calls, 9h55m. 21 finders / 37 raised / 23 CONFIRMED / 14 REFUTED by 3-lens adversarial
+verification / 23 triages / 3 completeness critics.** By rank: 6 rank-2, 7 rank-3, 10 rank-4; **SEVEN carry `changes_a_registered_number = YES`.** Report `state/ultracode-audit/workflow-report.md` (487 lines);
+synthesis `artifacts/synthesis.md`; structured record `artifacts/journal-digest.json`. **No push, no CR, PREREGISTRATIONS.md untouched by the child, shared clone never entered.**
+🟢 **THE ANSWER TO "HOW MANY HAVE WE NOT CAUGHT?": the known defects are a SAMPLE, not a census — and the evidence is a FLAT rate, not a guess.** Survivors per finder across three rounds: **1.00 / 1.33 / 1.00
+(1.10 overall)**, on progressively more obscure surface, with **ZERO mechanism collision in any round** (round 3's six survivors are six distinct mechanisms). The child's own pre-stated falsification criterion —
+"materially below 1.0 AND colliding" — **was not met in any round.** Kill rate 44%/11%/50% (38% overall), and ⚠ **that is not reassuring in the direction it looks: a single-finder pass without the adversarial
+panel would have shipped ~14 WRONG findings into this ledger.**
+🔴 **THREE STRUCTURAL REASONS THE COUNT CANNOT BE BOUNDED — these are the important part, because they are not "probably small", they are UNMEASURABLE BY THE METHOD USED:**
+ (a) **the out-of-repo DRIVER surface is >5x the audited `src/` surface and was never scoped** (~60,592 lines);
+ (b) 🔴 **THE KEYMEOW REFERENCE SOURCE IS NOT VENDORED.** Every "matches the reference" claim rests on `kmrun`'s NUMBERS for 5 layouts, not its CODE — so **a convention error that `kmstats` and `kmrun` SHARE is
+ structurally invisible to every method used in this campaign.** That is the single largest unexamined dependency in the project.
+ (c) **`sfs`, `sfs-dist`, `roll`, `sr-roll` — 4 of the 14 gauges this run existed to audit — got a STRUCTURAL PASS, not an audit.**
+ Two crude extrapolations, deliberately NOT averaged: ~1 confirmed defect per 420 lines read (=> ~3 more in unread `src/`, "order of magnitude tens" across the drivers) and 19 of 56 test files mutation-tested with
+ **37 untested** (=> ~12 more dead-gate findings). **Defensible estimate: ~10-20 more within one more comparable round (~170 agents)**, dominated by mutation-testing those 37 gate files and a first serious pass
+ over the drivers.
+🟢 **IT ANSWERED MY OPEN tune.py QUESTION, AND ITS ANSWER SUPERSEDES CEILING-SB-2's "UNANSWERABLE" — I VERIFIED THE MECHANISM AND RECONCILED OUR TWO DIFFERENT NUMBERS.** I had registered the argmax question as
+BLOCKED ON MISSING DATA after my own A/B returned all-`-inf`. The child solved it **analytically instead of empirically**, which is the better instrument here: the ceiling never sees `train_params`
+(`validate.py:649-652`) — and I verified something stronger at that exact site, `if holdout not in report["ceilings"]`, so **the ceiling is computed ONCE PER HOLDOUT AND CACHED ACROSS CANDIDATES**, making it
+structurally candidate-independent rather than merely parameter-independent. The correction is therefore a **PER-FOLD REWEIGHTING** (weight `(1+c)/2`), NOT a monotone rescale, so it CAN reorder a mean-over-folds.
+ ⚠ **OUR TWO FLIP-RATE NUMBERS DIFFER AND I FOUND WHY — it is the assumed CEILING RANGE, and this matters for anyone re-deriving it.** The child reports 2.39% of 200,000 pairs flipping with max flip-margin
+ **0.0282**; my reproduction gives **0.51%** with max flip-margin **0.0050**. Sweeping the range settles it:
+    ceiling range   weight spread   flip %   max flip margin
+    [0.709,0.815]        1.0620x     0.56%           0.0037   <- the ledger's OWN registered ceilings
+    [0.60,0.90]          1.1875x     1.47%           0.0126
+    [0.50,0.95]          1.3000x     2.21%           0.0314   <- reproduces the child's figures
+    [0.30,0.99]          1.5308x     3.55%           0.0469
+ => **the child's numbers are a `[0.50,0.95]` assumption; the ledger's actual ceilings span `[0.709,0.815]`.** Both are correct for their premise. **REGISTER THE NARROW ONE as the operative bound (0.51%,
+ margin 0.0050) and the wide one as the conservative one** — and note the conclusion holds under BOTH, more strongly under mine: the documented shipped margin (`tune.py:72`, depth-5 lost ~0.06 to depth-3) is
+ **12.1x** my flip bound and 2.1x the child's. => 🟢 **SHIPPED SELECTION IS ROBUST; R2-a IS CONFINED TO REPORTING.** ⚠ **BUT the child's caveat is the durable part: `tune.py` has NO minimum-margin rule, so any
+ FUTURE selection decided by less than ~0.03 is not robust to this correction.** CEILING-SB-2's "blocked on missing data" is **superseded for the argmax question** (the analytic route did not need the corpus);
+ its `-inf` degeneracy finding and the `tune.py` silent-selection defect stand — **and I have now FIXED the latter** (branch `ceiling-sb` @ `e81d5f0`, unpushed: `ObjectiveNotEvaluated` + `keybo/verdicts.py`,
+ mutation-proven 3 ways, full suite rc=0).
+🔴 **FOUR MORE REGISTERED-NUMBER MOVERS I had not yet registered:** **R2-c** `manifest.json`'s per-source `raw_bytes`/`sha256` are labelled SOURCE inputs but are **POST-STRIP payload**, so the hash **cannot
+detect an input change confined to a stripped region** (python-stdlib 6,923,454 -> 11,329,738, **38.9% unhashed**; man-pages 14.0%; repo-latex 17.5%); PREREG:6337's "~40 MB" is **49.7 MB**. Established
+POSITIVELY: the fix was implemented and the produced tables are **BIT-IDENTICAL** (digest 7f922b24a89b8426), so no gauge value moves. **R2-d** the practice term `b` does NOT cancel exactly in the layout ranking
+under **LOGRAT (the shipped default)** — it FLIPS; 7 registered numbers downstream. **R2-e** `Cell.frequency` is a dump OCCURRENCE COUNT duplicated across every wpm bucket, but `weighted_mae` treats it as a
+WEIGHT; 9 downstream (COMM-SPD, SELECT-1, COMM-OPT-1, POOL-1). **R2-f** `decode_event_key`'s "off-core labels break windows" claim is layout-dependent and `KNOWN_LAYOUTS['mtgap']` is **not a layout core** (25
+letters + 2 shift-state chars) — in the LABELER defining a registered gauge's training pool. **R3-f** PREREG:8354 cites SHAP as corroborating the inroll/outroll DIRECTIONAL distinction, but SHAP ranks `inwards`
+**LAST of 20 features at 0.00-0.05% with a seed-unstable sign**, and PREREG:8371's positive control **passes today but BREAKS under the minimal fix**. (THEORY-1's +13.4 ms gap is NOT downstream — re-derived
+independently at 142.4630 vs 155.8762: a real quantity under a misleading name.)
+🔴 **TWO RANK-3 ITEMS THAT DESERVE THE ATTENTION OF A RANK-1.** (i) **`axes_slow`'s "ZERO fast-path reuse" is FALSE on 6 of 10 axes, so 486 of 810 registered axis checks COMPARE AN AXIS AGAINST ITSELF** — proven
+by AST-normalizing both bodies AND by fault injection (inject +5% into the shared producer: the headline floor moves 0.7176 -> 0.7535 while the gate stays at **EXACTLY 0.000e+00**). ⚠ **And it is
+layout-INDEPENDENT, so no layout choice could ever have exposed it** — a whole class of self-comparison that the campaign's cross-layout instincts cannot reach. (ii) the **oxeylyzer-2 port is registered
+INTEGER-EXACT while 0 of 8 goldens match `binary*100`**, with **qwerty30M having the SMALLEST relative error of the eight** (7.57e-07 vs 3.30e-06 worst, 4.4x spread) — **textbook qwerty-flattering**, though no
+verdict moves (0 of 66 pairwise order flips).
+🟢 **THE `optimize.py` SKIPGRAM FIX IS COMMITTED (`afb6c19` finding + `0880c4a` fix, branch `ultraaudit`), AND A WORKFLOW FINDER'S VERSION IS STRONGER THAN THE CHILD'S OWN — register the finder's numbers.**
+End-to-end through the real CLI the objective moves **+3,008,690 ms-eq on keybo-lsb vs -94,705 on qwerty — OPPOSITE SIGN, 32x smaller.** Across the 15-layout registry the bug **DEFLATES comfort loss for 12
+layouts including every optimized one and INFLATES it for exactly qwerty / colemak / p13stab-win**, and it **INVERTS one comfort pair** (lsb-sib vs p16-balance). ⚠ **AND A SECOND LEG I MISSED WHEN I REGISTERED
+ULTRAAUDIT-FP1: `optimize.py:123`'s `if skipgram_path.exists() else {}` SILENTLY DROPS the entire `lag2_reuse` term** (exit 0, no warning) **while the sibling oxey path at :142 RAISES `FileNotFoundError` — two
+adjacent call sites with OPPOSITE failure policies for the same missing input.**
+🟢 **THE BUG CLASS RECURRED INSIDE THE AUDIT, THREE TIMES, AND THE THIRD IS THE WORST AND IS PARTLY MINE:** (1) two findings cite `tests/analysis/test_surface_provenance.py` as a written 3-assert regression test;
+**`ls` confirms it does not exist, and NO panel member caught it.** (2) the child's own mid-round commit `0880c4a` invalidated the base SHA eight finders had asserted. (3) 🔴 **PREREGISTRATIONS.md grew 8209 ->
+8954 lines DURING the run** (verified via `git show main:PREREGISTRATIONS.md | wc -l`), so **all three verifiers of R3-f judged exposure against a stale file — and MY OWN pushes (`cfbabfe`, `78eda9a`) are part of
+what moved it.** => **any finding whose blast radius was computed against 8209 lines needs a line-number re-check before it lands.** Registered fix: **pin the ledger SHA in every brief and re-check at triage
+time.** This is the audit-mutates-its-own-subject failure at campaign scale.
+🔴 **COVERAGE, CORRECTED DOWNWARD — the child ADOPTED TWO DOWNGRADES from its own synthesis agent, which was stricter than its first pass and was right:** remit 1 (the 14 gauges) **COVERED -> PARTIAL**, remit 2
+(corpus tables) **COVERED -> PARTIAL**. **30 of 69 modules / 3365 of 10951 lines have ZERO claimed coverage; 6 of 13 CLI subcommands never opened.**
+🔴 **THE SINGLE MOST DAMNING FACT, and it is a better answer to the user's question than any rate estimate: `optimize/qap_bound.py` — 74 lines, producing the registered "within N% of optimal" certificates cited
+in EIGHT ledger entries — was opened by NONE of the 159 agents.** And it carries a live mismatch: **the search optimizes `fit_combined = bigram + trigram` while the certificate bounds the BIGRAM COMPONENT
+ALONE**, with PREREG:2415/:2455 dropping the qualifier the other entries keep. The round-3 critic also caught a finder claiming `tune_lograt.py` "does not exist anywhere in the repo tree" **while admitting "I did
+not go look"** (it is at `~/keybo-e2e/tune_lograt.py`, 281 lines), and that the ledger registers P5's adoption "at tau +1.0" **TWICE** while the producing `p5_tune.json` has **ZERO tau keys** (trap 19 verbatim,
+missed for three rounds). Unrun round-4 worklist: qap-certificate-component, badscissor-denominator-partition, table-fastpath-parity, tau-gate-artifact-sweep, behavior-stats-badred-cache,
+mutation-power-backfill — ⚠ **note `badscissor`, THE GAUGE THE USER CAUGHT, is STILL unaudited after three rounds.**
+🟢 **THE ONE CHEAPEST GENERAL CHECK, registered as the takeaway if only one thing survives this campaign: FOR EVERY GAUGE, ASSERT WHAT IT IS INVARIANT TO — BY SHUFFLING, NEVER BY A VARIANCE THRESHOLD** (numpy
+gives `sfr` std = 1.9e-14) — **and assert it on a NON-REFERENCE layout, with SET EQUALITY not containment, so that BOTH a newly-degenerate gauge AND a de-degenerated one fail.** That catches R2-b directly, would
+have caught `sfr` before it shipped, and generalizes to `Genkey.index_imbalance_pct` (also a partition invariant, but harmless: one 0.3-weighted leg of a live sum, all 9 registry scores stay distinct).
+=> **AND THE DEEPEST LESSON OF THE WHOLE CAMPAIGN, which the 52x asymmetry and `test_kmstats.py` pinning qwerty ALONE both point at: A FROZEN BOARD THAT PINS ONE REFERENCE LAYOUT IS NOT A POSITIVE CONTROL ON A
+METRIC — IT IS A POSITIVE CONTROL ON THAT LAYOUT.** Every qwerty-flattering defect this campaign found survived because the check that should have caught it was anchored to qwerty.
