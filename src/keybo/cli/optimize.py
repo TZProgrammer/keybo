@@ -114,12 +114,18 @@ def run(args: argparse.Namespace) -> int:
         if args.comfort_weight:
             from pathlib import Path
 
-            from keybo.data.corpus import load_frequencies
+            from keybo.data.corpus import PRODUCTION_SKIPGRAMS, load_frequencies
 
             # Sibling tables come from whatever directory the bigram table came from -- the
             # user's --bigram-freqs, else the resolved production corpus (CORPUS-SWAP-1;
             # `freq_path` is what keeps this working now that the default is not a literal).
-            skipgram_path = Path(freq_path(args, "bigrams.txt")).with_name("1-skip.txt")
+            # `PRODUCTION_SKIPGRAMS` (1-skip31.txt) IS the trigram marginalization and is the
+            # table every frozen board -- and `analyze` since ALLGAUGE-1 -- is computed on.
+            # This path used to hardcode `1-skip.txt`, the "different, unreproducible pass":
+            # identical on blend-v1 (byte-identical files) but 4.3-4.6% apart on iWeb's
+            # optimized layouts vs 0.08% on qwerty, so the search objective silently
+            # disagreed with the gauge that reports on it.
+            skipgram_path = Path(freq_path(args, "bigrams.txt")).with_name(PRODUCTION_SKIPGRAMS)
             skipgrams = load_frequencies(str(skipgram_path)) if skipgram_path.exists() else {}
             comfort = ComfortBigramScorer(
                 freqs,
@@ -133,13 +139,14 @@ def run(args: argparse.Namespace) -> int:
         if args.oxey_weight:
             import os
 
-            from keybo.data.corpus import load_frequencies
+            from keybo.data.corpus import PRODUCTION_SKIPGRAMS, load_frequencies
             from keybo.scoring.oxey import OxeyStyleScorer
 
             corpus_dir = os.path.dirname(freq_path(args, "bigrams.txt"))
+            # `PRODUCTION_SKIPGRAMS`, not `1-skip.txt` -- see the comfort branch above.
             oxey = OxeyStyleScorer(
                 freqs,
-                load_frequencies(os.path.join(corpus_dir, "1-skip.txt")),
+                load_frequencies(os.path.join(corpus_dir, PRODUCTION_SKIPGRAMS)),
                 load_frequencies(os.path.join(corpus_dir, "trigrams.txt")),
             )
             scorer = CompositeScorer(scorer, oxey, comfort_weight=args.oxey_weight)
