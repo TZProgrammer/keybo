@@ -8883,3 +8883,72 @@ because it is the part a future agent will get wrong: *a test that writes only o
 => **THE GENERALIZABLE LESSON, and it is the most useful thing in this entry: A FIX'S SCOPE IS A CLAIM, NOT A CONSEQUENCE OF THE FIX.** ALLGAUGE-1 corrected the call site it was looking at; nothing verified that
 it was the ONLY call site. **The check that would have caught it is one grep** (`grep -rn '1-skip\.txt' src/`), and the reason nobody ran it is that the fix's own test went green. **When fixing a
 wrong-constant/wrong-file/wrong-flag defect, enumerate ALL call sites and assert the count — the fix is not "the site I changed is right", it is "no site is wrong".**
+
+### ULTRAAUDIT-INTERIM — 🔴 TWO REGISTERED SUB-MAJORITY VERDICTS ARE ACTUALLY MAJORITIES (`alt` and `imbalance` are HAND-PARTITION INVARIANTS, and four flagship layouts share ONE value of each); 🔴 the noise ceiling is a HALF-LENGTH reliability with no Spearman-Brown correction, which FAILS a gate I registered as passing "by a hair"; and 🟢 the base rate is FLAT, so the defect population is NOT bounded (2026-07-28)
+Interim digest from `ultracode-audit` (the user-requested workflow: 18 finders / 32 raised / **87 panel verdicts with 33 REFUTED (37%)** / 17 triages / 2 completeness critics; round 3 of 3, 131/157 agents).
+Registered before completion because the two rank-2 findings move registered numbers. **I re-derived both headline claims myself through the shipped CLI.** Two local commits on branch `ultraaudit` in its own
+worktree; **no push, no CR, PREREGISTRATIONS.md untouched by the child, shared clone never touched.**
+🔴 **[R1-a] `alt` AND `imbalance` ARE FUNCTIONS OF THE LEFT/RIGHT CHARACTER PARTITION ONLY — I REPRODUCED THE INVARIANCE AND THE TIE CENSUS EXACTLY.** `kmstats._trigram_value("alt")` reads only
+`a.hand/b.hand/c.hand`; `oxey.pattern_shares["imbalance"]` reads only `hand_load[-1]/hand_load[1]`. My own test over within-hand shuffles of qwerty: **`alt` and `imbalance` return ONE distinct value while
+`sfb`, `lsb`, `roll`, `redir`, `scissor` all return one per shuffle.** And through `analyze --json` on the actual flagship set: **`keybo-lsb`, `keybo-lsb+lm`, `flagship-c3` and `archive-1843` ALL report
+`imbalance = 2.077879` and `alt = 45.156073` — one value each, four layouts.** Exact-tie census, my run: **`keybo-lsb` vs `keybo-lsb+lm` ties 9 of 15 gauges** (`sfr sfb sfs lsb lsb-dist alt roll redir imbalance`)
+— **the very pair LMSCISSOR-1 adjudicated** — and `flagship-c3` vs `archive-1843` and `keybo-lsb` vs `flagship-c3` tie 3 of 15 each.
+ => **CONSEQUENCE FOR REGISTERED VERDICTS: ~14 registered denominators are wrong, and TWO registered sub-majority verdicts become MAJORITIES.** CORPUS-BLEND-1's `keybo-lsb+lm` **7/15 (iWeb)** and NO-ANCHOR-1's
+ `archive-1843` **7/15** — the ledger's headline flagship "INVERSION" — are **7 of 12 CONTESTED**, i.e. majorities. Also touched: RESELECT-90-110's "EROSION not inversion" (9/15 against a 7.5 threshold),
+ GEOMEAN-1's "17 of 45 field-best" (8 of its 45 cells are ties), and `blend-v1/PROVENANCE.md:185`'s "`alt` archive-1846 -> keybo-lsb winner change", which is **a stable-sort tie-break over a 4-way hex-identical
+ tie** (`0x1.693fa324d32c9p+5`).
+ ⚠ **AND A SEPARATE DEFECT ON THE SAME PATH — trap 33 recurring: SELECT-MAXIMIN-1's registered "keybo-lsb 8 of 45 field-best" is 0 STRICT WINS.** All 8 are tie credits from `board_iweb_vs_blend.py:101-105`, a
+ plain stable sort with **no strict-win term** — the identical defect REHUNT-1 found in `readjudicate.py` (12 of 42 tie-rows counted as dominators), in a second script.
+ 🟢 VERDICT **UNSUPPORTED, not WRONG** (a tie breaks nothing, so the verdicts likely hold — the `sfr` precedent). ⚠ **BUT THIS EXTENDS trap 23 / the `sfr` entry IN A WAY THAT MATTERS: `sfr` is a GLOBAL constant
+ that ties EVERY pair, so it is self-announcing; `alt`/`imbalance` are LAYOUT-SET-DEPENDENT ties that read as GENUINE AGREEMENT.** The incumbent pool is **5-of-5 DISTINCT on `alt`**, so **the degeneracy is
+ invisible on exactly the layouts a sanity check would use.** That is why one campaign-long fix (registering `sfr`) did not catch the other two.
+🔴 **[R2-a] THE NOISE CEILING IS A HALF-LENGTH RELIABILITY SCORED AGAINST FULL-SAMPLE rho, WITH NO SPEARMAN-BROWN CORRECTION — AND IT FLIPS A GATE I REGISTERED AS PASSING.** `training/validate.py:405`
+`split_half_ceiling` bisects participants, correlates the two halves, and **returns `float(np.mean(rhos))` raw — I verified there is NO Spearman-Brown / `2c/(1+c)` term anywhere in the file.** Since `f(c)/c` is
+DECREASING in `c` (1.4434 at c=.60 vs 1.0076 at c=.99), **the LOWER-ceiling arm is flattered more, so per-arm ceilings can INVERT an ordering** — and the ledger asserts "ceilings recomputed per arm" at :174 :508
+:544 :586 :618 :738 :1024 :1030 :1052.
+ => **THE MOVED GATE: PREREG:1052-1061 Q-OBJ F5M "delta -0.0199, inside the -0.02 gate BY A HAIR => ADOPT-CANDIDATE" becomes -0.0698 under the campaign's OWN prototyped `2c/(1+c)` and -0.0967 under the sqrt
+ form. It FAILS under all four candidate denominators, every `c**p` for p in [0.5,1.0), and the entire 3dp rounding box** — worst case still **2.4-4.8x past a gate whose shipped margin was 0.0001.** Arm ORDERING
+ inverts: `BASE .994 > F5M .974 > Q25 .941 > Q20 .937` becomes `BASE .855 > Q25 .801 > Q20 .792 > F5M .758` — **F5M drops BELOW the two quantile arms that the same entry "refuted as objectives."** Load-bearing
+ for PREREG:1101 "BOTH families ship" and PREREG:1196 "P9 … F5M family is final; CAMPAIGN COMPLETE". PREREG:12-18 OQ-5 criterion 1's qwerty borderline PASS (.796-.800) becomes **FAIL** (.7745-.7784).
+ 🟢 **ONE GATE MOVES FAVOURABLY (PREREG:1053, 0.870 -> 0.9612) — the child stated this itself so the fix is not oversold.** Credit where due: that is the discipline this thread has been trying to instill.
+ 🟢 **AND ITS OWN TRIAGE CORRECTLY HELD IT AT RANK 2 RATHER THAN 1 — I re-ran that check:** ceilings are written at `validate.py:632,650,689`, displayed at `cli/validate.py:93-99`, and **no optimizer, searcher or
+ layout objective reads a ceiling** (`grep ceiling` over `scoring/`, `cli/optimize.py`, `analysis/` is EMPTY). None of the four P9 headline percentages is a rho/ceiling.
+ ⚠ **ONE THING THE DIGEST OMITTED AND I FOUND WHILE CHECKING: `training/tune.py:98` SELECTS HYPERPARAMETERS by `rho_frac_ceiling`** (`mean_frac`, tau-gated). So a ceiling is not purely cosmetic — it is a
+ **model-selection criterion**. It does not enter any layout objective, so the rank-2 call stands, but "display-only" is too strong: **the shipped depth/params choice was made against this statistic.** Registered
+ as a scope correction to the child's own triage.
+🟢 **[R1-b] the `optimize.py` skipgram defect is now FIXED LOCALLY and MUTATION-PROVEN** — commits `afb6c19` (finding, doc-only) + `0880c4a` (fix), kept separate per the scope rule. **3 tests failed against
+unfixed `src/`, 7 passed with the fix; frozen gates 284 passed / 1 skipped => CHANGES NO REGISTERED NUMBER.** The pinning test is rewritten to write BOTH tables with DIFFERENT contents. **The new test is
+grep-based BY NECESSITY: at the default corpus a VALUE assertion CANNOT FAIL** (blend-v1's two tables are byte-identical) — a neat statement of why the original test was vacuous. Three workflow agents rated the
+objective **WRONG** where the child rated UNSUPPORTED, **and it deferred to the panel** — the stronger reading, correctly adopted.
+🟢 **[R1-c] `surfaces._resolve` is first-hit-wins PER SURFACE NAME**, so a partially-populated `--surface-dir` yields a frame **assembled from two sources while every report labels it one family** — demonstrated by
+placing `AALTO_BASE`'s array under the name `AALTO_TRI_PS_FREQ_PRIOR` (AALTO fit 225894995238.7975 vs vendored 223980183688.9508) with COMMUNITY and POOL still vendored, **all three reported as
+family=TRI_PS_FREQ_PRIOR**. `model_scores` has **no path/dir/source/sha key.** ⚠ **The asymmetry is the finding: `corpus_identity()` emits a per-table sha256 so "a modified table cannot masquerade as a known
+corpus" — surfaces get the NAME only.** LATENT (the vendored dir is complete today). Two siblings: `--model-family FREQ_PRIOR` reports `available=True/reason=None` with a **2-of-3 panel** (AALTO_FREQ_PRIOR does
+not exist, never disclosed), and an unresolvable `KEYBO_SURFACE_DIR` is **SILENTLY IGNORED** while the identical `--surface-dir` typo is a hard error.
+🟢 **[R1-d] `load_frequencies` (`data/corpus.py:160-183`) drops rows FOUR ways silently** — duplicate key OVERWRITES, non-int count dropped, no-tab line dropped, empty field dropped; exit 0, no warning, no count
+assertion (trap 38 one layer down). **Verified LATENT: all 8 shipped tables have 0 dupes / 0 no-tab / 0 bad-int with `loaded == lines` exactly** (4054, 102676, 3474, 4087, 4081, 114920, 4094, 4094).
+🟢 **THE BASE-RATE ANSWER TO THE USER'S QUESTION, AND IT IS THE MOST IMPORTANT PARAGRAPH HERE: THE RATE IS FLAT, SO THE POPULATION IS NOT BOUNDED BY THIS EVIDENCE.** Both completeness critics measured it
+independently: round 1 ~1.1 survivors/finder; round 2 **9 raised / 8 survived (89%)** at ~1.5 per finder. **A decaying population shows survival COLLAPSING as cheap surface is stripped; it has not.** Overlap
+between rounds is near ZERO (survivors sit in disjoint mechanisms) — **the large-population signature; near exhaustion, finders start COLLIDING.** Coverage MEASURED, not claimed: **30 of 69 modules and 3365 of
+10951 lines have ZERO claimed coverage** (~69% by line, 39/69 by file); **6 of 13 CLI subcommands untouched.** Two round-2 finders each NAMED their own highest-value gap and declined it — **"the round did not run
+out of surface, it ran out of assigned finders."** => **REGISTERED ANSWER: the eight-then-28 known defects are A SAMPLE, NOT A CENSUS.** The user's concern was correct and remains correct.
+🟢 **TWO SELF-REFERENTIAL CATCHES, both registered as METHOD findings because they are the hunted bug class occurring inside the hunt:** (1) **two findings cite a regression test that DOES NOT EXIST** —
+`tests/analysis/test_surface_provenance.py`, asserted in a triage doc as a written 3-assert test; the child ran `ls` and confirmed absence. *A claimed test is not a test.* (2) **its own mid-round fix commit
+`0880c4a` invalidated the base SHA that eight finders had asserted** — **an audit that mutates its own subject mid-run breaks its finders' citations.** Both are instances of exactly what was being hunted.
+🟢 **A COVERAGE GAP IT OWNED RATHER THAN PAPERED OVER:** the community-ports finder died **NINE times**, always `[Request interrupted by user]` — **deterministic context exhaustion on `community.py` (568 lines),
+not flakiness.** It covered that remit item personally so the deliverable does not claim uncovered surface. Result: **no new defect, 4 negatives** — the trap-28 habitat is CLOSED (both hand-rolled dof paths are
+the documented bug-preserving diagnostics; the correct path routes through `_dof_arrays -> check_dof_permutation`); `pinned_char` is FORCED (1 distinct pin over 200 random C30M permutations) and dvorak, the one
+registry layout whose 31-board is not a permutation, correctly RAISES; community parity gates **BITE HARD** (a +1 mutation to Oxeylyzer2 stretch gave 10 failed / 39 passed across 5 layouts); and
+**`Genkey.index_imbalance_pct` IS a finger-partition invariant — a THIRD instance of the alt/imbalance class** — but it is one 0.3-weighted leg of a live sum with all 9 registry scores distinct, so **NOT a
+defect.**
+🟢 HONEST NEGATIVES, each closing a hypothesis so nobody re-treads: **surface provenance CLOSED** (0 of 28 pairs bit-identical AND 0 affine in both `.native` and `.standardized`; closest POOL_FREQ_PRIOR vs
+POOL_TRI_PS_FREQ_PRIOR maxabs 72.4, k=0.98993; layout-level rho 0.309/0.691/0.809 = genuinely different rankers); `alt`/`roll`/`redir` ARE mutually exclusive over all 27,000 triples with `sr-roll` a strict subset
+of `roll`; blend-v1's skipgram marginal gap is **ROUNDING** (maxabs 11, sum|diff|/1e9 = 4.7e-6, both totals exactly 1e9) and iWeb's `1-skip31` matches the marginalization EXACTLY (0 of 4087 disagree); comfort's
+whole-corpus denominator is NOT trap 9 because `analyze.py:316-318` states it verbatim; **`test_kmstats.py` pins qwerty ALONE and passes 4/4 under a live qwerty-sparing mutation, BUT `test_analyze_allgauge.py` +
+`test_kan1_parity.py` DO bite — defense-in-depth holds, only the unit gate is weak**; the NA sentinel does NOT leak into JSON as a string (230 leaves, 13 unavailable, all null); `kmstats`' `a is b` predicate is
+sound (all 30 `_KEYS` distinct objects AND distinct signatures); `lsb` correctly excludes index-to-index pairs.
+⚠ ALSO CONFIRMED, rank 3, NOT yet fully triaged (registered so they are not lost): `analyze`'s time card can serve a **DIFFERENT corpus than its JSON reports** (`lru_cache` keyed on the label); oxey `inroll`/
+`outroll` credit **ZERO same-row rolls** (32-63% of eligible mass unrewarded, **sparing qwerty** — the asymmetry again); iWeb's `1-skip.txt` is **charset-TRUNCATED (59 of 64 chars)** rather than "a different
+convention"; the practice term `b` does **NOT** cancel exactly in the ranking under LOGRAT (the shipped default); `Cell.frequency` is duplicated across wpm buckets but `weighted_mae` treats it as a weight.
+=> USER-GATED, NOT ACTIONED: the `optimize.py` fix (local, mutation-proven), any Spearman-Brown correction to `split_half_ceiling` (it would move registered gates and must be done with the affected entries
+re-adjudicated, not silently), and adding a strict-win term to `board_iweb_vs_blend.py`. MODELLED-ONLY caveats unchanged throughout.
