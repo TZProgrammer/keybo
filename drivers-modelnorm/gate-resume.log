@@ -1,0 +1,20 @@
+MODELNORM-1 gate: checkpoint-resume reproducibility + the resume-identity guard
+(solo:POOL, blend-v1, .native, 4 islands, 4 epochs, budget 500k, seed 20260728)
+
+A. UNINTERRUPTED               unique=614,709  best=235793739168.937286377  gstrp-leaimydcbknou.wzvfx,hqj'
+B. KILLED after epoch 2, RESUMED
+     pre-kill epoch 1          unique=243,632  best=236889411074.897491455   (== A epoch 1 exactly)
+     pre-kill epoch 2          unique=438,228  best=235880291747.724731445   (== A epoch 2 exactly)
+     post-resume epoch 3       unique=614,709  best=235793739168.937286377  gstrp-leaimydcbknou.wzvfx,hqj'
+
+=> RESUME REPRODUCES THE UNINTERRUPTED RUN ON COUNTS *AND* VALUES (trap 36: assert counts,
+   not just conclusions). Identical unique-eval count to the digit, identical champion,
+   identical fitness to all printed digits.
+
+C. GUARD BITES. Resuming the same checkpoint with a DIFFERENT --epochs (4 -> 6) is refused:
+     "refusing to resume: the checkpoint is a DIFFERENT run.  epochs: checkpoint=4 requested=6"
+   Same for a different --objective (solo:POOL -> solo:AALTO). Both exit non-zero without
+   running an epoch.
+   WHY THIS MATTERS: per_epoch = budget*overshoot/(epochs*islands), so a resume with a
+   different --epochs re-scales every remaining epoch's spend -- the resumed run is then a
+   different search wearing the same output filename. Found by testing resume, not by reading.
