@@ -9329,3 +9329,47 @@ recoverable only from these files, because the shipped digest had dropped the jo
 which is the precise sense in which a false refutation is invisible by construction.
 ⚠ **AND IT GENERALIZES BEYOND THIS RUN: "durable" is a property of a LOCATION, not of an artifact.** The digest was in the right place and was useless (join lost); the transcripts were complete and in the wrong
 place. Both halves have to hold. The standing fix stays as registered — **emit a `finding_id` on every verdict** — so that no future run's audit trail depends on where its scratch files happened to live.
+
+### ARMG-1 — 🔴 REGISTERED FAILURE by its own pre-registered condition, and the SELF-KILL is worth more than the verdict: the arm built to COLLECT oxey-style headroom finished WORSE on oxey-style than its own target, because its objective made that axis the CHEAPEST to trade away (2026-07-28)
+Answers the user's standing ask — *"can we optimize a layout now that we have greatly improved things?"* Child `armg`, branch `optimize-arm-g`, **5 commits in causal order**: prereg `0f606d1` **ALONE before any
+result existed**, drivers `f58698e`, judge `ceb85cd` **committed WHILE THE RUNS WERE STILL EXECUTING so the thresholds provably were not tuned**, result `aea4378`, index `f43701d`. Nothing pushed, no CR,
+PREREGISTRATIONS.md verified untouched, **no layout adopted or recommended.**
+🟢 **IT MEASURED ITS OWN RULER, WITH THE FULL QUADRUPLE — the fix for the campaign's most-repeated error, applied correctly for the first time.** `sd_G = 0.049171 ms/char` (2sd = 0.098342) from its own 5
+baseline-control champions. Quadruple stated: POOL = its 5 ARM-G-family baseline-control champions (near-optimal cold start, blend-v1) × REPLICATE = independent cold-start runs, one champion each × SCALE = raw
+ms/char × STATISTIC = sd ddof=1 n=5. **The borrowed 0.0617 was used ONLY to set the search band before its own seeds could exist, and in NO verdict.**
+🔴 **Q1 — FASTER THAN ARM B? NO, cleanly.** No champion of either arm beat arm B (253.9006). Fastest of 10 was **the CONTROL at 253.9381** (+0.0375, inside 2sd_G — **a tie, not a lead**); best armg 254.0137. Its
+self-adverse prediction P4 held 5/5.
+🔴 **Q2 — SPEED-TIED BUT BETTER ON THE GAUGES? NO. F1 fired: no armg champion landed inside the verdict band at all — AND THE MECHANISM IS THE BORROWED-RULER CLASS BITING ITS AUTHOR, with a SIGN ERROR MADE IN THE
+PREREG.** Its SEARCH band edge was 254.0240 (2× the borrowed 0.0617) but its VERDICT band edge is 253.9989 (2× its measured sd_G) — **the search band was LOOSER by 0.0251, the optimizer correctly spent the freedom
+it was given, and every armg champion landed in the gap.** ⚠ **Its prereg NAMED this risk and argued it would be conservative if its own sd came out LARGER; it came out SMALLER (1.255×) — the anti-conservative
+direction.** => registered verbatim as the lesson: **NAMING A RISK IS NOT BOUNDING IT.**
+🟢 **THREE THINGS IT KILLED, AND THE THIRD IS THE ONE THAT MATTERS:**
+ **(a) the premise fails INDEPENDENTLY of the mis-set band.** Sweeping all **273 distinct layouts** in the 10 runs' archived top-50s: **ZERO layouts with D=0 anywhere, global min D 1.0594**; inside the measured band
+ only **7 of 273**, best D 1.2415 — **found by the BASELINE CONTROL, not by ARM G.** Even a perfectly-set band would have had to return something the archive does not contain.
+ **(b) the objective-vs-draw placebo is NULL** (same seeds, budget, engine; only the objective differs): mean D **2.4973 armg vs 2.5771 control (+0.0799)** against a between-seed spread of ~2. Per-seed
+ Hamming(armg, control) = **2, 0, 7, 2, 2 — on one seed BOTH ARMS RETURNED THE IDENTICAL CHAMPION.** 🟢 **And it anticipated the circularity objection: because D is both its objective AND its selection statistic, it
+ tested a statistic sharing NO component with D — per-axis win count vs arm B: armg 7.80 vs control 7.80, IDENTICAL to 2dp.** So the null is not an artifact of judging D by D.
+ **(c) 🔴 THE SHARPEST RESULT, WHICH I VERIFIED AND QUANTIFIED FURTHER: the arm built to collect oxey-style headroom finished WORSE on oxey-style than the layout it was collecting against.** Confirmed through the
+ shipped CLI: armg champion **254.0170 / oxey-style 11.3958** vs arm B **253.9006 / 8.6110**, with every incumbent better still (keybo-lsb -3.2497, flagship-c3 -7.8749). **Mechanism, verified by me:** its `D` is an
+ **UNWEIGHTED SUM of RANGE-NORMALIZED excesses**, so the WIDEST axis is the CHEAPEST to trade away — and I measured the ranges across the real board: **`oxey-style` is 99.0419 = 48.5% of the total range, 5.3× the
+ next widest (`alt` 18.79)**. => **the objective was structurally built to sacrifice exactly the axis it was built to collect**, and oxey ended up only 20.0% of its own deficit. It also compounds the double-count
+ the child flagged in **its own prereg section 5** (oxey-style is R²=0.9937 on its own components), **so the objective was partly fighting itself.**
+=> 🟢 **CONSEQUENCE FOR THE LEDGER, and this is the actionable part: SPEEDTIE-1'S LEVER IS NOT REFUTED — IT IS UNTESTED BY A CORRECT INSTRUMENT.** The arm could not answer the question because its objective PERMITTED
+trading away the target. **The arm to register next: minimize `oxey-style` ALONE subject to HARD constraints `ms <= armB + 2*sd_measured` AND `g <= g_armB` on the other 13 axes — hard, not summed, because "a
+maximizer does not read flags and A SUMMED PENALTY IS A FLAG."** ⚠ And its honest caveat: **the feasible set may be genuinely EMPTY at this budget, which is itself a real answer.**
+🟢 **Q3 — TIE-AWARE PER-PAIR CONTESTED COUNTS, exactly the framing ULTRAAUDIT R2-b requires** (champion `flmpg.yo,usnctdireahvxwkb-'qjz`, 254.0170, D 1.0594, Hamming 16/30 from arm B): vs arm-B **12 contested, 8
+better / 4 worse** with **2 ties BY CONSTRUCTION (alt, imbalance)**, cluster-corrected 5/3; vs keybo-lsb 14/6/8 (3/5); vs keybo-lsb+lm 14/6/8 (3/5); vs flagship-c3 14/3/11 (1/7); vs arm-A 14/5/9 (2/6); vs graphite
+14/4/10 (2/6). `sfr` identical across all seven and **never counted**. => **ARM G DOMINATES NOTHING and is out-contested by every incumbent except arm B.**
+🟢 **PREDICTIONS 3 HELD / 3 FAILED — and the split is diagnostic: BOTH self-adverse predictions held (P2 no D=0, P4 not faster) while ALL THREE optimistic ones failed (P1, P3, P5).** P6 held **stronger** than
+predicted and was verified rather than asserted: **THREE of its champions reproduce frozen SPEEDTIE-1 champions to all printed digits from a DISJOINT seed family** (s907919 ×2, s923757 ×1) — independent cold-start
+replication of the campaign's most-reproduced result, doubling as a positive control that its engine is the same engine.
+🟢 METHOD, notably better than prior arms: rc=0 read from the **SENTINEL not the callback**; 10/10 runs rc=0 in 392.7s; **EVERY seed EXCEEDED its 1M target (101.4-108.7%)** so the 80% floor excluded nothing and n=5
+stands on both arms; `unique_evals` **TRIPLY reconciled** (run JSON == ckpt n_unique == keys.npy length, 10/10); **`.keys.npy` sidecars RETAINED so `--resume` still works, unlike the prior arm**; **14 controls all ran
+BEFORE the result they bear on** — worktree isolation POSITIVE, arm B reproduces to 1.93e-12, six frozen champions to 2.814e-12, FastEval-vs-shipped-analyze worst rel 1.233e-14 with 10/15 gauges bit-exact and
+**MUTATION-CONTROLLED** (planted factor → rc=1), D(armB) and F(armB) exactly 0.0, and gauge directions **DERIVED two ways** (13/14 rank-correlation with `sfs` the sole miss at rho -0.0157, **matching ARME-1**; 14/14
+qwerty-is-worst). Drivers repointed and declared: it did NOT reuse `search_placebo.py` (cwd=/tmp/optev) or `run_budget.py`/`analyze_budget.py` (WORKTREE=/tmp/speedtie).
+🟢 **THREE DEFECTS IN ITS OWN WORK, ALL CAUGHT BY CONTROLS, AND FIXED AS CODE RATHER THAN AS A LESSON:** all 14 `ARMG_SCALE` constants hand-typed wrong by ~1e-5 — ⚠ **it hypothesized BLAS batch-shape dependence and
+MEASURED it instead of asserting: REFUTED, 1e-12 vs 1e-5, ~10 orders too small; the boring cause was its typing**; `ARMG_SIX[5]` was an **INVENTED layout string existing nowhere**; and a `KeyError` in its own judge.
+Fix: **`armg_assert_constants()` re-derives from live code and REFUSES TO RUN on drift**, wired into `main()`. => registered: **GENERATE OR ASSERT, NEVER RETYPE — 2 of 2 hand-transcriptions were wrong.**
+⚠ SCOPE: MODELLED ONLY (g-frame, baked 90 WPM, blend-v1, 1-skip31) and — importantly — **the as-shipped nested-`bad_redirect` oxey convention, the same one SPEEDTIE-1's 14.05× was measured on, so these numbers are
+NOT comparable to a post-OXEYFIX board.**
