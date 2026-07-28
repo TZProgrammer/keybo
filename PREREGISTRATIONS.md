@@ -8522,3 +8522,41 @@ AND VALUES; 10 sentinels all 0; frozen comparison set reproduced to worst |diff|
 every failure written up in `artifacts/PREDICTION-SCORED.md`. Notably **P6 FAILED and is the most informative failure** (it predicted normalization WOULD reorder), and **P15 failed as a BOUND while holding as
 a verdict** — its floor axis is this arm's normalized min-over-models, NOT arm E's six-surface ceiling-fraction floor, **so the n_ge NUMBER is not comparable across arms, only the verdict.** A fifth instance
 of the borrowed-ruler error, caught by the child itself.
+
+### UPSTREAMREDIR-1 — 🟢 SETTLED AGAINST ME: oxeylyzer's redirect classes are MUTUALLY EXCLUSIVE, genkey has no bad-redirect notion at all, so `oxey.py`'s nesting is a REAL BUG — and the "upstream is also nested" claim I registered as the blocker does not survive the source (2026-07-28)
+The blocker named in OXEY-DOUBLECHARGE-1 ("is oxeylyzer's `bad_redirect` additive-on-top or exclusive? UNRESOLVED") is now answered. Child `upstreamredir` (bare research, no repo writes — I confirmed
+`git status --short` empty, still main @ 181f324, no branch/commit/push). Writeup `state/upstreamredir/findings.md`.
+🟢 **(a) oxeylyzer @ d015a16 — MUTUALLY EXCLUSIVE.** `trigram_patterns.rs:173-190` `get_one_hand()` returns ONE enum through an exhaustive 4-way `match (self.is_sfs(), self.is_bad_redir())`:
+`(false,false) => Redirect`, `(false,true) => BadRedirect`, `(true,false) => RedirectSfs`, `(true,true) => BadRedirectSfs`. Accumulation is single-arm (`generate.rs:604-622`, `478-493`) and each weight hits
+its own disjoint bucket (`625-634`). **Upstream's price for a bad redirect is -4.9 FLAT, never -3.4 + -4.9.**
+🟢 **AND THE DIAGNOSIS OF OUR ERROR IS EXACT: the PREDICATES nest upstream too — `is_bad_redir()` CALLS `is_redir()` (`trigram_patterns.rs:162-168`) — but the DISPATCH is exclusive. We reproduced the nesting
+and dropped the `match`.** That is a sharper statement of the failure than "we double-counted": the sub-predicate relationship is real and faithful; what we lost was the exhaustive single-assignment that
+consumes it.
+🟢 **(b) genkey @ f1f4173 — NO bad-redirect notion, and it is Go, not the C my brief asserted** (a fifth brief-correction this session). One flat `Redirects` field (`layout.go:477-530`) whose redirect branch
+has no sub-test at all; one `Redirect` knob (`globals.go:75-85`) applied once (`generate.go:56`). **The negative is properly SCOPED rather than asserted:** grep for `badredirect|bad_redirect|bad redirect`
+across ALL 47 `git ls-files` entries — not just `*.go`, including `config.toml`, README, `layouts/`, `corpora/` — **zero hits**; `git branch -a` = main only. (Bonus: stock `config.toml:61-76` ships
+`Enabled=false` with all seven trigram weights at 0, gated at `generate.go:48`, so redirect is display-only in stock genkey regardless.)
+🟢 **IT DID NOT STOP AT READING CODE — IT FALSIFIED THE ALTERNATIVE, WHICH IS WHY THIS IS 🟢 AND NOT 🟡.** It ran the real release binary (`view qwerty`, upstream's own corpus and weights): Redirects 5.647 /
+Sfs 5.290 / Bad 0.400 / BadSfs 0.935 / Total 12.272 — and **the four SUM to the printed total exactly** (upstream itself adds them, `display.rs:159`). It then re-implemented the classifier from source and
+reproduced **all 11 trigram stats bit-exact at 3dp**, and ran the discriminator, changing ONLY whether plain `Redirects` includes the bad subset: **EXCLUSIVE -> 5.647% (exact match); NESTED -> 6.047%
+(= 5.647 + 0.400), off by precisely the bad_redirects mass.** One-sided and decisive.
+🔴 **RETRACTION OF MY OWN BLOCKER.** OXEY-DOUBLECHARGE-1 states: *"oxeylyzer's own weight table (`community.py:382-389`: redirects -340, bad_redirects -490) is ALSO non-exclusive in the same way — so the
+nesting may be FAITHFUL to the thing being ported."* **That is WRONG.** The table IS upstream's own defaults (`weights.rs:211-218`, `scale(x) = (x*100) as i64`) — but it is consumed under a **strict 4-way
+partition.** A weight TABLE carries no exclusivity semantics; only its CONSUMER does, and I inferred the semantics from the table. **That was the single claim blocking the fix, and it does not survive the
+source.** => `oxey.py`'s nesting is a **REAL BUG against the thing it ports**, not a faithful reproduction, and the fix is **UNBLOCKED**.
+🟢 **AND THE FIX REFERENCE IS ALREADY IN OUR REPO — WHICH I VERIFIED MYSELF.** `community.py:346-373` `_v1_pattern` returns **ONE** label per triple (a bad redirect `return`s `"bad_redirects"` and never also
+`"redirects"`), and `community.py:441-443` assigns **ONE** weight per triple (`PW[i,j,k] = self.WT[pat]`). I ran `tests/analysis/test_kan1_parity.py`: **21 passed, rc=0**, including the integer-exact
+`test_g2_oxeylyzer_exact` against goldens frozen from the real upstream repl. => **`oxey.py` and `community.py` DISAGREE with each other inside our own repo, and `community.py` is the upstream-correct one.**
+Any fix should reference it rather than author a new classification branch.
+⚠ **AND THE GAP IS LARGER THAN THE NESTING — THIS IS THE PART NOT TO CELEBRATE PAST.** Exclusivity is NECESSARY BUT NOT SUFFICIENT for upstream-comparable shares. Two further divergences remain in `oxey.py`:
+(i) upstream keeps **FOUR** redirect classes with four distinct weights where `oxey.py` has **TWO**; (ii) upstream's "bad" test is a **FINGER** predicate (`is_bad()` = LP|LR|LM|RM|RR|RP — excluding index AND
+thumb) versus `oxey.py`'s `abs(column) in (1,2)` **proxy**. `community.py` gets both right (`f1 in _BAD` with `_BAD = {0,1,2,7,8,9}`). **This is the same finger-vs-column confusion registered as the classifier
+mismatch (onehand 1080 vs 756) — so ONE root cause, `abs(column)` standing in for finger identity, produced BOTH the class-size error AND the bad-redirect predicate error.**
+⚠ CAVEATS, stated rather than buried: the oxeylyzer clone is **SHALLOW (depth 1)**, so exclusivity is verified at **d015a16 only** — no claim about older upstream releases (indirect counter-evidence: our own
+parity-gated port is exclusive too, and its goldens predate this audit). The one-line fix is **INFERRED, not run** — the child wrote no code. No `oxey.py` change is made on this entry.
+=> ACTION REGISTERED, and deliberately narrow: **the defect is now CONFIRMED rather than suspected, and its consequence is still the measured one — spearman 0.9989, top-10 overlap 9/10 in-band, zero published
+rankings flipped (OXEY-DOUBLECHARGE-1).** So this changes the DIAGNOSIS, not any number I have shown. **Do not quote `bad_redirect = 4.0`** (the effective price is 6.0, and upstream's is a flat -4.9 in its own
+units). Fixing `oxey.py` properly means adopting `community.py`'s finger-based 4-way partition, which is a larger change than un-nesting one `if` — and it must be done with the `oxey-style` gauge's frozen
+boards re-adjudicated, not silently.
+=> PROCESS LESSON, the cleanest of the session: **I inferred a semantic (exclusivity) from a DATA TABLE and registered it as a warrant for inaction.** The refutation cost one agent a few hours and required
+reading the CONSUMER. A table, a weight list, a config — none of them carry the semantics of the code that reads them. *Name is not thing*, in the form: **a value is not its interpretation.**
