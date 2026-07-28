@@ -10,7 +10,7 @@ evidence leans H-REAL and against H-UNDER; that reading is labelled post-hoc in 
 claim about realized human typing speed. **No layout is adopted or recommended for adoption.**
 
 > ## ⚠ READ THE SELF-AUDIT BEFORE REUSING ANY OF THIS — `report.md` §5b (also committed as
-> `agent-artifacts/speedtie-budget/SELF-AUDIT-and-report.md` on branch `speedtie-budget` @ `d2f612e`)
+> `agent-artifacts/speedtie-budget/SELF-AUDIT-and-report.md` on branch `speedtie-budget`)
 > 1. **Do NOT merge/cherry-pick branch `speedtie-budget` into `main` expecting artifacts only.**
 >    `git diff 45ea276 b36b8d8 -- src/ tests/` = **+912 lines resurrecting
 >    `src/keybo/analysis/evidence_scorer.py`**, a module the ledger deliberately deleted, with no
@@ -31,7 +31,7 @@ claim about realized human typing speed. **No layout is adopted or recommended f
 
 The `/tmp/speedtie` worktree (branch `speedtie-budget`) is EPHEMERAL. Everything needed to read
 or reproduce this result is copied here. Commits on that branch: `40ff53c` (pre-registration), `23584ea` (drivers),
-`b36b8d8` (result + addendum), **`d2f612e` (self-audit) = the tip**. The commits SURVIVE workspace
+`b36b8d8` (result + addendum), `d2f612e` (self-audit), `28087cb` (doc-fix). Resolve the current tip with `git rev-parse speedtie-budget` — it is the authority, not a hash quoted here. The commits SURVIVE workspace
 destruction in the shared `.git` (verified empirically by the parent on two earlier children); the
 `/tmp/speedtie` checkout does not, so **this directory is the durable copy.**
 

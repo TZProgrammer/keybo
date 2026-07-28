@@ -1,7 +1,7 @@
 # SPEEDTIE-BUDGET — does the free gauge headroom survive at the full budget?
 
 Subagent `speedtie` of `keybo-optimization`. Worktree `/tmp/speedtie`, branch `speedtie-budget`
-(commits `40ff53c` prereg → `23584ea` drivers → `b36b8d8` result → `d2f612e` self-audit **= tip**;
+(commits `40ff53c` prereg → `23584ea` drivers → `b36b8d8` result → `d2f612e` self-audit → `28087cb` doc-fix; **tip = `git rev-parse speedtie-budget`**,
 **nothing pushed**, `PREREGISTRATIONS.md` untouched). ⚠ **Do not merge this branch expecting
 artifacts only — see §5b(d)2.** Durable record: `state/speedtie/artifacts/` +
 `profiles-and-artifacts-index.md`.
