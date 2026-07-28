@@ -31,5 +31,29 @@ penaltyaudit's own later run produced independently.
 | `sp8_final.py` | the definitive estimate with all three correction axes applied at once | `sp8_definitive.json` |
 | `sp9_indomain_check.py` | does the domain restriction break identification? same-size placebo; form-free concavity bins | `sp9_indomain_check.json` |
 
+## ⚠️ REUSE HAZARD — these scripts hardcode `/tmp/scissorprice/probe`
+11 of the 13 files carry that literal (only `matched_prices.py` is clean), and it is an
+**ephemeral** path that dies with the workspace. Every `sp*.py` fails at import
+(`spec_from_file_location("c3", "/tmp/scissorprice/probe/collin3.py")`) once it is gone. To re-run:
+
+    git worktree add /tmp/<new> scissor-price          # this branch, tip e1a04c7
+    sed -i 's#/tmp/scissorprice#/tmp/<new>#g' /tmp/<new>/probe/*.py
+
+`collin3.py:137-138` also *writes* into its own probe dir, so that dir must be writable.
+
+## ⚠️ `collin3.py` IS penaltyaudit's FILE, and the pool seed is ITS seed
+`diff` after reversing the path rewrite is **empty**, and the pool uses `random.Random(31337)` —
+penaltyaudit's seed. So reproducing its `scissor_conditional.json` / `scissor_tangent.json`
+digit-for-digit is **near-tautological** (same instrument + same seed + same surfaces) and evidences
+correct transcription, NOT independent corroboration. The genuinely independent parts of this work
+are the BKW/eigen route, the matched-estimator controls (against frozen THEORY-1 artifacts), the
+cluster bootstrap, leave-one-source-out, the radius sweep, the same-size placebo, the domain-coverage
+finding, and `sp6`'s matched decomposition.
+
+## ⚠️ `sp8`'s +32.59 depends on ONE exclusion, worth 2.6x
+The "domain of use" drops `qwerty30m` as an outlier. Keeping it: implied w **+12.68** (n=809) vs
+**+32.59** (n=503) — and the full pool gives +13.29, so the whole "domain pushes UP" axis is
+contingent on that judgment. Direction (ratio>1) survives either way; the level does not.
+
 Run any of them with `/tmp/scissorprice/.venv/bin/python probe/<script>.py`.
 Copies of penaltyaudit's own probes are also present for reconciliation; the `sp*` files are mine.
