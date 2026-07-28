@@ -9228,3 +9228,50 @@ certificates carry a scope word** — `:287` ("bigram-component", on a wrapped l
 ⚠ **NOT DONE, deliberately and named so it is not mistaken for complete:** the docstring's outgoing-only description vs the implemented halved outgoing+incoming (a comment fix, bundled with nothing urgent), the
 seed-count raise + asymmetric-T case inside the ORIGINAL `test_qap_bound.py` (the new file covers the class; consolidating is cosmetic), and the six unpushed code fixes across four branches — those remain
 **user-gated** along with adopting a layout.
+
+### ULTRAAUDIT-SELFAUDIT — 🟢 THE WARM SELF-AUDIT FOUND FOUR MORE DEFECTS IN ITS OWN 487-LINE REPORT, and it DIAGNOSED the mechanism behind the two constants I caught: they are the √SB form's factors, and its own report CONTRADICTED ITSELF 29 lines apart (2026-07-28)
+The reflection pass sent to `ultracode-audit` before reaping, with six targeted questions built from what I learned by ACTING on its findings. **It came back with four NEW defects in its own work** — the reflection
+gate is now 4-for-4 at finding what a child's own callback missed. Branch `ultraaudit` @ **0880c4a**, worktree clean; report.md grown 1 -> 59 lines (it was a bare stub), workflow-report.md 487 -> **525**,
+reflection-proposal.md **112 lines (NEW)**. No push, no CR, no KB write.
+🟢 **(a) THE MECHANISM BEHIND MY CATCH IS WORSE THAN A TYPO, AND I VERIFIED IT EXACTLY. `1.4434` and `1.0076` are the √SB form's inflation factors, mislabelled as SB's.** Computed both columns myself:
+`sqrt(2r/(1+r))/r` = **1.4434 at r=0.60 and 1.0076 at r=0.99 — exact to 4dp**, while `2r/(1+r)/r` = 1.2500 and 1.0050. It computed both forms in one script and **carried the wrong column into prose.**
+⚠ **AND THE PART THAT MATTERS MOST: ITS REPORT CONTRADICTED ITSELF 29 LINES APART** — line 99's `tune.py` weight table had the CORRECT SB values (qwerty 1.0183, graphite 1.2500) **the whole time.** => 🟢 **AN
+INTERNAL CONTRADICTION IS A FREE ORACLE AND NOBODY DIFFED THE REPORT AGAINST ITSELF.** Registered as the durable lesson: **A WRONG CONSTANT ATTACHED TO A TRUE CONCLUSION IS AUDITED BY NOBODY** — it passed a 3-lens
+adversarial panel, the child's own hostile re-read, AND my registration, because **every lens tests whether the CLAIM is true and none asks whether the NUMBER is the number that supports it.**
+🟢 **AND THE SWEEP I ASKED FOR FOUND ANOTHER OF EXACTLY THAT SHAPE: `0.0282` should be `0.0270`** (the flip-case max |margin|; re-runs at 0.0270 at the pinned seed — its 0.0282 came from a later search under a
+different seed). Same signature: a number supporting a conclusion it believed (0.06 >> bound), so no lens questioned it. **The ratio becomes 2.2x not 2.1x; the conclusion holds.** All other load-bearing numbers
+re-derived and HELD (2.39% flip rate, 0.0489 SB / 0.0427 √SB adversarial bounds, 1.2275x weight spread).
+🔴 **(b) ALL 23 LINE CITATIONS ARE STALE — AND MY OWN MEASUREMENT CORRECTS ITS FIGURE UPWARD.** It reports the ledger growing 8209 -> 9230; I measured `git show dec1c3f:` = **8209** and `git show 66d0715:` =
+**9230**, so growth is **1021 lines, not the 745 it registered earlier** — it under-counted its own method finding. Drift on citations is **+2 to +44 and grows with line number**. Confirmed relocations I spot-checked:
+the `-0.02` ADOPT rule is now at **:1056** (it said :1030 -> :1032 — both wrong), "CAMPAIGN COMPLETE" at **:1202** (it said :1196 -> :1202/1203 — right), the sfr-invariant correction at **:7240** (verified). ⚠ **ONE
+CLAIM OF ITS OWN IS WRONG: it says `:12-18` (OQ-5 criterion 1) "NO LONGER RESOLVES AT ALL". It does** — the OQ-5 heading sits at :11 with the criteria at :13-18, exactly where they were. => the standing rule stands
+and is reinforced by both errors: **cite `(sha, unique-string)`, never a bare line number** — and note that a staleness CORRECTION can itself be stale.
+🟢 **(c) OF ITS 23 CONFIRMED FINDINGS, IT NAMES THREE IT CANNOT VOUCH FOR AS INDEPENDENT — asked and answered honestly rather than deflected.** Cannot vouch: **R2-b** (`alt`/`imbalance`) — the shuffle calls
+`KmStats.stats`/`oxey.pattern_shares`, the code under test; mitigated but not eliminated by the INTERNAL contrast (sfb/lsb/roll/redir move 30/30 through the same call while two freeze), CLI confirmation, and an
+independent second finder. **F-P4** (`load_frequencies`) — unavoidably calls the parser it tests, mitigated because the expectation is literal input it wrote. **Workflow #8** (analyze's collision guard compares
+NAMES not LAYOUTS) — **uses the resolver as its own oracle; it says it would re-verify this one before acting on it**, and I am registering that caveat with the finding. The other 20 rest on an external binary, a
+frozen artifact, a mutation, or a source/AST check — strongest three: #9 ran the **REAL oxeylyzer-2 binary** against 8 goldens, #14 **AST-normalized both method bodies plus fault injection**, and R2-b's triage
+re-derived **18/18 numerators off the FROZEN board** rather than re-running the producer.
+🔴 **(d) THERE IS A THIRD REMIT THAT SHOULD BE PARTIAL, and it had still written COVERED after adopting the synthesis agent's other two downgrades. Remit 3 (frozen gates, mutation-tested): COVERED -> PARTIAL.**
+Covered for the 8 named gates (26 mutations + ~70 more across 12 files, **every one liveness-proven first**, and the source of **6 of the 23 confirmed findings — none of them findable by reading**). NOT covered as a
+suite property: **19 of 56 test files / 4,831 lines were mutation-tested; 37 files / 5,734 lines never were — 54% OF THE SUITE BY LINE HAS NEVER BEEN SHOWN ABLE TO FAIL.** Largest untouched: `test_keystrokes.py`
+763, **`test_bad_scissor.py` 413**, `test_train.py` 301, `test_ngram.py` 296, `test_cli.py` 292. ⚠ **SPECIFIC UNCLOSED HOLE: `tests/test_geometry.py` pins `ROW_STAGGERED_30.row_offsets` and NOTHING pins
+`ROW_STAGGERED_31`'s — the stagger the shipped K31 models were TRAINED UNDER is gated by nothing.** (Remit 4, surface provenance, re-checked and genuinely CLOSED: 0/28 pairs identical or affine in both frames,
+reproduced by three parties.)
+🟢 **(e) THE ROUND-4 `badscissor` PLAN — the gauge the USER caught, still unaudited after three rounds, and this is the most actionable paragraph it produced.** Order of operations, cheapest first: **(1) mutation-sweep
+`tests/analysis/test_bad_scissor.py` (413 lines, one of the LARGEST never mutation-tested) BEFORE reading the module** — mechanical, and it had a uniform hit rate across every finder that used it. **(2) the module's
+own docstring hands you the audit**: it states the denominator convention explicitly and even names its own pinning test for the ~1.497x space-including inflation, so this is a **"does the disclosure match the
+behaviour?"** check — the fastest-resolving shape in its whole run (comfort's denominator resolved as NOT-a-defect in one read for exactly this reason). **(3) `bad_scissor_cell` returns `"<finger-pair> dy<n>"` — a
+STRING key built from a lossy DISPLAY form, trap 38's exact habitat, worth 5 minutes.** (4) compute the effect on qwerty AND on keybo-lsb/+lm and report the **RATIO**, because the user's original catch was a
+support-boundary artifact between exactly that pair — then sweep all 15 registry layouts to convert a two-layout anecdote into a property. (5) **do NOT re-litigate the settled**: the dy=1 tail is 87.1-99.4% across
+all 15 layouts (structural), the wrong-denominator DIRECTION is backwards (space-touching is 33.8% of mass, so the oxey denominator DEFLATES), and the exclusion's justifying number is already registered as
+indistinguishable from zero (CI [-0.0654,+0.1049], P(>0)=0.382). 🟢 **AND A HARD MECHANICAL CONSTRAINT: a >500-line module DETERMINISTICALLY kills a finder (`community.py` stalled 9 of 9 attempts); at 296 lines
+`bad_scissor.py` is safely under that** — budget one finder with the file pre-sliced into (predicate, denominator, cell-keying, registry-sweep).
+🟢 **(f) RETRACTIONS, all accepted cleanly:** `qap_bound.py` **SOFTENED to LOOSE-not-wrong**, accepting all three of my corrections (cubic not combined; lines off by 8; `:287` DOES qualify; six not eight, all
+surviving) — ⚠ **but it holds that the COVERAGE point stands unchanged, and I agree: 74 lines, load-bearing, opened by none of 159 agents.** R2-a's arm-ordering inversion relabelled **FORM-DEPENDENT** (verbatim
+adoption). And it **declines to re-rank R2-a down**, correctly: my `tune.py` result made it **stronger, not weaker** — the residual is real, `tune.py` had no minimum-margin rule, so any future selection under
+0.0270 mean_frac was not robust. **(That residual is now CLOSED by MARGIN-GATE-1, which it did not know about.)**
+🔴 **THE HOLE IT NAMES BUT CANNOT CLOSE, and it is the right thing to end on: IT DID NOT RE-VERIFY THE 14 REFUTED FINDINGS.** *"If a refutation rested on a wrong-constant-supporting-a-true-conclusion, my panel would
+have killed a real defect and I would never see it."* => **the asymmetry is UNEXAMINED: this campaign has audited its CONFIRMATIONS repeatedly and never once audited its REFUTATIONS.** Given that the
+wrong-constant-behind-a-true-conclusion failure has now been found **three times** (my two, its 0.0282), the prior that at least one of 14 refutations is itself wrong is not small. **Registered as the highest-value
+unrun check in the campaign** — higher than round-4 badscissor, because a false refutation is invisible by construction whereas an unaudited gauge is merely unexamined.
