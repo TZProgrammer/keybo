@@ -8320,3 +8320,66 @@ exists at 10M evals is UNTESTED.
 `bands` block was quoted as a NOISE RULER while its `runs` block — six fully-scored champions — was never opened.** A file consulted for one purpose is
 not a file that has been read. The defect class here is not a wrong number; it is **an unexamined artifact whose headline field crowded out its
 richest field.**
+
+### PENALTYAUDIT-1 — 🟠 THE OXEY WEIGHTS: 3 signs inverted, scissor UNDER-priced 7x, and the ONE number that survives every control is a term that does NOTHING; plus the classifier that consumes the weights is NOT the one THEORY-1 priced (2026-07-28)
+User request: "audit the correct penalty function for each of these, using our model, SHAP, and any other empirical/theoretical derivation, as evidence."
+Child `penaltyaudit`, branch `penalty-audit` (its tip 571bfe9 was MY commit, verified — it changed zero repo files, `git status --short src/ tests/` EMPTY). `DEFAULT_OXEY_WEIGHTS`
+**UNTOUCHED**; nothing pushed. Dossier `state/penaltyaudit/report.md`; 8 verdict JSONs + 30 probe scripts durable in `state/penaltyaudit/artifacts/`.
+🟢 **FOUR CORRECTIONS TO MY OWN BRIEF, ALL FOUR OF WHICH I RE-VERIFIED MYSELF** (this is the fourth consecutive child to correct the brief that spawned it):
+ 1. **The dict has ELEVEN terms, not the ten I listed — I omitted `bad_redirect` (+4.0).** Verified: `len(DEFAULT_OXEY_WEIGHTS) == 11`. My brief would have left the
+    community's self-described WORST trigram class unaudited.
+ 2. **"Pass the frame and ASSERT it" was UNIMPLEMENTABLE.** `keybo.analysis.surfaces._resolve()` (surfaces.py:92-94) tries ONLY `.standardized.npy[.gz]` — there is **no
+    `.native` code path at all**, and `AALTO_FREQ_PRIOR.native` does not exist. Verified by reading the resolver. It read the natives by absolute path instead.
+ 3. It used the SHIPPED bigram part rather than a difference (trap 45, which I earned), and gets the substituted-tensor match at **EXACTLY 0.0**, not my 5.68e-14.
+ 4. 🟢 **NEW AND MATERIAL — THE CLASSIFIER THAT CONSUMES THESE WEIGHTS IS NOT THE ONE THEORY-1 PRICED.** `oxey.py:139-140` computes the direction step as
+    `d1 = abs(b[0]) - abs(a[0])` on **COLUMN** index, but `geometry.same_finger()`'s own docstring says "index columns 1 and 2 on one hand count as the same finger."
+    So a same-FINGER move across the index's two columns is a nonzero direction STEP. **I counted it independently over all slot triples on ROW_STAGGERED_30: onehand
+    1080 as-shipped vs 756 finger-correct = 1.4286x, `bad_redirect` 540 vs 540 IDENTICAL** — reproducing the child's 1.43x and its "540 vs 540" exactly. => **any transfer
+    of THEORY-1's onehand number into this scorer inherits a ~30-43% class mismatch.** (My all-slot-triples redirect count is 3240 vs its 2700 — different triple universe,
+    same mechanism; the onehand figure and the bad_redirect invariance are the reproduced ones.)
+⚠ **THE HEADLINE BOUNDS EVERY PER-TERM NUMBER BELOW IT, INCLUDING ITS OWN.** Effective dof **COLLAPSES 5.69 (random pool, n=400) -> 2.50 in the NEAR-OPTIMAL band (n=341)**;
+VIF(alternate) 8.17 -> **46.34**, VIF(redirect) 5.54 -> **19.49**. The correlation STRUCTURE is band-dependent (spearman between pools only **+0.615**, max |delta-rho| 0.724)
+and the random pool does NOT cover the band: **75% of near-optimal sfb, 53% of redirect, 48% of alternate lie outside it.** Per-cluster: **FIVE terms — sfb, onehand,
+redirect, alternate, imbalance — collapse into ONE cluster** with leave-one-cluster-out delta-R2 of only 0.002-0.020, and that cluster contains THREE of the four terms the
+audit calls defective. **So their per-term MAGNITUDES are priors, not measurements.** This is the same 4-5 dof ceiling registered for the 19-gauge frame, except the 11-term
+frame is BETTER on random permutations and FAR WORSE where it is actually used.
+VERDICTS (all MODELLED — g-frame, baked 90 WPM, blend-v1, tau saturated at 1.0; nothing here is a claim about realized typing speed):
+ **WRONG SIGN (3):** `onehand` (implied **+22.5** vs shipped -1.5), `outroll` (+7.8 vs -1.0), `inroll` (+5.1 vs -2.0) — marginal r positive in **3/3 sources in the operating
+ band**, which per trap 49 is the statistic that licenses a sign claim. Their CONDITIONAL betas are negative — apparent agreement with oxey that is **textbook suppression.**
+ **WRONG MAGNITUDE (5):** `scissor` **7.0x UNDER-priced** — the one NOBODY flagged, and the largest finding after the dof result — `alternate` 7.9x, `bad_redirect` 5.1x,
+ `lsb` 3.7x, `dsfb` 2.7x.  **UNIDENTIFIED (3):** `redirect` (VIF 19.5), `alternate` (VIF 46.3), and the inroll:outroll RATIO.  **CONSISTENT (2):** `sfb` (the anchor),
+ `imbalance` (1.35x).
+🟢 **SHOULD BE ZERO — two, and the second is the most interesting result in the audit:**
+ (a) **the inroll/outroll DIRECTIONAL distinction**, and not merely unproven: independently re-verified that max |non-landing feature diff| under swap is **EXACTLY
+ 0.000000e+00 over all 870 ordered pairs**, angle/inwards/outwards each exactly 0.0, and SHAP ranks `inwards` **LAST of 20 features** at 0.00-0.05% with a seed-unstable
+ sign. **Collapse to ONE roll term.** (It IS representable in the community TRIGRAM classes — that boundary is kept exact.)
+ (b) **`bad_redirect` is a REAL EFFECT AND AN INERT TERM.** Its matched effect is **the single most robust number in the entire audit** — +21.46/+6.80/+10.76 ms, identical
+ across all four strata levels INCLUDING exact (b,c), the only term the strongest control does not move — yet leave-one-cluster-out delta-R2 is **0.0000/0.0012/0.0002** and
+ zeroing it leaves spearman **0.99856**. **A term can be the best-measured thing on the board and still be worth deleting.** That dissociation (effect size vs leverage) is
+ the reusable lesson, and it is the exact inverse of the suppression failure in the three sign errors.
+🟢 **ITS HONESTY CHECK ON ITS OWN RECOMMENDATION, WHICH I AM REGISTERING VERBATIM AS THE HEADLINE CAVEAT:** flipping the three signs improves spearman(oxey, fitted ms/char)
+by only **+0.036/+0.010/+0.022**, because **sfb + imbalance carry 79.8% of the score's variance and BOTH are correctly signed.** The as-shipped scorer already correlates
+**+0.81 to +0.82** with our fitted surfaces DESPITE three inverted signs. => **"4 of 11 terms are defective" MUST NOT be read as "the scorer is broken."** And `onehand` — the
+term whose sign is most unambiguously wrong — is the **LEAST consequential of all eleven** (zeroing it leaves spearman 0.99975, top-10 overlap 10/10).
+⚠ WHAT THE EVIDENCE CANNOT SETTLE, registered as open: (i) whether `dsfb` is truly speed-neutral — on the served frame it is POSITIVE in 3/3 at every control level
+(+3.41/+5.64/+5.48 matched), but the shipped docstring's "neutral" comes from the lag-2 MEASURED-keystroke probe, **a different instrument on a different object**, so per
+trap 41 this is NOT a contradiction; it needs the lag-2 probe re-run at this control level. (ii) any per-term magnitude inside the 5-term cluster. (iii) whether a one-hand
+run beats a REDIRECT: it reconciled my +5.8/+3.2/+7.3 exactly (+5.77/+3.17/+7.31) but ONLY when the reference is `redirects` alone, excluding `redirects_sfs` AND
+`bad_redirects` — against the full family it is SIGN-SPLIT and on AALTO it **REVERSES to -3.13**, so that number is withdrawn as fragile. The onehand-vs-**ALTERNATE**
+result is robust (+36.44/+90.31/+53.22, 93-96% strata). (iv) a context-controlled onehand-vs-alternate contrast: **0 shared (b,c) strata — a closed door, not an open
+experiment.**
+🟢 POSITIVE CONTROLS, all bit-exact: effect-curves 112 cells vs frozen `curves.json` diff **0.0**; THEORY-1's matched estimator copied byte-identical, 165 cells diff **0.0**;
+its share path 7 layouts x 11 terms vs `OxeyStyleScorer.pattern_shares` diff **0.0**. **That last control caught a real bug in the child's OWN code** — it had excluded SPACE,
+which `pattern_shares` counts in every DENOMINATOR (33.74% of bigrams / 48.87% of trigrams, and space classifies as ALTERNATE): a silent **17.9-share-point** error on
+`alternate` with all numerators still correct. Consequence for interpretation: **`alternate` is largely a LAYOUT-INVARIANT CONSTANT plus a small movable part**, which is
+itself why its VIF explodes. Also NOT an identity (regressing all 29,791 surface cells on the 9 class indicators gives **R2 = 0.186**), and it computed its OWN paired floor
+rather than reusing mine — **0.2453 ms/char at n=11**, seed main effect **0.97%** (NOT FLAGSHIP-1's 78-83%; a different nuisance design, so the two floors are not
+interchangeable — a third instance of the wrong-ruler failure this session).
+⚠ TEST STATUS, stated as neither pass nor fail per traps 1/22: targeted suite **RC=0** with a real sentinel, census reconciled 61 collected = 61 progress chars
+(`tests/scoring/test_oxey.py` + all `tests/features` + `test_effect_curves.py`). The FULL suite **WEDGES** on `tests/analysis/test_shap_report.py::test_interaction_pairs_present_and_sorted`
+(O(features^2) TreeSHAP, **not marked `slow`, so `-m "not slow"` does not skip it**) and wedges again after deselecting it. **Both PRE-EXISTING** — zero repo files changed.
+Proposed repo fix (NOT applied): mark that test `slow`.
+=> ACTION: no weight is changed on this evidence. The scorer's docstring already says it reproduces COMMUNITY JUDGMENT, not our measurements, so the three inverted signs are
+**not defects against its stated contract** — they are defects only against a claim nobody made. What IS registered as a defect: the **classifier mismatch (4)**, which makes
+`onehand`/`redirect` shares non-comparable with THEORY-1's prices, and the **band-dependent dof collapse**, which makes 5 of 11 magnitudes unidentifiable where the scorer is
+used. Both are structural and neither is fixed by editing a number.
