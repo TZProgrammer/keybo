@@ -16,6 +16,8 @@ Rule: model "generalizes" iff (1) held-out ρ ≥ 0.8× split-half ceiling on ev
 model QWERTY-family, remediate via OQ-1/OQ-7.
 **Outcome:** freq-live model FAILED (1) and (3) → caveat fired. R1W remediation later
 passed (3) 12/12, (1) on 3/4 (qwerty .796–.800 borderline). Recorded in OQ-5 artifact.
+⚠⚠ SUPERSEDED IN PART by CEILING-SB-1 (2026-07-28) — 🔴 **CRITERION 1 IS A `rho >= 0.8 x ceiling` TEST, SO THE CORRECTION MAKES IT STRICTLY HARDER AND THE 'borderline PASS' BECOMES A FAIL.** Multiplying by (1+c)/2: at any plausible ceiling c in [0.60, 0.90] the qwerty fraction .796-.800 corrects to **0.637-0.760**, all of which FAIL the 0.800 bar (worst case 0.6368 at c=0.60, best 0.7600 at c=0.90). So R1W passed criterion 1 on **2/4 layouts, not 3/4**, and the qwerty cell is not borderline — it is a clear fail. ⚠ The direction is UNIVERSAL, not specific to this cell: (1+c)/2 < 1 for every c < 1, so no criterion-1 verdict anywhere in this ledger can move FAVOURABLY under the correction. See the CEILING-SB-1 entry at the end of this file. The general fact: the missing Spearman-Brown step means every `rho/ceiling` fraction ever registered was multiplied by 2/(1+c) too much, i.e. the CORRECTED fraction is the registered one times **(1+c)/2 < 1** — so every such fraction in this ledger is LOWER than printed, and every threshold on one is HARDER to pass. Never quote a `rho/ceiling` number below without applying it.
+
 
 ## 2026-07-04 — OQ-1 decisive A/B (freq feature vs pinned)
 
@@ -1052,6 +1054,8 @@ runs/qobj.json (own-frame, truncation-safe metrics):
   BASE own-ceiling 0.815, rho/own-ceil 0.994 | Q25 0.803/0.941 | Q20 0.795/0.937
   F5M  own-ceiling 0.709 (ratio 0.870 >= 0.85 gate), rho/own-ceil 0.974
        (delta -0.0199, inside the -0.02 gate BY A HAIR), dp-tau 1.0 => ADOPT-CANDIDATE.
+⚠⚠ SUPERSEDED IN PART by CEILING-SB-1 (2026-07-28) — 🔴 **THIS ADOPT-CANDIDATE VERDICT IS REFUTED.** The `-0.0199` margin exists only because the ceiling was a HALF-length reliability scored against a FULL-sample rho. Corrected: **delta -0.0698** under Spearman-Brown `2c/(1+c)`, and it FAILS the -0.02 gate under **all four** candidate correction forms (SB -0.0698, sqrt -0.0772, c**0.75 -0.0507, c**0.5 -0.0772) and across the whole 3dp rounding box. Corrected fractions: BASE 0.9021, Q25 0.8483, Q20 0.8410, **F5M 0.8323**. ⚠ The ARM ORDERING inverts (F5M falls BELOW Q25 and Q20 — the two arms this same entry 'refuted as objectives') under SB and sqrt but NOT under c**0.75, so quote the inversion only with its form named; the GATE FAILURE is form-independent. 🟢 The OTHER F5M gate moves FAVOURABLY: own-ceiling ratio 0.870 -> **0.9239**, still passing 0.85. See the CEILING-SB-1 entry at the end of this file. The general fact: the missing Spearman-Brown step means every `rho/ceiling` fraction ever registered was multiplied by 2/(1+c) too much, i.e. the CORRECTED fraction is the registered one times **(1+c)/2 < 1** — so every such fraction in this ledger is LOWER than printed, and every threshold on one is HARDER to pass. Never quote a `rho/ceiling` number below without applying it.
+
 Reading: quantile POINTS (q25/q20) are reliably measurable but the model predicts their
 cross-layout structure notably worse (-5pp of own ceiling) — refuted as objectives.
 The fastest-fifth MEAN is a noisier quantity (ceiling 0.709 vs 0.815) but its structure
@@ -1099,7 +1103,9 @@ genuinely prefer different layouts (shared core nrts/aei blocks, different vowel
 arrangement). Per the registered rule: D1' attainability (quality execution rises
 30.6%->67.6% with skill) decides FOR the quality objective at wpm 90, WITH the
 registered caveat (F5M's Q-OBJ gates were razor-thin) => BOTH families ship, user
-chooses. Composition note: D4 was bigram-T2-only by design; the quality-arm deliverable
+chooses.
+⚠⚠ SUPERSEDED IN PART by CEILING-SB-1 (2026-07-28) — 🔴 **THE PREMISE OF THIS DECISION IS WEAKER THAN REGISTERED.** 'F5M's Q-OBJ gates were razor-thin' understates it: one of the two gates is now REFUTED outright (delta -0.0698 vs a -0.02 bar), not thin. 'BOTH families ship, user chooses' therefore rests on D1' attainability ALONE, without the Q-OBJ gate as corroboration. The decision may still be right — attainability is an independent argument — but it must no longer be presented as gate-supported. See the CEILING-SB-1 entry at the end of this file. The general fact: the missing Spearman-Brown step means every `rho/ceiling` fraction ever registered was multiplied by 2/(1+c) too much, i.e. the CORRECTED fraction is the registered one times **(1+c)/2 < 1** — so every such fraction in this ledger is LOWER than printed, and every threshold on one is HARDER to pass. Never quote a `rho/ceiling` number below without applying it.
+ Composition note: D4 was bigram-T2-only by design; the quality-arm deliverable
 family (full T3c + oxey sweep) builds after the QIN verdict decides WHICH quality
 surface (QIN q=0.2 slice if QIN adopts, else F5M) — one quality-arm assembly, not two.
 
@@ -1194,6 +1200,8 @@ construction) — the speed surface is FLAT across the family, consistent with e
 prior round: heuristic quality (sfb halving) costs ~0.5% at most. Deliverable stands.
 
 ### Outcome append (2026-07-08): P9 — the quality-objective (F5M) family is final; CAMPAIGN COMPLETE
+⚠⚠ SUPERSEDED IN PART by CEILING-SB-1 (2026-07-28) — 🔴 **'CAMPAIGN COMPLETE' DOES NOT SURVIVE, ON TWO INDEPENDENT GROUNDS.** (a) The F5M Q-OBJ ADOPT-CANDIDATE gate that licensed this family is refuted (see :1052 above). The trigram gate cited here (raw rho 0.632 > 0.55) is a RAW rho and is unaffected — so the family may still be defensible, but not via the Q-OBJ gate. (b) Separately, ULTRAAUDIT-INTERIM measured the campaign's defect discovery rate as FLAT (round-2 survival 89%, near-zero inter-round overlap, ~69% of lines never audited), so the known-defect set is a SAMPLE, not a census. **Treat this heading as 'the F5M family was the last thing BUILT', never as 'the campaign was verified complete'.** See the CEILING-SB-1 entry at the end of this file. The general fact: the missing Spearman-Brown step means every `rho/ceiling` fraction ever registered was multiplied by 2/(1+c) too much, i.e. the CORRECTED fraction is the registered one times **(1+c)/2 < 1** — so every such fraction in this ledger is LOWER than printed, and every threshold on one is HARDER to pass. Never quote a `rho/ceiling` number below without applying it.
+
 Trigram gate PASSED (F5M cond-tri raw rho 0.632 > 0.55) => full-F5M family, not mixed.
 runs/p9_final.json (same pipeline as P8b, objective = fastest-fifth mean, rng 880111):
   w=0.0 gaedinrtsw.oypumflcbq;jk,hxvz/  +2.01% vs qwerty (F5M objective) | sfb 2.39%
