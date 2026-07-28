@@ -9471,3 +9471,24 @@ were measured on** — so these numbers are comparable to those and **NOT to a p
 => **WHAT IS NOW AVAILABLE TO THE USER, and it is a genuinely new option: `BALL-1` (253.966426, +0.0658 over arm B, oxey-style 7.5774) dominates arm B on 6 of 6 contested axes with 0 worse and is IN-BAND UNDER ALL
 NINE STATISTICS AND ALL THREE RULERS — the ruler-independent result. `HEADLINE` (254.039627, oxey-style 4.4465) dominates on 12 of 12 but its speed-tie holds only under the loosest ruler.** Adoption remains
 USER-GATED; nothing is recommended here.
+
+### ARMH-1 CONVENTION CHECK — 🟢 THE DOMINANCE SURVIVES THE UN-NESTED `bad_redirect` CONVENTION, AND THE HEADLINE'S GAP GETS *LARGER* — so the one scope caveat that could have overturned ARMH-1 does not (2026-07-28)
+ARMH-1's dominance rests on `oxey-style`, and every number in it is scoped to the **as-shipped NESTED convention** (a bad redirect charged +2.0 AND +4.0 = +6.0). OXEYFIX-1 makes those terms mutually exclusive and
+**moves every `oxey-style` value** — every score DROPS 0.42-1.50 absolute, and −1.6% of |score| on qwerty vs **−152%** on a near-optimal layout. A dominance claim resting on a gauge that a pending fix changes is
+exactly the sort of thing this campaign has been wrong about, so I computed it rather than caveating it. Recomputed the un-nested value directly as `fitness − w[redirect]·share[bad_redirect]` (removing the double
+charge), through the shipped scorer on blend-v1:
+    layout        nested    un-nested      delta        oxey gap vs armB (nested)   (un-nested)
+    arm B       8.611046     7.877154   −0.733892                       —              —
+    BALL-1      7.577429     6.843537   −0.733892                −1.033616      −1.033616
+    MID         7.769027     7.035135   −0.733892                −0.842019      −0.842019
+    HEADLINE    4.446491     3.500415   −0.946077                −4.164554      **−4.376739**
+🟢 **VERDICT: THE DOMINANCE IS CONVENTION-INDEPENDENT, AND ARMH-1 NEEDS NO AMENDMENT ON THIS AXIS.** All three champions remain better than arm B on `oxey-style` under the un-nested convention.
+🟢 **AND THE STRUCTURE IS INFORMATIVE RATHER THAN LUCKY: BALL-1's and MID's gaps are UNCHANGED TO ALL SIX DECIMALS (−0.733892 for each, identical to arm B's shift), because they carry the SAME bad-redirect mass as
+arm B** — they are 1-swap/2-swap neighbours that did not move a bad-redirect trigram. **The HEADLINE's shift is LARGER (−0.946077 vs −0.733892), so its advantage GROWS by 0.212185 under the corrected convention**
+(−4.164554 → −4.376739). => **the pending fix would make the headline look BETTER, not worse.** ⚠ The corollary worth registering: **a nested-convention `oxey-style` gap is a LOWER BOUND on the corrected one for a
+layout that reduces bad-redirect mass** — which is the direction any optimizer minimizing this gauge moves.
+⚠ WHAT THIS DOES **NOT** ESTABLISH, stated so the check is not over-read: it re-prices the `oxey-style` AXIS only. It does not re-run the search under the corrected convention (a maximizer given the un-nested gauge
+would find a different champion), and it does not touch the 12 other axes — which were never affected, since OXEYFIX-1 moves only `redirect`/`onehand` and `oxey-style` (its own re-adjudication: `bad_redirect` and all
+8 bigram/imbalance shares bit-identical at max|diff| exactly 0.0). **So the 12-better/0-worse census is unaffected on the other 11 contested axes by construction, and now verified on the twelfth.**
+=> This closes the sharpest of the five reflection questions before the child's callback. The remaining open ones — whether **30.0%** is the right ratio (a mixed-frame numerator/denominator risk) and whether the
+3 sub-0.3% wins are labelled constraint-binding EVERYWHERE — are still with `armh`.
