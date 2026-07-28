@@ -1,0 +1,9 @@
+{
+  "lb_free": 112447629234.79517,
+  "lb_pinned": 112447629234.79517,
+  "space_slot_from_LAP": 30,
+  "gap_free_pct": 2.341044827596561,
+  "gap_pinned_pct": 2.341044827596561,
+  "statement": "the found layout is within 2.34% of the best possible layout (Gilmore-Lawler certificate; the true optimum lies between the bound and the found value)",
+  "pin_violations": 0
+}

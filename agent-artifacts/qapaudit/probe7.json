@@ -1,0 +1,8 @@
+{
+  "real_code": 112447629234.79517,
+  "real_docstring": 112168515564.66948,
+  "viol_code": 0,
+  "viol_docstring": 0,
+  "median_rel_diff_pct": 0.27246707578515306,
+  "code_tighter_frac": 0.5716666666666667
+}
