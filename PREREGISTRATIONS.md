@@ -8116,3 +8116,55 @@ layout on the board; the fault is not the unbounded domain (fixed, and the fix m
 themselves in the region where they are supported. **The natural next arm is ARM E — the ARCHIVE-fitted weights as a SEARCH objective**, since
 keybo-lsb is out-of-domain on 0 of 14 gauges there versus 9 of 14 under random400; the pool rejected as a SCORER is the only one whose domains cover
 the band a search operates in. The child recommends it but verified none of its numbers.
+
+### ARME-1 — ⚠ POST-HOC: domain coverage is FIRST-ORDER but NOT SUFFICIENT — it recovers 72% of arm D's deficit and stalls; and a defect in MY OWN price_many (2026-07-27)
+STATUS. The best-posed evidence arm, run because a watchdog caught my NINTH stop-gate failure (I named it "the natural next arm" and parked it).
+Branch `arm-e` in the child's OWN worktree, 3 commits — **414f2a6 pre-registration + gates committed BEFORE the run so priority is verifiable**,
+29af7d7 result, 1374f1c writeup. NOTHING pushed; no layout promoted. 10,017,839 unique evals, blend-v1, `.native`, 90 WPM.
+=> 🟢 I VERIFIED THE HEADLINE via the shipped CLI: **arm E = 258.1803 ms/char**, champion `ou-qdbpmlsaiehvgctnr.,y'kfwjzx`. Board:
+arm B **253.9006** < keybo-lsb 254.6307 < arm A 256.8466 < **arm E 258.1803** < qwerty 263.7141 < qwerty30m 264.1389 < arm D 269.2762.
+So arm E is **11.0959 FASTER than arm D (22.35x the floor) and 5.53 FASTER than qwerty**, but still **+4.2797 behind arm B (8.62x)**. All 10 arm-E
+pairs resolve. **Changing ONLY the weights JSON recovered 72% of arm D's 15.3756 excess over arm B — and stalled there.**
+⭐ THE CHILD REJECTED ITS OWN PRE-REGISTERED LABEL WHILE HONOURING THE THRESHOLD, and it is right to. E3 fired on the number (>=256.9, by +1.28) but
+E3's TEXT said "the curves are the defect REGARDLESS OF FIT POOL ... closes the evidence-weight line entirely" — and the same run measures the fit pool
+as worth **11.0959 ms/char**, refuting "regardless of fit pool" from its own data. **Pre-registration binds the threshold, not a conclusion written
+before the data.** HONEST VERDICT: **domain coverage is FIRST-ORDER and NOT SUFFICIENT**; ARMD-1 needs NARROWING, not confirming — in-domain
+mis-specification is a property of these curves GENERALLY, but its SEVERITY is a property of the FIT.
+WHY ONLY 72% — the ruler is still anti-informative where a search operates: it ranks **arm B, the fastest layout the campaign has produced, 12th of 14
+on its own ruler**, and rho(ev, ms) over the six incumbents alone is **-0.6000**. Banded rho over 3600 perturbations chosen by neither objective:
++0.7272 (all) -> +0.4195 (<=257) -> +0.2568 (<=256) -> +0.1609 (<=255.5) -> **+0.0580 (<=255.0)** — better than arm D's column in EVERY band, still ~0
+in the band. Mechanism measured: **7 gauges move right, 7 WRONG, the wrong ones carrying 40.84% of attribution.**
+🟢 THE FLAT-OBJECTIVE HYPOTHESIS IS NOW REFUTED TWICE ON TWO INDEPENDENT FITS: plateau census 2560 slots -> **1698 distinct layouts -> 1698 distinct
+objective values, ZERO plateaus**, champion untied — reproduced without assuming arm D's result, on a fit with **7.6x less in-domain signal** (6.4350
+vs 48.8093 units). Clamp binds EXACTLY: worst |reward outside| = **0.000e+00** on all 14 gauges at 50 AND 1000 domain-widths, through the same object
+the search used. And the INVERSE of arm D's signature: 6 of 14 out-of-domain, all at their own curve's in-domain optimum, with **5 of the 6 pushed
+mechanism-RIGHT** (arm D's 3 were all on gauges it was WORSENING).
+Other mandated items: normfloor **+0.398631** (POSITIVE — its P12 failed; arm D's was negative only because arm D is slower than qwerty, which arm E
+is not) · no dominator, best n_ge **3/10** on the 10-axis frame with the strict-win term (ties arms A/C; B and D are 1/10) · 7 of 18 gauges vs every
+incumbent but only **5 of 11 correlation clusters** (dof 3.99), and **all 4 independent community gauges LOSE** · partly comfort-driven, but the
+largest attribution is sfs-dist 22.48%, and comfort is pushed past its CEILING (to 4.0015, clamped to 3.8371) — arm D's shape at the OPPOSITE EDGE,
+because the archive curve is minimized at hi where random400's was at lo.
+⚠ IT DOES NOT CLAIM REHABILITATION: EVIDENCE-SCORER-1's rejection of these weights as a SCORER stands, and the two verdicts are consistent.
+⚠⚠ A DEFECT IN MY OWN `price_many` (cf5f731), WHICH I VERIFIED AND HAVE NOW FIXED (**79cb175**). It was NOT bit-exact with `price`, nor with ITSELF
+across batch shapes: `_design(...) @ coeffs` dispatches to a different BLAS kernel by array SHAPE. I measured it on the REAL fitted curves and it is
+**9 of 14, not the 7 reported** (comfort at its floor: 0.069389400121559 at n=1 vs 0.06938940012155903 at n>=2). **So my own instruction — "pin your
+fast path against price_many at EXACT float equality" — was UNSATISFIABLE BY CONSTRUCTION**, and my 4 tests could not see it because both sides used
+ONE fixed 8-element array. FIXED by computing the form ELEMENTWISE (shape-invariant) and having `price()` DELEGATE to `price_many`, so there is
+genuinely ONE implementation rather than two that agree by inspection — removing the trap-28 habitat instead of testing around it. 3 new tests: shape
+invariance across n in {1,2,3,7,64}, and the same over the REAL shipped curves (a synthetic-only suite is what missed a form-specific defect).
+Verified **0 mismatches across BOTH fitted weight sets at all edges**. IMMATERIAL to arm E's result, which the child PROVED rather than assumed: over
+2061 layouts the two implementations differ by <=1.332e-15 with identical argmin and identical full ordering, against the search's own 1e-12 threshold.
+PREDICTIONS: **11 of 16 correct, 5 FAILED, all reported — and ALL FIVE FAILED IN THE SAME DIRECTION** (it predicted arm E would be as bad as arm D).
+Its P2 predicted 268.6 against an actual 258.18, wrong by 10.4. Root cause, and it is reusable: **it extrapolated a 42,605-eval probe to a 10M budget —
+a cheap probe bounds an objective's RANK behaviour, not its OPTIMUM's location.** Note the symmetry the child drew itself: ARMD-1 erred by not probing
+in-band; arm E erred by OVER-READING the probe. Its PREDICTION.md had flagged the contrary pre-run measurement (79.3% mechanism-right headroom) as
+"the honest tension in my own reasoning" — that was the better instrument, and it says so.
+ALSO FIXED, a trap-19 defect inherited from arm D's driver: it dumped `judgement.json` mid-function and kept appending sections, which silently left
+P14's `champion_drivers` PRINTED but ABSENT from the artifact. Arm E's dumps LAST and asserts all 15 cited keys exist.
+GATES: gate 1 **113 checks, 0 fail** (includes a mutation control and a published sensitivity floor catching relative coeff error >=1e-13, with a
++1 ULP change DOCUMENTED as a necessary blind spot rather than asserted away); gate 2 **28 checks, 0 fail** (positive controls reproduce BOTH arm A and
+arm D's frozen drivers exactly; the two workers' gauges are BITWISE identical while scores differ by 17.1005; resume bit-exact on the count).
+tests/analysis 300 passed / 1 skipped of 301 collected, reconciled against `--collect-only`.
+=> NET FOR THE USER'S QUESTION: the evidence-weight line is now fully mapped. Best evidence-weight layout is **258.18** against a baseline search's
+**253.90** and the best incumbent's **254.63** — so on predicted time the SHAP weights remain worse than both, and the reason is no longer domain
+coverage (72% recovered) but the curves' in-band ranking, which is ~0 to negative exactly where layouts are chosen. Adoption remains the USER's gate.
