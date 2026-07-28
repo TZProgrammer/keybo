@@ -1,0 +1,51 @@
+{
+ "registry_scissor_share": {
+  "archive-1843": 0.12025689767835637,
+  "archive-1846": 0.11041091724691095,
+  "flagship-c3": 0.08889392467316412,
+  "graphite": 0.5173238388852289,
+  "keybo-c30m": 0.22799930782718178,
+  "keybo-lsb": 0.1428912298103323,
+  "keybo-lsb+lm": 0.1431306284544182,
+  "lsb-sib": 0.1066954240312486,
+  "p16-balance": 0.48185859286234345,
+  "qwerty30m": 1.5831338237041819,
+  "semimak": 0.4279206997287121
+ },
+ "form_pool_share_mean": 0.6374632650704105,
+ "per_source": {
+  "AALTO": {
+   "linear_slope": 4.903676793547182,
+   "quad_c1": 6.078845043223211,
+   "quad_c2": -0.967644216112448,
+   "tangent_at_registry_mean": 6.617485186791504,
+   "tangent_at_registry_median": 7.035521276537374,
+   "sfb_linear": 1.9956811922428772,
+   "sfb_tangent_at_registry_mean": 2.390717452258571,
+   "ratio_linear": 7.371433091529177,
+   "ratio_tangent": 8.303973998106468
+  },
+  "COMMUNITY": {
+   "linear_slope": 7.313009951162623,
+   "quad_c1": 8.869395002623824,
+   "quad_c2": -1.281541595006069,
+   "tangent_at_registry_mean": 9.582766443519814,
+   "tangent_at_registry_median": 10.136410673808651,
+   "sfb_linear": 3.321570737763972,
+   "sfb_tangent_at_registry_mean": 3.54884532952493,
+   "ratio_linear": 6.605016597736791,
+   "ratio_tangent": 8.100747330796708
+  },
+  "POOL": {
+   "linear_slope": 4.903217963203783,
+   "quad_c1": 5.914365964107257,
+   "quad_c2": -0.8325884527408204,
+   "tangent_at_registry_mean": 6.377827178725321,
+   "tangent_at_registry_median": 6.737517254226056,
+   "sfb_linear": 2.0896262184163805,
+   "sfb_tangent_at_registry_mean": 2.388412718046687,
+   "ratio_linear": 7.03937085014134,
+   "ratio_tangent": 8.010961167475223
+  }
+ }
+}

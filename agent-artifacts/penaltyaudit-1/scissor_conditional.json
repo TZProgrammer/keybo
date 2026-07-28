@@ -1,0 +1,29 @@
+{
+ "AALTO": {
+  "marg_scissor": 4.903676793547182,
+  "cond_scissor": 1.5736766500139046,
+  "marg_sfb": 1.9956811922428772,
+  "cond_sfb": 1.0737570624248878,
+  "ratio_marg": 7.371433091529177,
+  "ratio_cond": 4.396739369872096,
+  "cond_implied_scissor": 17.586957479488383
+ },
+ "COMMUNITY": {
+  "marg_scissor": 7.313009951162623,
+  "cond_scissor": 1.4840219991505652,
+  "marg_sfb": 3.321570737763972,
+  "cond_sfb": 1.979611548052328,
+  "ratio_marg": 6.605016597736791,
+  "ratio_cond": 2.2489593990457024,
+  "cond_implied_scissor": 8.99583759618281
+ },
+ "POOL": {
+  "marg_scissor": 4.903217963203783,
+  "cond_scissor": 1.621436132337878,
+  "marg_sfb": 2.0896262184163805,
+  "cond_sfb": 1.2927176671179472,
+  "ratio_marg": 7.03937085014134,
+  "ratio_cond": 3.762854427338631,
+  "cond_implied_scissor": 15.051417709354524
+ }
+}

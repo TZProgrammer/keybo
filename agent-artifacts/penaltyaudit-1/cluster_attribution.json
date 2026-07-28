@@ -1,0 +1,296 @@
+{
+ "pool_n": 891,
+ "effective_dof": 2.844988335004594,
+ "sweep": {
+  "2": {
+   "groups": [
+    "sfb,dsfb,lsb,scissor,inroll,outroll,onehand,redirect,alternate,imbalance",
+    "bad_redirect"
+   ],
+   "per_source": {
+    "AALTO": {
+     "r2_per_term": 0.850410333946042,
+     "r2_per_cluster": 0.6873026040366533,
+     "betas": {
+      "sfb,dsfb,lsb,scissor,inroll,outroll,onehand,redirect,alternate,imbalance": 0.7914903806561295,
+      "bad_redirect": 0.07857139269593177
+     },
+     "loco_dr2": {
+      "sfb,dsfb,lsb,scissor,inroll,outroll,onehand,redirect,alternate,imbalance": 0.5054131255375123,
+      "bad_redirect": 0.0049806283535077656
+     }
+    },
+    "COMMUNITY": {
+     "r2_per_term": 0.8354130737438147,
+     "r2_per_cluster": 0.6606036764983669,
+     "betas": {
+      "sfb,dsfb,lsb,scissor,inroll,outroll,onehand,redirect,alternate,imbalance": 0.807551677274471,
+      "bad_redirect": 0.011728213826041061
+     },
+     "loco_dr2": {
+      "sfb,dsfb,lsb,scissor,inroll,outroll,onehand,redirect,alternate,imbalance": 0.5261334104855017,
+      "bad_redirect": 0.00011097342369392749
+     }
+    },
+    "POOL": {
+     "r2_per_term": 0.7893239502108609,
+     "r2_per_cluster": 0.61639701723892,
+     "betas": {
+      "sfb,dsfb,lsb,scissor,inroll,outroll,onehand,redirect,alternate,imbalance": 0.7658855758503705,
+      "bad_redirect": 0.04170011320104312
+     },
+     "loco_dr2": {
+      "sfb,dsfb,lsb,scissor,inroll,outroll,onehand,redirect,alternate,imbalance": 0.4732417100753221,
+      "bad_redirect": 0.0014029096484761139
+     }
+    }
+   }
+  },
+  "3": {
+   "groups": [
+    "sfb,dsfb,lsb,scissor,outroll,onehand,redirect,alternate,imbalance",
+    "inroll",
+    "bad_redirect"
+   ],
+   "per_source": {
+    "AALTO": {
+     "r2_per_term": 0.850410333946042,
+     "r2_per_cluster": 0.6956057107556171,
+     "betas": {
+      "sfb,dsfb,lsb,scissor,outroll,onehand,redirect,alternate,imbalance": 0.803897015321015,
+      "inroll": -0.012860178089819803,
+      "bad_redirect": 0.07800365817625103
+     },
+     "loco_dr2": {
+      "sfb,dsfb,lsb,scissor,outroll,onehand,redirect,alternate,imbalance": 0.3955390997510364,
+      "inroll": 0.00011613801432130977,
+      "bad_redirect": 0.0049100569890097034
+     }
+    },
+    "COMMUNITY": {
+     "r2_per_term": 0.8354130737438147,
+     "r2_per_cluster": 0.6772950297421425,
+     "betas": {
+      "sfb,dsfb,lsb,scissor,outroll,onehand,redirect,alternate,imbalance": 0.8483554302609103,
+      "inroll": -0.05811370026575501,
+      "bad_redirect": 0.010947354921153432
+     },
+     "loco_dr2": {
+      "sfb,dsfb,lsb,scissor,outroll,onehand,redirect,alternate,imbalance": 0.44049834030114454,
+      "inroll": 0.0023715784149886954,
+      "bad_redirect": 9.67108028786523e-05
+     }
+    },
+    "POOL": {
+     "r2_per_term": 0.7893239502108609,
+     "r2_per_cluster": 0.6231768145746056,
+     "betas": {
+      "sfb,dsfb,lsb,scissor,outroll,onehand,redirect,alternate,imbalance": 0.7727600984586925,
+      "inroll": -0.004088219598679922,
+      "bad_redirect": 0.041146006612599394
+     },
+     "loco_dr2": {
+      "sfb,dsfb,lsb,scissor,outroll,onehand,redirect,alternate,imbalance": 0.3654920767103328,
+      "inroll": 1.1736777256632358e-05,
+      "bad_redirect": 0.0013661927456353196
+     }
+    }
+   }
+  },
+  "4": {
+   "groups": [
+    "dsfb,lsb",
+    "sfb,scissor,outroll,onehand,redirect,alternate,imbalance",
+    "inroll",
+    "bad_redirect"
+   ],
+   "per_source": {
+    "AALTO": {
+     "r2_per_term": 0.850410333946042,
+     "r2_per_cluster": 0.7160891454868883,
+     "betas": {
+      "dsfb,lsb": -0.030866305395434678,
+      "sfb,scissor,outroll,onehand,redirect,alternate,imbalance": 0.8764309908704029,
+      "inroll": -0.022552794870623262,
+      "bad_redirect": 0.003340603215511777
+     },
+     "loco_dr2": {
+      "dsfb,lsb": 0.00048205309797222373,
+      "sfb,scissor,outroll,onehand,redirect,alternate,imbalance": 0.25918257065221717,
+      "inroll": 0.0003561325403504956,
+      "bad_redirect": 7.434247492721369e-06
+     }
+    },
+    "COMMUNITY": {
+     "r2_per_term": 0.8354130737438147,
+     "r2_per_cluster": 0.6809246570967147,
+     "betas": {
+      "dsfb,lsb": 0.27041603523270313,
+      "sfb,scissor,outroll,onehand,redirect,alternate,imbalance": 0.6314524584688467,
+      "inroll": -0.05228174490995638,
+      "bad_redirect": 0.04439715855569968
+     },
+     "loco_dr2": {
+      "dsfb,lsb": 0.03699904058062331,
+      "sfb,scissor,outroll,onehand,redirect,alternate,imbalance": 0.13454007270080348,
+      "inroll": 0.0019138639656713918,
+      "bad_redirect": 0.0013130993224518273
+     }
+    },
+    "POOL": {
+     "r2_per_term": 0.7893239502108609,
+     "r2_per_cluster": 0.6241567065001479,
+     "betas": {
+      "dsfb,lsb": 0.10339011891959654,
+      "sfb,scissor,outroll,onehand,redirect,alternate,imbalance": 0.7133032272995875,
+      "inroll": -0.0062136025332653584,
+      "bad_redirect": 0.01878282885004501
+     },
+     "loco_dr2": {
+      "dsfb,lsb": 0.005408584886841816,
+      "sfb,scissor,outroll,onehand,redirect,alternate,imbalance": 0.1716796103974344,
+      "inroll": 2.7033224834549507e-05,
+      "bad_redirect": 0.00023502238429740085
+     }
+    }
+   }
+  },
+  "5": {
+   "groups": [
+    "dsfb,lsb",
+    "sfb,onehand,redirect,alternate,imbalance",
+    "scissor,outroll",
+    "inroll",
+    "bad_redirect"
+   ],
+   "per_source": {
+    "AALTO": {
+     "r2_per_term": 0.850410333946042,
+     "r2_per_cluster": 0.7883466027402476,
+     "betas": {
+      "dsfb,lsb": 0.006080274297786155,
+      "sfb,onehand,redirect,alternate,imbalance": 0.29272504859274534,
+      "scissor,outroll": 0.6070887719947119,
+      "inroll": 0.1221936593779563,
+      "bad_redirect": -0.011122180966405857
+     },
+     "loco_dr2": {
+      "dsfb,lsb": 1.8520958220080708e-05,
+      "sfb,onehand,redirect,alternate,imbalance": 0.020016278415369015,
+      "scissor,outroll": 0.1704443772349239,
+      "inroll": 0.008517314126786024,
+      "bad_redirect": 8.221397240404382e-05
+     }
+    },
+    "COMMUNITY": {
+     "r2_per_term": 0.8354130737438147,
+     "r2_per_cluster": 0.7501583983409069,
+     "betas": {
+      "dsfb,lsb": 0.3073505996089302,
+      "sfb,onehand,redirect,alternate,imbalance": 0.10188427248436308,
+      "scissor,outroll": 0.5355224066229424,
+      "inroll": 0.09176732903940207,
+      "bad_redirect": 0.03069901139467111
+     },
+     "loco_dr2": {
+      "dsfb,lsb": 0.04732441320147307,
+      "sfb,onehand,redirect,alternate,imbalance": 0.0024248107961452048,
+      "scissor,outroll": 0.13262749619565628,
+      "inroll": 0.004803762257061472,
+      "bad_redirect": 0.0006263462747800874
+     }
+    },
+    "POOL": {
+     "r2_per_term": 0.7893239502108609,
+     "r2_per_cluster": 0.6949722310761348,
+     "betas": {
+      "dsfb,lsb": 0.13963548128324502,
+      "sfb,onehand,redirect,alternate,imbalance": 0.16675180904036083,
+      "scissor,outroll": 0.5597405993245611,
+      "inroll": 0.13771656066042595,
+      "bad_redirect": 0.004332812569375035
+     },
+     "loco_dr2": {
+      "dsfb,lsb": 0.0097680681445651,
+      "sfb,onehand,redirect,alternate,imbalance": 0.006495381558572877,
+      "scissor,outroll": 0.14489449793782305,
+      "inroll": 0.010818764292201632,
+      "bad_redirect": 1.247686637184664e-05
+     }
+    }
+   }
+  },
+  "6": {
+   "groups": [
+    "dsfb",
+    "lsb",
+    "sfb,onehand,redirect,alternate,imbalance",
+    "scissor,outroll",
+    "inroll",
+    "bad_redirect"
+   ],
+   "per_source": {
+    "AALTO": {
+     "r2_per_term": 0.850410333946042,
+     "r2_per_cluster": 0.7942615657651023,
+     "betas": {
+      "dsfb": 0.08828333520171035,
+      "lsb": -0.07526806427466383,
+      "sfb,onehand,redirect,alternate,imbalance": 0.29175037251129166,
+      "scissor,outroll": 0.5963021947731132,
+      "inroll": 0.12093630407407015,
+      "bad_redirect": -0.001837981433741051
+     },
+     "loco_dr2": {
+      "dsfb": 0.004189660351623048,
+      "lsb": 0.0033495773587483013,
+      "sfb,onehand,redirect,alternate,imbalance": 0.019882459425171417,
+      "scissor,outroll": 0.16295895081469103,
+      "inroll": 0.008341660249178262,
+      "bad_redirect": 2.223627445618881e-06
+     }
+    },
+    "COMMUNITY": {
+     "r2_per_term": 0.8354130737438147,
+     "r2_per_cluster": 0.7598317617876161,
+     "betas": {
+      "dsfb": 0.2830151074095896,
+      "lsb": 0.07386070984385029,
+      "sfb,onehand,redirect,alternate,imbalance": 0.10063782770131101,
+      "scissor,outroll": 0.5217282106221575,
+      "inroll": 0.0901593856530879,
+      "bad_redirect": 0.0425719220903402
+     },
+     "loco_dr2": {
+      "dsfb": 0.04305668513875782,
+      "lsb": 0.003225488311318636,
+      "sfb,onehand,redirect,alternate,imbalance": 0.0023657550402250704,
+      "scissor,outroll": 0.12474813018355357,
+      "inroll": 0.004636187596997465,
+      "bad_redirect": 0.001192961156457284
+     }
+    },
+    "POOL": {
+     "r2_per_term": 0.7893239502108609,
+     "r2_per_cluster": 0.7057107780835672,
+     "betas": {
+      "dsfb": 0.19359380543748733,
+      "lsb": -0.02677545230978458,
+      "sfb,onehand,redirect,alternate,imbalance": 0.16543852987979352,
+      "scissor,outroll": 0.5452067584429326,
+      "inroll": 0.1360223993390972,
+      "bad_redirect": 0.016842348815113643
+     },
+     "loco_dr2": {
+      "dsfb": 0.0201467161171609,
+      "lsb": 0.00042387924299092106,
+      "sfb,onehand,redirect,alternate,imbalance": 0.006393233858180802,
+      "scissor,outroll": 0.13622846582573644,
+      "inroll": 0.010552612133141737,
+      "bad_redirect": 0.0001867175330906301
+     }
+    }
+   }
+  }
+ }
+}

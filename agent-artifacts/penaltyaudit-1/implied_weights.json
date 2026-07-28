@@ -1,0 +1,123 @@
+{
+ "sfb": {
+  "implied_per_source": [
+   12.0,
+   12.0,
+   12.0
+  ],
+  "implied_mean": 12.0,
+  "oxey": 12.0,
+  "ratio": 1.0,
+  "verdict": "consistent"
+ },
+ "dsfb": {
+  "implied_per_source": [
+   12.413117938041362,
+   15.059207099771076,
+   13.445711535622335
+  ],
+  "implied_mean": 13.639345524478259,
+  "oxey": 5.0,
+  "ratio": 2.727869104895652,
+  "verdict": "WRONG MAGNITUDE"
+ },
+ "lsb": {
+  "implied_per_source": [
+   10.038723256797166,
+   12.571003765118933,
+   10.616168371341582
+  ],
+  "implied_mean": 11.075298464419227,
+  "oxey": 3.0,
+  "ratio": 3.691766154806409,
+  "verdict": "WRONG MAGNITUDE"
+ },
+ "scissor": {
+  "implied_per_source": [
+   29.485732366116707,
+   26.42006639094716,
+   28.157483400565358
+  ],
+  "implied_mean": 28.021094052543074,
+  "oxey": 4.0,
+  "ratio": 7.005273513135768,
+  "verdict": "WRONG MAGNITUDE"
+ },
+ "inroll": {
+  "implied_per_source": [
+   5.346111476986512,
+   4.791175927435264,
+   5.153371346876049
+  ],
+  "implied_mean": 5.0968862504326085,
+  "oxey": -2.0,
+  "ratio": -2.5484431252163042,
+  "verdict": "WRONG SIGN"
+ },
+ "outroll": {
+  "implied_per_source": [
+   8.125122905016388,
+   7.764411942062809,
+   7.406722720657512
+  ],
+  "implied_mean": 7.76541918924557,
+  "oxey": -1.0,
+  "ratio": -7.76541918924557,
+  "verdict": "WRONG SIGN"
+ },
+ "onehand": {
+  "implied_per_source": [
+   24.54230916291435,
+   21.352409955605598,
+   21.587817294551453
+  ],
+  "implied_mean": 22.494178804357134,
+  "oxey": -1.5,
+  "ratio": -14.996119202904756,
+  "verdict": "WRONG SIGN"
+ },
+ "redirect": {
+  "implied_per_source": [
+   8.693625312754516,
+   8.241631848354205,
+   8.039781688527405
+  ],
+  "implied_mean": 8.32501294987871,
+  "oxey": 2.0,
+  "ratio": 4.162506474939355,
+  "verdict": "WRONG MAGNITUDE"
+ },
+ "bad_redirect": {
+  "implied_per_source": [
+   22.27782581287724,
+   18.816738553636853,
+   19.857976524683583
+  ],
+  "implied_mean": 20.317513630399223,
+  "oxey": 4.0,
+  "ratio": 5.079378407599806,
+  "verdict": "WRONG MAGNITUDE"
+ },
+ "alternate": {
+  "implied_per_source": [
+   -4.19985907741098,
+   -3.8455532017245586,
+   -3.877076280311046
+  ],
+  "implied_mean": -3.9741628531488615,
+  "oxey": -0.5,
+  "ratio": 7.948325706297723,
+  "verdict": "WRONG MAGNITUDE"
+ },
+ "imbalance": {
+  "implied_per_source": [
+   2.117205879781045,
+   1.9385470406686267,
+   2.0153838822994676
+  ],
+  "implied_mean": 2.0237122675830466,
+  "oxey": 1.5,
+  "ratio": 1.3491415117220311,
+  "verdict": "consistent"
+ }
+}

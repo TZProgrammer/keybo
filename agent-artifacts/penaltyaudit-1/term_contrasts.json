@@ -1,0 +1,405 @@
+{
+ "frame": "NATIVE fitted surfaces (per-source bigram tensor intact); bigram MARGINAL = S.mean(axis=2) in ms; g-frame only (no b(ngram)); baked 90 WPM",
+ "contrasts": {
+  "sfb  vs same-hand 2-finger": {
+   "AALTO_BASE": {
+    "name": "sfb  vs same-hand 2-finger",
+    "note": "the SFB penalty proper (matched landing sigs)",
+    "n_strata": 0,
+    "verdict": "NO SHARED STRATUM",
+    "key_overlap": 30
+   },
+   "COMMUNITY_BASE": {
+    "name": "sfb  vs same-hand 2-finger",
+    "note": "the SFB penalty proper (matched landing sigs)",
+    "n_strata": 0,
+    "verdict": "NO SHARED STRATUM",
+    "key_overlap": 30
+   },
+   "POOL_BASE": {
+    "name": "sfb  vs same-hand 2-finger",
+    "note": "the SFB penalty proper (matched landing sigs)",
+    "n_strata": 0,
+    "verdict": "NO SHARED STRATUM",
+    "key_overlap": 30
+   },
+   "AALTO_TRI_PS_FREQ_PRIOR": {
+    "name": "sfb  vs same-hand 2-finger",
+    "note": "the SFB penalty proper (matched landing sigs)",
+    "n_strata": 0,
+    "verdict": "NO SHARED STRATUM",
+    "key_overlap": 30
+   },
+   "COMMUNITY_TRI_PS_FREQ_PRIOR": {
+    "name": "sfb  vs same-hand 2-finger",
+    "note": "the SFB penalty proper (matched landing sigs)",
+    "n_strata": 0,
+    "verdict": "NO SHARED STRATUM",
+    "key_overlap": 30
+   },
+   "POOL_TRI_PS_FREQ_PRIOR": {
+    "name": "sfb  vs same-hand 2-finger",
+    "note": "the SFB penalty proper (matched landing sigs)",
+    "n_strata": 0,
+    "verdict": "NO SHARED STRATUM",
+    "key_overlap": 30
+   }
+  },
+  "sfb  vs alternate": {
+   "AALTO_BASE": {
+    "name": "sfb  vs alternate",
+    "note": "SFB vs the fastest class",
+    "n_strata": 0,
+    "verdict": "NO SHARED STRATUM",
+    "key_overlap": 30
+   },
+   "COMMUNITY_BASE": {
+    "name": "sfb  vs alternate",
+    "note": "SFB vs the fastest class",
+    "n_strata": 0,
+    "verdict": "NO SHARED STRATUM",
+    "key_overlap": 30
+   },
+   "POOL_BASE": {
+    "name": "sfb  vs alternate",
+    "note": "SFB vs the fastest class",
+    "n_strata": 0,
+    "verdict": "NO SHARED STRATUM",
+    "key_overlap": 30
+   },
+   "AALTO_TRI_PS_FREQ_PRIOR": {
+    "name": "sfb  vs alternate",
+    "note": "SFB vs the fastest class",
+    "n_strata": 0,
+    "verdict": "NO SHARED STRATUM",
+    "key_overlap": 30
+   },
+   "COMMUNITY_TRI_PS_FREQ_PRIOR": {
+    "name": "sfb  vs alternate",
+    "note": "SFB vs the fastest class",
+    "n_strata": 0,
+    "verdict": "NO SHARED STRATUM",
+    "key_overlap": 30
+   },
+   "POOL_TRI_PS_FREQ_PRIOR": {
+    "name": "sfb  vs alternate",
+    "note": "SFB vs the fastest class",
+    "n_strata": 0,
+    "verdict": "NO SHARED STRATUM",
+    "key_overlap": 30
+   }
+  },
+  "lsb  vs same-hand non-lsb": {
+   "AALTO_BASE": {
+    "name": "lsb  vs same-hand non-lsb",
+    "note": "lateral stretch",
+    "delta_ms": 9.208231820667452,
+    "ci95": [
+     6.14153424686547,
+     12.153818455408707
+    ],
+    "n_strata": 24,
+    "frac_pos": 0.875,
+    "n_treat_cells": 32,
+    "n_ref_cells": 292,
+    "key_overlap": 14,
+    "identified": true
+   },
+   "COMMUNITY_BASE": {
+    "name": "lsb  vs same-hand non-lsb",
+    "note": "lateral stretch",
+    "delta_ms": 48.27340600495135,
+    "ci95": [
+     38.46471936094415,
+     58.105629117925375
+    ],
+    "n_strata": 24,
+    "frac_pos": 1.0,
+    "n_treat_cells": 32,
+    "n_ref_cells": 292,
+    "key_overlap": 14,
+    "identified": true
+   },
+   "POOL_BASE": {
+    "name": "lsb  vs same-hand non-lsb",
+    "note": "lateral stretch",
+    "delta_ms": 25.77506258706471,
+    "ci95": [
+     22.108445551944875,
+     29.523654384459785
+    ],
+    "n_strata": 24,
+    "frac_pos": 1.0,
+    "n_treat_cells": 32,
+    "n_ref_cells": 292,
+    "key_overlap": 14,
+    "identified": true
+   },
+   "AALTO_TRI_PS_FREQ_PRIOR": {
+    "name": "lsb  vs same-hand non-lsb",
+    "note": "lateral stretch",
+    "delta_ms": 8.755110127213882,
+    "ci95": [
+     5.6409753957542375,
+     11.761697567332913
+    ],
+    "n_strata": 24,
+    "frac_pos": 0.8333333333333334,
+    "n_treat_cells": 32,
+    "n_ref_cells": 292,
+    "key_overlap": 14,
+    "identified": true
+   },
+   "COMMUNITY_TRI_PS_FREQ_PRIOR": {
+    "name": "lsb  vs same-hand non-lsb",
+    "note": "lateral stretch",
+    "delta_ms": 49.22718873305494,
+    "ci95": [
+     40.894187496095824,
+     57.37569875475646
+    ],
+    "n_strata": 24,
+    "frac_pos": 1.0,
+    "n_treat_cells": 32,
+    "n_ref_cells": 292,
+    "key_overlap": 14,
+    "identified": true
+   },
+   "POOL_TRI_PS_FREQ_PRIOR": {
+    "name": "lsb  vs same-hand non-lsb",
+    "note": "lateral stretch",
+    "delta_ms": 27.216623328706245,
+    "ci95": [
+     23.293627611735793,
+     31.065032794660183
+    ],
+    "n_strata": 24,
+    "frac_pos": 1.0,
+    "n_treat_cells": 32,
+    "n_ref_cells": 292,
+    "key_overlap": 14,
+    "identified": true
+   }
+  },
+  "scissor vs adjacent-finger FLAT": {
+   "AALTO_BASE": {
+    "name": "scissor vs adjacent-finger FLAT",
+    "note": "the scissor (adjacency held)",
+    "n_strata": 0,
+    "verdict": "NO SHARED STRATUM",
+    "key_overlap": 16
+   },
+   "COMMUNITY_BASE": {
+    "name": "scissor vs adjacent-finger FLAT",
+    "note": "the scissor (adjacency held)",
+    "n_strata": 0,
+    "verdict": "NO SHARED STRATUM",
+    "key_overlap": 16
+   },
+   "POOL_BASE": {
+    "name": "scissor vs adjacent-finger FLAT",
+    "note": "the scissor (adjacency held)",
+    "n_strata": 0,
+    "verdict": "NO SHARED STRATUM",
+    "key_overlap": 16
+   },
+   "AALTO_TRI_PS_FREQ_PRIOR": {
+    "name": "scissor vs adjacent-finger FLAT",
+    "note": "the scissor (adjacency held)",
+    "n_strata": 0,
+    "verdict": "NO SHARED STRATUM",
+    "key_overlap": 16
+   },
+   "COMMUNITY_TRI_PS_FREQ_PRIOR": {
+    "name": "scissor vs adjacent-finger FLAT",
+    "note": "the scissor (adjacency held)",
+    "n_strata": 0,
+    "verdict": "NO SHARED STRATUM",
+    "key_overlap": 16
+   },
+   "POOL_TRI_PS_FREQ_PRIOR": {
+    "name": "scissor vs adjacent-finger FLAT",
+    "note": "the scissor (adjacency held)",
+    "n_strata": 0,
+    "verdict": "NO SHARED STRATUM",
+    "key_overlap": 16
+   }
+  },
+  "inroll vs outroll": {
+   "AALTO_BASE": {
+    "name": "inroll vs outroll",
+    "note": "roll direction -- STRUCTURALLY UNREPRESENTABLE here",
+    "n_strata": 0,
+    "verdict": "NO SHARED STRATUM",
+    "key_overlap": 18
+   },
+   "COMMUNITY_BASE": {
+    "name": "inroll vs outroll",
+    "note": "roll direction -- STRUCTURALLY UNREPRESENTABLE here",
+    "n_strata": 0,
+    "verdict": "NO SHARED STRATUM",
+    "key_overlap": 18
+   },
+   "POOL_BASE": {
+    "name": "inroll vs outroll",
+    "note": "roll direction -- STRUCTURALLY UNREPRESENTABLE here",
+    "n_strata": 0,
+    "verdict": "NO SHARED STRATUM",
+    "key_overlap": 18
+   },
+   "AALTO_TRI_PS_FREQ_PRIOR": {
+    "name": "inroll vs outroll",
+    "note": "roll direction -- STRUCTURALLY UNREPRESENTABLE here",
+    "n_strata": 0,
+    "verdict": "NO SHARED STRATUM",
+    "key_overlap": 18
+   },
+   "COMMUNITY_TRI_PS_FREQ_PRIOR": {
+    "name": "inroll vs outroll",
+    "note": "roll direction -- STRUCTURALLY UNREPRESENTABLE here",
+    "n_strata": 0,
+    "verdict": "NO SHARED STRATUM",
+    "key_overlap": 18
+   },
+   "POOL_TRI_PS_FREQ_PRIOR": {
+    "name": "inroll vs outroll",
+    "note": "roll direction -- STRUCTURALLY UNREPRESENTABLE here",
+    "n_strata": 0,
+    "verdict": "NO SHARED STRATUM",
+    "key_overlap": 18
+   }
+  },
+  "inroll vs same-hand non-roll": {
+   "AALTO_BASE": {
+    "name": "inroll vs same-hand non-roll",
+    "note": "is an inroll cheaper than generic same-hand?",
+    "n_strata": 0,
+    "verdict": "NO SHARED STRATUM",
+    "key_overlap": 24
+   },
+   "COMMUNITY_BASE": {
+    "name": "inroll vs same-hand non-roll",
+    "note": "is an inroll cheaper than generic same-hand?",
+    "n_strata": 0,
+    "verdict": "NO SHARED STRATUM",
+    "key_overlap": 24
+   },
+   "POOL_BASE": {
+    "name": "inroll vs same-hand non-roll",
+    "note": "is an inroll cheaper than generic same-hand?",
+    "n_strata": 0,
+    "verdict": "NO SHARED STRATUM",
+    "key_overlap": 24
+   },
+   "AALTO_TRI_PS_FREQ_PRIOR": {
+    "name": "inroll vs same-hand non-roll",
+    "note": "is an inroll cheaper than generic same-hand?",
+    "n_strata": 0,
+    "verdict": "NO SHARED STRATUM",
+    "key_overlap": 24
+   },
+   "COMMUNITY_TRI_PS_FREQ_PRIOR": {
+    "name": "inroll vs same-hand non-roll",
+    "note": "is an inroll cheaper than generic same-hand?",
+    "n_strata": 0,
+    "verdict": "NO SHARED STRATUM",
+    "key_overlap": 24
+   },
+   "POOL_TRI_PS_FREQ_PRIOR": {
+    "name": "inroll vs same-hand non-roll",
+    "note": "is an inroll cheaper than generic same-hand?",
+    "n_strata": 0,
+    "verdict": "NO SHARED STRATUM",
+    "key_overlap": 24
+   }
+  },
+  "outroll vs same-hand non-roll": {
+   "AALTO_BASE": {
+    "name": "outroll vs same-hand non-roll",
+    "note": "is an outroll cheaper than generic same-hand?",
+    "n_strata": 0,
+    "verdict": "NO SHARED STRATUM",
+    "key_overlap": 24
+   },
+   "COMMUNITY_BASE": {
+    "name": "outroll vs same-hand non-roll",
+    "note": "is an outroll cheaper than generic same-hand?",
+    "n_strata": 0,
+    "verdict": "NO SHARED STRATUM",
+    "key_overlap": 24
+   },
+   "POOL_BASE": {
+    "name": "outroll vs same-hand non-roll",
+    "note": "is an outroll cheaper than generic same-hand?",
+    "n_strata": 0,
+    "verdict": "NO SHARED STRATUM",
+    "key_overlap": 24
+   },
+   "AALTO_TRI_PS_FREQ_PRIOR": {
+    "name": "outroll vs same-hand non-roll",
+    "note": "is an outroll cheaper than generic same-hand?",
+    "n_strata": 0,
+    "verdict": "NO SHARED STRATUM",
+    "key_overlap": 24
+   },
+   "COMMUNITY_TRI_PS_FREQ_PRIOR": {
+    "name": "outroll vs same-hand non-roll",
+    "note": "is an outroll cheaper than generic same-hand?",
+    "n_strata": 0,
+    "verdict": "NO SHARED STRATUM",
+    "key_overlap": 24
+   },
+   "POOL_TRI_PS_FREQ_PRIOR": {
+    "name": "outroll vs same-hand non-roll",
+    "note": "is an outroll cheaper than generic same-hand?",
+    "n_strata": 0,
+    "verdict": "NO SHARED STRATUM",
+    "key_overlap": 24
+   }
+  },
+  "alternate vs same-hand (any)": {
+   "AALTO_BASE": {
+    "name": "alternate vs same-hand (any)",
+    "note": "hand alternation: the ONLY thing `alternate` can mean",
+    "n_strata": 0,
+    "verdict": "NO SHARED STRATUM",
+    "key_overlap": 30
+   },
+   "COMMUNITY_BASE": {
+    "name": "alternate vs same-hand (any)",
+    "note": "hand alternation: the ONLY thing `alternate` can mean",
+    "n_strata": 0,
+    "verdict": "NO SHARED STRATUM",
+    "key_overlap": 30
+   },
+   "POOL_BASE": {
+    "name": "alternate vs same-hand (any)",
+    "note": "hand alternation: the ONLY thing `alternate` can mean",
+    "n_strata": 0,
+    "verdict": "NO SHARED STRATUM",
+    "key_overlap": 30
+   },
+   "AALTO_TRI_PS_FREQ_PRIOR": {
+    "name": "alternate vs same-hand (any)",
+    "note": "hand alternation: the ONLY thing `alternate` can mean",
+    "n_strata": 0,
+    "verdict": "NO SHARED STRATUM",
+    "key_overlap": 30
+   },
+   "COMMUNITY_TRI_PS_FREQ_PRIOR": {
+    "name": "alternate vs same-hand (any)",
+    "note": "hand alternation: the ONLY thing `alternate` can mean",
+    "n_strata": 0,
+    "verdict": "NO SHARED STRATUM",
+    "key_overlap": 30
+   },
+   "POOL_TRI_PS_FREQ_PRIOR": {
+    "name": "alternate vs same-hand (any)",
+    "note": "hand alternation: the ONLY thing `alternate` can mean",
+    "n_strata": 0,
+    "verdict": "NO SHARED STRATUM",
+    "key_overlap": 30
+   }
+  }
+ }
+}
