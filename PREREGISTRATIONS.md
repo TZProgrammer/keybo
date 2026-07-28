@@ -8468,3 +8468,57 @@ weight table (`community.py:382-389`: redirects -340, bad_redirects -490) is ALS
 **That question — is oxeylyzer's bad_redirect additive-on-top or exclusive? — is UNRESOLVED and is the blocker on any fix.** Answering it requires reading the upstream implementation, not our port.
 ⚠ SCOPE: one corpus (blend-v1), the shipped `TRI_PS_FREQ_PRIOR`-independent pattern path only (this is a pure share-arithmetic result, no model surface involved), g-frame irrelevant here. `sfr`-style
 permutation-invariance does not apply. Nothing here is a claim about realized typing speed.
+
+### MODELNORM-1 — 🟢 THE USER'S NORMALIZATION SCHEME WORKS, IS STABLE TO EXACTLY 0.0, AND CHANGES NOT ONE RANKING: it buys an INTERPRETABLE WEIGHT, not a re-ordering — and its "qwerty30m ~= 0" premise is FALSE (2026-07-28)
+User's design, quoted: "Aalto, comm, and pool models all have different ranges. Shouldn't we normalize them before weighting them? Maybe we take 100 randomly generated layouts and score each. Set that as our
+'0'. Then we optimize focused entirely on maximizing their score, one for each model, set that as our '1' per model. Then we use that range in the layout optimization. We can then impose a preference for a
+model as a weight on top of that range." Child `modelnorm` was instructed to IMPLEMENT AND TEST IT, not redesign it — and did, then reported the design's defects separately. Branch `modelnorm`, 8 local
+commits in its own worktree; **no push, no merge, no CR, no corpus/default change, no layout adopted**; PREREGISTRATIONS.md untouched. All on blend-v1 / `.native` frame / **BAKED 90 WPM**. MODELLED ONLY.
+🟢 **(1) DO THE "1" ANCHORS STABILIZE? YES — COMPLETELY, AND MORE CLEANLY THAN I EXPECTED.** Two independent seeds (20260728 / 20260901) at an IDENTICAL 10M-unique budget returned the **IDENTICAL champion
+layout for ALL THREE models**: seed-to-seed gap **EXACTLY 0.0 ms** (0.0000% of span, verified in `anchors-evidence.json`), 40/40 islands within 0.10%, champion last improved at epoch 4-12 of 55. Anchor-induced
+blend perturbation **0.000000** against a **0.003284** decision margin => **STABLE**. Anchors of record: AALTO `lnfdg-,yehcrstmaoiupxqbwv.k'jz` 223.2363G (span 8.178% of the zero), COMMUNITY
+`mgndy-lea.tpscbkrouiwzxfqvh'j,` 219.8280G (13.791%), POOL `pctsm.reayfgdlk-niuobzvwx,hqj'` 235.4386G (9.107%). **This is the sharpest contrast with the ARME-1/SPEEDTIE-1 search-noise picture: at a 10M
+budget on THESE objectives the search is perfectly reproducible, where the archive-evidence objective spread 9.4293 ms/char over two seeds. Reproducibility is a property of the OBJECTIVE, not of the searcher
+— now demonstrated at both extremes.**
+🟢 **THE USER'S n=100 IS SUFFICIENT.** n=1000 moves the "0" by **less than 1 SE** (max **-0.979 SE** = -1.70% of span, AALTO) and the candidate RANKING is unchanged at n=100 / 1000 / 10000. The proposal's
+cheapest-to-doubt number survives.
+🟢 **(2) DOES NORMALIZING CHANGE ANY RANKING? NO — not one, anywhere it matters.** 0 discordant pairs within each model (normalization is an affine positive rescale, asserted in code — I confirmed the
+artifact records `normalization_is_affine_so_correlation_is_invariant = 3.33e-16`); 0 vs the raw MEAN of the three surfaces; 0 vs raw mean saved%; and **0 vs the PRIOR ceiling-fraction anchoring** — switching
+anchoring schemes shifts every candidate by a near-constant +0.058..+0.104 and reorders nothing. It changes exactly **2 pairs** versus the scale-broken raw `min()` — graphite>semimak, graphite>arm-A — and
+**NEITHER clears the floor** (gaps 0.0122 / 0.0241 vs a 0.231897 conservative normalized floor on its own 8x3 pool; model main effect 14.10% of SS; only 15/28 pairs sign-agree on all three models).
+=> **REGISTERED ANSWER TO THE USER'S QUESTION: the scheme is CORRECT and worth having, but it does not change WHAT WE PICK — it changes what a WEIGHT MEANS.** Before it, "weight the three models" was
+uninterpretable because the models' ranges differ; after it, a weight is a stated preference on a common 0-1 scale. **The value is interpretability, not a re-ordering.** Anyone hoping normalization would
+break the incumbent ties should read (2) as a null.
+🟢 **THE END-TO-END POSITIVE CONTROL IS THE BEST PART, AND NO UNIT TEST COULD SEE IT.** The weight sweep (identical budget+seed per cell) gives (1,0,0) 254.0711 / (2,1,1) 255.7811 / (1,1,1) 256.6268 /
+(0,0,1) 257.6572 / (0,1,0) 258.3823 — AALTO's normalized score moves **monotonically** 1.00000 -> 0.93740 -> 0.90286 as its weight drops, and **all three SOLO cells returned own_blend = 1.000000000 AND
+reproduced their own anchor layout.** I verified three of these cells myself through the shipped CLI: blend champion `pctsk-reayfgdlm.niuobzvwxh,qj'` = **256.63**, COMMUNITY-solo = **258.38**, POOL-solo =
+**257.66** — matching its 256.6268 / 258.3823 / 257.6572.
+⚠ **(3) THE BLEND SEARCH LOSES, WHICH IS THE FOURTH INDEPENDENT ARM TO DO SO.** `pctsk-reayfgdlm.niuobzvwxh,qj'` = **256.6268 ms/char vs arm B 253.9006 — SLOWER by +2.7262** (9,811,784 unique evals, 40
+islands x 55 epochs, 40/40 within 0.01%). It beats arm A (256.8466) and qwerty30m (264.1389) and loses to **every** incumbent. **NOT ADMISSIBLE:** no dominator on the 10-axis frame with the strict-win term
+required (best n_ge 5/10 blend, 7/10 sweep-AALTO-only); 4-10 of 18 movable on the 19-gauge frame.
+🟢 **AND THE MODELS EMPHATICALLY DISAGREE WHERE IT COUNTS** — the three solo champions are **24 / 26 / 24 of 30 slots apart** despite a wide-pool participation ratio of only **1.1672 of 3** (PC1 92.34%,
+pairwise rho 0.83-0.95). A near-unidimensional wide-pool structure coexisting with total near-optimal disagreement is the same band-dependence PENALTYAUDIT-1 found in the dof collapse (5.69 -> 2.50), now
+seen from the opposite side.
+🔴 **FIVE DEFECTS IN THE USER'S DESIGN, reported AFTER implementing it as specified. TWO ARE NEW AND ONE IS A TRAP:**
+ **(a) "qwerty30m must be ~0" IS FALSE — I verified it: qwerty30m normalizes to `[0.5649, 0.4243, 0.5239]`**, i.e. 0.42-0.56, because it sits at the **0.00-0.20 percentile** of a 1000-layout random pool
+ (z = -2.5..-3.1) and the scale's "0" is the pool MEAN, not its floor. => **a CORRECTLY-SIGNED implementation FAILS a "qwerty should be ~0" sanity check**, and someone "fixing" that would invert the sign —
+ exactly the trap-3 inversion. **DO NOT USE qwerty30m AS THE DIRECTION GUARD.** The correct guard is the one the artifact asserts: each model's own optimum normalizes to **exactly 1.0** (all three do).
+ **(b) A random-layout "0" wastes ~90% of the scale.** Excluding qwerty30m, the other 7 candidates occupy only **0.1696 / 0.0895 / 0.0962** of the per-model range — every layout anyone would actually consider
+ is crammed into the top tenth. The scheme is well-posed but low-resolution where it is used.
+ (c) The anchoring correction is **VERY unequal**: search-anchoring beats ceiling-anchoring by **1.21% (AALTO) / 14.74% (COMMUNITY) / 15.19% (POOL)** of span — because arm B already sits at **0.9879** of
+ AALTO's own optimum. (d) **Equal weights are NOT neutral**: POOL is fitted on the union of AALTO's and COMMUNITY's sources, so it is not an independent third vote (the artifact says so in its own
+ `independence.note`). (e) 90 WPM is BAKED and a 90-110 WPM objective **cannot be honoured** on these columns (7 of 8 per-seed models are gone).
+🔴 **TWO NUMBERS THE CAMPAIGN MUST STOP REUSING — the wrong-ruler failure, for the FOURTH independent time this session:** FLAGSHIP-1's "seed = 78-83% of SS" is **iWeb-only**; on blend-v1 the seed main effect
+is **0.74%** (raw ms) / **0.83%** (saved%) on COMMUNITY_BASE, the only surviving per-seed family. And a paired/unpaired ratio of **EXACTLY 1.0000 is a DEGENERACY, not a finding**: `saved%` is per-seed versus
+qwerty, so the reference row is (0,0,0) and spread(X-qwerty) == spread(X) identically; excluding it gives **0.5632**.
+🟢 **FIVE DEFECTS IN ITS OWN WORK, ALL FOUND BY TESTING RATHER THAN READING** — the same 0-for-N self-review pattern, broken only by execution: (i) **the zero-padding in `fit_batch` is LOAD-BEARING** — BLAS
+selects its kernel from the operand shape, so without a constant tile shape a layout's fit depended on **how many OTHER layouts shared its batch** (~1e-15 rel), and neither the search nor its resume would be
+reproducible. **This is the same shape-dependence class as the `price_many` defect in `79cb175`, discovered independently in different code.** (ii) resuming with a different `--epochs` is a DIFFERENT search
+under the same filename (`per_epoch` derives from it) — now blocked by a `run_identity` stamp over 10 knobs, verified to bite. (iii) `sfr` looked non-invariant only because it tested across `analyze`'s
+`--ref` row, whose CHARSET differs (trap 38 again). (iv) the paired-floor degeneracy above. (v) a real B023 loop-capture in `seed_floor.floor_of`. **The lint cleanup touched every driver, so it RE-RAN the
+whole pipeline and compared bit-for-bit: 6 of 7 artifacts IDENTICAL, the 7th differing only in two provenance fields it added deliberately.**
+🟢 GATES: 21 unit tests rc=0 with a real sentinel; **harness mutation-controlled** (planted `assert False` -> rc=1, restored -> rc=0); resume verified to reproduce the uninterrupted run on COUNTS (614,709)
+AND VALUES; 10 sentinels all 0; frozen comparison set reproduced to worst |diff| **EXACTLY 0.0** with SET-CONTAINMENT asserted. **PREDICTIONS PRE-REGISTERED AND SCORED: 11 of 18 HELD, 5 FAILED, 2 UNTESTABLE**,
+every failure written up in `artifacts/PREDICTION-SCORED.md`. Notably **P6 FAILED and is the most informative failure** (it predicted normalization WOULD reorder), and **P15 failed as a BOUND while holding as
+a verdict** — its floor axis is this arm's normalized min-over-models, NOT arm E's six-surface ceiling-fraction floor, **so the n_ge NUMBER is not comparable across arms, only the verdict.** A fifth instance
+of the borrowed-ruler error, caught by the child itself.
