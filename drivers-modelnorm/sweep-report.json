@@ -1,0 +1,249 @@
+{
+ "what": "MODELNORM-1 deliverable D: the preference sweep",
+ "identity": {
+  "models": [
+   "AALTO",
+   "COMMUNITY",
+   "POOL"
+  ],
+  "family": "TRI_PS_FREQ_PRIOR",
+  "frame": "native",
+  "frame_note": "geometry-only (g); the layout-independent b(ngram) term is excluded",
+  "baked_wpm": 90.0,
+  "wpm_caveat": "the arrays are BAKED at 90 WPM and cannot be re-evaluated (7 of 8 per-seed models are gone), so a 90-110 WPM objective is NOT honourable on these columns",
+  "corpus": "blend-v1",
+  "corpus_trigrams": "/tmp/modelnorm/data/corpus/blend-v1/trigrams.txt",
+  "corpus_trigrams_sha256": "19806532ee3567f5afe4311e51f346b6c36375030f473fe3f68a6a3dc21beb61",
+  "surface_dir": "/local/home/zegertho/agent/state/keybo-selmethod/artifacts/old-new-layout-comparison/tri_frequency_old_new_surfaces",
+  "surface_sha256": {
+   "AALTO": "0ec6dbff602d79c28b5e9a6307fce41ddb63b68e846cc5f9c80d4a1896654028",
+   "COMMUNITY": "421712f9999ba86e9e6b61c752422a45c25ad3cbc3ead45589185e3fd33ee10b",
+   "POOL": "284b7c97531311e9cc6d3640792fd43fbe76a77806cb553708f13a93ab19a517"
+  },
+  "native_frame_guard": {
+   "AALTO": {
+    "max_abs_std_minus_native": 0.0,
+    "max_variation_of_delta_over_third_slot": 0.0
+   },
+   "COMMUNITY": {
+    "max_abs_std_minus_native": 121.55301558217269,
+    "max_variation_of_delta_over_third_slot": 1.1368683772161603e-13
+   },
+   "POOL": {
+    "max_abs_std_minus_native": 50.7434916920962,
+    "max_variation_of_delta_over_third_slot": 1.1368683772161603e-13
+   }
+  },
+  "n_trigrams": 24478,
+  "total_trigram_freq": 887147352.0,
+  "tile": 16,
+  "numpy": "2.5.0"
+ },
+ "identical_run_settings": {
+  "budget_islands_seed_polish_gashare": [
+   10000000,
+   40,
+   20260728,
+   40,
+   0.6
+  ],
+  "why": "a difference between cells is then the WEIGHT and not the draw"
+ },
+ "cells": {
+  "equal": {
+   "weights": [
+    1.0,
+    1.0,
+    1.0
+   ],
+   "champion": "pctsk-reayfgdlm.niuobzvwxh,qj'",
+   "normalized": {
+    "AALTO": 0.9028626505786678,
+    "COMMUNITY": 0.9653299374624484,
+    "POOL": 0.9855808300447223
+   },
+   "normalized_floor_min_over_models": 0.9028626505786678,
+   "own_objective_blend": 0.9512578060286128,
+   "equal_weight_blend": 0.9512578060286128,
+   "ms_per_char": 256.6267857479948,
+   "unique_evals": 9811784,
+   "recorded_fitness": -0.951257806028615
+  },
+  "aalto-only": {
+   "weights": [
+    1.0,
+    0.0,
+    0.0
+   ],
+   "champion": "lnfdg-,yehcrstmaoiupxqbwv.k'jz",
+   "normalized": {
+    "AALTO": 1.0,
+    "COMMUNITY": 0.758729685699715,
+    "POOL": 0.811178832999314
+   },
+   "normalized_floor_min_over_models": 0.758729685699715,
+   "own_objective_blend": 1.0,
+   "equal_weight_blend": 0.8566361728996763,
+   "ms_per_char": 254.0711493268616,
+   "unique_evals": 8021356,
+   "recorded_fitness": -1.0000000000000275
+  },
+  "community-only": {
+   "weights": [
+    0.0,
+    1.0,
+    0.0
+   ],
+   "champion": "mgndy-lea.tpscbkrouiwzxfqvh'j,",
+   "normalized": {
+    "AALTO": 0.82006156773219,
+    "COMMUNITY": 1.0,
+    "POOL": 0.978830044190854
+   },
+   "normalized_floor_min_over_models": 0.82006156773219,
+   "own_objective_blend": 1.0,
+   "equal_weight_blend": 0.9329638706410146,
+   "ms_per_char": 258.3823211639554,
+   "unique_evals": 9229103,
+   "recorded_fitness": -1.0000000000000373
+  },
+  "pool-only": {
+   "weights": [
+    0.0,
+    0.0,
+    1.0
+   ],
+   "champion": "pctsm.reayfgdlk-niuobzvwx,hqj'",
+   "normalized": {
+    "AALTO": 0.862197624456622,
+    "COMMUNITY": 0.9682819210026264,
+    "POOL": 1.0
+   },
+   "normalized_floor_min_over_models": 0.862197624456622,
+   "own_objective_blend": 1.0,
+   "equal_weight_blend": 0.9434931818197494,
+   "ms_per_char": 257.6571936326212,
+   "unique_evals": 9847686,
+   "recorded_fitness": -1.000000000000071
+  },
+  "aalto-pref": {
+   "weights": [
+    2.0,
+    1.0,
+    1.0
+   ],
+   "champion": "csthg-reaypfdlm.nioubzvwkx,jq'",
+   "normalized": {
+    "AALTO": 0.9374030743037872,
+    "COMMUNITY": 0.9372041503145319,
+    "POOL": 0.9726153446141615
+   },
+   "normalized_floor_min_over_models": 0.9372041503145319,
+   "own_objective_blend": 0.946156410884067,
+   "equal_weight_blend": 0.9490741897441601,
+   "ms_per_char": 255.7811364513514,
+   "unique_evals": 9740844,
+   "recorded_fitness": -0.9461564108840784
+  }
+ },
+ "positive_control_solo_cells_hit_1.0": {
+  "aalto-only": {
+   "model": "AALTO",
+   "own_blend": 1.0,
+   "hits_1.0": true,
+   "champion": "lnfdg-,yehcrstmaoiupxqbwv.k'jz",
+   "anchor_layout_of_record": "lnfdg-,yehcrstmaoiupxqbwv.k'jz",
+   "reproduces_the_anchor_layout": true,
+   "note": "a solo blend's maximum is 1.0 BY CONSTRUCTION at that model's '1' anchor, so this is an end-to-end control on the anchors, the normalization AND the search in one number \u2014 it is what would catch an anchor/objective mismatch that no unit test can see"
+  },
+  "community-only": {
+   "model": "COMMUNITY",
+   "own_blend": 1.0,
+   "hits_1.0": true,
+   "champion": "mgndy-lea.tpscbkrouiwzxfqvh'j,",
+   "anchor_layout_of_record": "mgndy-lea.tpscbkrouiwzxfqvh'j,",
+   "reproduces_the_anchor_layout": true,
+   "note": "a solo blend's maximum is 1.0 BY CONSTRUCTION at that model's '1' anchor, so this is an end-to-end control on the anchors, the normalization AND the search in one number \u2014 it is what would catch an anchor/objective mismatch that no unit test can see"
+  },
+  "pool-only": {
+   "model": "POOL",
+   "own_blend": 1.0,
+   "hits_1.0": true,
+   "champion": "pctsm.reayfgdlk-niuobzvwx,hqj'",
+   "anchor_layout_of_record": "pctsm.reayfgdlk-niuobzvwx,hqj'",
+   "reproduces_the_anchor_layout": true,
+   "note": "a solo blend's maximum is 1.0 BY CONSTRUCTION at that model's '1' anchor, so this is an end-to-end control on the anchors, the normalization AND the search in one number \u2014 it is what would catch an anchor/objective mismatch that no unit test can see"
+  }
+ },
+ "solo_champion_pairwise_hamming_distance_of_30": {
+  "aalto-only vs community-only": 24,
+  "aalto-only vs pool-only": 26,
+  "community-only vs pool-only": 24
+ },
+ "trap52_note": "the three models correlate 0.83-0.95 on a WIDE random pool (participation ratio 1.17 of 3), but that does NOT imply they agree in the NARROW near-optimal band. The Hamming distances above are the direct measurement of band agreement.",
+ "preference_monotonicity": {
+  "aalto_normalized_at_1_0_0": 1.0,
+  "aalto_normalized_at_1_1_1": 0.9028626505786678,
+  "aalto_normalized_at_2_1_1": 0.9374030743037872,
+  "monotone_2_1_1_lies_between": true,
+  "moved_toward_aalto_vs_equal": true,
+  "verdict": "the weight ACTS AS A PREFERENCE: raising AALTO's weight from 1 to 2 moved the champion's AALTO score toward the AALTO-only optimum without reaching it"
+ },
+ "cost_of_each_preference": {
+  "equal": {
+   "shortfall_vs_each_models_own_optimum": {
+    "AALTO": -0.09713734942133223,
+    "COMMUNITY": -0.03467006253755156,
+    "POOL": -0.0144191699552777
+   },
+   "worst_shortfall": -0.09713734942133223
+  },
+  "aalto-only": {
+   "shortfall_vs_each_models_own_optimum": {
+    "AALTO": 0.0,
+    "COMMUNITY": -0.241270314300285,
+    "POOL": -0.18882116700068596
+   },
+   "worst_shortfall": -0.241270314300285
+  },
+  "community-only": {
+   "shortfall_vs_each_models_own_optimum": {
+    "AALTO": -0.17993843226781003,
+    "COMMUNITY": 0.0,
+    "POOL": -0.021169955809146046
+   },
+   "worst_shortfall": -0.17993843226781003
+  },
+  "pool-only": {
+   "shortfall_vs_each_models_own_optimum": {
+    "AALTO": -0.13780237554337804,
+    "COMMUNITY": -0.031718078997373556,
+    "POOL": 0.0
+   },
+   "worst_shortfall": -0.13780237554337804
+  },
+  "aalto-pref": {
+   "shortfall_vs_each_models_own_optimum": {
+    "AALTO": -0.06259692569621278,
+    "COMMUNITY": -0.06279584968546814,
+    "POOL": -0.027384655385838452
+   },
+   "worst_shortfall": -0.06279584968546814
+  }
+ },
+ "ms_per_char": {
+  "equal": 256.6267857479948,
+  "aalto-only": 254.0711493268616,
+  "community-only": 258.3823211639554,
+  "pool-only": 257.6571936326212,
+  "aalto-pref": 255.7811364513514
+ },
+ "frozen_comparison_ms_per_char": {
+  "arm-B": 253.90057910352797,
+  "keybo-lsb": 254.6307495925403,
+  "flagship-c3": 254.9761188060974,
+  "arm-A": 256.846570694692,
+  "qwerty30m": 264.13891657883323
+ },
+ "modelled_only": "MODELLED ONLY: .native frame, BAKED 90 WPM, tau saturated at 1.0, Phase-D cancelled. No layout is promoted or adopted."
+}

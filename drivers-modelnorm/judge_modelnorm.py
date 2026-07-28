@@ -14,11 +14,16 @@ E. Admissibility on three frames:
      comparable to the campaign's other arms.
    * the **normalized floor** — this arm's own min-over-models normalized score, which is the
      scale-corrected analogue of FLOOR-METHODOLOGY-1's ceiling-fraction floor.
-   * the **19-gauge frame** with per-gauge win counts, reported as **18 gauges that can move
-     plus ``sfr``**, because ``sfr`` counts doubled letters and is a PERMUTATION INVARIANT
-     (trap 23) — numpy gives it std 1.9e-14, so a ``std > 0`` filter keeps it and then
-     rank-correlates pure noise. Invariance is tested directly by shuffling, never via a
-     variance threshold.
+   * the **19-gauge frame**. ⚠ Only **15** of those 19 gauges come out of ``analyze``'s
+     ``gauges`` block (the 11 keymeow-class statistics plus ``scissor``, ``imbalance``,
+     ``oxey-style``, ``comfort``); the other four — ``genkey``, ``oxeylyzer1``, ``oxeylyzer2``,
+     ``wfd`` — are ``community`` scores and are reported in their own block. This driver counts
+     wins over the 15-gauge block MINUS ``sfr``, i.e. **14 movable gauges**, and states that
+     denominator on every line, because ``sfr`` counts doubled letters and is a PERMUTATION
+     INVARIANT (trap 23): it is a tie by construction, so counting it inflates every
+     denominator by one. Invariance is tested directly across the C30M layouts, never via a
+     ``std > 0`` filter — and NOT across ``analyze``'s ``--ref`` row, whose charset differs.
+     The four community gauges are reported alongside so the 19-gauge frame is complete.
 """
 
 from __future__ import annotations
@@ -86,16 +91,40 @@ def run_analyze(layouts: dict[str, str], corpus: str | None) -> dict:
 
 
 def assert_sfr_is_a_permutation_invariant(analyze_rows: dict, layouts: dict) -> dict:
-    """TRAP 23, tested DIRECTLY (by looking across shuffled layouts), never via std > 0."""
-    values = sorted({round(row["gauges"]["sfr"], 12) for row in analyze_rows.values()})
+    """TRAP 23, tested DIRECTLY (across actual layouts), never via a ``std > 0`` filter.
+
+    ⚠ **The invariance is over PERMUTATIONS OF ONE CHARSET, not over every row `analyze`
+    returns.** ``analyze`` adds a ``--ref`` row that defaults to CLASSIC qwerty (`;./`), whose
+    charset is not C30M — and `sfr` counts doubled letters, so a different letter *set* legally
+    gives a different value (2.664409719629 for classic vs 2.659577102696 for every C30M
+    layout). Testing invariance over the raw row set therefore reports a FALSE non-invariance
+    and a spurious numpy std of 1.2e-3. Restrict to the C30M rows we asked for, which is where
+    the invariance claim actually lives.
+    """
+    ours = {
+        row["layout"]: row for row in analyze_rows.values()
+        if row["layout"] in set(layouts.values())
+    }
+    values = sorted({round(row["gauges"]["sfr"], 12) for row in ours.values()})
+    off_charset = sorted(
+        {round(row["gauges"]["sfr"], 12) for row in analyze_rows.values()
+         if row["layout"] not in set(layouts.values())}
+    )
     return {
-        "distinct_values_over_the_scored_layouts": values,
+        "scope": "the C30M layouts requested by this arm (analyze's --ref row is EXCLUDED)",
+        "n_layouts_tested": len(ours),
+        "distinct_values_over_our_c30m_layouts": values,
         "is_invariant": len(values) == 1,
-        "numpy_std": float(np.std([row["gauges"]["sfr"] for row in analyze_rows.values()])),
+        "numpy_std_over_our_c30m_layouts": float(
+            np.std([row["gauges"]["sfr"] for row in ours.values()])
+        ),
+        "values_on_analyze_ref_rows_off_charset": off_charset,
         "note": (
-            "sfr counts DOUBLED LETTERS, so no placement can move it. numpy reports a std of "
-            "order 1e-14 rather than 0, so a `std > 0` filter KEEPS it and then rank-correlates "
-            "pure noise. Excluded from win COUNTS below; the frame is 18 movable gauges + sfr."
+            "sfr counts DOUBLED LETTERS, so no PLACEMENT can move it — but a different CHARSET "
+            "can, which is why the scope above is restricted to C30M. Within C30M it is a "
+            "permutation invariant and therefore a tie by construction, so it is excluded from "
+            "the win COUNTS below. numpy can report a std of order 1e-14 for it rather than 0, "
+            "so a `std > 0` filter would KEEP it and then rank-correlate pure noise."
         ),
     }
 
@@ -211,10 +240,25 @@ def main() -> int:
 
     # ---- E: the 19-gauge frame ----
     sfr = assert_sfr_is_a_permutation_invariant(analyze["rows"], everyone)
+    assert sfr["is_invariant"], (
+        f"sfr is NOT invariant over the C30M layouts scored here "
+        f"({sfr['distinct_values_over_our_c30m_layouts']}); trap 23's premise does not hold and "
+        f"the denominator below is wrong"
+    )
     gauge_names = [g for g in GAUGE_LOWER_BETTER if g in rows[champion_name]["gauges"]]
     movable = [g for g in gauge_names if g != "sfr"]
+    missing_from_gauges = [g for g in GAUGE_LOWER_BETTER if g not in gauge_names]
     gauge_table = {
         name: {g: rows[name]["gauges"][g] for g in gauge_names} for name in everyone
+    }
+    # the four COMMUNITY gauges completing the 19-gauge frame; direction from the campaign's
+    # frozen convention (trap 5 of the traps file: oxeylyzer1/2 and wfd are HIGHER-better,
+    # only genkey is lower-better — derived from qwerty-is-worst, never assumed from uniformity)
+    community_lower_better = {"genkey": True, "oxeylyzer1": False, "oxeylyzer2": False,
+                              "wfd": False}
+    community_table = {
+        name: {g: rows[name]["community"][g] for g in community_lower_better}
+        for name in everyone
     }
     wins = {}
     for name in champions:
@@ -225,8 +269,18 @@ def main() -> int:
                 if (gauge_table[name][g] < gauge_table[incumbent][g]) == GAUGE_LOWER_BETTER[g]
                 and gauge_table[name][g] != gauge_table[incumbent][g]
             ]
+            won_community = [
+                g for g in community_lower_better
+                if (community_table[name][g] < community_table[incumbent][g])
+                == community_lower_better[g]
+                and community_table[name][g] != community_table[incumbent][g]
+            ]
             per_incumbent[incumbent] = {
                 "wins": len(won), "of": len(movable), "which": won,
+                "community_wins": len(won_community), "community_of": len(community_lower_better),
+                "community_which": won_community,
+                "total_wins_18_movable": len(won) + len(won_community),
+                "total_of": len(movable) + len(community_lower_better),
             }
         wins[name] = per_incumbent
 
@@ -260,13 +314,26 @@ def main() -> int:
         },
         "E_nineteen_gauge_frame": {
             "sfr_invariance": sfr,
-            "gauges_counted": movable,
-            "n_gauges_counted": len(movable),
+            "gauges_from_analyze_gauges_block": gauge_names,
+            "gauges_counted_movable": movable,
+            "n_gauges_counted_movable": len(movable),
+            "community_gauges_completing_the_frame": list(community_lower_better),
+            "community_direction_lower_better": community_lower_better,
+            "gauges_in_my_table_absent_from_analyze": missing_from_gauges,
             "gauge_values": gauge_table,
+            "community_values": community_table,
             "win_counts_vs_incumbents": wins,
             "denominator_note": (
-                f"win counts are out of {len(movable)} MOVABLE gauges, not {len(gauge_names)}: "
-                f"sfr is a permutation invariant and is a tie by construction (trap 23)."
+                f"analyze's `gauges` block carries {len(gauge_names)} of the 19-gauge frame; the "
+                f"other 4 (genkey, oxeylyzer1, oxeylyzer2, wfd) are `community` scores and are "
+                f"counted separately above. Win counts are out of {len(movable)} MOVABLE "
+                f"keymeow-class gauges (sfr EXCLUDED: it counts doubled letters, is a "
+                f"permutation invariant within C30M, and is therefore a tie by construction -- "
+                f"trap 23; counting it would inflate every denominator by one), plus "
+                f"{len(community_lower_better)} community gauges, i.e. "
+                f"{len(movable) + len(community_lower_better)} movable of the 19-gauge frame. "
+                f"Names in my direction table absent from analyze's gauges block: "
+                f"{missing_from_gauges}."
             ),
         },
         "modelled_only": (
@@ -297,12 +364,22 @@ def main() -> int:
                   f"n_strict={result['n_strict']:2d} dominates={result['dominates']}")
     print(f"\n  normalized floor: " + "  ".join(
         f"{n}={normalized_rows[n]['normalized_floor_min_over_models']:+.6f}" for n in champions))
-    print(f"\n== E: 19-gauge frame ({len(movable)} movable + sfr invariant) ==")
-    print(f"  sfr distinct values over all scored layouts: "
-          f"{sfr['distinct_values_over_the_scored_layouts']} (invariant={sfr['is_invariant']}, "
-          f"numpy std={sfr['numpy_std']:.3e})")
+    print(f"\n== E: 19-gauge frame ==")
+    print(f"  analyze `gauges` block carries {len(gauge_names)} of 19; the other 4 "
+          f"({', '.join(community_lower_better)}) are `community` scores, counted separately.")
+    print(f"  movable denominator = {len(movable)} keymeow-class (sfr EXCLUDED, invariant) "
+          f"+ {len(community_lower_better)} community = "
+          f"{len(movable) + len(community_lower_better)} of 19")
+    if missing_from_gauges:
+        print(f"  names in my direction table absent from analyze: {missing_from_gauges}")
+    print(f"  sfr over our {sfr['n_layouts_tested']} C30M layouts: "
+          f"{sfr['distinct_values_over_our_c30m_layouts']} -> invariant={sfr['is_invariant']} "
+          f"(numpy std {sfr['numpy_std_over_our_c30m_layouts']:.3e}); analyze's off-charset "
+          f"--ref rows give {sfr['values_on_analyze_ref_rows_off_charset']} and are EXCLUDED")
     for name in champions:
-        summary = "  ".join(f"{i}:{v['wins']}/{v['of']}" for i, v in wins[name].items())
+        summary = "  ".join(
+            f"{i}:{v['total_wins_18_movable']}/{v['total_of']}" for i, v in wins[name].items()
+        )
         print(f"  {name}: {summary}")
     return 0
 

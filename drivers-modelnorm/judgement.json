@@ -1,0 +1,1458 @@
+{
+ "what": "MODELNORM-1 deliverables C and E: independent ms/char + admissibility",
+ "identity": {
+  "models": [
+   "AALTO",
+   "COMMUNITY",
+   "POOL"
+  ],
+  "family": "TRI_PS_FREQ_PRIOR",
+  "frame": "native",
+  "frame_note": "geometry-only (g); the layout-independent b(ngram) term is excluded",
+  "baked_wpm": 90.0,
+  "wpm_caveat": "the arrays are BAKED at 90 WPM and cannot be re-evaluated (7 of 8 per-seed models are gone), so a 90-110 WPM objective is NOT honourable on these columns",
+  "corpus": "blend-v1",
+  "corpus_trigrams": "/tmp/modelnorm/data/corpus/blend-v1/trigrams.txt",
+  "corpus_trigrams_sha256": "19806532ee3567f5afe4311e51f346b6c36375030f473fe3f68a6a3dc21beb61",
+  "surface_dir": "/local/home/zegertho/agent/state/keybo-selmethod/artifacts/old-new-layout-comparison/tri_frequency_old_new_surfaces",
+  "surface_sha256": {
+   "AALTO": "0ec6dbff602d79c28b5e9a6307fce41ddb63b68e846cc5f9c80d4a1896654028",
+   "COMMUNITY": "421712f9999ba86e9e6b61c752422a45c25ad3cbc3ead45589185e3fd33ee10b",
+   "POOL": "284b7c97531311e9cc6d3640792fd43fbe76a77806cb553708f13a93ab19a517"
+  },
+  "native_frame_guard": {
+   "AALTO": {
+    "max_abs_std_minus_native": 0.0,
+    "max_variation_of_delta_over_third_slot": 0.0
+   },
+   "COMMUNITY": {
+    "max_abs_std_minus_native": 121.55301558217269,
+    "max_variation_of_delta_over_third_slot": 1.1368683772161603e-13
+   },
+   "POOL": {
+    "max_abs_std_minus_native": 50.7434916920962,
+    "max_variation_of_delta_over_third_slot": 1.1368683772161603e-13
+   }
+  },
+  "n_trigrams": 24478,
+  "total_trigram_freq": 887147352.0,
+  "tile": 16,
+  "numpy": "2.5.0"
+ },
+ "analyze_extra_rows": [
+  "qwertyuiopasdfghjkl;zxcvbnm,./"
+ ],
+ "analyze_containment_check": "SET-CONTAINMENT of the requested layout strings was asserted (never len(rows) == len(layouts): analyze adds a --ref row, so a count comparison is wrong in the other direction while containment catches a dropped request)",
+ "C_ms_per_char": {
+  "keybo-lsb": 254.6307495925403,
+  "keybo-lsb+lm": 254.68467763206198,
+  "flagship-c3": 254.9761188060974,
+  "arm-B": 253.90057910352797,
+  "arm-A": 256.846570694692,
+  "graphite": 258.1695631301549,
+  "semimak": 257.3915378008198,
+  "qwerty30m": 264.13891657883323,
+  "blend-equal": 256.6267857479948,
+  "sweep-aalto-only": 254.0711493268616,
+  "sweep-community-only": 258.3823211639554,
+  "sweep-pool-only": 257.6571936326212,
+  "sweep-aalto-pref": 255.7811364513514
+ },
+ "C_frozen_set_reproduced": {
+  "arm-B": {
+   "expected": 253.90057910352797,
+   "got": 253.90057910352797,
+   "abs_diff": 0.0
+  },
+  "keybo-lsb": {
+   "expected": 254.6307495925403,
+   "got": 254.6307495925403,
+   "abs_diff": 0.0
+  },
+  "flagship-c3": {
+   "expected": 254.9761188060974,
+   "got": 254.9761188060974,
+   "abs_diff": 0.0
+  },
+  "arm-A": {
+   "expected": 256.846570694692,
+   "got": 256.846570694692,
+   "abs_diff": 0.0
+  },
+  "qwerty30m": {
+   "expected": 264.13891657883323,
+   "got": 264.13891657883323,
+   "abs_diff": 0.0
+  }
+ },
+ "C_frozen_worst_abs_diff": 0.0,
+ "normalized_rows": {
+  "keybo-lsb": {
+   "layout": "pyuo,vgdnlhiea.cstrmkj-z'fwbxq",
+   "raw_ms": {
+    "AALTO": 223980183688.9498,
+    "COMMUNITY": 226369201453.53336,
+    "POOL": 239424452409.38156
+   },
+   "normalized": {
+    "AALTO": 0.9625863281139454,
+    "COMMUNITY": 0.8139965361376934,
+    "POOL": 0.8310306880683016
+   },
+   "normalized_floor_min_over_models": 0.8139965361376934,
+   "normalized_mean_over_models": 0.8692045174399802,
+   "equal_weight_blend": 0.8692045174399801,
+   "analyze_ms_per_char": 254.6307495925403
+  },
+  "keybo-lsb+lm": {
+   "layout": "pyuo,vgdnmhiea.cstrlkj-z'fwbxq",
+   "raw_ms": {
+    "AALTO": 224026883755.97028,
+    "COMMUNITY": 226227778417.69455,
+    "POOL": 239696342181.10324
+   },
+   "normalized": {
+    "AALTO": 0.9602374912354593,
+    "COMMUNITY": 0.8180180188227262,
+    "POOL": 0.819504657497829
+   },
+   "normalized_floor_min_over_models": 0.8180180188227262,
+   "normalized_mean_over_models": 0.8659200558520048,
+   "equal_weight_blend": 0.8659200558520048,
+   "analyze_ms_per_char": 254.68467763206198
+  },
+  "flagship-c3": {
+   "layout": "pyou'vgdnmheai.cstrlkjz,-wfbxq",
+   "raw_ms": {
+    "AALTO": 224205769266.099,
+    "COMMUNITY": 225010243471.03625,
+    "POOL": 239022507166.35486
+   },
+   "normalized": {
+    "AALTO": 0.951240226134471,
+    "COMMUNITY": 0.8526396466032914,
+    "POOL": 0.8480700681429749
+   },
+   "normalized_floor_min_over_models": 0.8480700681429749,
+   "normalized_mean_over_models": 0.8839833136269123,
+   "equal_weight_blend": 0.8839833136269124,
+   "analyze_ms_per_char": 254.9761188060974
+  },
+  "arm-B": {
+   "layout": "flmpg-yuo,sntdcireahkxbwv'.jzq",
+   "raw_ms": {
+    "AALTO": 223477218870.82468,
+    "COMMUNITY": 227708944047.07544,
+    "POOL": 239722378137.3181
+   },
+   "normalized": {
+    "AALTO": 0.9878835576206043,
+    "COMMUNITY": 0.7758998313796978,
+    "POOL": 0.8184009336417829
+   },
+   "normalized_floor_min_over_models": 0.7758998313796978,
+   "normalized_mean_over_models": 0.8607281075473616,
+   "equal_weight_blend": 0.8607281075473616,
+   "analyze_ms_per_char": 253.90057910352797
+  },
+  "arm-A": {
+   "layout": "udy.,fgpmliheaocsntr-k'qjwzbvx",
+   "raw_ms": {
+    "AALTO": 226086057144.9143,
+    "COMMUNITY": 228158859196.25723,
+    "POOL": 241291227419.6763
+   },
+   "normalized": {
+    "AALTO": 0.8566688519650224,
+    "COMMUNITY": 0.7631061166115407,
+    "POOL": 0.7518938168995066
+   },
+   "normalized_floor_min_over_models": 0.7518938168995066,
+   "normalized_mean_over_models": 0.7905562618253565,
+   "equal_weight_blend": 0.7905562618253565,
+   "analyze_ms_per_char": 256.846570694692
+  },
+  "graphite": {
+   "layout": "bldwz'foujnrtsgyhaeixqmcvkp,.-",
+   "raw_ms": {
+    "AALTO": 226849214370.00693,
+    "COMMUNITY": 225518109120.75317,
+    "POOL": 240448213291.0651
+   },
+   "normalized": {
+    "AALTO": 0.8182849277279394,
+    "COMMUNITY": 0.8381980607290678,
+    "POOL": 0.7876311179247897
+   },
+   "normalized_floor_min_over_models": 0.7876311179247897,
+   "normalized_mean_over_models": 0.8147047021272655,
+   "equal_weight_blend": 0.8147047021272656,
+   "analyze_ms_per_char": 258.1695631301549
+  },
+  "semimak": {
+   "layout": "flhvz'wuoysrntkcdeaixjbmqpg,.-",
+   "raw_ms": {
+    "AALTO": 226418399582.76263,
+    "COMMUNITY": 226597721331.07785,
+    "POOL": 241096897537.19702
+   },
+   "normalized": {
+    "AALTO": 0.8399532833564838,
+    "COMMUNITY": 0.8074983816801801,
+    "POOL": 0.7601319060046214
+   },
+   "normalized_floor_min_over_models": 0.7601319060046214,
+   "normalized_mean_over_models": 0.8025278570137617,
+   "equal_weight_blend": 0.8025278570137618,
+   "analyze_ms_per_char": 257.3915378008198
+  },
+  "qwerty30m": {
+   "layout": "qwertyuiopasdfghjkl'zxcvbnm,.-",
+   "raw_ms": {
+    "AALTO": 231887489331.27304,
+    "COMMUNITY": 240073700934.36688,
+    "POOL": 246668782494.0886
+   },
+   "normalized": {
+    "AALTO": 0.5648787382296216,
+    "COMMUNITY": 0.42429759464395983,
+    "POOL": 0.5239269324169064
+   },
+   "normalized_floor_min_over_models": 0.42429759464395983,
+   "normalized_mean_over_models": 0.5043677550968293,
+   "equal_weight_blend": 0.5043677550968293,
+   "analyze_ms_per_char": 264.13891657883323
+  },
+  "blend-equal": {
+   "layout": "pctsk-reayfgdlm.niuobzvwxh,qj'",
+   "raw_ms": {
+    "AALTO": 225167622360.89557,
+    "COMMUNITY": 221047276503.11307,
+    "POOL": 235778739120.2662
+   },
+   "normalized": {
+    "AALTO": 0.9028626505786678,
+    "COMMUNITY": 0.9653299374624484,
+    "POOL": 0.9855808300447223
+   },
+   "normalized_floor_min_over_models": 0.9028626505786678,
+   "normalized_mean_over_models": 0.9512578060286129,
+   "equal_weight_blend": 0.9512578060286128,
+   "analyze_ms_per_char": 256.6267857479948
+  },
+  "sweep-aalto-only": {
+   "layout": "lnfdg-,yehcrstmaoiupxqbwv.k'jz",
+   "raw_ms": {
+    "AALTO": 223236317224.4182,
+    "COMMUNITY": 228312764657.0448,
+    "POOL": 239892741670.80225
+   },
+   "normalized": {
+    "AALTO": 1.0,
+    "COMMUNITY": 0.758729685699715,
+    "POOL": 0.811178832999314
+   },
+   "normalized_floor_min_over_models": 0.758729685699715,
+   "normalized_mean_over_models": 0.8566361728996763,
+   "equal_weight_blend": 0.8566361728996763,
+   "analyze_ms_per_char": 254.0711493268616
+  },
+  "sweep-community-only": {
+   "layout": "mgndy-lea.tpscbkrouiwzxfqvh'j,",
+   "raw_ms": {
+    "AALTO": 226813890841.14474,
+    "COMMUNITY": 219828038256.7244,
+    "POOL": 235937984717.7447
+   },
+   "normalized": {
+    "AALTO": 0.82006156773219,
+    "COMMUNITY": 1.0,
+    "POOL": 0.978830044190854
+   },
+   "normalized_floor_min_over_models": 0.82006156773219,
+   "normalized_mean_over_models": 0.9329638706410147,
+   "equal_weight_blend": 0.9329638706410146,
+   "analyze_ms_per_char": 258.3823211639554
+  },
+  "sweep-pool-only": {
+   "layout": "pctsm.reayfgdlk-niuobzvwx,hqj'",
+   "raw_ms": {
+    "AALTO": 225976132931.67346,
+    "COMMUNITY": 220943464425.15686,
+    "POOL": 235438602522.19055
+   },
+   "normalized": {
+    "AALTO": 0.862197624456622,
+    "COMMUNITY": 0.9682819210026264,
+    "POOL": 1.0
+   },
+   "normalized_floor_min_over_models": 0.862197624456622,
+   "normalized_mean_over_models": 0.9434931818197495,
+   "equal_weight_blend": 0.9434931818197494,
+   "analyze_ms_per_char": 257.6571936326212
+  },
+  "sweep-aalto-pref": {
+   "layout": "csthg-reaypfdlm.nioubzvwkx,jq'",
+   "raw_ms": {
+    "AALTO": 224480882418.3933,
+    "COMMUNITY": 222036372942.24942,
+    "POOL": 236084584472.0048
+   },
+   "normalized": {
+    "AALTO": 0.9374030743037872,
+    "COMMUNITY": 0.9372041503145319,
+    "POOL": 0.9726153446141615
+   },
+   "normalized_floor_min_over_models": 0.9372041503145319,
+   "normalized_mean_over_models": 0.9490741897441602,
+   "equal_weight_blend": 0.9490741897441601,
+   "analyze_ms_per_char": 255.7811364513514
+  }
+ },
+ "E_dominance": {
+  "frame": {
+   "axes": [
+    "floor",
+    "mean",
+    "wfd",
+    "genkey",
+    "oxey1",
+    "oxey2",
+    "lsb",
+    "scissor",
+    "sfb",
+    "sfs"
+   ],
+   "sign": {
+    "floor": 1,
+    "mean": 1,
+    "wfd": 1,
+    "oxey1": 1,
+    "oxey2": 1,
+    "genkey": -1,
+    "lsb": -1,
+    "scissor": -1,
+    "sfb": -1,
+    "sfs": -1
+   },
+   "predicate": "n_ge == 10 AND n_strict >= 1 (trap 33: the strict-win term is required, else a candidate that merely TIES everywhere is labelled a dominator)",
+   "floor_axis_note": "'floor' here is THIS arm's min-over-three-models NORMALIZED score (the scale-corrected analogue of FLOOR-METHODOLOGY-1's ceiling-fraction floor). It is NOT numerically the same axis as arm E's six-surface ceiling-fraction floor; the dominance VERDICT is comparable, the floor NUMBER is not."
+  },
+  "axes_values": {
+   "keybo-lsb": {
+    "floor": 0.8139965361376934,
+    "mean": 4.018431868359677,
+    "wfd": -16213995653000,
+    "genkey": 1.3192528115010698,
+    "oxey1": -478152084.0,
+    "oxey2": -5014283671800.0,
+    "lsb": 0.9219164873805757,
+    "sfb": 1.6231451290880634,
+    "sfs": 7.648785919530305,
+    "scissor": 0.1428912298103323
+   },
+   "keybo-lsb+lm": {
+    "floor": 0.8180180188227262,
+    "mean": 3.994613345505201,
+    "wfd": -16198743046400,
+    "genkey": 1.3192528115010698,
+    "oxey1": -501083916.0,
+    "oxey2": -5448376242000.0,
+    "lsb": 0.9219164873805757,
+    "sfb": 1.6231451290880634,
+    "sfs": 7.648785919530305,
+    "scissor": 0.1431306284544182
+   },
+   "flagship-c3": {
+    "floor": 0.8480700681429749,
+    "mean": 4.229007101429031,
+    "wfd": -17469561624900,
+    "genkey": 1.714954419174497,
+    "oxey1": -669139578.0,
+    "oxey2": -5253107519400.0,
+    "lsb": 0.7966817375198627,
+    "sfb": 1.6538458472490638,
+    "sfs": 6.771728107316596,
+    "scissor": 0.08889392467316412
+   },
+   "arm-B": {
+    "floor": 0.7758998313796978,
+    "mean": 3.864453866528228,
+    "wfd": -24776829639300,
+    "genkey": 1.8966095757980304,
+    "oxey1": -701831201.0,
+    "oxey2": -6599504224200.0,
+    "lsb": 1.1410913569660872,
+    "sfb": 2.539124615505356,
+    "sfs": 6.799508454836403,
+    "scissor": 0.25671106120493087
+   },
+   "arm-A": {
+    "floor": 0.7518938168995066,
+    "mean": 3.214965041010872,
+    "wfd": -18090854043100,
+    "genkey": 1.8626723148839366,
+    "oxey1": -1031966378.0,
+    "oxey2": -7953269298000.0,
+    "lsb": 1.0711070450922304,
+    "sfb": 1.4093263871731363,
+    "sfs": 6.272448707285011,
+    "scissor": 0.175265519848105
+   },
+   "graphite": {
+    "floor": 0.7876311179247897,
+    "mean": 3.5858409120274124,
+    "wfd": -15898878320600,
+    "genkey": 1.8397628219101516,
+    "oxey1": -505761933.0,
+    "oxey2": -5843469291600.0,
+    "lsb": 0.5593501769822644,
+    "sfb": 1.52566973366407,
+    "sfs": 6.877768232942885,
+    "scissor": 0.5173238388852289
+   },
+   "semimak": {
+    "floor": 0.7601319060046214,
+    "mean": 3.4102102320263783,
+    "wfd": -14167403918000,
+    "genkey": 2.0166106914169353,
+    "oxey1": -826102757.0,
+    "oxey2": -5661708510600.0,
+    "lsb": 1.4177099338706234,
+    "sfb": 1.0666355920099653,
+    "sfs": 6.377568771970209,
+    "scissor": 0.4279206997287121
+   },
+   "qwerty30m": {
+    "floor": 0.42429759464395983,
+    "mean": 0.0,
+    "wfd": -65746277057400,
+    "genkey": 6.352834065891653,
+    "oxey1": -1622259550.0,
+    "oxey2": -10185000883200.0,
+    "lsb": 3.1855669963128577,
+    "sfb": 7.154593528477934,
+    "sfs": 11.369224153441149,
+    "scissor": 1.5831338237041819
+   },
+   "blend-equal": {
+    "floor": 0.9028626505786678,
+    "mean": 5.079329144588133,
+    "wfd": -36006186682400,
+    "genkey": 4.073696235104149,
+    "oxey1": -570336874.0,
+    "oxey2": -4598777297100.0,
+    "lsb": 0.38316742829874223,
+    "sfb": 2.8865094992496214,
+    "sfs": 9.553360874993341,
+    "scissor": 0.26505631412162206
+   },
+   "sweep-aalto-only": {
+    "floor": 0.758729685699715,
+    "mean": 3.792222836163757,
+    "wfd": -24835738503500,
+    "genkey": 1.4229665321604699,
+    "oxey1": -767563139.0,
+    "oxey2": -6354287152200.0,
+    "lsb": 0.7962069665036922,
+    "sfb": 1.9240286935955755,
+    "sfs": 9.065979892987201,
+    "scissor": 0.17182629791960763
+   },
+   "sweep-community-only": {
+    "floor": 0.82006156773219,
+    "mean": 4.990448721215457,
+    "wfd": -24988167363000,
+    "genkey": 3.1923600843300646,
+    "oxey1": -528862960.0,
+    "oxey2": -3707539823400.0,
+    "lsb": 0.5028827409941223,
+    "sfb": 2.0442841337017312,
+    "sfs": 8.45661150357274,
+    "scissor": 1.5627250892958584
+   },
+   "sweep-pool-only": {
+    "floor": 0.862197624456622,
+    "mean": 5.023485398568442,
+    "wfd": -36316949709800,
+    "genkey": 1.6237738173400236,
+    "oxey1": -510253293.0,
+    "oxey2": -4497480840300.0,
+    "lsb": 0.4572383891459803,
+    "sfb": 2.8865094992496214,
+    "sfs": 9.553360874993341,
+    "scissor": 1.5366795453144007
+   },
+   "sweep-aalto-pref": {
+    "floor": 0.9372041503145319,
+    "mean": 4.999384119676353,
+    "wfd": -25991948731900,
+    "genkey": 0.6433503110999614,
+    "oxey1": -733419507.0,
+    "oxey2": -5416704422100.0,
+    "lsb": 0.2812261212324253,
+    "sfb": 2.132069180503193,
+    "sfs": 8.315728847137583,
+    "scissor": 0.313643516262688
+   }
+  },
+  "verdicts": {
+   "blend-equal": {
+    "vs_incumbents": {
+     "keybo-lsb": {
+      "dominates": false,
+      "n_ge": 4,
+      "n_strict": 4
+     },
+     "keybo-lsb+lm": {
+      "dominates": false,
+      "n_ge": 4,
+      "n_strict": 4
+     },
+     "flagship-c3": {
+      "dominates": false,
+      "n_ge": 5,
+      "n_strict": 5
+     },
+     "arm-B": {
+      "dominates": false,
+      "n_ge": 5,
+      "n_strict": 5
+     },
+     "arm-A": {
+      "dominates": false,
+      "n_ge": 5,
+      "n_strict": 5
+     }
+    },
+    "dominator_exists": false,
+    "best_n_ge": 5,
+    "best_n_strict": 5
+   },
+   "sweep-aalto-only": {
+    "vs_incumbents": {
+     "keybo-lsb": {
+      "dominates": false,
+      "n_ge": 1,
+      "n_strict": 1
+     },
+     "keybo-lsb+lm": {
+      "dominates": false,
+      "n_ge": 1,
+      "n_strict": 1
+     },
+     "flagship-c3": {
+      "dominates": false,
+      "n_ge": 2,
+      "n_strict": 2
+     },
+     "arm-B": {
+      "dominates": false,
+      "n_ge": 5,
+      "n_strict": 5
+     },
+     "arm-A": {
+      "dominates": false,
+      "n_ge": 7,
+      "n_strict": 7
+     }
+    },
+    "dominator_exists": false,
+    "best_n_ge": 7,
+    "best_n_strict": 7
+   },
+   "sweep-community-only": {
+    "vs_incumbents": {
+     "keybo-lsb": {
+      "dominates": false,
+      "n_ge": 4,
+      "n_strict": 4
+     },
+     "keybo-lsb+lm": {
+      "dominates": false,
+      "n_ge": 4,
+      "n_strict": 4
+     },
+     "flagship-c3": {
+      "dominates": false,
+      "n_ge": 4,
+      "n_strict": 4
+     },
+     "arm-B": {
+      "dominates": false,
+      "n_ge": 6,
+      "n_strict": 6
+     },
+     "arm-A": {
+      "dominates": false,
+      "n_ge": 5,
+      "n_strict": 5
+     }
+    },
+    "dominator_exists": false,
+    "best_n_ge": 6,
+    "best_n_strict": 6
+   },
+   "sweep-pool-only": {
+    "vs_incumbents": {
+     "keybo-lsb": {
+      "dominates": false,
+      "n_ge": 4,
+      "n_strict": 4
+     },
+     "keybo-lsb+lm": {
+      "dominates": false,
+      "n_ge": 4,
+      "n_strict": 4
+     },
+     "flagship-c3": {
+      "dominates": false,
+      "n_ge": 6,
+      "n_strict": 6
+     },
+     "arm-B": {
+      "dominates": false,
+      "n_ge": 6,
+      "n_strict": 6
+     },
+     "arm-A": {
+      "dominates": false,
+      "n_ge": 6,
+      "n_strict": 6
+     }
+    },
+    "dominator_exists": false,
+    "best_n_ge": 6,
+    "best_n_strict": 6
+   },
+   "sweep-aalto-pref": {
+    "vs_incumbents": {
+     "keybo-lsb": {
+      "dominates": false,
+      "n_ge": 4,
+      "n_strict": 4
+     },
+     "keybo-lsb+lm": {
+      "dominates": false,
+      "n_ge": 5,
+      "n_strict": 5
+     },
+     "flagship-c3": {
+      "dominates": false,
+      "n_ge": 4,
+      "n_strict": 4
+     },
+     "arm-B": {
+      "dominates": false,
+      "n_ge": 6,
+      "n_strict": 6
+     },
+     "arm-A": {
+      "dominates": false,
+      "n_ge": 6,
+      "n_strict": 6
+     }
+    },
+    "dominator_exists": false,
+    "best_n_ge": 6,
+    "best_n_strict": 6
+   }
+  }
+ },
+ "E_nineteen_gauge_frame": {
+  "sfr_invariance": {
+   "scope": "the C30M layouts requested by this arm (analyze's --ref row is EXCLUDED)",
+   "n_layouts_tested": 13,
+   "distinct_values_over_our_c30m_layouts": [
+    2.659577102696
+   ],
+   "is_invariant": true,
+   "numpy_std_over_our_c30m_layouts": 0.0,
+   "values_on_analyze_ref_rows_off_charset": [
+    2.664409719629
+   ],
+   "note": "sfr counts DOUBLED LETTERS, so no PLACEMENT can move it \u2014 but a different CHARSET can, which is why the scope above is restricted to C30M. Within C30M it is a permutation invariant and therefore a tie by construction, so it is excluded from the win COUNTS below. numpy can report a std of order 1e-14 for it rather than 0, so a `std > 0` filter would KEEP it and then rank-correlate pure noise."
+  },
+  "gauges_from_analyze_gauges_block": [
+   "sfb",
+   "sfs",
+   "sfr",
+   "lsb",
+   "lsb-dist",
+   "sfb-dist",
+   "sfs-dist",
+   "alt",
+   "redir",
+   "roll",
+   "sr-roll",
+   "scissor",
+   "imbalance",
+   "oxey-style",
+   "comfort"
+  ],
+  "gauges_counted_movable": [
+   "sfb",
+   "sfs",
+   "lsb",
+   "lsb-dist",
+   "sfb-dist",
+   "sfs-dist",
+   "alt",
+   "redir",
+   "roll",
+   "sr-roll",
+   "scissor",
+   "imbalance",
+   "oxey-style",
+   "comfort"
+  ],
+  "n_gauges_counted_movable": 14,
+  "community_gauges_completing_the_frame": [
+   "genkey",
+   "oxeylyzer1",
+   "oxeylyzer2",
+   "wfd"
+  ],
+  "community_direction_lower_better": {
+   "genkey": true,
+   "oxeylyzer1": false,
+   "oxeylyzer2": false,
+   "wfd": false
+  },
+  "gauges_in_my_table_absent_from_analyze": [
+   "bad-redir",
+   "onehand"
+  ],
+  "gauge_values": {
+   "keybo-lsb": {
+    "sfb": 1.6231451290880634,
+    "sfs": 7.648785919530305,
+    "sfr": 2.6595771026964927,
+    "lsb": 0.9219164873805757,
+    "lsb-dist": 1.896001842444029,
+    "sfb-dist": 1.9031223416978642,
+    "sfs-dist": 8.990578227895021,
+    "alt": 45.156072890944024,
+    "redir": 3.3584021416404592,
+    "roll": 41.62490994630278,
+    "sr-roll": 12.692077364130578,
+    "scissor": 0.1428912298103323,
+    "imbalance": 2.077878600654005,
+    "oxey-style": -3.249680324731691,
+    "comfort": 3.710857346
+   },
+   "keybo-lsb+lm": {
+    "sfb": 1.6231451290880634,
+    "sfs": 7.648785919530305,
+    "sfr": 2.6595771026964927,
+    "lsb": 0.9219164873805757,
+    "lsb-dist": 1.896001842444029,
+    "sfb-dist": 1.902868828399939,
+    "sfs-dist": 8.986972324864816,
+    "alt": 45.156072890944024,
+    "redir": 3.3584021416404592,
+    "roll": 41.62490994630278,
+    "sr-roll": 12.985648853254718,
+    "scissor": 0.1431306284544182,
+    "imbalance": 2.077878600654005,
+    "oxey-style": -2.858518039478539,
+    "comfort": 3.595268038
+   },
+   "flagship-c3": {
+    "sfb": 1.6538458472490638,
+    "sfs": 6.771728107316596,
+    "sfr": 2.6595771026964927,
+    "lsb": 0.7966817375198627,
+    "lsb-dist": 1.6852172426265222,
+    "sfb-dist": 1.928972591879256,
+    "sfs-dist": 8.131026071225804,
+    "alt": 45.156072890944024,
+    "redir": 2.493932453490948,
+    "roll": 41.76079973449445,
+    "sr-roll": 12.953200819114445,
+    "scissor": 0.08889392467316412,
+    "imbalance": 2.077878600654005,
+    "oxey-style": -7.874864180076726,
+    "comfort": 3.605551773
+   },
+   "arm-B": {
+    "sfb": 2.539124615505356,
+    "sfs": 6.799508454836403,
+    "sfr": 2.6595771026964927,
+    "lsb": 1.1410913569660872,
+    "lsb-dist": 2.322675604674633,
+    "sfb-dist": 3.0423296718509327,
+    "sfs-dist": 8.005623911481186,
+    "alt": 37.13733008655502,
+    "redir": 4.420586814037255,
+    "roll": 45.442097658599806,
+    "sr-roll": 17.813072191285166,
+    "scissor": 0.25671106120493087,
+    "imbalance": 4.8753996439391,
+    "oxey-style": 8.611045585392063,
+    "comfort": 3.4140465
+   },
+   "arm-A": {
+    "sfb": 1.4093263871731363,
+    "sfs": 6.272448707285011,
+    "sfr": 2.6595771026964927,
+    "lsb": 1.0711070450922304,
+    "lsb-dist": 2.283654699662536,
+    "sfb-dist": 1.6216157388141694,
+    "sfs-dist": 7.244212843740728,
+    "alt": 43.79388131823506,
+    "redir": 3.8951697159797862,
+    "roll": 42.148236274171836,
+    "sr-roll": 17.834326642524836,
+    "scissor": 0.175265519848105,
+    "imbalance": 0.665708592909423,
+    "oxey-style": -12.493184339694858,
+    "comfort": 2.959197461
+   },
+   "graphite": {
+    "sfb": 1.52566973366407,
+    "sfs": 6.877768232942885,
+    "sfr": 2.6595771026964927,
+    "lsb": 0.5593501769822644,
+    "lsb-dist": 1.2424128784224684,
+    "sfb-dist": 1.85484090763163,
+    "sfs-dist": 8.22520608200641,
+    "alt": 44.07633884838469,
+    "redir": 3.213103459515324,
+    "roll": 42.46568616536896,
+    "sr-roll": 14.341745342846863,
+    "scissor": 0.5173238388852289,
+    "imbalance": 2.49586541227071,
+    "oxey-style": -7.148220013154661,
+    "comfort": 3.98099314
+   },
+   "semimak": {
+    "sfb": 1.0666355920099653,
+    "sfs": 6.377568771970209,
+    "sfr": 2.6595771026964927,
+    "lsb": 1.4177099338706234,
+    "lsb-dist": 2.9121479897863503,
+    "sfb-dist": 1.28272007871847,
+    "sfs-dist": 7.372975626259579,
+    "alt": 40.85257134788585,
+    "redir": 7.165357965391563,
+    "roll": 42.51968745451457,
+    "sr-roll": 12.246153197966352,
+    "scissor": 0.4279206997287121,
+    "imbalance": 9.39225651499524,
+    "oxey-style": -0.29803275674393526,
+    "comfort": 3.772047746
+   },
+   "qwerty30m": {
+    "sfb": 7.154593528477934,
+    "sfs": 11.369224153441149,
+    "sfr": 2.6595771026964927,
+    "lsb": 3.1855669963128577,
+    "lsb-dist": 6.958789559608355,
+    "sfb-dist": 10.16825880898138,
+    "sfs-dist": 15.746184896599134,
+    "alt": 26.458303537682045,
+    "redir": 13.422189596580113,
+    "roll": 37.691778239300696,
+    "sr-roll": 5.031342353185906,
+    "scissor": 1.5831338237041819,
+    "imbalance": 14.928795371517694,
+    "oxey-style": 88.19717144314424,
+    "comfort": 7.581203825
+   },
+   "blend-equal": {
+    "sfb": 2.8865094992496214,
+    "sfs": 9.553360874993341,
+    "sfr": 2.6595771026964927,
+    "lsb": 0.38316742829874223,
+    "lsb-dist": 0.884747523447776,
+    "sfb-dist": 3.5677772093698734,
+    "sfs-dist": 11.99633165843417,
+    "alt": 32.90109920273462,
+    "redir": 8.114118569109932,
+    "roll": 45.7102126079975,
+    "sr-roll": 10.949434110830863,
+    "scissor": 0.26505631412162206,
+    "imbalance": 17.678511340223192,
+    "oxey-style": 36.8863929854457,
+    "comfort": 5.303096615
+   },
+   "sweep-aalto-only": {
+    "sfb": 1.9240286935955755,
+    "sfs": 9.065979892987201,
+    "sfr": 2.6595771026964927,
+    "lsb": 0.7962069665036922,
+    "lsb-dist": 1.6369439257308056,
+    "sfb-dist": 2.448959636834455,
+    "sfs-dist": 11.006767120049261,
+    "alt": 45.156072890944024,
+    "redir": 3.4397452596013323,
+    "roll": 40.95131186561269,
+    "sr-roll": 10.017245129709451,
+    "scissor": 0.17182629791960763,
+    "imbalance": 2.077878600654005,
+    "oxey-style": 3.66843358310017,
+    "comfort": 4.073745231
+   },
+   "sweep-community-only": {
+    "sfb": 2.0442841337017312,
+    "sfs": 8.45661150357274,
+    "sfr": 2.6595771026964927,
+    "lsb": 0.5028827409941223,
+    "lsb-dist": 1.042756141941748,
+    "sfb-dist": 2.4430240818164743,
+    "sfs-dist": 10.362995220995156,
+    "alt": 30.80161768591578,
+    "redir": 9.33131411623005,
+    "roll": 48.15934397453452,
+    "sr-roll": 10.233481452528942,
+    "scissor": 1.5627250892958584,
+    "imbalance": 13.353995934387996,
+    "oxey-style": 23.61418800719539,
+    "comfort": 5.012847211
+   },
+   "sweep-pool-only": {
+    "sfb": 2.8865094992496214,
+    "sfs": 9.553360874993341,
+    "sfr": 2.6595771026964927,
+    "lsb": 0.4572383891459803,
+    "lsb-dist": 1.0243641842674358,
+    "sfb-dist": 3.603274923601805,
+    "sfs-dist": 12.003298279597644,
+    "alt": 32.90109920273462,
+    "redir": 8.114118569109932,
+    "roll": 45.7102126079975,
+    "sr-roll": 11.033034738330757,
+    "scissor": 1.5366795453144007,
+    "imbalance": 17.678511340223192,
+    "oxey-style": 42.158367079240016,
+    "comfort": 5.626806813
+   },
+   "sweep-aalto-pref": {
+    "sfb": 2.132069180503193,
+    "sfs": 8.315728847137583,
+    "sfr": 2.6595771026964927,
+    "lsb": 0.2812261212324253,
+    "lsb-dist": 0.5973904915999945,
+    "sfb-dist": 2.7765004052731115,
+    "sfs-dist": 9.776195124846014,
+    "alt": 32.57728132383527,
+    "redir": 8.149181136199777,
+    "roll": 47.47614222095197,
+    "sr-roll": 13.066902501320142,
+    "scissor": 0.313643516262688,
+    "imbalance": 11.57243802762221,
+    "oxey-style": 22.19519212217643,
+    "comfort": 4.911474455
+   }
+  },
+  "community_values": {
+   "keybo-lsb": {
+    "genkey": 31.698613915102623,
+    "oxeylyzer1": 18441741862,
+    "oxeylyzer2": -21228279324800,
+    "wfd": -16213995653000
+   },
+   "keybo-lsb+lm": {
+    "genkey": 31.62611787107056,
+    "oxeylyzer1": 18430076058,
+    "oxeylyzer2": -21647119288400,
+    "wfd": -16198743046400
+   },
+   "flagship-c3": {
+    "genkey": 32.702982334916875,
+    "oxeylyzer1": 18799648612,
+    "oxeylyzer2": -22722669144300,
+    "wfd": -17469561624900
+   },
+   "arm-B": {
+    "genkey": 39.08149315702107,
+    "oxeylyzer1": 14490697126,
+    "oxeylyzer2": -31376333863500,
+    "wfd": -24776829639300
+   },
+   "arm-A": {
+    "genkey": 33.43407046740172,
+    "oxeylyzer1": 16288964677,
+    "oxeylyzer2": -26044123341100,
+    "wfd": -18090854043100
+   },
+   "graphite": {
+    "genkey": 29.456572857937264,
+    "oxeylyzer1": 19701209932,
+    "oxeylyzer2": -21742347612200,
+    "wfd": -15898878320600
+   },
+   "semimak": {
+    "genkey": 27.68661745609495,
+    "oxeylyzer1": 15796400056,
+    "oxeylyzer2": -19829112428600,
+    "wfd": -14167403918000
+   },
+   "qwerty30m": {
+    "genkey": 110.94234027768327,
+    "oxeylyzer1": -20848183371,
+    "oxeylyzer2": -75931277940600,
+    "wfd": -65746277057400
+   },
+   "blend-equal": {
+    "genkey": 60.03391895170535,
+    "oxeylyzer1": 4874216576,
+    "oxeylyzer2": -40604963979500,
+    "wfd": -36006186682400
+   },
+   "sweep-aalto-only": {
+    "genkey": 43.76102634884369,
+    "oxeylyzer1": 13591062672,
+    "oxeylyzer2": -31190025655700,
+    "wfd": -24835738503500
+   },
+   "sweep-community-only": {
+    "genkey": 48.16323784010284,
+    "oxeylyzer1": 9605921317,
+    "oxeylyzer2": -28695707186400,
+    "wfd": -24988167363000
+   },
+   "sweep-pool-only": {
+    "genkey": 56.59129092546946,
+    "oxeylyzer1": 4781607828,
+    "oxeylyzer2": -40814430550100,
+    "wfd": -36316949709800
+   },
+   "sweep-aalto-pref": {
+    "genkey": 45.670229819405094,
+    "oxeylyzer1": 10668315860,
+    "oxeylyzer2": -31408653154000,
+    "wfd": -25991948731900
+   }
+  },
+  "win_counts_vs_incumbents": {
+   "blend-equal": {
+    "keybo-lsb": {
+     "wins": 5,
+     "of": 14,
+     "which": [
+      "lsb",
+      "lsb-dist",
+      "roll",
+      "oxey-style",
+      "comfort"
+     ],
+     "community_wins": 0,
+     "community_of": 4,
+     "community_which": [],
+     "total_wins_18_movable": 5,
+     "total_of": 18
+    },
+    "keybo-lsb+lm": {
+     "wins": 5,
+     "of": 14,
+     "which": [
+      "lsb",
+      "lsb-dist",
+      "roll",
+      "oxey-style",
+      "comfort"
+     ],
+     "community_wins": 0,
+     "community_of": 4,
+     "community_which": [],
+     "total_wins_18_movable": 5,
+     "total_of": 18
+    },
+    "flagship-c3": {
+     "wins": 5,
+     "of": 14,
+     "which": [
+      "lsb",
+      "lsb-dist",
+      "roll",
+      "oxey-style",
+      "comfort"
+     ],
+     "community_wins": 0,
+     "community_of": 4,
+     "community_which": [],
+     "total_wins_18_movable": 5,
+     "total_of": 18
+    },
+    "arm-B": {
+     "wins": 5,
+     "of": 14,
+     "which": [
+      "lsb",
+      "lsb-dist",
+      "roll",
+      "oxey-style",
+      "comfort"
+     ],
+     "community_wins": 0,
+     "community_of": 4,
+     "community_which": [],
+     "total_wins_18_movable": 5,
+     "total_of": 18
+    },
+    "arm-A": {
+     "wins": 5,
+     "of": 14,
+     "which": [
+      "lsb",
+      "lsb-dist",
+      "roll",
+      "oxey-style",
+      "comfort"
+     ],
+     "community_wins": 0,
+     "community_of": 4,
+     "community_which": [],
+     "total_wins_18_movable": 5,
+     "total_of": 18
+    }
+   },
+   "sweep-aalto-only": {
+    "keybo-lsb": {
+     "wins": 4,
+     "of": 14,
+     "which": [
+      "lsb",
+      "lsb-dist",
+      "oxey-style",
+      "comfort"
+     ],
+     "community_wins": 0,
+     "community_of": 4,
+     "community_which": [],
+     "total_wins_18_movable": 4,
+     "total_of": 18
+    },
+    "keybo-lsb+lm": {
+     "wins": 4,
+     "of": 14,
+     "which": [
+      "lsb",
+      "lsb-dist",
+      "oxey-style",
+      "comfort"
+     ],
+     "community_wins": 0,
+     "community_of": 4,
+     "community_which": [],
+     "total_wins_18_movable": 4,
+     "total_of": 18
+    },
+    "flagship-c3": {
+     "wins": 4,
+     "of": 14,
+     "which": [
+      "lsb",
+      "lsb-dist",
+      "oxey-style",
+      "comfort"
+     ],
+     "community_wins": 0,
+     "community_of": 4,
+     "community_which": [],
+     "total_wins_18_movable": 4,
+     "total_of": 18
+    },
+    "arm-B": {
+     "wins": 9,
+     "of": 14,
+     "which": [
+      "sfb",
+      "lsb",
+      "lsb-dist",
+      "sfb-dist",
+      "alt",
+      "redir",
+      "scissor",
+      "imbalance",
+      "comfort"
+     ],
+     "community_wins": 1,
+     "community_of": 4,
+     "community_which": [
+      "oxeylyzer2"
+     ],
+     "total_wins_18_movable": 10,
+     "total_of": 18
+    },
+    "arm-A": {
+     "wins": 7,
+     "of": 14,
+     "which": [
+      "lsb",
+      "lsb-dist",
+      "alt",
+      "redir",
+      "scissor",
+      "oxey-style",
+      "comfort"
+     ],
+     "community_wins": 0,
+     "community_of": 4,
+     "community_which": [],
+     "total_wins_18_movable": 7,
+     "total_of": 18
+    }
+   },
+   "sweep-community-only": {
+    "keybo-lsb": {
+     "wins": 5,
+     "of": 14,
+     "which": [
+      "lsb",
+      "lsb-dist",
+      "roll",
+      "oxey-style",
+      "comfort"
+     ],
+     "community_wins": 0,
+     "community_of": 4,
+     "community_which": [],
+     "total_wins_18_movable": 5,
+     "total_of": 18
+    },
+    "keybo-lsb+lm": {
+     "wins": 5,
+     "of": 14,
+     "which": [
+      "lsb",
+      "lsb-dist",
+      "roll",
+      "oxey-style",
+      "comfort"
+     ],
+     "community_wins": 0,
+     "community_of": 4,
+     "community_which": [],
+     "total_wins_18_movable": 5,
+     "total_of": 18
+    },
+    "flagship-c3": {
+     "wins": 5,
+     "of": 14,
+     "which": [
+      "lsb",
+      "lsb-dist",
+      "roll",
+      "oxey-style",
+      "comfort"
+     ],
+     "community_wins": 0,
+     "community_of": 4,
+     "community_which": [],
+     "total_wins_18_movable": 5,
+     "total_of": 18
+    },
+    "arm-B": {
+     "wins": 7,
+     "of": 14,
+     "which": [
+      "sfb",
+      "lsb",
+      "lsb-dist",
+      "sfb-dist",
+      "roll",
+      "oxey-style",
+      "comfort"
+     ],
+     "community_wins": 1,
+     "community_of": 4,
+     "community_which": [
+      "oxeylyzer2"
+     ],
+     "total_wins_18_movable": 8,
+     "total_of": 18
+    },
+    "arm-A": {
+     "wins": 5,
+     "of": 14,
+     "which": [
+      "lsb",
+      "lsb-dist",
+      "roll",
+      "oxey-style",
+      "comfort"
+     ],
+     "community_wins": 0,
+     "community_of": 4,
+     "community_which": [],
+     "total_wins_18_movable": 5,
+     "total_of": 18
+    }
+   },
+   "sweep-pool-only": {
+    "keybo-lsb": {
+     "wins": 5,
+     "of": 14,
+     "which": [
+      "lsb",
+      "lsb-dist",
+      "roll",
+      "oxey-style",
+      "comfort"
+     ],
+     "community_wins": 0,
+     "community_of": 4,
+     "community_which": [],
+     "total_wins_18_movable": 5,
+     "total_of": 18
+    },
+    "keybo-lsb+lm": {
+     "wins": 5,
+     "of": 14,
+     "which": [
+      "lsb",
+      "lsb-dist",
+      "roll",
+      "oxey-style",
+      "comfort"
+     ],
+     "community_wins": 0,
+     "community_of": 4,
+     "community_which": [],
+     "total_wins_18_movable": 5,
+     "total_of": 18
+    },
+    "flagship-c3": {
+     "wins": 5,
+     "of": 14,
+     "which": [
+      "lsb",
+      "lsb-dist",
+      "roll",
+      "oxey-style",
+      "comfort"
+     ],
+     "community_wins": 0,
+     "community_of": 4,
+     "community_which": [],
+     "total_wins_18_movable": 5,
+     "total_of": 18
+    },
+    "arm-B": {
+     "wins": 5,
+     "of": 14,
+     "which": [
+      "lsb",
+      "lsb-dist",
+      "roll",
+      "oxey-style",
+      "comfort"
+     ],
+     "community_wins": 0,
+     "community_of": 4,
+     "community_which": [],
+     "total_wins_18_movable": 5,
+     "total_of": 18
+    },
+    "arm-A": {
+     "wins": 5,
+     "of": 14,
+     "which": [
+      "lsb",
+      "lsb-dist",
+      "roll",
+      "oxey-style",
+      "comfort"
+     ],
+     "community_wins": 0,
+     "community_of": 4,
+     "community_which": [],
+     "total_wins_18_movable": 5,
+     "total_of": 18
+    }
+   },
+   "sweep-aalto-pref": {
+    "keybo-lsb": {
+     "wins": 6,
+     "of": 14,
+     "which": [
+      "lsb",
+      "lsb-dist",
+      "roll",
+      "sr-roll",
+      "oxey-style",
+      "comfort"
+     ],
+     "community_wins": 0,
+     "community_of": 4,
+     "community_which": [],
+     "total_wins_18_movable": 6,
+     "total_of": 18
+    },
+    "keybo-lsb+lm": {
+     "wins": 6,
+     "of": 14,
+     "which": [
+      "lsb",
+      "lsb-dist",
+      "roll",
+      "sr-roll",
+      "oxey-style",
+      "comfort"
+     ],
+     "community_wins": 0,
+     "community_of": 4,
+     "community_which": [],
+     "total_wins_18_movable": 6,
+     "total_of": 18
+    },
+    "flagship-c3": {
+     "wins": 6,
+     "of": 14,
+     "which": [
+      "lsb",
+      "lsb-dist",
+      "roll",
+      "sr-roll",
+      "oxey-style",
+      "comfort"
+     ],
+     "community_wins": 0,
+     "community_of": 4,
+     "community_which": [],
+     "total_wins_18_movable": 6,
+     "total_of": 18
+    },
+    "arm-B": {
+     "wins": 7,
+     "of": 14,
+     "which": [
+      "sfb",
+      "lsb",
+      "lsb-dist",
+      "sfb-dist",
+      "roll",
+      "oxey-style",
+      "comfort"
+     ],
+     "community_wins": 0,
+     "community_of": 4,
+     "community_which": [],
+     "total_wins_18_movable": 7,
+     "total_of": 18
+    },
+    "arm-A": {
+     "wins": 5,
+     "of": 14,
+     "which": [
+      "lsb",
+      "lsb-dist",
+      "roll",
+      "oxey-style",
+      "comfort"
+     ],
+     "community_wins": 0,
+     "community_of": 4,
+     "community_which": [],
+     "total_wins_18_movable": 5,
+     "total_of": 18
+    }
+   }
+  },
+  "denominator_note": "analyze's `gauges` block carries 15 of the 19-gauge frame; the other 4 (genkey, oxeylyzer1, oxeylyzer2, wfd) are `community` scores and are counted separately above. Win counts are out of 14 MOVABLE keymeow-class gauges (sfr EXCLUDED: it counts doubled letters, is a permutation invariant within C30M, and is therefore a tie by construction -- trap 23; counting it would inflate every denominator by one), plus 4 community gauges, i.e. 18 movable of the 19-gauge frame. Names in my direction table absent from analyze's gauges block: ['bad-redir', 'onehand']."
+ },
+ "modelled_only": "MODELLED ONLY: the three fitted surfaces are on the .native frame at a BAKED 90 WPM; tau saturated at 1.0, Phase-D cancelled. ms/char is the shipped served K31 metric at 90 WPM on blend-v1. No layout is promoted or adopted."
+}
