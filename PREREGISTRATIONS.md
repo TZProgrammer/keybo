@@ -8714,3 +8714,89 @@ Hamming BOTH ways, because here they diverge sharply and **either one alone supp
 byte-identically, md5 01f3a95a). ⚠ The six `.keys.npy` dedup sidecars (388MB) were deleted after verifying `unique_evals` is **triply** recorded and agrees across the run JSON, the ckpt `n_unique`, and the
 independent log trace for all six seeds — **`--resume` on these exact runs is consequently no longer possible**, noted in the index.
 MODELLED ONLY: g-frame, baked 90 WPM, blend-v1, skipgrams 1-skip31. No layout adopted or recommended.
+
+### OXEYFIX-1 — 🟢 SHIPPED (unpushed): `oxey.py` now DELEGATES its trigram partition to the parity-gated `_v1_pattern`; a THIRD defect nobody listed (no Sft/Sfb exclusion) was part of the gap; and the FULLER repair is LESS disruptive to selection than the un-nesting alone (2026-07-28)
+Child `oxeyfix`, branch `oxey-partition-fix`, 5 commits on base 395cdb6. **Nothing pushed, no CR.** 4 files: `src/keybo/scoring/oxey.py` + 3 test files. Report `state/oxeyfix/report.md`; full diff in
+`state/oxeyfix/artifacts/`. **I verified the scope claims myself: `community.py` appears in 0 changed files, and all ELEVEN weight VALUES are byte-identical between main and the fix**
+(sfb 12.0, dsfb 5.0, lsb 3.0, scissor 4.0, inroll -2.0, outroll -1.0, onehand -1.5, redirect 2.0, bad_redirect 4.0, alternate -0.5, imbalance 1.5).
+🟢 **DESIGN ANSWER — option (c), a delegation variant of (b), written in an EMPTY commit (01c258f) BEFORE any code change as required.** Keep the 11-key dict and both redirect term NAMES, make the two terms
+mutually EXCLUSIVE, and obtain exclusivity + the finger predicate by **DELEGATING to the parity-gated `community._v1_pattern`** rather than patching oxey's own predicates. Upstream's four labels roll onto the
+two existing keys — the same roll-up `analysis/redirects.py` already publishes as `bad_redirects_total`.
+ **Option (a) — four terms — was rejected on two decisive grounds:** (1) **arithmetically impossible without repricing** — upstream's bad/plain ratio is 4.9/3.4 = **1.441**, ours is 4.0/2.0 = **2.000**, so no
+ "upstream-proportional" defaults preserve both shipped values, and a new `redirect_sfs` term silently reprices mass currently charged at the plain weight; (2) **PENALTYAUDIT-1 already measured `redirect` as
+ UNIDENTIFIED in-band** (VIF 19.49, eff dof 2.50, 5 of 11 terms in one cluster), so splitting it four ways **adds knobs nobody can calibrate** — and the four-way split ALREADY ships correctly in
+ `RedirectFamily`. Delegation over hand-patching per trap 28: **a hand-rolled reimplementation of a validated classifier loses the validation.**
+🟢 **A THIRD DEFECT NOBODY LISTED, and it is most of the numeric gap: `oxey.py` had NO Sft/Sfb exclusion.** Its `d1 and d2` guard rejected only exact COLUMN equality, so **same-finger-different-column triples
+were being classified**, where `_v1_pattern` correctly returns `None`. Full accounting: onehand **1080 -> 756** (-324), redirect term **3240 -> 2268** (-972), double-charged **540 -> 0**, bad subfamily **540 both
+ways**. => the registered "onehand 1.4286x" and "432-triple gap" were each only PART of the divergence.
+🔴 **AND IT CORRECTS ME: the brief's second "divergence" is NOT one.** `abs(column) in (1,2)` is **STRUCTURALLY EQUIVALENT** to the finger predicate on this board — `_ABS_COLUMN_TO_FINGER` maps abs-cols 1,2 to
+index, `_BAD` is exactly "not an index", and the thumb cannot appear in a same-hand letter triple. **Measured 540 vs 540 with ZERO either-only triples.** So my "one root cause produced three defects, including
+the bad-redirect predicate" over-claimed: the proxy is **fragile and worth deleting but moved no number.** The genuine third defect is the missing Sft/Sfb exclusion above.
+🟢 TEST RCs, both required pins present: new `tests/scoring/test_oxey_trigram_partition.py` **rc=1 BEFORE (7 of 8 fail) -> rc=0 AFTER (11/11)**; `test_kan1_parity.py` **rc=0, 21/21 intact**. Pins: `qew`
+(LP,LM,LR on qwerty30m) charged **ONCE** — bad_redirect 100.0, redirect 0.0, fitness **exactly 400.0** — and the onehand class at **756 not 1080**. Requirement 3's control asserts class MEMBERSHIP
+triple-for-triple vs `_v1_pattern` **in both directions (0 oxey-only, 0 v1-only)**, not sizes. FULL suite **rc=0** with the shap test deselected, census reconciling 834/835 collected vs 834 progress chars.
+🟢 **RE-ADJUDICATION — AND THE BIGGER CHANGE IS *LESS* DISRUPTIVE THAN THE SMALLER ONE.** Its BEFORE board reproduces my OXEY-DOUBLECHARGE-1 table **BIT-EXACT** (qwerty30m 88.197171 / graphite -7.148220 /
+arm B 8.611046 / arm E -0.992396). Its pre-registered prediction held: over 816 layouts **only `redirect` and `onehand` move**; `bad_redirect` and all 8 bigram/imbalance shares are bit-identical at max|diff|
+**exactly 0.0**. Every score DROPS 0.42-1.50 absolute: **-1.6% of |score| on qwerty30m but -152% on arm E** (the denominator-to-zero pathology, larger than mine). **My registered nine: ordering IDENTICAL,
+spearman 1.000000, 0 of 36 pairwise inversions.** 400 near-optimal arm-B perturbations spearman 0.999260 **top-10 10/10**; 400 random spearman 0.999081 **top-10 10/10** — where the un-nesting ALONE displaced
+one (my 9/10). **The full repair displaces none.**
+⚠ **BUT ONE RANKING DOES FLIP, and it is registered as a NEW cell, not a retraction: `archive-1846` vs `lsb-sib` reverses** (gap -0.175417 -> +0.115189). Both are C30M registry adoption layouts my nine did not
+contain. Over all 16 layouts spearman 0.997059, **1 of 120 pairs inverted**. Both margins are tiny against the pool's 96.07 span — **that pair was never resolved by this gauge.**
+🔴 **AND IT REFUTED MY REGISTERED WEDGE CLAIM.** My "the full suite WEDGES AGAIN after deselecting the shap test" **did NOT reproduce**: with that single deselect the run cleared the whole `test_shap_report.py`
+block and went green. The apparent hang is **xgboost THREAD THRASH** — the first run burned **3h28m CPU in 6m25s wall (~32x oversubscription)** at ~2 progress-chars/min; with `OMP_NUM_THREADS=8
+OPENBLAS_NUM_THREADS=8 MKL_NUM_THREADS=8` the identical suite finished in **~2 minutes, rc=0**. => the PENALTYAUDIT-1 cell's "wedges again" is **SOFTENED to "pathologically slow without thread caps"**, and the
+proposed repo fix changes from "mark it slow" to "cap the thread env".
+🟢 TWO CONTROLS THAT ONLY BECAME POSSIBLE WITH THE FIX: (a) oxey's redirect **numerator MASS now equals `RedirectFamily`'s exactly** (diff 0, 4 layouts), and `RedirectFamily` is itself pinned equal to
+`kmstats.redir` — **pre-fix it could match neither.** Asserted on the NUMERATOR deliberately: the two SHARES still differ by **1.8989x**, purely the documented space-in-denominator convention, and **a wrong
+denominator is invisible to a numerator check and vice versa.** (b) The 3 frozen-board controls failed on **EXACTLY ONE of 15 gauges**, handled per this repo's own trap-13 procedure rather than by overwriting:
+record frozen AND corrected values, compare 14 gauges against frozen with **no tolerance** and only `oxey-style` against corrected, **assert the frozen value is no longer produced** so the substitution cannot
+outlive its justification, plus a bounding test requiring the moved set to be exactly `{"oxey-style"}`. **MUTATION-PROVEN to bite** (perturbing frozen `scissor` in the 16th digit gives rc=1 naming both gauges).
+⚠ CAVEATS REGISTERED: the 4-to-2 collapse is a **deliberate documented resolution loss** — `oxey-style` is now upstream-consistent in its PARTITION but still **not comparable to upstream's SHARES**;
+exclusivity is inherited from UPSTREAMREDIR-1 **at d015a16 only**; its 400-layout pools are its own draws (seeds 20260728/900000), comparable in kind to mine but not pool-identical; and **`oxey-style` is
+summation-order sensitive in its last digits** (flagship-c3 is ...373956 from a 1-layout run, ...373587 from a 3-layout run — float addition, noted at the pin). PENALTYAUDIT-1's signs and the scissor magnitude
+remain exactly as unsettled and user-gated as before.
+=> STATUS: **the fix is complete, tested, re-adjudicated, and UNPUSHED. Landing it is a user gate** (it changes a published gauge column, even though no adoption ranking moves).
+
+### SCISSORSUPPORT-1 — 🟢 THE INCUMBENT SUPPORT IS CORRECT AND MY PREMISE INVERTS: the sparse source is COMMUNITY, not AALTO; the "60-87% of the effect sits outside the gauge" number is **23.6%** support-weighted; and all 8 widenings fit WORSE (2026-07-28)
+Sent to re-scope `is_scissor` on the strength of SCISSORPRICE-1's "the support is more wrong than the price." **It comes back recommending NO CHANGE, and the reason overturns the premise.** Child
+`scissorsupport` (bare, repo READ-ONLY — I verified HEAD still 7e4805a, status clean, no branch/commit/push, `classify.py` and `DEFAULT_OXEY_WEIGHTS` unedited). Dossier `state/scissorsupport/report.md`,
+13 artifact JSONs + `SS-PREREGISTRATION.md`.
+🟢 **THE HEADLINE — A CELL'S COST IS A GBM RESPONSE, SO ITS MEASUREMENT-VS-EXTRAPOLATION STATUS IS SET BY THAT CELL'S TRAINING SUPPORT, WHICH IS COUNTABLE.** `scissor` and `adjacent` are FEATURES of the fitted
+surface (`schema.py:47-49`). It identified each surface's exact training subset **by EXACT PRACTICE-TERM KEY-SET MATCH, not by count**: AALTO = azerty+dvorak+qwerty+qwertz (724 ngrams); COMMUNITY = 4
+`@rowStagger` labels (576), ortholinear/angleMod captures EXCLUDED. Then counted: **AALTO 7,669,316 in-frame samples vs COMMUNITY 11,930 — 643x** — and **AALTO covers the EXCLUDED cells BETTER than the included
+ones** (84/96 pairs, 24,799 samples/pair). COMMUNITY prices non-adjacent-dy2 at +31.50 **off 242 samples** over 20 of 48 pairs; index-pinky +28.35 **off 13**; middle-pinky +22.30 **off 5**.
+=> **THE ANSWER IS (a) SPARSITY — BUT THE SPARSE SOURCE IS COMMUNITY, NOT AALTO, WHICH IS THE OPPOSITE OF WHAT I ASKED IT TO CHECK. The cells COMMUNITY cannot speak to are exactly where it makes its biggest
+claims.** The adjacency contrast at FIXED dy2 — precisely what an adjacency gate exists to price — is **AALTO +29.02 [+20.53,+43.05] P=1.000 vs COMMUNITY +5.93 [-3.83,+15.98] P=0.884**; support-weighted
+**+19.25 [+15.45,+30.41] from 373k samples vs +4.17 from 95**. On AALTO the dy1->dy2 jump exists **ONLY for adjacent pairs (+21.97 vs +0.19)**. It attacked this twice and it STRENGTHENED: on non-qwerty-observed
+pairs only, **+35.24**; under the strictest matching (landing x ORIGIN), **AALTO +22.69 [+7.80,+37.59] SURVIVES while COMMUNITY collapses to +0.46 [-2.01,+2.93]**. => **support-weighted, SCISSORPRICE-1's
+"60-87%" is 23.6%.** The registered "the support is more wrong than the level" is **RETRACTED**.
+🔴 **TWO ERRORS IN MY OWN BRIEF AND LEDGER, both verified by me:** (1) I wrote **"870 ordered SAME-HAND pairs"** — **870 is ALL ordered distinct pairs; same-hand is 420**, same-hand-distinct-finger 324,
+row-travel 216. So `is_scissor` sees **24 of 216 = 11.1%** of the pairs it could be about, not 24/870. (2) The ledger cells at :8626 and :8665 quote the in-domain range as `[0.0548, 0.5173]%` — **the lower bound
+is my own 14-layout scan's min (which includes qwerty variants), not the real-layout min of 0.0682.** scissorprice's own report has it right; only my ledger cell merged the two. Harmless to every verdict (the
+UPPER bound drives the out-of-domain finding, and the child reproduced my 42.9% exactly) but **it must not be re-quoted as-is.**
+🟢 **AND SCISSORPRICE-1'S REFERENCE CLASS WAS HIDING THE STORY.** Against a neutral common reference, **adjacent-dy0 is the CHEAPEST cell in the neighbourhood** (-0.87 AALTO / -18.52 COMM / -15.65 POOL) — so
+pricing the excluded neighbours against it **inflated every excluded-neighbour number, and inflated it MORE on COMMUNITY/POOL.** Also: the most expensive cell in the whole neighbourhood has **NO row travel** —
+non-adjacent dy0 index-middle at +13.85/+54.17/+34.09 — **and `lsb` already owns it.**
+🟢 **Q3: 8 CANDIDATE PREDICATES PRE-REGISTERED WITH 5 PREDICTIONS BEFORE MEASURING. NONE BEATS THE INCUMBENT.** All widenings fit **WORSE out-of-sample on ALL THREE sources** (C2 -0.295 on AALTO) — it had
+predicted they would win on COMMUNITY; they do not. And **`bad_scissor` is UNIDENTIFIED in this frame: VIF 480.64, BKW load 0.999361, rank 1 of 11 (WORST)** — its own prereg P4 said it would be the
+BEST-identified, **badly refuted**. C2 worse still (VIF 1397.96). Their implied-weight cluster-CIs span **+-250**, so they cannot be priced, so they cannot be proposed. C4 as a 12th companion term is worse than
+a **SAME-SIZE PLACEBO** on 3/3. Scorecard: **2 of 5 confirmed, 3 refuted, all reported.**
+⚠ **Q4 — NOT INERT, AND IT CORRECTS SCISSORPRICE-1: "argmin invariant under re-weighting" is invariance ABOVE A FLIP POINT.** The incumbent's own argmin flips **graphite -> flagship-c3 at w_scissor = 2.35-2.50**,
+and shipped is **4.0** — **all five weights tested (4.0 / 20.49 / 28.02 / 32.59 / 44.95) sit above the flip**, which is why nothing appeared to move. 🟢 **AND IT FOUND A SECOND NULL THAT REFRAMES ITS OWN
+RESULT: at w_scissor = 0 the argmin of the 17-layout board is ALREADY `graphite`, not flagship-c3.** Classifying all 24 combos against BOTH nulls: **10 unchanged, 10 REVERT TO THE w=0 NULL** (the term failing
+to act, not acting), **4 genuinely new** — and **every one of the 4 comes from a candidate that failed identification or fit.** 9 distinct argmins are reachable across candidates x w in [0,200].
+🟢 **THE SELF-KILL IS THE BEST PART: IT HAD A PUBLISHABLE-LOOKING PROPOSAL AND DESTROYED IT.** C5 (narrow to pinky-ring) fit better AND moved the board — then attack 1 showed the move was **the w=0 null showing
+through**, a same-size support placebo of 400 random 8-pair subsets **reproduced it 30.5% of the time**, its CV win was **COMMUNITY-only** (28% of seeds on AALTO, 0% on POOL), and leave-one-source-layout-out
+**sign-flipped**. **RETRACTED by its author.** It also caught its own BKW convention error (raw vs standardized columns gave 0.2253 where the ledger says 0.000227) and that it nearly published against the
+inflating baseline.
+🟢 **11 POSITIVE CONTROLS BEFORE USE, FOUR REPRODUCING PRIOR AGENTS' FROZEN ARTIFACTS EXACTLY:** matched estimator 165 cells diff 0.0 (md5 38294e1b, **against THEORY-1's ORIGINAL, not a copy**); share path 7x11
+diff 0.0; `_X_random.npy` md5-identical to TWO prior agents; scissorprice's excluded-neighbour table exact on all 4 rows x 3 sources; **SCISSORPRICE-1's ENTIRE 11-term BKW table to 4.43e-04 with scissor 0.000227
+exact, cond idx 20.4, VIF 2.16/1.22**; my 17-layout board exact at all five weights including graphite leaving the top five; C0 share == shipped `scissor` diff 0.0; C6 share == shipped `BadScissor` diff 0.0;
+the 42.9% out-of-domain figure.
+⚠ INDETERMINATE, named as asked: **the non-adjacent-dy2 class on its own terms** — AALTO +3.81 **[-0.52,+8.46]** (the one interval touching zero) vs COMMUNITY +31.50 from 242 samples. **What would settle it:**
+keystroke data on layouts placing high-frequency bigrams on non-adjacent two-row-apart column pairs (**28 of 48 such pairs unobserved by COMMUNITY, 7 by AALTO**) — **a missing-observations problem, so more data
+CAN fix it.** Also unsettled: whether `bad_scissor` works in a frame BUILT for it (its VIF 481 is a statement about THIS 11-term frame, where `dsfb`/`sfb` already carry row travel, **not about the predicate**).
+⚠ **AND A BOUND ON ALL OF Q4 THAT THE CHILD RAISED AGAINST ITSELF: spearman(shipped oxey score, modelled ms/char) over the 17 layouts is -0.4363 on AALTO** — so "the argmin moved" is a statement about **the
+GAUGE**, and on the best-supported source **the gauge is not tracking the objective there at all.**
+=> REGISTERED: **no change to `is_scissor`.** The predicate is 11.1% of its plausible neighbourhood by design and that scoping is **defensible on the best-supported source**. The re-scoping thread is CLOSED;
+the PRICE (SCISSORPRICE-1's 5.1x-11.2x) stands and remains user-gated. MODELLED ONLY: g-frame, 90 WPM baked, blend-v1, tau saturated.
