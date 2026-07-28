@@ -8612,3 +8612,55 @@ verbatim — **a summary figure I could have checked in one grep and did not.** 
 ⚠ (B) RE-HARVEST: my verified bundle stopped at 2ec398a; the flush added commits, so the tip has moved (12 commits on `origin/main..modelnorm`, worktree clean). Re-harvested at the live tip rather than any
 written-down SHA — **the child's note that "writing 'HEAD is <sha>' into a tracked file is self-invalidating" is correct and it caught itself doing it twice.** Also: my "9 patches" was a bundle boundary-ref
 off-by-one; **8 was authoritative** at that tip.
+
+### SCISSORPRICE-1 — 🟢 REVERSES MY OWN SOFTENING: `scissor` is OUTSIDE the collinear cluster by a CLUSTERING-FREE route, and the corrected price is HIGHER not lower — implied weight +32.59 [+20.49,+44.95] = 5.1x-11.2x, with P(ratio>1)=1.000 in all four specs (2026-07-28)
+Child `scissorprice`, branch `scissor-price` @ e1a04c7 (drivers only; `git status` clean, `DEFAULT_OXEY_WEIGHTS` and PREREGISTRATIONS.md untouched, nothing pushed, no search run, no layout adopted — verified
+by `git diff`, not assumed). 9 artifact JSONs + drivers + index in `state/scissorprice/artifacts/`. **This entry supersedes the softening I registered in the PENALTYAUDIT-1 CORRECTION cell.**
+🟢 **PRIMARY ANSWER, AND OBTAINED CLUSTERING-FREE SO MY CUT-DEPENDENCE CAVEAT CAN BE DROPPED ENTIRELY.** penaltyaudit's membership verdict rested on average linkage at K=5/6 (it merged at K<=4, and single
+linkage chained all 11 — the reason I registered it conditionally). The child replaced the dendrogram with **BKW variance-decomposition proportions**: in the near-optimal band there is **exactly ONE
+ill-conditioned direction** (condition index **20.4**, all others <= 8.0), and it loads **alternate 0.982 / redirect 0.756 / sfb 0.538 / onehand 0.342** — **the eigen route INDEPENDENTLY RECOVERS the same
+5-term cluster with no linkage and no K** — while **scissor loads 0.000227, LAST of eleven.** Corroborated three more ways: VIF **2.16** (3rd lowest), bootstrap **P(conditional beta > 0) = 1.000 in 3/3**, and
+leave-one-TERM-out dR2 **0.0264/0.0088/0.0253** — comparable to `sfb` the anchor (0.0274/0.0348/0.0359) and **3-30x the cluster members**. => **scissor is a MEASUREMENT, not a prior. My "outside the cluster
+only at K=5/K=6" caveat is retired: it is outside by a route that has no K.**
+🟢 **AND THE AXIS NOBODY CAUGHT — WHICH I VERIFIED MYSELF AND IS THE REASON THE NUMBER GOES UP.** The n=891 registry-perturbation pool is **42.9% OUT-OF-DOMAIN on scissor**. I measured the real range through
+the shipped CLI over 14 C30M layouts (registry + the six SPEEDTIE-1 champions + arm E + qwerty30m): real non-qwerty layouts occupy **[0.0548, 0.5173]%** scissor share (highest non-qwerty `graphite` at
+0.5173%), while the pool spans to **4.07% — 7.9x the highest real non-qwerty value**, reproducing the child's bound and its 7.9x exactly. **That is trap 51/52 one level down, inside the pool that was built to
+fix exactly this problem.** Restricting to the real range roughly **DOUBLES the conditional** (+1.57 -> +3.63, +1.48 -> +3.06, +1.62 -> +3.02); it is **NOT a subsample artifact** (a same-size placebo over all
+11 other terms plus a random draw gives [+1.29, +2.32], and scissor-in-domain lies **outside** that range 3/3); and **identification IMPROVES** (VIF 2.16 -> 1.22).
+=> **THE THREE CORRECTION AXES, COMBINED UNDER A CLUSTER BOOTSTRAP: implied weight +32.59, CI95 [+20.49, +44.95] = 5.1x - 11.2x the shipped +4.0, with P(ratio > 1) = 1.000 in ALL FOUR domain x form specs.**
+Conditioning pushes DOWN (2.25-4.40x); tangent/saturation pushes UP (8.01-8.30x — **the child verified penaltyaudit's tangent claim exactly and reports it "asked to be contradicted and I could not"**); and
+the out-of-domain restriction pushes UP. **So my original "+28.02 / 7.0x" was roughly right AS A NUMBER but reached by a route that does not license it** — and **penaltyaudit's own flush recommendation
+("conditionally 2.2-4.4x, quote the range not the 7.0x") is itself an out-of-domain artifact that UNDERSTATES the effect.** ⚠ Process note: the child tried to relay this to penaltyaudit and **the relay was
+REFUSED because I had already destroyed it** — so this correction is carried here; penaltyaudit's APPENDIX A.2 predates the finding and must be read against this cell. **(Reaping cost a correction its
+author could no longer receive: a real cost of the reap-by-default policy, worth weighing next time a sibling is mid-thread on the same number.)**
+🔴 **A CORRECTION THAT HITS BOTH OF US: every CI either of us published on this term is TOO NARROW.** Both were ROW bootstraps over a pool that is **11 clusters of 81 near-duplicates**, so effective n is
+nearer **11** than 891. Cluster-bootstrapping (resampling the 11 SOURCE layouts) widens the conditional-ratio CI from **[3.33, 5.79]** to **[2.81, 7.85]**, and takes COMMUNITY's lower bound to **1.035** — the
+verdict survives, **but only just, on that source.** All previously published CIs on scissor are superseded by the cluster-bootstrap versions.
+🟢 **THE PENALTY FUNCTION, and the structural fact kills two of the three splits I asked for.** `is_scissor = is_adjacent AND |dy| == 2` (`classify.py:99`) — I verified it fires on **exactly 24 of 870 ordered
+pairs with `|dy|` support `{2}` only**. => **dy1/dy2 is NOT a split of this term (dy1 is not in its support), and narrow/wide is NOT one either (this predicate IS the narrow one).** Those questions belong to
+`bad_scissor` / `wscissor`-GRADED — different terms. **My brief asked for both; both were ill-posed.** Per-finger is the only real partition and it is **NOT warranted**: pinky-ring +39.8/+44.8/+37.4,
+middle-ring +29.0/+38.3/+37.9, index-middle +32.1/+52.0/+47.3 — spread only 9.8-13.7 ms on a mean of 32-45, all positive 3/3, but the **RANK ORDER is source-unstable** => per BADSCISSOR-1's ship-flat logic,
+**SHIP ONE FLAT NUMBER.**
+🟢 FORM: **sqrt beats BOTH linear and quadratic out-of-sample in 3/3** (grouped 5-fold CV). ⚠ And **"SATURATING" is the wrong prescription**: a marginally-fitted quadratic **turns over and starts REWARDING
+scissor at high share**, and **75-97% of that curvature is itself confound** (c2 -0.97/-1.28/-0.83 marginal -> -0.24/-0.04/-0.10 conditional). => concavity is real but mild; use **sqrt**, not a quadratic.
+🟢 **MOST INTERESTING RESULT: THE SUPPORT MAY BE MORE WRONG THAN THE LEVEL.** The EXCLUDED neighbours (adjacent dy1, non-adjacent dy2) cost **+24..+39 ms on COMMUNITY/POOL — 60-87% of what the INCLUDED ones
+cost** (though only +4.6..+12.2 on AALTO). **The gauge's boundary is leaving most of the effect outside itself.** That independently corroborates BADSCISSOR-1's cross-cut and trap 12 from a new direction, and
+it means re-pricing scissor is the SECOND-order fix — re-scoping its predicate is the first.
+🟢 **DOES RE-WEIGHTING CHANGE THE PICK? NO — and it tested this on 17 layouts, not a convenient subset.** `argmin` is **flagship-c3** under shipped +4.0, under best-supported +32.6, at BOTH CI ends, and at
++28.0, across all 17 (the 6 SPEEDTIE-1 champions + 11 registry). Within the six speed-tied champions the pick is **`puy.,vdfnlheioamtsrc'jqk-gwbxz` under all six weights.** Middle ranks reshuffle up to 8-10
+positions and **graphite leaves the top five**, but nothing at the top moves. => corroborates the "zeroing scissor leaves spearman 0.998" result from the opposite side: **real explanatory power, little ranking
+leverage.** No adoption consequence.
+🟢 FOUR POSITIVE CONTROLS, ALL BEFORE USE: matched estimator 165 cells diff **0.0** (byte-identical THEORY-1 copy, md5 38294e1b...); share path 7x11 diff **0.0** vs shipped `pattern_shares`; the scissor
+matched headline +33.62/+45.01/+40.87 reproduced exactly; and **penaltyaudit's conditional AND tangent tables reproduced to all printed digits from an INDEPENDENT pool build** (its `_X_random.npy` is even
+md5-identical to the one penaltyaudit's later run wrote).
+🟢 **THREE BUGS IT CAUGHT IN ITS OWN CODE, each of which would have produced a PLAUSIBLE WRONG ANSWER:** (1) its speedtie harvester walked for layouts as dict VALUES when they are the KEYS — **it took 0 of 6
+and still printed a full table**; (2) a single-weight argmax **PINNED at its grid ceiling 40.0** and it nearly read that as an optimum (trap 51); (3) it nearly published the joint 11-weight refit as
+CORROBORATION of the conditional when the two are **ALGEBRAICALLY the same number** (verified identical to 1.33e-14) — **GUARD-CD-1's exact shape, recurring.** And its own pre-registered prediction (that a
+marginal-calibrated scorer would agree WORSE) was **REFUTED** — it agrees better, but the criterion is confounded: a single free weight patches eleven-term misfit, and the free-one-weight placebo shows
+**outroll buys 66-89% as much WITH A SIGN FLIP**, so the gain is not scissor-specific.
+⚠ ONE FACTUAL CORRECTION to penaltyaudit (its dossier's verdict unaffected): **rho(scissor, outroll) IS >= 0.5 in the band — +0.6088**, not the sub-0.5 it reported from the RANDOM pool (+0.166). **The same
+band-dependence its own headline warns about, biting its own reported correlation.** Harmless to the verdict: partialling outroll out leaves +2.99/+3.98/+3.21, ~2x the full conditional, so **outroll is NOT what
+absorbs scissor's price — all ten controls each take a slice** (POOLSWEEP-1's shared-factor restriction).
+=> REGISTERED WORDING, replacing BOTH my "7.0x under-priced" AND my "unsettled between ~2x and ~8x": **`scissor` is under-priced relative to `sfb` by 5.1x-11.2x (implied weight +32.59, CI95 [+20.49,+44.95],
+cluster-bootstrapped over 11 source layouts, in-domain [0.0548,0.5173]% share, sqrt form, flat across fingers), P(ratio>1)=1.000 in all four specs. It is identified (BKW loading 0.000227, VIF 1.22 in-domain).
+Re-weighting changes no top-of-board pick. The larger defect is the PREDICATE'S SUPPORT, not its price.** MODELLED ONLY: g-frame, baked 90 WPM, blend-v1, tau saturated.
