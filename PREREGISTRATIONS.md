@@ -8014,3 +8014,51 @@ ceilings — trap 36). Frame asserted `native`; corpus sha256 matched on all 4 t
 ⚠ ONE SELF-INFLICTED BUG WORTH BANKING: the child's own trap-38 row-drop assertion read `blob.get("layouts", blob)`, fell through to the whole JSON
 and compared against its 10 top-level KEYS — and `analyze` legitimately adds a `--ref` row, so **a bare COUNT check is wrong in BOTH directions**.
 Assert SET-CONTAINMENT of the requested layout strings instead. My own trap 38 said "assert len(rows) == len(layouts)"; that is now corrected.
+
+### DOMAIN-HARD-1 + OPTEVIDENCE-1 ADDENDUM — `valid_domain` SHIPPED as a hard constraint; and the child RETRACTED its own headline's warrant, then rescued the conclusion on a better test (2026-07-27)
+STATUS. Fix to shipped scorer code, prompted by a watchdog catching my EIGHTH stop-gate failure: I endorsed the design lesson and REGISTERED IT AS A
+LESSON instead of shipping it. Committed LOCALLY as `3a3df7f` on branch `domain-hard` (base f883681), NOTHING pushed. Suite **rc=0, 880 collected, 0
+failed** (877 passed / 3 skipped) from an out-of-tree sentinel; 873 prior + 7 new reconciles; ruff clean.
+THE FIX. An `extrapolating: true` FLAG stopped nothing, because **a maximizer does not read flags** — an unclamped fitted curve is an UNBOUNDED
+objective by construction. Now: `EXTRAPOLATE` / `CLAMP` / `REJECT` policies plus **`SEARCH_DOMAIN_POLICY = CLAMP`** (named so a search cannot silently
+inherit the diagnostic default); `LossCurve.price(level, policy=)` SATURATES at the domain edge under CLAMP and raises `OutOfDomainError` under REJECT;
+`score()`/`score_layout()` thread it AND emit `domain_policy`, because a clamped total and an extrapolated one were previously INDISTINGUISHABLE in
+the artifact. EXTRAPOLATE stays the default deliberately — qwerty sits outside most domains and is the most interesting diagnostic comparison — so
+this is a MODE, not a blanket rejection. 7 regression tests pin both measured exploits (comfort 2.9592 vs [6.5236,11.5644]; sr-roll 17.8343 vs
+[1.9997,8.3369]), that in-domain prices are **BIT-IDENTICAL across all three policies**, and that pushing 50x past a ceiling under CLAMP buys EXACTLY
+nothing.
+🔴 THE CHILD RETRACTED THE WARRANT FOR ITS OWN HEADLINE, exactly as I suspected in its reflection prompt. Its "weights are UNINFORMATIVE" conclusion
+had rested on arm C recovering only 28% of the deficit — but **arm C bounded the five SIGN ERRORS while leaving EXTRAPOLATION FREE**: its champion is
+out-of-domain on 10 of 14 gauges just like arm A's, and only **3.9-10.5%** of its evidence-score advantage survives a clamp. So the "72% residual =>
+uninformative" inference was CIRCULAR with the extrapolation the same report had diagnosed. **Warrant withdrawn.**
+🟢 BUT THE CONCLUSION SURVIVES ON A BETTER TEST IT SHOULD HAVE RUN IN ROUND 1 — and I VERIFIED THE DECAY MYSELF from `banded-rank.json`. Rank
+agreement between the evidence objective and predicted ms/char over **36,005 incumbent perturbations** — a pool selected by NEITHER objective,
+instrument positive control rho = **1.0000** — decays MONOTONICALLY as the band tightens:
+    all n=36005  rho_raw **+0.9111**  rho_clamped +0.6258      <=257.0 n=6852  +0.6331  +0.1760
+    <=256.0 n=3890  +0.3896  +0.0220 (indistinguishable)       <=255.5 n=2260  +0.2373  **-0.0491 (ANTI-ranks)**
+    <=255.0 n=809   **-0.0455** [CI -0.111,+0.026]  clamped **-0.0884**   <-- THE INCUMBENT BAND, inside the p95=0.2231 noise band
+=> **THE CORRECT, SCOPED STATEMENT: the weights are UNINFORMATIVE IN-BAND and highly informative OUT-OF-BAND.** The report's flat phrasing
+over-claimed, and I had registered that flat phrasing. ⚠ AND A CONSEQUENCE FOR MY OWN FIX: **CLAMP bounds the exploit but does NOT make the objective
+rank the band** — clamped rho is NEGATIVE (-0.0884) in-band, and re-scoring the 8 existing champions under CLAMP still ranks arm A's best with rho
+-0.395 against ms/char. The fix removes an unbounded reward; it does not manufacture signal that was never there. Both relayed to `armd`, along with
+the warning that **clamping removes the gradient outside every domain, so arm D must check for TIE PLATEAUS before reading its champion.**
+THREE MORE SELF-CORRECTIONS, all of which sharpen rather than excuse: (1) the 96.5% decomposition METHOD is VALID and order-INDEPENDENT — the
+objective is a SUM of univariate curves so the per-gauge delta is an identity (residual 3.6e-15) and the exact Shapley value over all 11 correlation
+clusters EQUALS it to <1e-9, so **collinearity corrupts the fit, not the arithmetic** — but the DENOMINATOR was inflated: shares were of the NET gain
+while six gauges push the other way (+0.7458), so the honest figure is comfort+sr-roll = **86.4% OF GROSS, not 96.5%**. (2) "8x amplification" is
+DEMOTED: it divides a win-share in the near-optimal band by a shap_share on the 400-RANDOM fitting pool — a cross-pool ratio — and hinge geometry does
+NOT predict it (Spearman of |far-slope| x distance-outside vs amplification = +0.07 across 14 gauges; `comfort` has the LARGEST far-slope x distance,
+13.06 vs sr-roll's 4.87, yet only 1.32x). **8x is a small denominator, not a mechanism**; the load-bearing fact (sr-roll at 17.83 vs ceiling 8.34) is
+untouched. (3) P6: it CHECKED comparability before letting the falsification propagate — WSCISSOR-GEN-1's blend-v1 incumbent floors match its own to
+worst **4.8e-05** (same normalization, corpus and 46-layout reference population), so the falsification of the NUMBER stands; but its "not a
+ruler-optimizing pathology" gloss was over-stated, because the floor-sign difference is objective SHAPE (a single narrow axis at a Pareto extreme vs a
+14-gauge composite whose comfort term carries broad positional pressure). AND TRAP 19 BITES THE PRECEDENT ITSELF: WSCISSOR-GEN-1's CONSTRAINED cell's
+floor was never computed and is actually **+0.8025**, so that precedent covers UNCONSTRAINED champions only — arm C's +0.5689 AGREES with its
+constrained cell rather than contradicting anything.
+⭐ THE HIGHEST-VALUE UNRUN EXPERIMENT, and it is NOT arm D: under the **ARCHIVE-fitted** weights (`arm-archive400-native.json`) keybo-lsb is
+out-of-domain on **0 of 14** gauges, versus 9 of 14 under random400. **The pool EVIDENCE-SCORER-1 REJECTED as a scorer (0/12 cross-source cells) has
+valid domains that actually COVER the near-optimal band** — and nobody has tried it as a SEARCH objective. Given the in-band result, the scorer and
+search verdicts can genuinely diverge. Registered as the natural next arm if arm D lands in outcome (ii) or (iii).
+⚠ A PROCESS ERROR OF MINE WORTH BANKING: I spawned `armd` pointing at **/tmp/domainfix — the same worktree I was still editing**. The child committed
+MY staged changes as `3a3df7f` and built `e0b7a1b` on top. I verified NOTHING WAS LOST (3a3df7f carries both files; all 7 tests present at HEAD) — but
+that was luck, not design. A child must get its OWN worktree, or the parent must commit before spawning.
