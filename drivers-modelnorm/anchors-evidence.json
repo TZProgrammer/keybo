@@ -1,0 +1,1948 @@
+{
+ "what": "MODELNORM-1 anchors of record + their stability evidence",
+ "identity": {
+  "models": [
+   "AALTO",
+   "COMMUNITY",
+   "POOL"
+  ],
+  "family": "TRI_PS_FREQ_PRIOR",
+  "frame": "native",
+  "frame_note": "geometry-only (g); the layout-independent b(ngram) term is excluded",
+  "baked_wpm": 90.0,
+  "wpm_caveat": "the arrays are BAKED at 90 WPM and cannot be re-evaluated (7 of 8 per-seed models are gone), so a 90-110 WPM objective is NOT honourable on these columns",
+  "corpus": "blend-v1",
+  "corpus_trigrams": "/tmp/modelnorm/data/corpus/blend-v1/trigrams.txt",
+  "corpus_trigrams_sha256": "19806532ee3567f5afe4311e51f346b6c36375030f473fe3f68a6a3dc21beb61",
+  "surface_dir": "/local/home/zegertho/agent/state/keybo-selmethod/artifacts/old-new-layout-comparison/tri_frequency_old_new_surfaces",
+  "surface_sha256": {
+   "AALTO": "0ec6dbff602d79c28b5e9a6307fce41ddb63b68e846cc5f9c80d4a1896654028",
+   "COMMUNITY": "421712f9999ba86e9e6b61c752422a45c25ad3cbc3ead45589185e3fd33ee10b",
+   "POOL": "284b7c97531311e9cc6d3640792fd43fbe76a77806cb553708f13a93ab19a517"
+  },
+  "native_frame_guard": {
+   "AALTO": {
+    "max_abs_std_minus_native": 0.0,
+    "max_variation_of_delta_over_third_slot": 0.0
+   },
+   "COMMUNITY": {
+    "max_abs_std_minus_native": 121.55301558217269,
+    "max_variation_of_delta_over_third_slot": 1.1368683772161603e-13
+   },
+   "POOL": {
+    "max_abs_std_minus_native": 50.7434916920962,
+    "max_variation_of_delta_over_third_slot": 1.1368683772161603e-13
+   }
+  },
+  "n_trigrams": 24478,
+  "total_trigram_freq": 887147352.0,
+  "tile": 16,
+  "numpy": "2.5.0"
+ },
+ "zero_anchor": {
+  "value": {
+   "AALTO": 243118526775.97125,
+   "COMMUNITY": 254994927415.5801,
+   "POOL": 259027796569.4634
+  },
+  "statistic": "mean",
+  "n": 100,
+  "seed": 20260728,
+  "sd": {
+   "AALTO": 3357543573.175914,
+   "COMMUNITY": 6123204217.854651,
+   "POOL": 3947242328.336462
+  },
+  "se": {
+   "AALTO": 335754357.31759137,
+   "COMMUNITY": 612320421.7854651,
+   "POOL": 394724232.8336462
+  },
+  "n100_vs_n1000_shift_in_se": {
+   "AALTO": -0.9791609824829768,
+   "COMMUNITY": 0.1283655491071241,
+   "POOL": -0.2873173520295269
+  }
+ },
+ "one_anchor": {
+  "value": {
+   "AALTO": 223236317224.4182,
+   "COMMUNITY": 219828038256.7244,
+   "POOL": 235438602522.19055
+  },
+  "layout": {
+   "AALTO": "lnfdg-,yehcrstmaoiupxqbwv.k'jz",
+   "COMMUNITY": "mgndy-lea.tpscbkrouiwzxfqvh'j,",
+   "POOL": "pctsm.reayfgdlk-niuobzvwx,hqj'"
+  },
+  "statistic": "slower of two independent seeds (conservative)",
+  "best_seen": {
+   "AALTO": 223236317224.4182,
+   "COMMUNITY": 219828038256.7244,
+   "POOL": 235438602522.19055
+  },
+  "best_layout": {
+   "AALTO": "lnfdg-,yehcrstmaoiupxqbwv.k'jz",
+   "COMMUNITY": "mgndy-lea.tpscbkrouiwzxfqvh'j,",
+   "POOL": "pctsm.reayfgdlk-niuobzvwx,hqj'"
+  },
+  "per_seed": {
+   "AALTO": {
+    "s1": {
+     "seed": 20260728,
+     "layout": "lnfdg-,yehcrstmaoiupxqbwv.k'jz",
+     "fit": 223236317224.4182,
+     "budget_requested": 10000000,
+     "unique_evals": 8021356,
+     "islands": 40,
+     "epochs_run": 55,
+     "convergence": {
+      "epochs_run": 55,
+      "unique_evals": 8021356,
+      "champion_fitness": 223236317224.41766,
+      "last_epoch_that_improved_the_champion": 12,
+      "epochs_since_last_improvement": 43,
+      "islands": 40,
+      "islands_within_0.01pct_of_champion": 40,
+      "islands_within_0.10pct_of_champion": 40,
+      "island_best_spread_pct_of_champion": 0.0,
+      "best_so_far_curve": [
+       {
+        "epoch": 1,
+        "unique": 368094,
+        "best_fit": 223684714838.45398
+       },
+       {
+        "epoch": 2,
+        "unique": 563144,
+        "best_fit": 223406932313.22638
+       },
+       {
+        "epoch": 3,
+        "unique": 753603,
+        "best_fit": 223406932313.22638
+       },
+       {
+        "epoch": 4,
+        "unique": 934933,
+        "best_fit": 223406932313.22638
+       },
+       {
+        "epoch": 5,
+        "unique": 1090463,
+        "best_fit": 223360816776.2562
+       },
+       {
+        "epoch": 6,
+        "unique": 1245954,
+        "best_fit": 223360816776.2562
+       },
+       {
+        "epoch": 7,
+        "unique": 1389430,
+        "best_fit": 223360816776.2562
+       },
+       {
+        "epoch": 8,
+        "unique": 1533891,
+        "best_fit": 223360816776.2562
+       },
+       {
+        "epoch": 9,
+        "unique": 1700780,
+        "best_fit": 223316703466.81284
+       },
+       {
+        "epoch": 10,
+        "unique": 1837389,
+        "best_fit": 223311982246.35025
+       },
+       {
+        "epoch": 11,
+        "unique": 1972131,
+        "best_fit": 223241709941.11667
+       },
+       {
+        "epoch": 12,
+        "unique": 2120163,
+        "best_fit": 223236317224.41766
+       },
+       {
+        "epoch": 13,
+        "unique": 2291550,
+        "best_fit": 223236317224.41766
+       },
+       {
+        "epoch": 14,
+        "unique": 2445696,
+        "best_fit": 223236317224.41766
+       },
+       {
+        "epoch": 15,
+        "unique": 2586868,
+        "best_fit": 223236317224.41766
+       },
+       {
+        "epoch": 16,
+        "unique": 2738723,
+        "best_fit": 223236317224.41766
+       },
+       {
+        "epoch": 17,
+        "unique": 2882997,
+        "best_fit": 223236317224.41766
+       },
+       {
+        "epoch": 18,
+        "unique": 3023505,
+        "best_fit": 223236317224.41766
+       },
+       {
+        "epoch": 19,
+        "unique": 3181443,
+        "best_fit": 223236317224.41766
+       },
+       {
+        "epoch": 20,
+        "unique": 3340185,
+        "best_fit": 223236317224.41766
+       },
+       {
+        "epoch": 21,
+        "unique": 3488631,
+        "best_fit": 223236317224.41766
+       },
+       {
+        "epoch": 22,
+        "unique": 3610959,
+        "best_fit": 223236317224.41766
+       },
+       {
+        "epoch": 23,
+        "unique": 3762445,
+        "best_fit": 223236317224.41766
+       },
+       {
+        "epoch": 24,
+        "unique": 3903596,
+        "best_fit": 223236317224.41766
+       },
+       {
+        "epoch": 25,
+        "unique": 4046403,
+        "best_fit": 223236317224.41766
+       },
+       {
+        "epoch": 26,
+        "unique": 4191658,
+        "best_fit": 223236317224.41766
+       },
+       {
+        "epoch": 27,
+        "unique": 4333940,
+        "best_fit": 223236317224.41766
+       },
+       {
+        "epoch": 28,
+        "unique": 4484109,
+        "best_fit": 223236317224.41766
+       },
+       {
+        "epoch": 29,
+        "unique": 4628588,
+        "best_fit": 223236317224.41766
+       },
+       {
+        "epoch": 30,
+        "unique": 4763510,
+        "best_fit": 223236317224.41766
+       },
+       {
+        "epoch": 31,
+        "unique": 4907297,
+        "best_fit": 223236317224.41766
+       },
+       {
+        "epoch": 32,
+        "unique": 5036229,
+        "best_fit": 223236317224.41766
+       },
+       {
+        "epoch": 33,
+        "unique": 5170767,
+        "best_fit": 223236317224.41766
+       },
+       {
+        "epoch": 34,
+        "unique": 5310051,
+        "best_fit": 223236317224.41766
+       },
+       {
+        "epoch": 35,
+        "unique": 5453762,
+        "best_fit": 223236317224.41766
+       },
+       {
+        "epoch": 36,
+        "unique": 5577572,
+        "best_fit": 223236317224.41766
+       },
+       {
+        "epoch": 37,
+        "unique": 5724786,
+        "best_fit": 223236317224.41766
+       },
+       {
+        "epoch": 38,
+        "unique": 5857099,
+        "best_fit": 223236317224.41766
+       },
+       {
+        "epoch": 39,
+        "unique": 5979897,
+        "best_fit": 223236317224.41766
+       },
+       {
+        "epoch": 40,
+        "unique": 6101777,
+        "best_fit": 223236317224.41766
+       },
+       {
+        "epoch": 41,
+        "unique": 6218598,
+        "best_fit": 223236317224.41766
+       },
+       {
+        "epoch": 42,
+        "unique": 6345367,
+        "best_fit": 223236317224.41766
+       },
+       {
+        "epoch": 43,
+        "unique": 6475236,
+        "best_fit": 223236317224.41766
+       },
+       {
+        "epoch": 44,
+        "unique": 6597254,
+        "best_fit": 223236317224.41766
+       },
+       {
+        "epoch": 45,
+        "unique": 6723837,
+        "best_fit": 223236317224.41766
+       },
+       {
+        "epoch": 46,
+        "unique": 6862568,
+        "best_fit": 223236317224.41766
+       },
+       {
+        "epoch": 47,
+        "unique": 6997974,
+        "best_fit": 223236317224.41766
+       },
+       {
+        "epoch": 48,
+        "unique": 7122690,
+        "best_fit": 223236317224.41766
+       },
+       {
+        "epoch": 49,
+        "unique": 7249939,
+        "best_fit": 223236317224.41766
+       },
+       {
+        "epoch": 50,
+        "unique": 7385030,
+        "best_fit": 223236317224.41766
+       },
+       {
+        "epoch": 51,
+        "unique": 7514086,
+        "best_fit": 223236317224.41766
+       },
+       {
+        "epoch": 52,
+        "unique": 7636881,
+        "best_fit": 223236317224.41766
+       },
+       {
+        "epoch": 53,
+        "unique": 7762384,
+        "best_fit": 223236317224.41766
+       },
+       {
+        "epoch": 54,
+        "unique": 7893297,
+        "best_fit": 223236317224.41766
+       },
+       {
+        "epoch": 55,
+        "unique": 8021356,
+        "best_fit": 223236317224.41766
+       }
+      ]
+     }
+    },
+    "s2": {
+     "seed": 20260901,
+     "layout": "lnfdg-,yehcrstmaoiupxqbwv.k'jz",
+     "fit": 223236317224.4182,
+     "budget_requested": 10000000,
+     "unique_evals": 9902351,
+     "islands": 40,
+     "epochs_run": 55,
+     "convergence": {
+      "epochs_run": 55,
+      "unique_evals": 9902351,
+      "champion_fitness": 223236317224.41766,
+      "last_epoch_that_improved_the_champion": 4,
+      "epochs_since_last_improvement": 51,
+      "islands": 40,
+      "islands_within_0.01pct_of_champion": 40,
+      "islands_within_0.10pct_of_champion": 40,
+      "island_best_spread_pct_of_champion": 0.0,
+      "best_so_far_curve": [
+       {
+        "epoch": 1,
+        "unique": 368111,
+        "best_fit": 223520479613.20023
+       },
+       {
+        "epoch": 2,
+        "unique": 660473,
+        "best_fit": 223419197807.30225
+       },
+       {
+        "epoch": 3,
+        "unique": 919438,
+        "best_fit": 223419197807.30225
+       },
+       {
+        "epoch": 4,
+        "unique": 1158033,
+        "best_fit": 223236317224.41766
+       },
+       {
+        "epoch": 5,
+        "unique": 1382867,
+        "best_fit": 223236317224.41766
+       },
+       {
+        "epoch": 6,
+        "unique": 1611469,
+        "best_fit": 223236317224.41766
+       },
+       {
+        "epoch": 7,
+        "unique": 1827428,
+        "best_fit": 223236317224.41766
+       },
+       {
+        "epoch": 8,
+        "unique": 2021356,
+        "best_fit": 223236317224.41766
+       },
+       {
+        "epoch": 9,
+        "unique": 2225171,
+        "best_fit": 223236317224.41766
+       },
+       {
+        "epoch": 10,
+        "unique": 2402237,
+        "best_fit": 223236317224.41766
+       },
+       {
+        "epoch": 11,
+        "unique": 2586173,
+        "best_fit": 223236317224.41766
+       },
+       {
+        "epoch": 12,
+        "unique": 2771162,
+        "best_fit": 223236317224.41766
+       },
+       {
+        "epoch": 13,
+        "unique": 2953345,
+        "best_fit": 223236317224.41766
+       },
+       {
+        "epoch": 14,
+        "unique": 3139840,
+        "best_fit": 223236317224.41766
+       },
+       {
+        "epoch": 15,
+        "unique": 3319276,
+        "best_fit": 223236317224.41766
+       },
+       {
+        "epoch": 16,
+        "unique": 3491516,
+        "best_fit": 223236317224.41766
+       },
+       {
+        "epoch": 17,
+        "unique": 3669174,
+        "best_fit": 223236317224.41766
+       },
+       {
+        "epoch": 18,
+        "unique": 3832991,
+        "best_fit": 223236317224.41766
+       },
+       {
+        "epoch": 19,
+        "unique": 4005997,
+        "best_fit": 223236317224.41766
+       },
+       {
+        "epoch": 20,
+        "unique": 4182866,
+        "best_fit": 223236317224.41766
+       },
+       {
+        "epoch": 21,
+        "unique": 4361253,
+        "best_fit": 223236317224.41766
+       },
+       {
+        "epoch": 22,
+        "unique": 4541317,
+        "best_fit": 223236317224.41766
+       },
+       {
+        "epoch": 23,
+        "unique": 4712142,
+        "best_fit": 223236317224.41766
+       },
+       {
+        "epoch": 24,
+        "unique": 4890636,
+        "best_fit": 223236317224.41766
+       },
+       {
+        "epoch": 25,
+        "unique": 5055242,
+        "best_fit": 223236317224.41766
+       },
+       {
+        "epoch": 26,
+        "unique": 5227075,
+        "best_fit": 223236317224.41766
+       },
+       {
+        "epoch": 27,
+        "unique": 5391015,
+        "best_fit": 223236317224.41766
+       },
+       {
+        "epoch": 28,
+        "unique": 5558300,
+        "best_fit": 223236317224.41766
+       },
+       {
+        "epoch": 29,
+        "unique": 5724353,
+        "best_fit": 223236317224.41766
+       },
+       {
+        "epoch": 30,
+        "unique": 5893963,
+        "best_fit": 223236317224.41766
+       },
+       {
+        "epoch": 31,
+        "unique": 6066947,
+        "best_fit": 223236317224.41766
+       },
+       {
+        "epoch": 32,
+        "unique": 6224162,
+        "best_fit": 223236317224.41766
+       },
+       {
+        "epoch": 33,
+        "unique": 6384882,
+        "best_fit": 223236317224.41766
+       },
+       {
+        "epoch": 34,
+        "unique": 6545464,
+        "best_fit": 223236317224.41766
+       },
+       {
+        "epoch": 35,
+        "unique": 6710301,
+        "best_fit": 223236317224.41766
+       },
+       {
+        "epoch": 36,
+        "unique": 6876805,
+        "best_fit": 223236317224.41766
+       },
+       {
+        "epoch": 37,
+        "unique": 7044336,
+        "best_fit": 223236317224.41766
+       },
+       {
+        "epoch": 38,
+        "unique": 7218549,
+        "best_fit": 223236317224.41766
+       },
+       {
+        "epoch": 39,
+        "unique": 7375157,
+        "best_fit": 223236317224.41766
+       },
+       {
+        "epoch": 40,
+        "unique": 7546568,
+        "best_fit": 223236317224.41766
+       },
+       {
+        "epoch": 41,
+        "unique": 7711214,
+        "best_fit": 223236317224.41766
+       },
+       {
+        "epoch": 42,
+        "unique": 7871474,
+        "best_fit": 223236317224.41766
+       },
+       {
+        "epoch": 43,
+        "unique": 8029587,
+        "best_fit": 223236317224.41766
+       },
+       {
+        "epoch": 44,
+        "unique": 8197263,
+        "best_fit": 223236317224.41766
+       },
+       {
+        "epoch": 45,
+        "unique": 8344408,
+        "best_fit": 223236317224.41766
+       },
+       {
+        "epoch": 46,
+        "unique": 8498771,
+        "best_fit": 223236317224.41766
+       },
+       {
+        "epoch": 47,
+        "unique": 8657984,
+        "best_fit": 223236317224.41766
+       },
+       {
+        "epoch": 48,
+        "unique": 8813677,
+        "best_fit": 223236317224.41766
+       },
+       {
+        "epoch": 49,
+        "unique": 8963942,
+        "best_fit": 223236317224.41766
+       },
+       {
+        "epoch": 50,
+        "unique": 9124067,
+        "best_fit": 223236317224.41766
+       },
+       {
+        "epoch": 51,
+        "unique": 9293557,
+        "best_fit": 223236317224.41766
+       },
+       {
+        "epoch": 52,
+        "unique": 9450618,
+        "best_fit": 223236317224.41766
+       },
+       {
+        "epoch": 53,
+        "unique": 9600852,
+        "best_fit": 223236317224.41766
+       },
+       {
+        "epoch": 54,
+        "unique": 9758538,
+        "best_fit": 223236317224.41766
+       },
+       {
+        "epoch": 55,
+        "unique": 9902351,
+        "best_fit": 223236317224.41766
+       }
+      ]
+     }
+    }
+   },
+   "COMMUNITY": {
+    "s1": {
+     "seed": 20260728,
+     "layout": "mgndy-lea.tpscbkrouiwzxfqvh'j,",
+     "fit": 219828038256.7244,
+     "budget_requested": 10000000,
+     "unique_evals": 9229103,
+     "islands": 40,
+     "epochs_run": 55,
+     "convergence": {
+      "epochs_run": 55,
+      "unique_evals": 9229103,
+      "champion_fitness": 219828038256.72308,
+      "last_epoch_that_improved_the_champion": 8,
+      "epochs_since_last_improvement": 47,
+      "islands": 40,
+      "islands_within_0.01pct_of_champion": 40,
+      "islands_within_0.10pct_of_champion": 40,
+      "island_best_spread_pct_of_champion": 0.0,
+      "best_so_far_curve": [
+       {
+        "epoch": 1,
+        "unique": 368099,
+        "best_fit": 220775767619.66263
+       },
+       {
+        "epoch": 2,
+        "unique": 593829,
+        "best_fit": 220059502418.5568
+       },
+       {
+        "epoch": 3,
+        "unique": 790766,
+        "best_fit": 220059502418.5568
+       },
+       {
+        "epoch": 4,
+        "unique": 991915,
+        "best_fit": 219922279010.90512
+       },
+       {
+        "epoch": 5,
+        "unique": 1192462,
+        "best_fit": 219922279010.90512
+       },
+       {
+        "epoch": 6,
+        "unique": 1370466,
+        "best_fit": 219897961067.39157
+       },
+       {
+        "epoch": 7,
+        "unique": 1525046,
+        "best_fit": 219897961067.39157
+       },
+       {
+        "epoch": 8,
+        "unique": 1724482,
+        "best_fit": 219828038256.72308
+       },
+       {
+        "epoch": 9,
+        "unique": 1894968,
+        "best_fit": 219828038256.72308
+       },
+       {
+        "epoch": 10,
+        "unique": 2066411,
+        "best_fit": 219828038256.72308
+       },
+       {
+        "epoch": 11,
+        "unique": 2239480,
+        "best_fit": 219828038256.72308
+       },
+       {
+        "epoch": 12,
+        "unique": 2410090,
+        "best_fit": 219828038256.72308
+       },
+       {
+        "epoch": 13,
+        "unique": 2588040,
+        "best_fit": 219828038256.72308
+       },
+       {
+        "epoch": 14,
+        "unique": 2762500,
+        "best_fit": 219828038256.72308
+       },
+       {
+        "epoch": 15,
+        "unique": 2933903,
+        "best_fit": 219828038256.72308
+       },
+       {
+        "epoch": 16,
+        "unique": 3113662,
+        "best_fit": 219828038256.72308
+       },
+       {
+        "epoch": 17,
+        "unique": 3287200,
+        "best_fit": 219828038256.72308
+       },
+       {
+        "epoch": 18,
+        "unique": 3428727,
+        "best_fit": 219828038256.72308
+       },
+       {
+        "epoch": 19,
+        "unique": 3590770,
+        "best_fit": 219828038256.72308
+       },
+       {
+        "epoch": 20,
+        "unique": 3753921,
+        "best_fit": 219828038256.72308
+       },
+       {
+        "epoch": 21,
+        "unique": 3907689,
+        "best_fit": 219828038256.72308
+       },
+       {
+        "epoch": 22,
+        "unique": 4075942,
+        "best_fit": 219828038256.72308
+       },
+       {
+        "epoch": 23,
+        "unique": 4235661,
+        "best_fit": 219828038256.72308
+       },
+       {
+        "epoch": 24,
+        "unique": 4385310,
+        "best_fit": 219828038256.72308
+       },
+       {
+        "epoch": 25,
+        "unique": 4541560,
+        "best_fit": 219828038256.72308
+       },
+       {
+        "epoch": 26,
+        "unique": 4699882,
+        "best_fit": 219828038256.72308
+       },
+       {
+        "epoch": 27,
+        "unique": 4872808,
+        "best_fit": 219828038256.72308
+       },
+       {
+        "epoch": 28,
+        "unique": 5040517,
+        "best_fit": 219828038256.72308
+       },
+       {
+        "epoch": 29,
+        "unique": 5193613,
+        "best_fit": 219828038256.72308
+       },
+       {
+        "epoch": 30,
+        "unique": 5352052,
+        "best_fit": 219828038256.72308
+       },
+       {
+        "epoch": 31,
+        "unique": 5511763,
+        "best_fit": 219828038256.72308
+       },
+       {
+        "epoch": 32,
+        "unique": 5674273,
+        "best_fit": 219828038256.72308
+       },
+       {
+        "epoch": 33,
+        "unique": 5836197,
+        "best_fit": 219828038256.72308
+       },
+       {
+        "epoch": 34,
+        "unique": 5992565,
+        "best_fit": 219828038256.72308
+       },
+       {
+        "epoch": 35,
+        "unique": 6152904,
+        "best_fit": 219828038256.72308
+       },
+       {
+        "epoch": 36,
+        "unique": 6312014,
+        "best_fit": 219828038256.72308
+       },
+       {
+        "epoch": 37,
+        "unique": 6463669,
+        "best_fit": 219828038256.72308
+       },
+       {
+        "epoch": 38,
+        "unique": 6619890,
+        "best_fit": 219828038256.72308
+       },
+       {
+        "epoch": 39,
+        "unique": 6770560,
+        "best_fit": 219828038256.72308
+       },
+       {
+        "epoch": 40,
+        "unique": 6923768,
+        "best_fit": 219828038256.72308
+       },
+       {
+        "epoch": 41,
+        "unique": 7080122,
+        "best_fit": 219828038256.72308
+       },
+       {
+        "epoch": 42,
+        "unique": 7233336,
+        "best_fit": 219828038256.72308
+       },
+       {
+        "epoch": 43,
+        "unique": 7387892,
+        "best_fit": 219828038256.72308
+       },
+       {
+        "epoch": 44,
+        "unique": 7530577,
+        "best_fit": 219828038256.72308
+       },
+       {
+        "epoch": 45,
+        "unique": 7696042,
+        "best_fit": 219828038256.72308
+       },
+       {
+        "epoch": 46,
+        "unique": 7857767,
+        "best_fit": 219828038256.72308
+       },
+       {
+        "epoch": 47,
+        "unique": 8012303,
+        "best_fit": 219828038256.72308
+       },
+       {
+        "epoch": 48,
+        "unique": 8168717,
+        "best_fit": 219828038256.72308
+       },
+       {
+        "epoch": 49,
+        "unique": 8316311,
+        "best_fit": 219828038256.72308
+       },
+       {
+        "epoch": 50,
+        "unique": 8467502,
+        "best_fit": 219828038256.72308
+       },
+       {
+        "epoch": 51,
+        "unique": 8614155,
+        "best_fit": 219828038256.72308
+       },
+       {
+        "epoch": 52,
+        "unique": 8768656,
+        "best_fit": 219828038256.72308
+       },
+       {
+        "epoch": 53,
+        "unique": 8927728,
+        "best_fit": 219828038256.72308
+       },
+       {
+        "epoch": 54,
+        "unique": 9078606,
+        "best_fit": 219828038256.72308
+       },
+       {
+        "epoch": 55,
+        "unique": 9229103,
+        "best_fit": 219828038256.72308
+       }
+      ]
+     }
+    },
+    "s2": {
+     "seed": 20260901,
+     "layout": "mgndy-lea.tpscbkrouiwzxfqvh'j,",
+     "fit": 219828038256.7244,
+     "budget_requested": 10000000,
+     "unique_evals": 9992986,
+     "islands": 40,
+     "epochs_run": 55,
+     "convergence": {
+      "epochs_run": 55,
+      "unique_evals": 9992986,
+      "champion_fitness": 219828038256.72308,
+      "last_epoch_that_improved_the_champion": 11,
+      "epochs_since_last_improvement": 44,
+      "islands": 40,
+      "islands_within_0.01pct_of_champion": 40,
+      "islands_within_0.10pct_of_champion": 40,
+      "island_best_spread_pct_of_champion": 0.0,
+      "best_so_far_curve": [
+       {
+        "epoch": 1,
+        "unique": 368110,
+        "best_fit": 220713398474.09683
+       },
+       {
+        "epoch": 2,
+        "unique": 674837,
+        "best_fit": 220463725161.84427
+       },
+       {
+        "epoch": 3,
+        "unique": 946114,
+        "best_fit": 220353057445.78726
+       },
+       {
+        "epoch": 4,
+        "unique": 1192994,
+        "best_fit": 219920822380.1181
+       },
+       {
+        "epoch": 5,
+        "unique": 1426689,
+        "best_fit": 219920822380.1181
+       },
+       {
+        "epoch": 6,
+        "unique": 1649482,
+        "best_fit": 219920822380.1181
+       },
+       {
+        "epoch": 7,
+        "unique": 1864284,
+        "best_fit": 219920822380.1181
+       },
+       {
+        "epoch": 8,
+        "unique": 2063039,
+        "best_fit": 219920822380.1181
+       },
+       {
+        "epoch": 9,
+        "unique": 2264174,
+        "best_fit": 219920822380.1181
+       },
+       {
+        "epoch": 10,
+        "unique": 2452122,
+        "best_fit": 219895740789.9143
+       },
+       {
+        "epoch": 11,
+        "unique": 2654553,
+        "best_fit": 219828038256.72308
+       },
+       {
+        "epoch": 12,
+        "unique": 2857319,
+        "best_fit": 219828038256.72308
+       },
+       {
+        "epoch": 13,
+        "unique": 3047792,
+        "best_fit": 219828038256.72308
+       },
+       {
+        "epoch": 14,
+        "unique": 3238842,
+        "best_fit": 219828038256.72308
+       },
+       {
+        "epoch": 15,
+        "unique": 3432101,
+        "best_fit": 219828038256.72308
+       },
+       {
+        "epoch": 16,
+        "unique": 3621990,
+        "best_fit": 219828038256.72308
+       },
+       {
+        "epoch": 17,
+        "unique": 3807119,
+        "best_fit": 219828038256.72308
+       },
+       {
+        "epoch": 18,
+        "unique": 3984339,
+        "best_fit": 219828038256.72308
+       },
+       {
+        "epoch": 19,
+        "unique": 4155460,
+        "best_fit": 219828038256.72308
+       },
+       {
+        "epoch": 20,
+        "unique": 4330330,
+        "best_fit": 219828038256.72308
+       },
+       {
+        "epoch": 21,
+        "unique": 4490916,
+        "best_fit": 219828038256.72308
+       },
+       {
+        "epoch": 22,
+        "unique": 4664531,
+        "best_fit": 219828038256.72308
+       },
+       {
+        "epoch": 23,
+        "unique": 4832102,
+        "best_fit": 219828038256.72308
+       },
+       {
+        "epoch": 24,
+        "unique": 5001645,
+        "best_fit": 219828038256.72308
+       },
+       {
+        "epoch": 25,
+        "unique": 5174612,
+        "best_fit": 219828038256.72308
+       },
+       {
+        "epoch": 26,
+        "unique": 5346022,
+        "best_fit": 219828038256.72308
+       },
+       {
+        "epoch": 27,
+        "unique": 5521332,
+        "best_fit": 219828038256.72308
+       },
+       {
+        "epoch": 28,
+        "unique": 5694004,
+        "best_fit": 219828038256.72308
+       },
+       {
+        "epoch": 29,
+        "unique": 5863017,
+        "best_fit": 219828038256.72308
+       },
+       {
+        "epoch": 30,
+        "unique": 6031414,
+        "best_fit": 219828038256.72308
+       },
+       {
+        "epoch": 31,
+        "unique": 6193284,
+        "best_fit": 219828038256.72308
+       },
+       {
+        "epoch": 32,
+        "unique": 6358207,
+        "best_fit": 219828038256.72308
+       },
+       {
+        "epoch": 33,
+        "unique": 6509049,
+        "best_fit": 219828038256.72308
+       },
+       {
+        "epoch": 34,
+        "unique": 6657761,
+        "best_fit": 219828038256.72308
+       },
+       {
+        "epoch": 35,
+        "unique": 6821165,
+        "best_fit": 219828038256.72308
+       },
+       {
+        "epoch": 36,
+        "unique": 6976193,
+        "best_fit": 219828038256.72308
+       },
+       {
+        "epoch": 37,
+        "unique": 7142702,
+        "best_fit": 219828038256.72308
+       },
+       {
+        "epoch": 38,
+        "unique": 7324534,
+        "best_fit": 219828038256.72308
+       },
+       {
+        "epoch": 39,
+        "unique": 7487208,
+        "best_fit": 219828038256.72308
+       },
+       {
+        "epoch": 40,
+        "unique": 7654756,
+        "best_fit": 219828038256.72308
+       },
+       {
+        "epoch": 41,
+        "unique": 7824117,
+        "best_fit": 219828038256.72308
+       },
+       {
+        "epoch": 42,
+        "unique": 7976053,
+        "best_fit": 219828038256.72308
+       },
+       {
+        "epoch": 43,
+        "unique": 8136141,
+        "best_fit": 219828038256.72308
+       },
+       {
+        "epoch": 44,
+        "unique": 8290393,
+        "best_fit": 219828038256.72308
+       },
+       {
+        "epoch": 45,
+        "unique": 8446410,
+        "best_fit": 219828038256.72308
+       },
+       {
+        "epoch": 46,
+        "unique": 8603516,
+        "best_fit": 219828038256.72308
+       },
+       {
+        "epoch": 47,
+        "unique": 8761811,
+        "best_fit": 219828038256.72308
+       },
+       {
+        "epoch": 48,
+        "unique": 8913461,
+        "best_fit": 219828038256.72308
+       },
+       {
+        "epoch": 49,
+        "unique": 9075594,
+        "best_fit": 219828038256.72308
+       },
+       {
+        "epoch": 50,
+        "unique": 9229953,
+        "best_fit": 219828038256.72308
+       },
+       {
+        "epoch": 51,
+        "unique": 9388809,
+        "best_fit": 219828038256.72308
+       },
+       {
+        "epoch": 52,
+        "unique": 9540894,
+        "best_fit": 219828038256.72308
+       },
+       {
+        "epoch": 53,
+        "unique": 9689388,
+        "best_fit": 219828038256.72308
+       },
+       {
+        "epoch": 54,
+        "unique": 9842099,
+        "best_fit": 219828038256.72308
+       },
+       {
+        "epoch": 55,
+        "unique": 9992986,
+        "best_fit": 219828038256.72308
+       }
+      ]
+     }
+    }
+   },
+   "POOL": {
+    "s1": {
+     "seed": 20260728,
+     "layout": "pctsm.reayfgdlk-niuobzvwx,hqj'",
+     "fit": 235438602522.19055,
+     "budget_requested": 10000000,
+     "unique_evals": 9847686,
+     "islands": 40,
+     "epochs_run": 55,
+     "convergence": {
+      "epochs_run": 55,
+      "unique_evals": 9847686,
+      "champion_fitness": 235438602522.18887,
+      "last_epoch_that_improved_the_champion": 6,
+      "epochs_since_last_improvement": 49,
+      "islands": 40,
+      "islands_within_0.01pct_of_champion": 40,
+      "islands_within_0.10pct_of_champion": 40,
+      "island_best_spread_pct_of_champion": 0.0,
+      "best_so_far_curve": [
+       {
+        "epoch": 1,
+        "unique": 368103,
+        "best_fit": 236298377866.30054
+       },
+       {
+        "epoch": 2,
+        "unique": 670898,
+        "best_fit": 235774400192.61646
+       },
+       {
+        "epoch": 3,
+        "unique": 926147,
+        "best_fit": 235663353396.57755
+       },
+       {
+        "epoch": 4,
+        "unique": 1168445,
+        "best_fit": 235589133146.37332
+       },
+       {
+        "epoch": 5,
+        "unique": 1386442,
+        "best_fit": 235589133146.37332
+       },
+       {
+        "epoch": 6,
+        "unique": 1597269,
+        "best_fit": 235438602522.18887
+       },
+       {
+        "epoch": 7,
+        "unique": 1798101,
+        "best_fit": 235438602522.18887
+       },
+       {
+        "epoch": 8,
+        "unique": 1998811,
+        "best_fit": 235438602522.18887
+       },
+       {
+        "epoch": 9,
+        "unique": 2200716,
+        "best_fit": 235438602522.18887
+       },
+       {
+        "epoch": 10,
+        "unique": 2387918,
+        "best_fit": 235438602522.18887
+       },
+       {
+        "epoch": 11,
+        "unique": 2582236,
+        "best_fit": 235438602522.18887
+       },
+       {
+        "epoch": 12,
+        "unique": 2771684,
+        "best_fit": 235438602522.18887
+       },
+       {
+        "epoch": 13,
+        "unique": 2959851,
+        "best_fit": 235438602522.18887
+       },
+       {
+        "epoch": 14,
+        "unique": 3139595,
+        "best_fit": 235438602522.18887
+       },
+       {
+        "epoch": 15,
+        "unique": 3317309,
+        "best_fit": 235438602522.18887
+       },
+       {
+        "epoch": 16,
+        "unique": 3496763,
+        "best_fit": 235438602522.18887
+       },
+       {
+        "epoch": 17,
+        "unique": 3664414,
+        "best_fit": 235438602522.18887
+       },
+       {
+        "epoch": 18,
+        "unique": 3843751,
+        "best_fit": 235438602522.18887
+       },
+       {
+        "epoch": 19,
+        "unique": 4014341,
+        "best_fit": 235438602522.18887
+       },
+       {
+        "epoch": 20,
+        "unique": 4180588,
+        "best_fit": 235438602522.18887
+       },
+       {
+        "epoch": 21,
+        "unique": 4345624,
+        "best_fit": 235438602522.18887
+       },
+       {
+        "epoch": 22,
+        "unique": 4524077,
+        "best_fit": 235438602522.18887
+       },
+       {
+        "epoch": 23,
+        "unique": 4700451,
+        "best_fit": 235438602522.18887
+       },
+       {
+        "epoch": 24,
+        "unique": 4868510,
+        "best_fit": 235438602522.18887
+       },
+       {
+        "epoch": 25,
+        "unique": 5036315,
+        "best_fit": 235438602522.18887
+       },
+       {
+        "epoch": 26,
+        "unique": 5213336,
+        "best_fit": 235438602522.18887
+       },
+       {
+        "epoch": 27,
+        "unique": 5391062,
+        "best_fit": 235438602522.18887
+       },
+       {
+        "epoch": 28,
+        "unique": 5554172,
+        "best_fit": 235438602522.18887
+       },
+       {
+        "epoch": 29,
+        "unique": 5723670,
+        "best_fit": 235438602522.18887
+       },
+       {
+        "epoch": 30,
+        "unique": 5891539,
+        "best_fit": 235438602522.18887
+       },
+       {
+        "epoch": 31,
+        "unique": 6045442,
+        "best_fit": 235438602522.18887
+       },
+       {
+        "epoch": 32,
+        "unique": 6223210,
+        "best_fit": 235438602522.18887
+       },
+       {
+        "epoch": 33,
+        "unique": 6384810,
+        "best_fit": 235438602522.18887
+       },
+       {
+        "epoch": 34,
+        "unique": 6550315,
+        "best_fit": 235438602522.18887
+       },
+       {
+        "epoch": 35,
+        "unique": 6717622,
+        "best_fit": 235438602522.18887
+       },
+       {
+        "epoch": 36,
+        "unique": 6879039,
+        "best_fit": 235438602522.18887
+       },
+       {
+        "epoch": 37,
+        "unique": 7044172,
+        "best_fit": 235438602522.18887
+       },
+       {
+        "epoch": 38,
+        "unique": 7197649,
+        "best_fit": 235438602522.18887
+       },
+       {
+        "epoch": 39,
+        "unique": 7361985,
+        "best_fit": 235438602522.18887
+       },
+       {
+        "epoch": 40,
+        "unique": 7513818,
+        "best_fit": 235438602522.18887
+       },
+       {
+        "epoch": 41,
+        "unique": 7679792,
+        "best_fit": 235438602522.18887
+       },
+       {
+        "epoch": 42,
+        "unique": 7831467,
+        "best_fit": 235438602522.18887
+       },
+       {
+        "epoch": 43,
+        "unique": 7984321,
+        "best_fit": 235438602522.18887
+       },
+       {
+        "epoch": 44,
+        "unique": 8141955,
+        "best_fit": 235438602522.18887
+       },
+       {
+        "epoch": 45,
+        "unique": 8295991,
+        "best_fit": 235438602522.18887
+       },
+       {
+        "epoch": 46,
+        "unique": 8452977,
+        "best_fit": 235438602522.18887
+       },
+       {
+        "epoch": 47,
+        "unique": 8607123,
+        "best_fit": 235438602522.18887
+       },
+       {
+        "epoch": 48,
+        "unique": 8763098,
+        "best_fit": 235438602522.18887
+       },
+       {
+        "epoch": 49,
+        "unique": 8904206,
+        "best_fit": 235438602522.18887
+       },
+       {
+        "epoch": 50,
+        "unique": 9058928,
+        "best_fit": 235438602522.18887
+       },
+       {
+        "epoch": 51,
+        "unique": 9206809,
+        "best_fit": 235438602522.18887
+       },
+       {
+        "epoch": 52,
+        "unique": 9358895,
+        "best_fit": 235438602522.18887
+       },
+       {
+        "epoch": 53,
+        "unique": 9520003,
+        "best_fit": 235438602522.18887
+       },
+       {
+        "epoch": 54,
+        "unique": 9687494,
+        "best_fit": 235438602522.18887
+       },
+       {
+        "epoch": 55,
+        "unique": 9847686,
+        "best_fit": 235438602522.18887
+       }
+      ]
+     }
+    },
+    "s2": {
+     "seed": 20260901,
+     "layout": "pctsm.reayfgdlk-niuobzvwx,hqj'",
+     "fit": 235438602522.19055,
+     "budget_requested": 10000000,
+     "unique_evals": 9415303,
+     "islands": 40,
+     "epochs_run": 55,
+     "convergence": {
+      "epochs_run": 55,
+      "unique_evals": 9415303,
+      "champion_fitness": 235438602522.18887,
+      "last_epoch_that_improved_the_champion": 10,
+      "epochs_since_last_improvement": 45,
+      "islands": 40,
+      "islands_within_0.01pct_of_champion": 40,
+      "islands_within_0.10pct_of_champion": 40,
+      "island_best_spread_pct_of_champion": 0.0,
+      "best_so_far_curve": [
+       {
+        "epoch": 1,
+        "unique": 368119,
+        "best_fit": 235920220504.10046
+       },
+       {
+        "epoch": 2,
+        "unique": 619388,
+        "best_fit": 235750825710.7132
+       },
+       {
+        "epoch": 3,
+        "unique": 837793,
+        "best_fit": 235721977701.2588
+       },
+       {
+        "epoch": 4,
+        "unique": 1048387,
+        "best_fit": 235552359938.9897
+       },
+       {
+        "epoch": 5,
+        "unique": 1249108,
+        "best_fit": 235552359938.9897
+       },
+       {
+        "epoch": 6,
+        "unique": 1440578,
+        "best_fit": 235513728182.56366
+       },
+       {
+        "epoch": 7,
+        "unique": 1638028,
+        "best_fit": 235513728182.56366
+       },
+       {
+        "epoch": 8,
+        "unique": 1824027,
+        "best_fit": 235513728182.56366
+       },
+       {
+        "epoch": 9,
+        "unique": 2012015,
+        "best_fit": 235513728182.56366
+       },
+       {
+        "epoch": 10,
+        "unique": 2188107,
+        "best_fit": 235438602522.18887
+       },
+       {
+        "epoch": 11,
+        "unique": 2359282,
+        "best_fit": 235438602522.18887
+       },
+       {
+        "epoch": 12,
+        "unique": 2544396,
+        "best_fit": 235438602522.18887
+       },
+       {
+        "epoch": 13,
+        "unique": 2730652,
+        "best_fit": 235438602522.18887
+       },
+       {
+        "epoch": 14,
+        "unique": 2905465,
+        "best_fit": 235438602522.18887
+       },
+       {
+        "epoch": 15,
+        "unique": 3091495,
+        "best_fit": 235438602522.18887
+       },
+       {
+        "epoch": 16,
+        "unique": 3262055,
+        "best_fit": 235438602522.18887
+       },
+       {
+        "epoch": 17,
+        "unique": 3425754,
+        "best_fit": 235438602522.18887
+       },
+       {
+        "epoch": 18,
+        "unique": 3587712,
+        "best_fit": 235438602522.18887
+       },
+       {
+        "epoch": 19,
+        "unique": 3750951,
+        "best_fit": 235438602522.18887
+       },
+       {
+        "epoch": 20,
+        "unique": 3915485,
+        "best_fit": 235438602522.18887
+       },
+       {
+        "epoch": 21,
+        "unique": 4081765,
+        "best_fit": 235438602522.18887
+       },
+       {
+        "epoch": 22,
+        "unique": 4251538,
+        "best_fit": 235438602522.18887
+       },
+       {
+        "epoch": 23,
+        "unique": 4412127,
+        "best_fit": 235438602522.18887
+       },
+       {
+        "epoch": 24,
+        "unique": 4575895,
+        "best_fit": 235438602522.18887
+       },
+       {
+        "epoch": 25,
+        "unique": 4739522,
+        "best_fit": 235438602522.18887
+       },
+       {
+        "epoch": 26,
+        "unique": 4911859,
+        "best_fit": 235438602522.18887
+       },
+       {
+        "epoch": 27,
+        "unique": 5066720,
+        "best_fit": 235438602522.18887
+       },
+       {
+        "epoch": 28,
+        "unique": 5226479,
+        "best_fit": 235438602522.18887
+       },
+       {
+        "epoch": 29,
+        "unique": 5388187,
+        "best_fit": 235438602522.18887
+       },
+       {
+        "epoch": 30,
+        "unique": 5548629,
+        "best_fit": 235438602522.18887
+       },
+       {
+        "epoch": 31,
+        "unique": 5711357,
+        "best_fit": 235438602522.18887
+       },
+       {
+        "epoch": 32,
+        "unique": 5876596,
+        "best_fit": 235438602522.18887
+       },
+       {
+        "epoch": 33,
+        "unique": 6022420,
+        "best_fit": 235438602522.18887
+       },
+       {
+        "epoch": 34,
+        "unique": 6166115,
+        "best_fit": 235438602522.18887
+       },
+       {
+        "epoch": 35,
+        "unique": 6334641,
+        "best_fit": 235438602522.18887
+       },
+       {
+        "epoch": 36,
+        "unique": 6488556,
+        "best_fit": 235438602522.18887
+       },
+       {
+        "epoch": 37,
+        "unique": 6653907,
+        "best_fit": 235438602522.18887
+       },
+       {
+        "epoch": 38,
+        "unique": 6803907,
+        "best_fit": 235438602522.18887
+       },
+       {
+        "epoch": 39,
+        "unique": 6956468,
+        "best_fit": 235438602522.18887
+       },
+       {
+        "epoch": 40,
+        "unique": 7113566,
+        "best_fit": 235438602522.18887
+       },
+       {
+        "epoch": 41,
+        "unique": 7279473,
+        "best_fit": 235438602522.18887
+       },
+       {
+        "epoch": 42,
+        "unique": 7432798,
+        "best_fit": 235438602522.18887
+       },
+       {
+        "epoch": 43,
+        "unique": 7594495,
+        "best_fit": 235438602522.18887
+       },
+       {
+        "epoch": 44,
+        "unique": 7756351,
+        "best_fit": 235438602522.18887
+       },
+       {
+        "epoch": 45,
+        "unique": 7899270,
+        "best_fit": 235438602522.18887
+       },
+       {
+        "epoch": 46,
+        "unique": 8054852,
+        "best_fit": 235438602522.18887
+       },
+       {
+        "epoch": 47,
+        "unique": 8201798,
+        "best_fit": 235438602522.18887
+       },
+       {
+        "epoch": 48,
+        "unique": 8346586,
+        "best_fit": 235438602522.18887
+       },
+       {
+        "epoch": 49,
+        "unique": 8499053,
+        "best_fit": 235438602522.18887
+       },
+       {
+        "epoch": 50,
+        "unique": 8656054,
+        "best_fit": 235438602522.18887
+       },
+       {
+        "epoch": 51,
+        "unique": 8811126,
+        "best_fit": 235438602522.18887
+       },
+       {
+        "epoch": 52,
+        "unique": 8960957,
+        "best_fit": 235438602522.18887
+       },
+       {
+        "epoch": 53,
+        "unique": 9110265,
+        "best_fit": 235438602522.18887
+       },
+       {
+        "epoch": 54,
+        "unique": 9264050,
+        "best_fit": 235438602522.18887
+       },
+       {
+        "epoch": 55,
+        "unique": 9415303,
+        "best_fit": 235438602522.18887
+       }
+      ]
+     }
+    }
+   }
+  }
+ },
+ "span": {
+  "AALTO": 19882209551.55304,
+  "COMMUNITY": 35166889158.85571,
+  "POOL": 23589194047.272858
+ },
+ "span_pct_of_zero": {
+  "AALTO": 8.177990305886516,
+  "COMMUNITY": 13.791211266544993,
+  "POOL": 9.106819561331113
+ },
+ "stability": {
+  "seed_to_seed_gap_ms": {
+   "AALTO": 0.0,
+   "COMMUNITY": 0.0,
+   "POOL": 0.0
+  },
+  "seed_to_seed_gap_pct_of_span": {
+   "AALTO": 0.0,
+   "COMMUNITY": 0.0,
+   "POOL": 0.0
+  },
+  "blend_decision_margin": 0.0032844615879752403,
+  "decision_margin_definition": "the smallest gap between two ADJACENT candidates of the 8 on the equal-weight normalized blend \u2014 what the blend must resolve to order them",
+  "anchor_induced_blend_perturbation": 0.0,
+  "normalization_is_stable": true,
+  "verdict": "STABLE: seed-to-seed anchor disagreement perturbs the equal-weight blend by 0.000000, below the 0.003284 decision margin"
+ },
+ "direction_assertions": {
+  "AALTO_optimum_normalizes_to": 1.0,
+  "COMMUNITY_optimum_normalizes_to": 1.0,
+  "POOL_optimum_normalizes_to": 1.0,
+  "qwerty30m_normalized": [
+   0.5648787382296216,
+   0.42429759464395983,
+   0.5239269324169064
+  ],
+  "monotone_faster_is_higher": true
+ },
+ "vs_prior_ceiling_fraction_anchoring": {
+  "AALTO": {
+   "ceiling_fraction_one_best_of_8_candidates": 223477218870.82468,
+   "search_one_conservative": 223236317224.4182,
+   "search_one_best_of_two_seeds": 223236317224.4182,
+   "search_beats_ceiling_by_ms": 240901646.40646362,
+   "search_beats_ceiling_pct_of_search_span": 1.211644237939572,
+   "ceiling_span": 19641307905.146576,
+   "span_ratio_search_over_ceiling": 1.0122650511651181
+  },
+  "COMMUNITY": {
+   "ceiling_fraction_one_best_of_8_candidates": 225010243471.03625,
+   "search_one_conservative": 219828038256.7244,
+   "search_one_best_of_two_seeds": 219828038256.7244,
+   "search_beats_ceiling_by_ms": 5182205214.311859,
+   "search_beats_ceiling_pct_of_search_span": 14.736035339670863,
+   "ceiling_span": 29984683944.543854,
+   "span_ratio_search_over_ceiling": 1.1728284087935112
+  },
+  "POOL": {
+   "ceiling_fraction_one_best_of_8_candidates": 239022507166.35486,
+   "search_one_conservative": 235438602522.19055,
+   "search_one_best_of_two_seeds": 235438602522.19055,
+   "search_beats_ceiling_by_ms": 3583904644.1643066,
+   "search_beats_ceiling_pct_of_search_span": 15.192993185702507,
+   "ceiling_span": 20005289403.10855,
+   "span_ratio_search_over_ceiling": 1.1791478529477017
+  }
+ },
+ "modelled_only": "MODELLED ONLY: fitted surfaces on the .native frame at a BAKED 90 WPM; tau saturated at 1.0, Phase-D cancelled. No layout is promoted or adopted."
+}

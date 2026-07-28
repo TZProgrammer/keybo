@@ -1,0 +1,1031 @@
+{
+ "what": "MODELNORM-1 seed-noise resolution floor, from the surviving per-seed surfaces",
+ "identity": {
+  "models": [
+   "AALTO",
+   "COMMUNITY",
+   "POOL"
+  ],
+  "family": "TRI_PS_FREQ_PRIOR",
+  "frame": "native",
+  "frame_note": "geometry-only (g); the layout-independent b(ngram) term is excluded",
+  "baked_wpm": 90.0,
+  "wpm_caveat": "the arrays are BAKED at 90 WPM and cannot be re-evaluated (7 of 8 per-seed models are gone), so a 90-110 WPM objective is NOT honourable on these columns",
+  "corpus": "blend-v1",
+  "corpus_trigrams": "/tmp/modelnorm/data/corpus/blend-v1/trigrams.txt",
+  "corpus_trigrams_sha256": "19806532ee3567f5afe4311e51f346b6c36375030f473fe3f68a6a3dc21beb61",
+  "surface_dir": "/local/home/zegertho/agent/state/keybo-selmethod/artifacts/old-new-layout-comparison/tri_frequency_old_new_surfaces",
+  "surface_sha256": {
+   "AALTO": "0ec6dbff602d79c28b5e9a6307fce41ddb63b68e846cc5f9c80d4a1896654028",
+   "COMMUNITY": "421712f9999ba86e9e6b61c752422a45c25ad3cbc3ead45589185e3fd33ee10b",
+   "POOL": "284b7c97531311e9cc6d3640792fd43fbe76a77806cb553708f13a93ab19a517"
+  },
+  "native_frame_guard": {
+   "AALTO": {
+    "max_abs_std_minus_native": 0.0,
+    "max_variation_of_delta_over_third_slot": 0.0
+   },
+   "COMMUNITY": {
+    "max_abs_std_minus_native": 121.55301558217269,
+    "max_variation_of_delta_over_third_slot": 1.1368683772161603e-13
+   },
+   "POOL": {
+    "max_abs_std_minus_native": 50.7434916920962,
+    "max_variation_of_delta_over_third_slot": 1.1368683772161603e-13
+   }
+  },
+  "n_trigrams": 24478,
+  "total_trigram_freq": 887147352.0,
+  "tile": 16,
+  "numpy": "2.5.0"
+ },
+ "inventory_of_per_seed_material": {
+  "AALTO_BASE": {
+   "per_seed_conditional_available": [],
+   "per_seed_bigram_available": []
+  },
+  "AALTO_FREQ_PRIOR": {
+   "per_seed_conditional_available": [],
+   "per_seed_bigram_available": []
+  },
+  "AALTO_TRI_PS_FREQ_PRIOR": {
+   "per_seed_conditional_available": [],
+   "per_seed_bigram_available": []
+  },
+  "COMMUNITY_BASE": {
+   "per_seed_conditional_available": [
+    0,
+    1,
+    2
+   ],
+   "per_seed_bigram_available": [
+    0,
+    1,
+    2
+   ]
+  },
+  "COMMUNITY_FREQ_PRIOR": {
+   "per_seed_conditional_available": [],
+   "per_seed_bigram_available": []
+  },
+  "COMMUNITY_TRI_PS_FREQ_PRIOR": {
+   "per_seed_conditional_available": [],
+   "per_seed_bigram_available": []
+  },
+  "POOL_BASE": {
+   "per_seed_conditional_available": [],
+   "per_seed_bigram_available": []
+  },
+  "POOL_FREQ_PRIOR": {
+   "per_seed_conditional_available": [],
+   "per_seed_bigram_available": []
+  },
+  "POOL_TRI_PS_FREQ_PRIOR": {
+   "per_seed_conditional_available": [],
+   "per_seed_bigram_available": []
+  }
+ },
+ "usable_families": [
+  "COMMUNITY_BASE"
+ ],
+ "trap14_note": "per-seed material survives for ONE family only (COMMUNITY_BASE, 3 seeds). Nothing survives for AALTO or POOL, or for TRI_PS_FREQ_PRIOR on any model \u2014 the per-seed models behind 7 of 8 surfaces are gone. So a seed floor exists for exactly one of the three models this arm blends, on a DIFFERENT family than the one it blends.",
+ "results": {
+  "COMMUNITY_BASE": {
+   "positive_control_seedmean_reproduces_shipped_native_max_abs": 0.0,
+   "per_seed_fit_ms": {
+    "keybo-lsb": [
+     227107021089.78088,
+     227746920439.14792,
+     228534079508.66675
+    ],
+    "keybo-lsb+lm": [
+     226723358129.2019,
+     227291756957.69916,
+     228240074611.49802
+    ],
+    "flagship-c3": [
+     225367740061.27155,
+     225978438194.31552,
+     226413441410.4409
+    ],
+    "arm-B": [
+     228601220296.3914,
+     229139447969.36496,
+     229735328820.5742
+    ],
+    "arm-A": [
+     229990716222.37018,
+     229937583967.04294,
+     230570252545.13345
+    ],
+    "graphite": [
+     226485456425.64148,
+     226679938587.67673,
+     227039392270.11014
+    ],
+    "semimak": [
+     227724100652.34943,
+     228063542588.02634,
+     228776304616.63773
+    ],
+    "qwerty30m": [
+     243873101498.96927,
+     243487546787.8018,
+     245708056320.70126
+    ]
+   },
+   "saved_vs_qwerty30m_pct_per_seed": {
+    "keybo-lsb": [
+     6.87491990963146,
+     6.4646535546936,
+     6.989586368962531
+    ],
+    "keybo-lsb+lm": [
+     7.032240646613442,
+     6.651588569421651,
+     7.109242558332651
+    ],
+    "flagship-c3": [
+     7.588110916683421,
+     7.190966776114172,
+     7.852658638541666
+    ],
+    "arm-B": [
+     6.262224537560335,
+     5.892744416592743,
+     6.500693440543626
+    ],
+    "arm-A": [
+     5.692462674756182,
+     5.564951061980827,
+     6.160890286727005
+    ],
+    "graphite": [
+     7.129792078935482,
+     6.902861531055137,
+     7.597904737085437
+    ],
+    "semimak": [
+     6.621886853187087,
+     6.33461727437642,
+     6.891003883879165
+    ],
+    "qwerty30m": [
+     0.0,
+     0.0,
+     0.0
+    ]
+   },
+   "decomposition_on_raw_ms": {
+    "ss_candidate": 7.46826505611591e+20,
+    "ss_seed": 5.600451108074739e+18,
+    "ss_interaction": 1.5877566629879283e+18,
+    "ss_total": 7.540147133826537e+20,
+    "seed_main_effect_share_of_ss": 0.007427509050785028,
+    "candidate_main_effect_share_of_ss": 0.990466753972459,
+    "interaction_share_of_ss": 0.0021057369767559964
+   },
+   "decomposition_on_saved_pct": {
+    "ss_candidate": 125.04483867987685,
+    "ss_seed": 1.0522797605664111,
+    "ss_interaction": 0.2326792151965224,
+    "ss_total": 126.32979765563978,
+    "seed_main_effect_share_of_ss": 0.008329624364908764,
+    "candidate_main_effect_share_of_ss": 0.9898285361046364,
+    "interaction_share_of_ss": 0.0018418395304548708
+   },
+   "scale_note": "saved% divides by qwerty PER SEED, so the reference row is identically zero and the seed MAIN effect is partly removed by construction. The raw-ms decomposition is therefore reported alongside; on blend-v1 the seed share is small on BOTH scales, which is the substantive finding.",
+   "floor_saved_pct_all_rows": {
+    "rows_used": [
+     "keybo-lsb",
+     "keybo-lsb+lm",
+     "flagship-c3",
+     "arm-B",
+     "arm-A",
+     "graphite",
+     "semimak",
+     "qwerty30m"
+    ],
+    "floor_unpaired_max_within_candidate_spread": 0.6950432060302996,
+    "floor_paired_max_difference_spread": 0.6950432060302996,
+    "floor_paired_median_difference_spread": 0.21684081434157898,
+    "paired_over_unpaired_ratio": 1.0,
+    "pairs_resolved_against_the_conservative_paired_floor": 17,
+    "n_pairs": 28,
+    "per_pair": {
+     "keybo-lsb vs keybo-lsb+lm": {
+      "mean_difference": -0.1546373136933846,
+      "per_seed_differences": [
+       -0.15732073698198157,
+       -0.18693501472805174,
+       -0.11965618937012046
+      ],
+      "spread": 0.06727882535793128,
+      "sd": 0.03371958860655172,
+      "sign_agrees_across_seeds": true
+     },
+     "keybo-lsb vs flagship-c3": {
+      "mean_difference": -0.7675254993505559,
+      "per_seed_differences": [
+       -0.7131910070519609,
+       -0.7263132214205719,
+       -0.8630722695791349
+      ],
+      "spread": 0.14988126252717393,
+      "sd": 0.08300564500874982,
+      "sign_agrees_across_seeds": true
+     },
+     "keybo-lsb vs arm-B": {
+      "mean_difference": 0.5578324795302958,
+      "per_seed_differences": [
+       0.6126953720711255,
+       0.5719091381008568,
+       0.4888929284189052
+      ],
+      "spread": 0.12380244365222026,
+      "sd": 0.0630902171572535,
+      "sign_agrees_across_seeds": true
+     },
+     "keybo-lsb vs arm-A": {
+      "mean_difference": 0.970285269941192,
+      "per_seed_differences": [
+       1.1824572348752778,
+       0.8997024927127724,
+       0.8286960822355258
+      ],
+      "spread": 0.35376115263975194,
+      "sd": 0.1871448225578496,
+      "sign_agrees_across_seeds": true
+     },
+     "keybo-lsb vs graphite": {
+      "mean_difference": -0.4337995045961553,
+      "per_seed_differences": [
+       -0.2548721693040221,
+       -0.43820797636153763,
+       -0.6083183681229061
+      ],
+      "spread": 0.35344619881888395,
+      "sd": 0.1767643341637649,
+      "sign_agrees_across_seeds": true
+     },
+     "keybo-lsb vs semimak": {
+      "mean_difference": 0.16055060728163953,
+      "per_seed_differences": [
+       0.253033056444373,
+       0.13003628031717973,
+       0.09858248508336587
+      ],
+      "spread": 0.15445057136100715,
+      "sd": 0.08162161393286621,
+      "sign_agrees_across_seeds": true
+     },
+     "keybo-lsb vs qwerty30m": {
+      "mean_difference": 6.776386611095863,
+      "per_seed_differences": [
+       6.87491990963146,
+       6.4646535546936,
+       6.989586368962531
+      ],
+      "spread": 0.5249328142689311,
+      "sd": 0.2759895343383582,
+      "sign_agrees_across_seeds": true
+     },
+     "keybo-lsb+lm vs flagship-c3": {
+      "mean_difference": -0.6128881856571713,
+      "per_seed_differences": [
+       -0.5558702700699794,
+       -0.5393782066925201,
+       -0.7434160802090144
+      ],
+      "spread": 0.20403787351649427,
+      "sd": 0.11334083765666432,
+      "sign_agrees_across_seeds": true
+     },
+     "keybo-lsb+lm vs arm-B": {
+      "mean_difference": 0.7124697932236804,
+      "per_seed_differences": [
+       0.770016109053107,
+       0.7588441528289085,
+       0.6085491177890257
+      ],
+      "spread": 0.16146699126408137,
+      "sd": 0.09017113306688006,
+      "sign_agrees_across_seeds": true
+     },
+     "keybo-lsb+lm vs arm-A": {
+      "mean_difference": 1.1249225836345766,
+      "per_seed_differences": [
+       1.3397779718572593,
+       1.086637507440824,
+       0.9483522716056463
+      ],
+      "spread": 0.39142570025161305,
+      "sd": 0.19850146094862245,
+      "sign_agrees_across_seeds": true
+     },
+     "keybo-lsb+lm vs graphite": {
+      "mean_difference": -0.27916219090277067,
+      "per_seed_differences": [
+       -0.09755143232204055,
+       -0.2512729616334859,
+       -0.4886621787527856
+      ],
+      "spread": 0.39111074643074506,
+      "sd": 0.19704126680807169,
+      "sign_agrees_across_seeds": true
+     },
+     "keybo-lsb+lm vs semimak": {
+      "mean_difference": 0.3151879209750241,
+      "per_seed_differences": [
+       0.4103537934263546,
+       0.31697129504523147,
+       0.21823867445348633
+      ],
+      "spread": 0.19211511897286826,
+      "sd": 0.09606997476733065,
+      "sign_agrees_across_seeds": true
+     },
+     "keybo-lsb+lm vs qwerty30m": {
+      "mean_difference": 6.9310239247892484,
+      "per_seed_differences": [
+       7.032240646613442,
+       6.651588569421651,
+       7.109242558332651
+      ],
+      "spread": 0.45765398891099984,
+      "sd": 0.2450416535492783,
+      "sign_agrees_across_seeds": true
+     },
+     "flagship-c3 vs arm-B": {
+      "mean_difference": 1.3253579788808516,
+      "per_seed_differences": [
+       1.3258863791230864,
+       1.2982223595214286,
+       1.35196519799804
+      ],
+      "spread": 0.05374283847661143,
+      "sd": 0.026875315384061668,
+      "sign_agrees_across_seeds": true
+     },
+     "flagship-c3 vs arm-A": {
+      "mean_difference": 1.737810769291748,
+      "per_seed_differences": [
+       1.8956482419272387,
+       1.6260157141333442,
+       1.6917683518146607
+      ],
+      "spread": 0.26963252779389446,
+      "sd": 0.1405893067287911,
+      "sign_agrees_across_seeds": true
+     },
+     "flagship-c3 vs graphite": {
+      "mean_difference": 0.3337259947544006,
+      "per_seed_differences": [
+       0.4583188377479388,
+       0.28810524505903423,
+       0.2547539014562288
+      ],
+      "spread": 0.20356493629171002,
+      "sd": 0.1091815480011959,
+      "sign_agrees_across_seeds": true
+     },
+     "flagship-c3 vs semimak": {
+      "mean_difference": 0.9280761066321954,
+      "per_seed_differences": [
+       0.9662240634963339,
+       0.8563495017377516,
+       0.9616547546625007
+      ],
+      "spread": 0.10987456175858235,
+      "sd": 0.062159062356727,
+      "sign_agrees_across_seeds": true
+     },
+     "flagship-c3 vs qwerty30m": {
+      "mean_difference": 7.54391211044642,
+      "per_seed_differences": [
+       7.588110916683421,
+       7.190966776114172,
+       7.852658638541666
+      ],
+      "spread": 0.6616918624274941,
+      "sd": 0.3330528202181652,
+      "sign_agrees_across_seeds": true
+     },
+     "arm-B vs arm-A": {
+      "mean_difference": 0.41245279041089616,
+      "per_seed_differences": [
+       0.5697618628041523,
+       0.3277933546119156,
+       0.33980315381662063
+      ],
+      "spread": 0.2419685081922367,
+      "sd": 0.1363659305404189,
+      "sign_agrees_across_seeds": true
+     },
+     "arm-B vs graphite": {
+      "mean_difference": -0.991631984126451,
+      "per_seed_differences": [
+       -0.8675675413751476,
+       -1.0101171144623944,
+       -1.0972112965418113
+      ],
+      "spread": 0.2296437551666637,
+      "sd": 0.1159324743305958,
+      "sign_agrees_across_seeds": true
+     },
+     "arm-B vs semimak": {
+      "mean_difference": -0.39728187224865624,
+      "per_seed_differences": [
+       -0.35966231562675244,
+       -0.441872857783677,
+       -0.3903104433355393
+      ],
+      "spread": 0.08221054215692458,
+      "sd": 0.04154628655189114,
+      "sign_agrees_across_seeds": true
+     },
+     "arm-B vs qwerty30m": {
+      "mean_difference": 6.2185541315655675,
+      "per_seed_differences": [
+       6.262224537560335,
+       5.892744416592743,
+       6.500693440543626
+      ],
+      "spread": 0.6079490239508827,
+      "sd": 0.306318187838265,
+      "sign_agrees_across_seeds": true
+     },
+     "arm-A vs graphite": {
+      "mean_difference": -1.4040847745373473,
+      "per_seed_differences": [
+       -1.4373294041792999,
+       -1.33791046907431,
+       -1.437014450358432
+      ],
+      "spread": 0.09941893510498989,
+      "sd": 0.05730884597175066,
+      "sign_agrees_across_seeds": true
+     },
+     "arm-A vs semimak": {
+      "mean_difference": -0.8097346626595524,
+      "per_seed_differences": [
+       -0.9294241784309047,
+       -0.7696662123955926,
+       -0.73011359715216
+      ],
+      "spread": 0.1993105812787448,
+      "sd": 0.10552387162312778,
+      "sign_agrees_across_seeds": true
+     },
+     "arm-A vs qwerty30m": {
+      "mean_difference": 5.8061013411546725,
+      "per_seed_differences": [
+       5.692462674756182,
+       5.564951061980827,
+       6.160890286727005
+      ],
+      "spread": 0.5959392247461777,
+      "sd": 0.31380121059898597,
+      "sign_agrees_across_seeds": true
+     },
+     "graphite vs semimak": {
+      "mean_difference": 0.5943501118777949,
+      "per_seed_differences": [
+       0.5079052257483951,
+       0.5682442566787174,
+       0.7069008532062719
+      ],
+      "spread": 0.1989956274578768,
+      "sd": 0.10203407123894902,
+      "sign_agrees_across_seeds": true
+     },
+     "graphite vs qwerty30m": {
+      "mean_difference": 7.210186115692019,
+      "per_seed_differences": [
+       7.129792078935482,
+       6.902861531055137,
+       7.597904737085437
+      ],
+      "spread": 0.6950432060302996,
+      "sd": 0.3544272357222677,
+      "sign_agrees_across_seeds": true
+     },
+     "semimak vs qwerty30m": {
+      "mean_difference": 6.615836003814223,
+      "per_seed_differences": [
+       6.621886853187087,
+       6.33461727437642,
+       6.891003883879165
+      ],
+      "spread": 0.556386609502745,
+      "sd": 0.27824265379716645,
+      "sign_agrees_across_seeds": true
+     }
+    }
+   },
+   "floor_saved_pct_excluding_reference": {
+    "rows_used": [
+     "keybo-lsb",
+     "keybo-lsb+lm",
+     "flagship-c3",
+     "arm-B",
+     "arm-A",
+     "graphite",
+     "semimak"
+    ],
+    "floor_unpaired_max_within_candidate_spread": 0.6950432060302996,
+    "floor_paired_max_difference_spread": 0.39142570025161305,
+    "floor_paired_median_difference_spread": 0.1989956274578768,
+    "paired_over_unpaired_ratio": 0.5631674360033229,
+    "pairs_resolved_against_the_conservative_paired_floor": 16,
+    "n_pairs": 21,
+    "per_pair": {
+     "keybo-lsb vs keybo-lsb+lm": {
+      "mean_difference": -0.1546373136933846,
+      "per_seed_differences": [
+       -0.15732073698198157,
+       -0.18693501472805174,
+       -0.11965618937012046
+      ],
+      "spread": 0.06727882535793128,
+      "sd": 0.03371958860655172,
+      "sign_agrees_across_seeds": true
+     },
+     "keybo-lsb vs flagship-c3": {
+      "mean_difference": -0.7675254993505559,
+      "per_seed_differences": [
+       -0.7131910070519609,
+       -0.7263132214205719,
+       -0.8630722695791349
+      ],
+      "spread": 0.14988126252717393,
+      "sd": 0.08300564500874982,
+      "sign_agrees_across_seeds": true
+     },
+     "keybo-lsb vs arm-B": {
+      "mean_difference": 0.5578324795302958,
+      "per_seed_differences": [
+       0.6126953720711255,
+       0.5719091381008568,
+       0.4888929284189052
+      ],
+      "spread": 0.12380244365222026,
+      "sd": 0.0630902171572535,
+      "sign_agrees_across_seeds": true
+     },
+     "keybo-lsb vs arm-A": {
+      "mean_difference": 0.970285269941192,
+      "per_seed_differences": [
+       1.1824572348752778,
+       0.8997024927127724,
+       0.8286960822355258
+      ],
+      "spread": 0.35376115263975194,
+      "sd": 0.1871448225578496,
+      "sign_agrees_across_seeds": true
+     },
+     "keybo-lsb vs graphite": {
+      "mean_difference": -0.4337995045961553,
+      "per_seed_differences": [
+       -0.2548721693040221,
+       -0.43820797636153763,
+       -0.6083183681229061
+      ],
+      "spread": 0.35344619881888395,
+      "sd": 0.1767643341637649,
+      "sign_agrees_across_seeds": true
+     },
+     "keybo-lsb vs semimak": {
+      "mean_difference": 0.16055060728163953,
+      "per_seed_differences": [
+       0.253033056444373,
+       0.13003628031717973,
+       0.09858248508336587
+      ],
+      "spread": 0.15445057136100715,
+      "sd": 0.08162161393286621,
+      "sign_agrees_across_seeds": true
+     },
+     "keybo-lsb+lm vs flagship-c3": {
+      "mean_difference": -0.6128881856571713,
+      "per_seed_differences": [
+       -0.5558702700699794,
+       -0.5393782066925201,
+       -0.7434160802090144
+      ],
+      "spread": 0.20403787351649427,
+      "sd": 0.11334083765666432,
+      "sign_agrees_across_seeds": true
+     },
+     "keybo-lsb+lm vs arm-B": {
+      "mean_difference": 0.7124697932236804,
+      "per_seed_differences": [
+       0.770016109053107,
+       0.7588441528289085,
+       0.6085491177890257
+      ],
+      "spread": 0.16146699126408137,
+      "sd": 0.09017113306688006,
+      "sign_agrees_across_seeds": true
+     },
+     "keybo-lsb+lm vs arm-A": {
+      "mean_difference": 1.1249225836345766,
+      "per_seed_differences": [
+       1.3397779718572593,
+       1.086637507440824,
+       0.9483522716056463
+      ],
+      "spread": 0.39142570025161305,
+      "sd": 0.19850146094862245,
+      "sign_agrees_across_seeds": true
+     },
+     "keybo-lsb+lm vs graphite": {
+      "mean_difference": -0.27916219090277067,
+      "per_seed_differences": [
+       -0.09755143232204055,
+       -0.2512729616334859,
+       -0.4886621787527856
+      ],
+      "spread": 0.39111074643074506,
+      "sd": 0.19704126680807169,
+      "sign_agrees_across_seeds": true
+     },
+     "keybo-lsb+lm vs semimak": {
+      "mean_difference": 0.3151879209750241,
+      "per_seed_differences": [
+       0.4103537934263546,
+       0.31697129504523147,
+       0.21823867445348633
+      ],
+      "spread": 0.19211511897286826,
+      "sd": 0.09606997476733065,
+      "sign_agrees_across_seeds": true
+     },
+     "flagship-c3 vs arm-B": {
+      "mean_difference": 1.3253579788808516,
+      "per_seed_differences": [
+       1.3258863791230864,
+       1.2982223595214286,
+       1.35196519799804
+      ],
+      "spread": 0.05374283847661143,
+      "sd": 0.026875315384061668,
+      "sign_agrees_across_seeds": true
+     },
+     "flagship-c3 vs arm-A": {
+      "mean_difference": 1.737810769291748,
+      "per_seed_differences": [
+       1.8956482419272387,
+       1.6260157141333442,
+       1.6917683518146607
+      ],
+      "spread": 0.26963252779389446,
+      "sd": 0.1405893067287911,
+      "sign_agrees_across_seeds": true
+     },
+     "flagship-c3 vs graphite": {
+      "mean_difference": 0.3337259947544006,
+      "per_seed_differences": [
+       0.4583188377479388,
+       0.28810524505903423,
+       0.2547539014562288
+      ],
+      "spread": 0.20356493629171002,
+      "sd": 0.1091815480011959,
+      "sign_agrees_across_seeds": true
+     },
+     "flagship-c3 vs semimak": {
+      "mean_difference": 0.9280761066321954,
+      "per_seed_differences": [
+       0.9662240634963339,
+       0.8563495017377516,
+       0.9616547546625007
+      ],
+      "spread": 0.10987456175858235,
+      "sd": 0.062159062356727,
+      "sign_agrees_across_seeds": true
+     },
+     "arm-B vs arm-A": {
+      "mean_difference": 0.41245279041089616,
+      "per_seed_differences": [
+       0.5697618628041523,
+       0.3277933546119156,
+       0.33980315381662063
+      ],
+      "spread": 0.2419685081922367,
+      "sd": 0.1363659305404189,
+      "sign_agrees_across_seeds": true
+     },
+     "arm-B vs graphite": {
+      "mean_difference": -0.991631984126451,
+      "per_seed_differences": [
+       -0.8675675413751476,
+       -1.0101171144623944,
+       -1.0972112965418113
+      ],
+      "spread": 0.2296437551666637,
+      "sd": 0.1159324743305958,
+      "sign_agrees_across_seeds": true
+     },
+     "arm-B vs semimak": {
+      "mean_difference": -0.39728187224865624,
+      "per_seed_differences": [
+       -0.35966231562675244,
+       -0.441872857783677,
+       -0.3903104433355393
+      ],
+      "spread": 0.08221054215692458,
+      "sd": 0.04154628655189114,
+      "sign_agrees_across_seeds": true
+     },
+     "arm-A vs graphite": {
+      "mean_difference": -1.4040847745373473,
+      "per_seed_differences": [
+       -1.4373294041792999,
+       -1.33791046907431,
+       -1.437014450358432
+      ],
+      "spread": 0.09941893510498989,
+      "sd": 0.05730884597175066,
+      "sign_agrees_across_seeds": true
+     },
+     "arm-A vs semimak": {
+      "mean_difference": -0.8097346626595524,
+      "per_seed_differences": [
+       -0.9294241784309047,
+       -0.7696662123955926,
+       -0.73011359715216
+      ],
+      "spread": 0.1993105812787448,
+      "sd": 0.10552387162312778,
+      "sign_agrees_across_seeds": true
+     },
+     "graphite vs semimak": {
+      "mean_difference": 0.5943501118777949,
+      "per_seed_differences": [
+       0.5079052257483951,
+       0.5682442566787174,
+       0.7069008532062719
+      ],
+      "spread": 0.1989956274578768,
+      "sd": 0.10203407123894902,
+      "sign_agrees_across_seeds": true
+     }
+    }
+   },
+   "floor_raw_ms_excluding_reference": {
+    "rows_used": [
+     "keybo-lsb",
+     "keybo-lsb+lm",
+     "flagship-c3",
+     "arm-B",
+     "arm-A",
+     "graphite",
+     "semimak"
+    ],
+    "floor_unpaired_max_within_candidate_spread": 1516716482.296112,
+    "floor_paired_max_difference_spread": 962780637.8274536,
+    "floor_paired_median_difference_spread": 472667641.5250244,
+    "paired_over_unpaired_ratio": 0.6347795709122437,
+    "pairs_resolved_against_the_conservative_paired_floor": 16,
+    "n_pairs": 21,
+    "per_pair": {
+     "keybo-lsb vs keybo-lsb+lm": {
+      "mean_difference": 377610446.39882404,
+      "per_seed_differences": [
+       383662960.5789795,
+       455163481.448761,
+       294004897.1687317
+      ],
+      "spread": 161158584.2800293,
+      "sd": 80749594.53589575,
+      "sign_agrees_across_seeds": true
+     },
+     "keybo-lsb vs flagship-c3": {
+      "mean_difference": 1876133790.5225322,
+      "per_seed_differences": [
+       1739281028.5093384,
+       1768482244.8323975,
+       2120638098.2258606
+      ],
+      "spread": 381357069.7165222,
+      "sd": 212249723.4928693,
+      "sign_agrees_across_seeds": true
+     },
+     "keybo-lsb vs arm-B": {
+      "mean_difference": -1362658682.9116619,
+      "per_seed_differences": [
+       -1494199206.6105042,
+       -1392527530.217041,
+       -1201249311.9074402
+      ],
+      "spread": 292949894.70306396,
+      "sd": 148741457.67454383,
+      "sign_agrees_across_seeds": true
+     },
+     "keybo-lsb vs arm-A": {
+      "mean_difference": -2370177232.3170066,
+      "per_seed_differences": [
+       -2883695132.5892944,
+       -2190663527.8950195,
+       -2036173036.4667053
+      ],
+      "spread": 847522096.1225891,
+      "sd": 451378226.55782276,
+      "sign_agrees_across_seeds": true
+     },
+     "keybo-lsb vs graphite": {
+      "mean_difference": 1061077918.0557352,
+      "per_seed_differences": [
+       621564664.1394043,
+       1066981851.4711914,
+       1494687238.55661
+      ],
+      "spread": 873122574.4172058,
+      "sd": 436591227.36441106,
+      "sign_agrees_across_seeds": true
+     },
+     "keybo-lsb vs semimak": {
+      "mean_difference": -391975606.47264606,
+      "per_seed_differences": [
+       -617079562.5685425,
+       -316622148.87841797,
+       -242225107.97097778
+      ],
+      "spread": 374854454.5975647,
+      "sd": 198463027.3160804,
+      "sign_agrees_across_seeds": true
+     },
+     "keybo-lsb+lm vs flagship-c3": {
+      "mean_difference": 1498523344.123708,
+      "per_seed_differences": [
+       1355618067.930359,
+       1313318763.3836365,
+       1826633201.057129
+      ],
+      "spread": 513314437.67349243,
+      "sd": 284937478.14904326,
+      "sign_agrees_across_seeds": true
+     },
+     "keybo-lsb+lm vs arm-B": {
+      "mean_difference": -1740269129.3104858,
+      "per_seed_differences": [
+       -1877862167.1894836,
+       -1847691011.665802,
+       -1495254209.0761719
+      ],
+      "spread": 382607958.11331177,
+      "sd": 212724723.55012938,
+      "sign_agrees_across_seeds": true
+     },
+     "keybo-lsb+lm vs arm-A": {
+      "mean_difference": -2747787678.7158303,
+      "per_seed_differences": [
+       -3267358093.168274,
+       -2645827009.3437805,
+       -2330177933.635437
+      ],
+      "spread": 937180159.5328369,
+      "sd": 476837127.7801213,
+      "sign_agrees_across_seeds": true
+     },
+     "keybo-lsb+lm vs graphite": {
+      "mean_difference": 683467471.6569113,
+      "per_seed_differences": [
+       237901703.5604248,
+       611818370.0224304,
+       1200682341.3878784
+      ],
+      "spread": 962780637.8274536,
+      "sd": 485372881.8832287,
+      "sign_agrees_across_seeds": true
+     },
+     "keybo-lsb+lm vs semimak": {
+      "mean_difference": -769586052.8714701,
+      "per_seed_differences": [
+       -1000742523.147522,
+       -771785630.327179,
+       -536230005.1397095
+      ],
+      "spread": 464512518.0078125,
+      "sd": 232264070.51506552,
+      "sign_agrees_across_seeds": true
+     },
+     "flagship-c3 vs arm-B": {
+      "mean_difference": -3238792473.434194,
+      "per_seed_differences": [
+       -3233480235.1198425,
+       -3161009775.0494385,
+       -3321887410.133301
+      ],
+      "spread": 160877635.0838623,
+      "sd": 80570269.17216696,
+      "sign_agrees_across_seeds": true
+     },
+     "flagship-c3 vs arm-A": {
+      "mean_difference": -4246311022.8395386,
+      "per_seed_differences": [
+       -4622976161.098633,
+       -3959145772.727417,
+       -4156811134.692566
+      ],
+      "spread": 663830388.3712158,
+      "sd": 340845080.0803941,
+      "sign_agrees_across_seeds": true
+     },
+     "flagship-c3 vs graphite": {
+      "mean_difference": -815055872.4667969,
+      "per_seed_differences": [
+       -1117716364.369934,
+       -701500393.361206,
+       -625950859.6692505
+      ],
+      "spread": 491765504.7006836,
+      "sd": 264819680.2157172,
+      "sign_agrees_across_seeds": true
+     },
+     "flagship-c3 vs semimak": {
+      "mean_difference": -2268109396.995178,
+      "per_seed_differences": [
+       -2356360591.077881,
+       -2085104393.7108154,
+       -2362863206.1968384
+      ],
+      "spread": 277758812.48602295,
+      "sd": 158520328.10077876,
+      "sign_agrees_across_seeds": true
+     },
+     "arm-B vs arm-A": {
+      "mean_difference": -1007518549.4053446,
+      "per_seed_differences": [
+       -1389495925.9787903,
+       -798135997.6779785,
+       -834923724.5592651
+      ],
+      "spread": 591359928.3008118,
+      "sd": 331313101.7221051,
+      "sign_agrees_across_seeds": true
+     },
+     "arm-B vs graphite": {
+      "mean_difference": 2423736600.967397,
+      "per_seed_differences": [
+       2115763870.7499084,
+       2459509381.6882324,
+       2695936550.4640503
+      ],
+      "spread": 580172679.7141418,
+      "sd": 291735931.0267554,
+      "sign_agrees_across_seeds": true
+     },
+     "arm-B vs semimak": {
+      "mean_difference": 970683076.4390157,
+      "per_seed_differences": [
+       877119644.0419617,
+       1075905381.338623,
+       959024203.9364624
+      ],
+      "spread": 198785737.29666138,
+      "sd": 99904400.89989737,
+      "sign_agrees_across_seeds": true
+     },
+     "arm-A vs graphite": {
+      "mean_difference": 3431255150.3727417,
+      "per_seed_differences": [
+       3505259796.7286987,
+       3257645379.366211,
+       3530860275.0233154
+      ],
+      "spread": 273214895.6571045,
+      "sd": 150894368.89404893,
+      "sign_agrees_across_seeds": true
+     },
+     "arm-A vs semimak": {
+      "mean_difference": 1978201625.8443604,
+      "per_seed_differences": [
+       2266615570.020752,
+       1874041379.0166016,
+       1793947928.4957275
+      ],
+      "spread": 472667641.5250244,
+      "sd": 252963816.78141636,
+      "sign_agrees_across_seeds": true
+     },
+     "graphite vs semimak": {
+      "mean_difference": -1453053524.5283813,
+      "per_seed_differences": [
+       -1238644226.7079468,
+       -1383604000.3496094,
+       -1736912346.527588
+      ],
+      "spread": 498268119.8196411,
+      "sd": 256291254.46187866,
+      "sign_agrees_across_seeds": true
+     }
+    }
+   }
+  }
+ },
+ "how_to_read_this": "the seed floor bounds FIT NOISE for one model; the rank table's model-spread floor bounds MODEL DISAGREEMENT across three models. They are different quantities and the larger one is not a refinement of the smaller. A ranking change should clear the seed floor to be real at all, and clear the model-spread floor to be a claim about the blend rather than about which model you happened to weight.",
+ "not_reused": "FLAGSHIP-1's 'seed = 78-83% of SS' is its iWeb figure and is NOT reused; the share here is computed on blend-v1 and reported above, on BOTH the raw-ms and saved% scales. It comes out ~0.7-0.8%, i.e. two orders of magnitude smaller \u2014 so on blend-v1 the seed is NOT the dominant variance component and the paired-vs-unpaired distinction buys far less than it did on iWeb.",
+ "modelled_only": "MODELLED ONLY: fitted surfaces, .native frame, BAKED 90 WPM. Not a claim about realized typing speed. No layout is promoted or adopted."
+}

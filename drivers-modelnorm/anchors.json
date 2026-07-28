@@ -1,0 +1,46 @@
+{
+ "zero": {
+  "AALTO": 243118526775.97125,
+  "COMMUNITY": 254994927415.5801,
+  "POOL": 259027796569.4634
+ },
+ "one": {
+  "AALTO": 223236317224.4182,
+  "COMMUNITY": 219828038256.7244,
+  "POOL": 235438602522.19055
+ },
+ "zero_statistic": "mean",
+ "zero_n": 100,
+ "zero_seed": 20260728,
+ "zero_sd": {
+  "AALTO": 3357543573.175914,
+  "COMMUNITY": 6123204217.854651,
+  "POOL": 3947242328.336462
+ },
+ "one_provenance": {
+  "kind": "per-model island memetic search, IDENTICAL budget across models and seeds",
+  "statistic": "the SLOWER of two independent seeds (conservative: cannot flatter a model whose search converged better)",
+  "budget_requested": 10000000,
+  "islands": 40,
+  "seeds": {
+   "s1": 20260728,
+   "s2": 20260901
+  },
+  "layout_of_record": {
+   "AALTO": "lnfdg-,yehcrstmaoiupxqbwv.k'jz",
+   "COMMUNITY": "mgndy-lea.tpscbkrouiwzxfqvh'j,",
+   "POOL": "pctsm.reayfgdlk-niuobzvwx,hqj'"
+  },
+  "best_layout_seen": {
+   "AALTO": "lnfdg-,yehcrstmaoiupxqbwv.k'jz",
+   "COMMUNITY": "mgndy-lea.tpscbkrouiwzxfqvh'j,",
+   "POOL": "pctsm.reayfgdlk-niuobzvwx,hqj'"
+  },
+  "best_fit_seen": {
+   "AALTO": 223236317224.4182,
+   "COMMUNITY": 219828038256.7244,
+   "POOL": 235438602522.19055
+  },
+  "is_a_lower_bound_not_the_optimum": "an optimizer output bounds the true optimum from one side only; every normalized score is therefore an upper bound on the true normalized score"
+ }
+}

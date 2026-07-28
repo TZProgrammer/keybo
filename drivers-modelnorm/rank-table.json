@@ -1,0 +1,1221 @@
+{
+ "what": "MODELNORM-1 deliverables A and B: the candidate table on the normalized scale, and whether normalizing changes any ranking",
+ "identity": {
+  "models": [
+   "AALTO",
+   "COMMUNITY",
+   "POOL"
+  ],
+  "family": "TRI_PS_FREQ_PRIOR",
+  "frame": "native",
+  "frame_note": "geometry-only (g); the layout-independent b(ngram) term is excluded",
+  "baked_wpm": 90.0,
+  "wpm_caveat": "the arrays are BAKED at 90 WPM and cannot be re-evaluated (7 of 8 per-seed models are gone), so a 90-110 WPM objective is NOT honourable on these columns",
+  "corpus": "blend-v1",
+  "corpus_trigrams": "/tmp/modelnorm/data/corpus/blend-v1/trigrams.txt",
+  "corpus_trigrams_sha256": "19806532ee3567f5afe4311e51f346b6c36375030f473fe3f68a6a3dc21beb61",
+  "surface_dir": "/local/home/zegertho/agent/state/keybo-selmethod/artifacts/old-new-layout-comparison/tri_frequency_old_new_surfaces",
+  "surface_sha256": {
+   "AALTO": "0ec6dbff602d79c28b5e9a6307fce41ddb63b68e846cc5f9c80d4a1896654028",
+   "COMMUNITY": "421712f9999ba86e9e6b61c752422a45c25ad3cbc3ead45589185e3fd33ee10b",
+   "POOL": "284b7c97531311e9cc6d3640792fd43fbe76a77806cb553708f13a93ab19a517"
+  },
+  "native_frame_guard": {
+   "AALTO": {
+    "max_abs_std_minus_native": 0.0,
+    "max_variation_of_delta_over_third_slot": 0.0
+   },
+   "COMMUNITY": {
+    "max_abs_std_minus_native": 121.55301558217269,
+    "max_variation_of_delta_over_third_slot": 1.1368683772161603e-13
+   },
+   "POOL": {
+    "max_abs_std_minus_native": 50.7434916920962,
+    "max_variation_of_delta_over_third_slot": 1.1368683772161603e-13
+   }
+  },
+  "n_trigrams": 24478,
+  "total_trigram_freq": 887147352.0,
+  "tile": 16,
+  "numpy": "2.5.0"
+ },
+ "anchors": {
+  "zero": {
+   "AALTO": 243118526775.97125,
+   "COMMUNITY": 254994927415.5801,
+   "POOL": 259027796569.4634
+  },
+  "one": {
+   "AALTO": 223236317224.4182,
+   "COMMUNITY": 219828038256.7244,
+   "POOL": 235438602522.19055
+  },
+  "zero_statistic": "mean",
+  "zero_n": 100,
+  "zero_seed": 20260728,
+  "zero_sd": {
+   "AALTO": 3357543573.175914,
+   "COMMUNITY": 6123204217.854651,
+   "POOL": 3947242328.336462
+  },
+  "one_provenance": {
+   "kind": "per-model island memetic search, IDENTICAL budget across models and seeds",
+   "statistic": "the SLOWER of two independent seeds (conservative: cannot flatter a model whose search converged better)",
+   "budget_requested": 10000000,
+   "islands": 40,
+   "seeds": {
+    "s1": 20260728,
+    "s2": 20260901
+   },
+   "layout_of_record": {
+    "AALTO": "lnfdg-,yehcrstmaoiupxqbwv.k'jz",
+    "COMMUNITY": "mgndy-lea.tpscbkrouiwzxfqvh'j,",
+    "POOL": "pctsm.reayfgdlk-niuobzvwx,hqj'"
+   },
+   "best_layout_seen": {
+    "AALTO": "lnfdg-,yehcrstmaoiupxqbwv.k'jz",
+    "COMMUNITY": "mgndy-lea.tpscbkrouiwzxfqvh'j,",
+    "POOL": "pctsm.reayfgdlk-niuobzvwx,hqj'"
+   },
+   "best_fit_seen": {
+    "AALTO": 223236317224.4182,
+    "COMMUNITY": 219828038256.7244,
+    "POOL": 235438602522.19055
+   },
+   "is_a_lower_bound_not_the_optimum": "an optimizer output bounds the true optimum from one side only; every normalized score is therefore an upper bound on the true normalized score"
+  },
+  "span": {
+   "AALTO": 19882209551.55304,
+   "COMMUNITY": 35166889158.85571,
+   "POOL": 23589194047.272858
+  }
+ },
+ "layouts": {
+  "keybo-lsb": "pyuo,vgdnlhiea.cstrmkj-z'fwbxq",
+  "keybo-lsb+lm": "pyuo,vgdnmhiea.cstrlkj-z'fwbxq",
+  "flagship-c3": "pyou'vgdnmheai.cstrlkjz,-wfbxq",
+  "arm-B": "flmpg-yuo,sntdcireahkxbwv'.jzq",
+  "arm-A": "udy.,fgpmliheaocsntr-k'qjwzbvx",
+  "graphite": "bldwz'foujnrtsgyhaeixqmcvkp,.-",
+  "semimak": "flhvz'wuoysrntkcdeaixjbmqpg,.-",
+  "qwerty30m": "qwertyuiopasdfghjkl'zxcvbnm,.-"
+ },
+ "table": [
+  {
+   "name": "keybo-lsb",
+   "layout": "pyuo,vgdnlhiea.cstrmkj-z'fwbxq",
+   "raw_ms": {
+    "AALTO": 223980183688.9498,
+    "COMMUNITY": 226369201453.53336,
+    "POOL": 239424452409.38156
+   },
+   "saved_vs_qwerty30m_pct": {
+    "AALTO": 3.4099750983231814,
+    "COMMUNITY": 5.708455123362377,
+    "POOL": 2.936865383393472
+   },
+   "normalized": {
+    "AALTO": 0.9625863281139454,
+    "COMMUNITY": 0.8139965361376934,
+    "POOL": 0.8310306880683016
+   },
+   "equal_weight_blend": 0.8692045174399801
+  },
+  {
+   "name": "keybo-lsb+lm",
+   "layout": "pyuo,vgdnmhiea.cstrlkj-z'fwbxq",
+   "raw_ms": {
+    "AALTO": 224026883755.97028,
+    "COMMUNITY": 226227778417.69455,
+    "POOL": 239696342181.10324
+   },
+   "saved_vs_qwerty30m_pct": {
+    "AALTO": 3.389835992433876,
+    "COMMUNITY": 5.767363298347128,
+    "POOL": 2.826640745734599
+   },
+   "normalized": {
+    "AALTO": 0.9602374912354593,
+    "COMMUNITY": 0.8180180188227262,
+    "POOL": 0.819504657497829
+   },
+   "equal_weight_blend": 0.8659200558520048
+  },
+  {
+   "name": "flagship-c3",
+   "layout": "pyou'vgdnmheai.cstrlkjz,-wfbxq",
+   "raw_ms": {
+    "AALTO": 224205769266.099,
+    "COMMUNITY": 225010243471.03625,
+    "POOL": 239022507166.35486
+   },
+   "saved_vs_qwerty30m_pct": {
+    "AALTO": 3.3126927577364795,
+    "COMMUNITY": 6.274513786684521,
+    "POOL": 3.099814759866093
+   },
+   "normalized": {
+    "AALTO": 0.951240226134471,
+    "COMMUNITY": 0.8526396466032914,
+    "POOL": 0.8480700681429749
+   },
+   "equal_weight_blend": 0.8839833136269124
+  },
+  {
+   "name": "arm-B",
+   "layout": "flmpg-yuo,sntdcireahkxbwv'.jzq",
+   "raw_ms": {
+    "AALTO": 223477218870.82468,
+    "COMMUNITY": 227708944047.07544,
+    "POOL": 239722378137.3181
+   },
+   "saved_vs_qwerty30m_pct": {
+    "AALTO": 3.6268754665041425,
+    "COMMUNITY": 5.150400414192724,
+    "POOL": 2.8160857188878174
+   },
+   "normalized": {
+    "AALTO": 0.9878835576206043,
+    "COMMUNITY": 0.7758998313796978,
+    "POOL": 0.8184009336417829
+   },
+   "equal_weight_blend": 0.8607281075473616
+  },
+  {
+   "name": "arm-A",
+   "layout": "udy.,fgpmliheaocsntr-k'qjwzbvx",
+   "raw_ms": {
+    "AALTO": 226086057144.9143,
+    "COMMUNITY": 228158859196.25723,
+    "POOL": 241291227419.6763
+   },
+   "saved_vs_qwerty30m_pct": {
+    "AALTO": 2.501830608925537,
+    "COMMUNITY": 4.962993319025399,
+    "POOL": 2.1800711950816787
+   },
+   "normalized": {
+    "AALTO": 0.8566688519650224,
+    "COMMUNITY": 0.7631061166115407,
+    "POOL": 0.7518938168995066
+   },
+   "equal_weight_blend": 0.7905562618253565
+  },
+  {
+   "name": "graphite",
+   "layout": "bldwz'foujnrtsgyhaeixqmcvkp,.-",
+   "raw_ms": {
+    "AALTO": 226849214370.00693,
+    "COMMUNITY": 225518109120.75317,
+    "POOL": 240448213291.0651
+   },
+   "saved_vs_qwerty30m_pct": {
+    "AALTO": 2.172723925639841,
+    "COMMUNITY": 6.062968062292262,
+    "POOL": 2.5218307481501334
+   },
+   "normalized": {
+    "AALTO": 0.8182849277279394,
+    "COMMUNITY": 0.8381980607290678,
+    "POOL": 0.7876311179247897
+   },
+   "equal_weight_blend": 0.8147047021272656
+  },
+  {
+   "name": "semimak",
+   "layout": "flhvz'wuoysrntkcdeaixjbmqpg,.-",
+   "raw_ms": {
+    "AALTO": 226418399582.76263,
+    "COMMUNITY": 226597721331.07785,
+    "POOL": 241096897537.19702
+   },
+   "saved_vs_qwerty30m_pct": {
+    "AALTO": 2.3585100534239234,
+    "COMMUNITY": 5.613267738548833,
+    "POOL": 2.2588529041063787
+   },
+   "normalized": {
+    "AALTO": 0.8399532833564838,
+    "COMMUNITY": 0.8074983816801801,
+    "POOL": 0.7601319060046214
+   },
+   "equal_weight_blend": 0.8025278570137618
+  },
+  {
+   "name": "qwerty30m",
+   "layout": "qwertyuiopasdfghjkl'zxcvbnm,.-",
+   "raw_ms": {
+    "AALTO": 231887489331.27304,
+    "COMMUNITY": 240073700934.36688,
+    "POOL": 246668782494.0886
+   },
+   "saved_vs_qwerty30m_pct": {
+    "AALTO": 0.0,
+    "COMMUNITY": 0.0,
+    "POOL": 0.0
+   },
+   "normalized": {
+    "AALTO": 0.5648787382296216,
+    "COMMUNITY": 0.42429759464395983,
+    "POOL": 0.5239269324169064
+   },
+   "equal_weight_blend": 0.5043677550968293
+  }
+ ],
+ "B1_per_model_rankings": {
+  "AALTO": {
+   "raw_ms": {
+    "keybo-lsb": 223980183688.9498,
+    "keybo-lsb+lm": 224026883755.97028,
+    "flagship-c3": 224205769266.099,
+    "arm-B": 223477218870.82468,
+    "arm-A": 226086057144.9143,
+    "graphite": 226849214370.00693,
+    "semimak": 226418399582.76263,
+    "qwerty30m": 231887489331.27304
+   },
+   "normalized": {
+    "keybo-lsb": 0.9625863281139454,
+    "keybo-lsb+lm": 0.9602374912354593,
+    "flagship-c3": 0.951240226134471,
+    "arm-B": 0.9878835576206043,
+    "arm-A": 0.8566688519650224,
+    "graphite": 0.8182849277279394,
+    "semimak": 0.8399532833564838,
+    "qwerty30m": 0.5648787382296216
+   },
+   "raw_ranking_best_first": [
+    "arm-B",
+    "keybo-lsb",
+    "keybo-lsb+lm",
+    "flagship-c3",
+    "arm-A",
+    "semimak",
+    "graphite",
+    "qwerty30m"
+   ],
+   "normalized_ranking_best_first": [
+    "arm-B",
+    "keybo-lsb",
+    "keybo-lsb+lm",
+    "flagship-c3",
+    "arm-A",
+    "semimak",
+    "graphite",
+    "qwerty30m"
+   ],
+   "rankings_identical": true,
+   "discordant_pairs": []
+  },
+  "COMMUNITY": {
+   "raw_ms": {
+    "keybo-lsb": 226369201453.53336,
+    "keybo-lsb+lm": 226227778417.69455,
+    "flagship-c3": 225010243471.03625,
+    "arm-B": 227708944047.07544,
+    "arm-A": 228158859196.25723,
+    "graphite": 225518109120.75317,
+    "semimak": 226597721331.07785,
+    "qwerty30m": 240073700934.36688
+   },
+   "normalized": {
+    "keybo-lsb": 0.8139965361376934,
+    "keybo-lsb+lm": 0.8180180188227262,
+    "flagship-c3": 0.8526396466032914,
+    "arm-B": 0.7758998313796978,
+    "arm-A": 0.7631061166115407,
+    "graphite": 0.8381980607290678,
+    "semimak": 0.8074983816801801,
+    "qwerty30m": 0.42429759464395983
+   },
+   "raw_ranking_best_first": [
+    "flagship-c3",
+    "graphite",
+    "keybo-lsb+lm",
+    "keybo-lsb",
+    "semimak",
+    "arm-B",
+    "arm-A",
+    "qwerty30m"
+   ],
+   "normalized_ranking_best_first": [
+    "flagship-c3",
+    "graphite",
+    "keybo-lsb+lm",
+    "keybo-lsb",
+    "semimak",
+    "arm-B",
+    "arm-A",
+    "qwerty30m"
+   ],
+   "rankings_identical": true,
+   "discordant_pairs": []
+  },
+  "POOL": {
+   "raw_ms": {
+    "keybo-lsb": 239424452409.38156,
+    "keybo-lsb+lm": 239696342181.10324,
+    "flagship-c3": 239022507166.35486,
+    "arm-B": 239722378137.3181,
+    "arm-A": 241291227419.6763,
+    "graphite": 240448213291.0651,
+    "semimak": 241096897537.19702,
+    "qwerty30m": 246668782494.0886
+   },
+   "normalized": {
+    "keybo-lsb": 0.8310306880683016,
+    "keybo-lsb+lm": 0.819504657497829,
+    "flagship-c3": 0.8480700681429749,
+    "arm-B": 0.8184009336417829,
+    "arm-A": 0.7518938168995066,
+    "graphite": 0.7876311179247897,
+    "semimak": 0.7601319060046214,
+    "qwerty30m": 0.5239269324169064
+   },
+   "raw_ranking_best_first": [
+    "flagship-c3",
+    "keybo-lsb",
+    "keybo-lsb+lm",
+    "arm-B",
+    "graphite",
+    "semimak",
+    "arm-A",
+    "qwerty30m"
+   ],
+   "normalized_ranking_best_first": [
+    "flagship-c3",
+    "keybo-lsb",
+    "keybo-lsb+lm",
+    "arm-B",
+    "graphite",
+    "semimak",
+    "arm-A",
+    "qwerty30m"
+   ],
+   "rankings_identical": true,
+   "discordant_pairs": []
+  }
+ },
+ "B1_verdict": "normalization changes NO within-model ranking, and cannot: it is a per-model affine map with positive scale. Asserted in code.",
+ "B2_aggregate_rankings": {
+  "normalized_equal_weight_blend_best_first": [
+   "flagship-c3",
+   "keybo-lsb",
+   "keybo-lsb+lm",
+   "arm-B",
+   "graphite",
+   "semimak",
+   "arm-A",
+   "qwerty30m"
+  ],
+  "normalized_equal_weight_blend_values": {
+   "keybo-lsb": 0.8692045174399801,
+   "keybo-lsb+lm": 0.8659200558520048,
+   "flagship-c3": 0.8839833136269124,
+   "arm-B": 0.8607281075473616,
+   "arm-A": 0.7905562618253565,
+   "graphite": 0.8147047021272656,
+   "semimak": 0.8025278570137618,
+   "qwerty30m": 0.5043677550968293
+  },
+  "compared_against": {
+   "raw_mean_predicted_ms": {
+    "ranking_best_first": [
+     "flagship-c3",
+     "keybo-lsb",
+     "keybo-lsb+lm",
+     "arm-B",
+     "graphite",
+     "semimak",
+     "arm-A",
+     "qwerty30m"
+    ],
+    "values": {
+     "keybo-lsb": 229924612517.28824,
+     "keybo-lsb+lm": 229983668118.256,
+     "flagship-c3": 229412839967.83005,
+     "arm-B": 230302847018.4061,
+     "arm-A": 231845381253.61594,
+     "graphite": 230938512260.6084,
+     "semimak": 231371006150.34583,
+     "qwerty30m": 239543324253.24283
+    },
+    "identical_to_normalized_blend": true,
+    "discordant_pairs_vs_normalized_blend": [],
+    "n_discordant_pairs": 0
+   },
+   "raw_mean_saved_vs_qwerty_pct": {
+    "ranking_best_first": [
+     "flagship-c3",
+     "keybo-lsb",
+     "keybo-lsb+lm",
+     "arm-B",
+     "graphite",
+     "semimak",
+     "arm-A",
+     "qwerty30m"
+    ],
+    "values": {
+     "keybo-lsb": 4.018431868359677,
+     "keybo-lsb+lm": 3.994613345505201,
+     "flagship-c3": 4.229007101429031,
+     "arm-B": 3.864453866528228,
+     "arm-A": 3.214965041010872,
+     "graphite": 3.5858409120274124,
+     "semimak": 3.4102102320263783,
+     "qwerty30m": 0.0
+    },
+    "identical_to_normalized_blend": true,
+    "discordant_pairs_vs_normalized_blend": [],
+    "n_discordant_pairs": 0
+   },
+   "raw_min_saved_vs_qwerty_pct_the_scale_broken_floor": {
+    "ranking_best_first": [
+     "flagship-c3",
+     "keybo-lsb",
+     "keybo-lsb+lm",
+     "arm-B",
+     "semimak",
+     "arm-A",
+     "graphite",
+     "qwerty30m"
+    ],
+    "values": {
+     "keybo-lsb": 2.936865383393472,
+     "keybo-lsb+lm": 2.826640745734599,
+     "flagship-c3": 3.099814759866093,
+     "arm-B": 2.8160857188878174,
+     "arm-A": 2.1800711950816787,
+     "graphite": 2.172723925639841,
+     "semimak": 2.2588529041063787,
+     "qwerty30m": 0.0
+    },
+    "identical_to_normalized_blend": false,
+    "discordant_pairs_vs_normalized_blend": [
+     [
+      "graphite",
+      "semimak"
+     ],
+     [
+      "graphite",
+      "arm-A"
+     ]
+    ],
+    "n_discordant_pairs": 2
+   }
+  }
+ },
+ "B3_against_the_resolution_floor": {
+  "floor_on_the_normalized_scale": {
+   "pool": "the 8 candidates of this arm, measured on 3 native surfaces (blend-v1, 90 WPM baked)",
+   "n_candidates": 8,
+   "n_pairs": 28,
+   "floor_conservative_max_pair_spread": 0.23189685924203496,
+   "floor_median_pair_spread": 0.10698174348484621,
+   "floor_max_pair_sd": 0.11669851040481621,
+   "floor_median_pair_sd": 0.05531264756031021,
+   "pairs_whose_sign_agrees_on_all_three_models": 15,
+   "per_pair": {
+    "keybo-lsb vs keybo-lsb+lm": {
+     "mean_difference": 0.0032844615879753145,
+     "per_model_differences": [
+      0.0023488368784860825,
+      -0.004021482685032773,
+      0.011526030570472634
+     ],
+     "spread_max_minus_min": 0.015547513255505407,
+     "sd": 0.007815870860325431,
+     "sign_agrees_across_all_three_models": false
+    },
+    "keybo-lsb vs flagship-c3": {
+     "mean_difference": -0.014778796186932305,
+     "per_model_differences": [
+      0.011346101979474388,
+      -0.038643110465597985,
+      -0.017039380074673316
+     ],
+     "spread_max_minus_min": 0.04998921244507237,
+     "sd": 0.025071159124675117,
+     "sign_agrees_across_all_three_models": false
+    },
+    "keybo-lsb vs arm-B": {
+     "mean_difference": 0.008476409892618478,
+     "per_model_differences": [
+      -0.025297229506658914,
+      0.03809670475799565,
+      0.012629754426518702
+     ],
+     "spread_max_minus_min": 0.06339393426465456,
+     "sd": 0.031900398563353326,
+     "sign_agrees_across_all_three_models": false
+    },
+    "keybo-lsb vs arm-A": {
+     "mean_difference": 0.07864825561462356,
+     "per_model_differences": [
+      0.105917476148923,
+      0.0508904195261527,
+      0.07913687116879498
+     ],
+     "spread_max_minus_min": 0.0550270566227703,
+     "sd": 0.027516782134021884,
+     "sign_agrees_across_all_three_models": true
+    },
+    "keybo-lsb vs graphite": {
+     "mean_difference": 0.05449981531271453,
+     "per_model_differences": [
+      0.14430140038600603,
+      -0.024201524591374368,
+      0.04339957014351192
+     ],
+     "spread_max_minus_min": 0.1685029249773804,
+     "sd": 0.08479811621489876,
+     "sign_agrees_across_all_three_models": false
+    },
+    "keybo-lsb vs semimak": {
+     "mean_difference": 0.06667666042621838,
+     "per_model_differences": [
+      0.12263304475746162,
+      0.006498154457513339,
+      0.07089878206368017
+     ],
+     "spread_max_minus_min": 0.11613489029994828,
+     "sd": 0.058182453708883725,
+     "sign_agrees_across_all_three_models": true
+    },
+    "keybo-lsb vs qwerty30m": {
+     "mean_difference": 0.36483676234315093,
+     "per_model_differences": [
+      0.39770758988432375,
+      0.3896989414937336,
+      0.30710375565139525
+     ],
+     "spread_max_minus_min": 0.0906038342329285,
+     "sd": 0.05015834585105204,
+     "sign_agrees_across_all_three_models": true
+    },
+    "keybo-lsb+lm vs flagship-c3": {
+     "mean_difference": -0.01806325777490762,
+     "per_model_differences": [
+      0.008997265100988305,
+      -0.03462162778056521,
+      -0.02856541064514595
+     ],
+     "spread_max_minus_min": 0.04361889288155352,
+     "sd": 0.02362992520588039,
+     "sign_agrees_across_all_three_models": false
+    },
+    "keybo-lsb+lm vs arm-B": {
+     "mean_difference": 0.005191948304643164,
+     "per_model_differences": [
+      -0.027646066385144996,
+      0.04211818744302842,
+      0.0011037238560460683
+     ],
+     "spread_max_minus_min": 0.06976425382817342,
+     "sd": 0.03506134570159897,
+     "sign_agrees_across_all_three_models": false
+    },
+    "keybo-lsb+lm vs arm-A": {
+     "mean_difference": 0.07536379402664824,
+     "per_model_differences": [
+      0.10356863927043691,
+      0.05491190221118547,
+      0.06761084059832234
+     ],
+     "spread_max_minus_min": 0.04865673705925144,
+     "sd": 0.025237882844240837,
+     "sign_agrees_across_all_three_models": true
+    },
+    "keybo-lsb+lm vs graphite": {
+     "mean_difference": 0.05121535372473921,
+     "per_model_differences": [
+      0.14195256350751995,
+      -0.020180041906341595,
+      0.03187353957303929
+     ],
+     "spread_max_minus_min": 0.16213260541386154,
+     "sd": 0.08277877001732331,
+     "sign_agrees_across_all_three_models": false
+    },
+    "keybo-lsb+lm vs semimak": {
+     "mean_difference": 0.06339219883824306,
+     "per_model_differences": [
+      0.12028420787897554,
+      0.010519637142546112,
+      0.05937275149320753
+     ],
+     "spread_max_minus_min": 0.10976457073642942,
+     "sd": 0.054992565087998845,
+     "sign_agrees_across_all_three_models": true
+    },
+    "keybo-lsb+lm vs qwerty30m": {
+     "mean_difference": 0.3615523007551755,
+     "per_model_differences": [
+      0.39535875300583767,
+      0.39372042417876635,
+      0.2955777250809226
+     ],
+     "spread_max_minus_min": 0.09978102792491506,
+     "sd": 0.05714153049126964,
+     "sign_agrees_across_all_three_models": true
+    },
+    "flagship-c3 vs arm-B": {
+     "mean_difference": 0.023255206079550783,
+     "per_model_differences": [
+      -0.0366433314861333,
+      0.07673981522359363,
+      0.029669134501192018
+     ],
+     "spread_max_minus_min": 0.11338314670972693,
+     "sd": 0.05696304370202068,
+     "sign_agrees_across_all_three_models": false
+    },
+    "flagship-c3 vs arm-A": {
+     "mean_difference": 0.09342705180155586,
+     "per_model_differences": [
+      0.09457137416944861,
+      0.08953352999175068,
+      0.09617625124346829
+     ],
+     "spread_max_minus_min": 0.006642721251717609,
+     "sd": 0.003466055635481049,
+     "sign_agrees_across_all_three_models": true
+    },
+    "flagship-c3 vs graphite": {
+     "mean_difference": 0.06927861149964683,
+     "per_model_differences": [
+      0.13295529840653164,
+      0.014441585874223617,
+      0.06043895021818524
+     ],
+     "spread_max_minus_min": 0.11851371253230802,
+     "sd": 0.059749307303314105,
+     "sign_agrees_across_all_three_models": true
+    },
+    "flagship-c3 vs semimak": {
+     "mean_difference": 0.08145545661315068,
+     "per_model_differences": [
+      0.11128694277798723,
+      0.045141264923111324,
+      0.08793816213835348
+     ],
+     "spread_max_minus_min": 0.0661456778548759,
+     "sd": 0.033545965151045014,
+     "sign_agrees_across_all_three_models": true
+    },
+    "flagship-c3 vs qwerty30m": {
+     "mean_difference": 0.37961555853008316,
+     "per_model_differences": [
+      0.38636148790484937,
+      0.42834205195933156,
+      0.32414313572606857
+     ],
+     "spread_max_minus_min": 0.104198916233263,
+     "sd": 0.05242598791051667,
+     "sign_agrees_across_all_three_models": true
+    },
+    "arm-B vs arm-A": {
+     "mean_difference": 0.07017184572200508,
+     "per_model_differences": [
+      0.1312147056555819,
+      0.01279371476815705,
+      0.06650711674227627
+     ],
+     "spread_max_minus_min": 0.11842099088742486,
+     "sd": 0.059295492658051493,
+     "sign_agrees_across_all_three_models": true
+    },
+    "arm-B vs graphite": {
+     "mean_difference": 0.04602340542009605,
+     "per_model_differences": [
+      0.16959862989266494,
+      -0.062298229349370016,
+      0.03076981571699322
+     ],
+     "spread_max_minus_min": 0.23189685924203496,
+     "sd": 0.11669851040481621,
+     "sign_agrees_across_all_three_models": false
+    },
+    "arm-B vs semimak": {
+     "mean_difference": 0.058200250533599895,
+     "per_model_differences": [
+      0.14793027426412053,
+      -0.03159855030048231,
+      0.058269027637161463
+     ],
+     "spread_max_minus_min": 0.17952882456460284,
+     "sd": 0.08976443204356872,
+     "sign_agrees_across_all_three_models": false
+    },
+    "arm-B vs qwerty30m": {
+     "mean_difference": 0.3563603524505324,
+     "per_model_differences": [
+      0.42300481939098267,
+      0.3516022367357379,
+      0.29447400122487655
+     ],
+     "spread_max_minus_min": 0.12853081816610612,
+     "sd": 0.0643973800202981,
+     "sign_agrees_across_all_three_models": true
+    },
+    "arm-A vs graphite": {
+     "mean_difference": -0.02414844030190903,
+     "per_model_differences": [
+      0.038383924237083034,
+      -0.07509194411752707,
+      -0.03573730102528305
+     ],
+     "spread_max_minus_min": 0.1134758683546101,
+     "sd": 0.0576187421275189,
+     "sign_agrees_across_all_three_models": false
+    },
+    "arm-A vs semimak": {
+     "mean_difference": -0.011971595188405182,
+     "per_model_differences": [
+      0.016715568608538622,
+      -0.04439226506863936,
+      -0.00823808910511481
+     ],
+     "spread_max_minus_min": 0.06110783367717798,
+     "sd": 0.0307245200928328,
+     "sign_agrees_across_all_three_models": false
+    },
+    "arm-A vs qwerty30m": {
+     "mean_difference": 0.2861885067285273,
+     "per_model_differences": [
+      0.29179011373540076,
+      0.3388085219675809,
+      0.22796688448260027
+     ],
+     "spread_max_minus_min": 0.1108416374849806,
+     "sd": 0.05563273003262158,
+     "sign_agrees_across_all_three_models": true
+    },
+    "graphite vs semimak": {
+     "mean_difference": 0.012176845113503846,
+     "per_model_differences": [
+      -0.02166835562854441,
+      0.030699679048887707,
+      0.027499211920168243
+     ],
+     "spread_max_minus_min": 0.05236803467743212,
+     "sd": 0.029354453791761503,
+     "sign_agrees_across_all_three_models": false
+    },
+    "graphite vs qwerty30m": {
+     "mean_difference": 0.31033694703043635,
+     "per_model_differences": [
+      0.2534061894983177,
+      0.41390046608510794,
+      0.2637041855078833
+     ],
+     "spread_max_minus_min": 0.16049427658679022,
+     "sd": 0.08983631804395009,
+     "sign_agrees_across_all_three_models": true
+    },
+    "semimak vs qwerty30m": {
+     "mean_difference": 0.2981601019169325,
+     "per_model_differences": [
+      0.27507454512686214,
+      0.38320078703622024,
+      0.23620497358771508
+     ],
+     "spread_max_minus_min": 0.14699581344850515,
+     "sd": 0.076168559734825,
+     "sign_agrees_across_all_three_models": true
+    }
+   }
+  },
+  "floor_on_saved_vs_qwerty_pct": {
+   "pool": "the 8 candidates of this arm, measured on 3 native surfaces (blend-v1, 90 WPM baked)",
+   "n_candidates": 8,
+   "n_pairs": 28,
+   "floor_conservative_max_pair_spread": 3.8902441366524205,
+   "floor_median_pair_spread": 0.9469577112484973,
+   "floor_max_pair_sd": 2.152344787043946,
+   "floor_median_pair_sd": 0.47545393402389496,
+   "pairs_whose_sign_agrees_on_all_three_models": 15,
+   "per_pair": {
+    "keybo-lsb vs keybo-lsb+lm": {
+     "mean_difference": 0.023818522854475905,
+     "per_model_differences": [
+      0.02013910588930523,
+      -0.05890817498475087,
+      0.11022463765887336
+     ],
+     "spread_max_minus_min": 0.16913281264362423,
+     "sd": 0.0846264182161133,
+     "sign_agrees_across_all_three_models": false
+    },
+    "keybo-lsb vs flagship-c3": {
+     "mean_difference": -0.2105752330693543,
+     "per_model_differences": [
+      0.09728234058670182,
+      -0.5660586633221438,
+      -0.16294937647262087
+     ],
+     "spread_max_minus_min": 0.6633410039088457,
+     "sd": 0.3342252063042646,
+     "sign_agrees_across_all_three_models": false
+    },
+    "keybo-lsb vs arm-B": {
+     "mean_difference": 0.15397800183144886,
+     "per_model_differences": [
+      -0.21690036818096115,
+      0.558054709169653,
+      0.1207796645056547
+     ],
+     "spread_max_minus_min": 0.7749550773506142,
+     "sd": 0.3885427134547398,
+     "sign_agrees_across_all_three_models": false
+    },
+    "keybo-lsb vs arm-A": {
+     "mean_difference": 0.8034668273488053,
+     "per_model_differences": [
+      0.9081444893976443,
+      0.7454618043369781,
+      0.7567941883117935
+     ],
+     "spread_max_minus_min": 0.1626826850606662,
+     "sd": 0.09083042128409607,
+     "sign_agrees_across_all_three_models": true
+    },
+    "keybo-lsb vs graphite": {
+     "mean_difference": 0.43259095633226474,
+     "per_model_differences": [
+      1.2372511726833402,
+      -0.35451293892988467,
+      0.4150346352433387
+     ],
+     "spread_max_minus_min": 1.5917641116132248,
+     "sd": 0.7960272703008314,
+     "sign_agrees_across_all_three_models": false
+    },
+    "keybo-lsb vs semimak": {
+     "mean_difference": 0.6082216363332984,
+     "per_model_differences": [
+      1.051465044899258,
+      0.09518738481354383,
+      0.6780124792870934
+     ],
+     "spread_max_minus_min": 0.9562776600857141,
+     "sd": 0.4819437852228236,
+     "sign_agrees_across_all_three_models": true
+    },
+    "keybo-lsb vs qwerty30m": {
+     "mean_difference": 4.018431868359677,
+     "per_model_differences": [
+      3.4099750983231814,
+      5.708455123362377,
+      2.936865383393472
+     ],
+     "spread_max_minus_min": 2.771589739968905,
+     "sd": 1.482596422640922,
+     "sign_agrees_across_all_three_models": true
+    },
+    "keybo-lsb+lm vs flagship-c3": {
+     "mean_difference": -0.2343937559238302,
+     "per_model_differences": [
+      0.07714323469739659,
+      -0.507150488337393,
+      -0.2731740141314942
+     ],
+     "spread_max_minus_min": 0.5842937230347895,
+     "sd": 0.29407094384595983,
+     "sign_agrees_across_all_three_models": false
+    },
+    "keybo-lsb+lm vs arm-B": {
+     "mean_difference": 0.13015947897697297,
+     "per_model_differences": [
+      -0.23703947407026638,
+      0.6169628841544039,
+      0.010555026846781335
+     ],
+     "spread_max_minus_min": 0.8540023582246703,
+     "sd": 0.43938471262704054,
+     "sign_agrees_across_all_three_models": false
+    },
+    "keybo-lsb+lm vs arm-A": {
+     "mean_difference": 0.7796483044943293,
+     "per_model_differences": [
+      0.888005383508339,
+      0.8043699793217289,
+      0.6465695506529201
+     ],
+     "spread_max_minus_min": 0.24143583285541892,
+     "sd": 0.12260173837002152,
+     "sign_agrees_across_all_three_models": true
+    },
+    "keybo-lsb+lm vs graphite": {
+     "mean_difference": 0.40877243347778885,
+     "per_model_differences": [
+      1.217112066794035,
+      -0.2956047639451338,
+      0.30480999758446536
+     ],
+     "spread_max_minus_min": 1.5127168307391687,
+     "sd": 0.7616982299822179,
+     "sign_agrees_across_all_three_models": false
+    },
+    "keybo-lsb+lm vs semimak": {
+     "mean_difference": 0.5844031134788225,
+     "per_model_differences": [
+      1.0313259390099527,
+      0.1540955597982947,
+      0.56778784162822
+     ],
+     "spread_max_minus_min": 0.877230379211658,
+     "sd": 0.43885115357824844,
+     "sign_agrees_across_all_three_models": true
+    },
+    "keybo-lsb+lm vs qwerty30m": {
+     "mean_difference": 3.994613345505201,
+     "per_model_differences": [
+      3.389835992433876,
+      5.767363298347128,
+      2.826640745734599
+     ],
+     "spread_max_minus_min": 2.940722552612529,
+     "sd": 1.5608584234170488,
+     "sign_agrees_across_all_three_models": true
+    },
+    "flagship-c3 vs arm-B": {
+     "mean_difference": 0.36455323490080316,
+     "per_model_differences": [
+      -0.31418270876766297,
+      1.1241133724917969,
+      0.28372904097827556
+     ],
+     "spread_max_minus_min": 1.4382960812594598,
+     "sd": 0.7225464117162298,
+     "sign_agrees_across_all_three_models": false
+    },
+    "flagship-c3 vs arm-A": {
+     "mean_difference": 1.0140420604181595,
+     "per_model_differences": [
+      0.8108621488109424,
+      1.311520467659122,
+      0.9197435647844143
+     ],
+     "spread_max_minus_min": 0.5006583188481795,
+     "sd": 0.26331320279671117,
+     "sign_agrees_across_all_three_models": true
+    },
+    "flagship-c3 vs graphite": {
+     "mean_difference": 0.6431661894016191,
+     "per_model_differences": [
+      1.1399688320966384,
+      0.21154572439225916,
+      0.5779840117159596
+     ],
+     "spread_max_minus_min": 0.9284231077043792,
+     "sd": 0.46763116229112445,
+     "sign_agrees_across_all_three_models": true
+    },
+    "flagship-c3 vs semimak": {
+     "mean_difference": 0.8187968694026527,
+     "per_model_differences": [
+      0.9541827043125561,
+      0.6612460481356877,
+      0.8409618557597143
+     ],
+     "spread_max_minus_min": 0.2929366561768685,
+     "sd": 0.14772080455432726,
+     "sign_agrees_across_all_three_models": true
+    },
+    "flagship-c3 vs qwerty30m": {
+     "mean_difference": 4.229007101429031,
+     "per_model_differences": [
+      3.3126927577364795,
+      6.274513786684521,
+      3.099814759866093
+     ],
+     "spread_max_minus_min": 3.174699026818428,
+     "sd": 1.7746555891392004,
+     "sign_agrees_across_all_three_models": true
+    },
+    "arm-B vs arm-A": {
+     "mean_difference": 0.6494888255173564,
+     "per_model_differences": [
+      1.1250448575786054,
+      0.187407095167325,
+      0.6360145238061388
+     ],
+     "spread_max_minus_min": 0.9376377624112804,
+     "sd": 0.4689640828249663,
+     "sign_agrees_across_all_three_models": true
+    },
+    "arm-B vs graphite": {
+     "mean_difference": 0.27861295450081586,
+     "per_model_differences": [
+      1.4541515408643013,
+      -0.9125676480995377,
+      0.29425497073768403
+     ],
+     "spread_max_minus_min": 2.366719188963839,
+     "sd": 1.1834371273356177,
+     "sign_agrees_across_all_three_models": false
+    },
+    "arm-B vs semimak": {
+     "mean_difference": 0.4542436345018495,
+     "per_model_differences": [
+      1.268365413080219,
+      -0.4628673243561092,
+      0.5572328147814387
+     ],
+     "spread_max_minus_min": 1.7312327374363283,
+     "sd": 0.8701992738642207,
+     "sign_agrees_across_all_three_models": false
+    },
+    "arm-B vs qwerty30m": {
+     "mean_difference": 3.864453866528228,
+     "per_model_differences": [
+      3.6268754665041425,
+      5.150400414192724,
+      2.8160857188878174
+     ],
+     "spread_max_minus_min": 2.3343146953049065,
+     "sd": 1.1851535327954825,
+     "sign_agrees_across_all_three_models": true
+    },
+    "arm-A vs graphite": {
+     "mean_difference": -0.3708758710165405,
+     "per_model_differences": [
+      0.3291066832856959,
+      -1.0999747432668627,
+      -0.34175955306845474
+     ],
+     "spread_max_minus_min": 1.4290814265525587,
+     "sd": 0.7149854899978841,
+     "sign_agrees_across_all_three_models": false
+    },
+    "arm-A vs semimak": {
+     "mean_difference": -0.19524519101550686,
+     "per_model_differences": [
+      0.1433205555016137,
+      -0.6502744195234342,
+      -0.07878170902470005
+     ],
+     "spread_max_minus_min": 0.7935949750250479,
+     "sd": 0.4094155017513612,
+     "sign_agrees_across_all_three_models": false
+    },
+    "arm-A vs qwerty30m": {
+     "mean_difference": 3.214965041010872,
+     "per_model_differences": [
+      2.501830608925537,
+      4.962993319025399,
+      2.1800711950816787
+     ],
+     "spread_max_minus_min": 2.7829221239437203,
+     "sd": 1.5223614635339109,
+     "sign_agrees_across_all_three_models": true
+    },
+    "graphite vs semimak": {
+     "mean_difference": 0.17563068000103366,
+     "per_model_differences": [
+      -0.1857861277840822,
+      0.4497003237434285,
+      0.2629778440437547
+     ],
+     "spread_max_minus_min": 0.6354864515275107,
+     "sd": 0.32662348785487905,
+     "sign_agrees_across_all_three_models": false
+    },
+    "graphite vs qwerty30m": {
+     "mean_difference": 3.5858409120274124,
+     "per_model_differences": [
+      2.172723925639841,
+      6.062968062292262,
+      2.5218307481501334
+     ],
+     "spread_max_minus_min": 3.8902441366524205,
+     "sd": 2.152344787043946,
+     "sign_agrees_across_all_three_models": true
+    },
+    "semimak vs qwerty30m": {
+     "mean_difference": 3.4102102320263783,
+     "per_model_differences": [
+      2.3585100534239234,
+      5.613267738548833,
+      2.2588529041063787
+     ],
+     "spread_max_minus_min": 3.3544148344424545,
+     "sd": 1.908554340236669,
+     "sign_agrees_across_all_three_models": true
+    }
+   }
+  },
+  "two_way_decomposition_normalized": {
+   "ss_candidate": 0.32273409266629394,
+   "ss_model": 0.056802995944943604,
+   "ss_interaction": 0.023313776533525156,
+   "ss_total": 0.4028508651447627,
+   "model_main_effect_share_of_ss": 0.14100254178312785,
+   "candidate_main_effect_share_of_ss": 0.8011254798976809,
+   "interaction_share_of_ss": 0.057871978319191275,
+   "residual_sd_after_removing_both_main_effects": 0.031167408547448216
+  },
+  "two_way_decomposition_saved_pct": {
+   "ss_candidate": 39.5115790729791,
+   "ss_model": 33.06533359741529,
+   "ss_interaction": 6.496895811274367,
+   "ss_total": 79.07380848166876,
+   "model_main_effect_share_of_ss": 0.4181578481208558,
+   "candidate_main_effect_share_of_ss": 0.4996797274806721,
+   "interaction_share_of_ss": 0.08216242439847204,
+   "residual_sd_after_removing_both_main_effects": 0.5202922180240945
+  },
+  "per_comparison_verdicts": {
+   "raw_mean_predicted_ms": [],
+   "raw_mean_saved_vs_qwerty_pct": [],
+   "raw_min_saved_vs_qwerty_pct_the_scale_broken_floor": [
+    {
+     "pair": [
+      "graphite",
+      "semimak"
+     ],
+     "blend_gap": 0.01217684511350381,
+     "floor_conservative": 0.23189685924203496,
+     "floor_this_pair_spread": 0.05236803467743212,
+     "clears_conservative_floor": false
+    },
+    {
+     "pair": [
+      "graphite",
+      "arm-A"
+     ],
+     "blend_gap": 0.024148440301909102,
+     "floor_conservative": 0.23189685924203496,
+     "floor_this_pair_spread": 0.1134758683546101,
+     "clears_conservative_floor": false
+    }
+   ]
+  },
+  "note": "the paired floor is computed on THIS pool and is NOT transferable \u2014 a paired floor must name its pool. The replicate structure used is the three models as three measurements of one quantity, so the MODEL main effect is the nuisance that a paired difference cancels and the candidate x model INTERACTION is what actually limits resolution."
+ },
+ "design_defect_scale_occupancy": {
+  "per_model": {
+   "AALTO": {
+    "min_normalized": 0.5648787382296216,
+    "max_normalized": 0.9878835576206043,
+    "window_width": 0.42300481939098267
+   },
+   "COMMUNITY": {
+    "min_normalized": 0.42429759464395983,
+    "max_normalized": 0.8526396466032914,
+    "window_width": 0.42834205195933156
+   },
+   "POOL": {
+    "min_normalized": 0.5239269324169064,
+    "max_normalized": 0.8480700681429749,
+    "window_width": 0.32414313572606857
+   }
+  },
+  "blend_min": 0.5043677550968293,
+  "blend_max": 0.8839833136269124,
+  "blend_window_width": 0.3796155585300831,
+  "why_this_matters": "the '0' anchor is the mean of RANDOM layouts, and random layouts are 2.5-3 sd worse than qwerty, so the [0,1] scale spends most of its range on a region no candidate occupies. A narrow occupancy window is a property of the ANCHORING, not of the layouts."
+ },
+ "modelled_only": "MODELLED ONLY: fitted surfaces on the .native frame at a BAKED 90 WPM; tau saturated at 1.0, Phase-D cancelled. No layout is promoted or adopted."
+}
