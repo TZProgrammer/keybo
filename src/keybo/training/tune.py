@@ -155,8 +155,7 @@ def tune_lolo(
             float(m["rho_frac_ceiling"])
             for fold in report["folds"].values()
             for m in fold["seeds"]
-            if m["rho_frac_ceiling"] is not None
-            and math.isfinite(float(m["rho_frac_ceiling"]))
+            if m["rho_frac_ceiling"] is not None and math.isfinite(float(m["rho_frac_ceiling"]))
         ]
         n_folds_seen += sum(len(f["seeds"]) for f in report["folds"].values())
         n_fracs_finite += len(fracs)
