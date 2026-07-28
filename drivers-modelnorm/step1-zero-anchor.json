@@ -35,7 +35,9 @@
    }
   },
   "n_trigrams": 24478,
-  "total_trigram_freq": 887147352.0
+  "total_trigram_freq": 887147352.0,
+  "tile": 16,
+  "numpy": "2.5.0"
  },
  "anchor_of_record": {
   "n": 100,

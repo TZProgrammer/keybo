@@ -235,7 +235,7 @@ class NativeSurfaces:
 
         objective = S.trigram_objective(str(self.trigram_path))
         worst = 0.0
-        for name, layout in CANDIDATES.items():
+        for layout in CANDIDATES.values():
             for m in MODELS:
                 std = np.load(self.native_dir / f"{m}_{FAMILY}.standardized.npy")
                 theirs = S.score_fit(layout, std, objective)
@@ -481,7 +481,8 @@ def ceiling_fraction_anchors(surf: NativeSurfaces, pool: dict[str, str]) -> dict
 
 
 def load_anchors(path: Path) -> Anchors:
-    blob = json.load(open(path))
+    with open(path) as handle:
+        blob = json.load(handle)
     return Anchors(
         zero=blob["zero"],
         one=blob["one"],

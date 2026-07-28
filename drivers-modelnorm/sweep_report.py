@@ -28,11 +28,22 @@ import subprocess
 import sys
 from pathlib import Path
 
-import numpy as np
-
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import modelnorm_eval as MN  # noqa: E402
+
+
+def _read_json(path):
+    """json.load with the handle closed (ruff SIM115)."""
+    with open(path) as handle:
+        return json.load(handle)
+
+
+def _write_json(path, payload):
+    """json.dump with the handle closed (ruff SIM115)."""
+    with open(path, "w") as handle:
+        json.dump(payload, handle, indent=1)
+
 
 REPO = Path("/tmp/modelnorm")
 
@@ -86,7 +97,7 @@ def main() -> int:
         if not path.is_file():
             print(f"  (skipping {name}: {path} not present)")
             continue
-        run = json.load(open(path))
+        run = _read_json(path)
         assert run["objective"] == "blend", f"{path} is not a blend run"
         assert tuple(run["weights"]) == weights, (
             f"{path} ran at weights {run['weights']}, expected {list(weights)}"
@@ -102,7 +113,7 @@ def main() -> int:
         for n, r in cells.items()
     }
     assert len(set(signature.values())) == 1, (
-        f"sweep cells did NOT run at identical settings, so a difference between them is not "
+        "sweep cells did NOT run at identical settings, so a difference between them is not "
         f"attributable to the weight: {signature}"
     )
 
@@ -151,7 +162,7 @@ def main() -> int:
         }
         assert control[name]["hits_1.0"], (
             f"{name}: solo blend reached {got_blend}, not 1.0 — the anchor and the objective "
-            f"disagree, so the normalization is not the one the anchors describe"
+            "disagree, so the normalization is not the one the anchors describe"
         )
 
     # ---- do the solo champions differ? (trap 52: wide-pool correlation != band agreement) ----
@@ -250,7 +261,7 @@ def main() -> int:
     for pair, distance in distances.items():
         print(f"    {pair:34s} {distance}/30")
     if preference:
-        print(f"\n  preference monotonicity on AALTO: "
+        print("\n  preference monotonicity on AALTO: "
               f"(1,0,0)={preference['aalto_normalized_at_1_0_0']:.5f}  "
               f"(2,1,1)={preference['aalto_normalized_at_2_1_1']:.5f}  "
               f"(1,1,1)={preference['aalto_normalized_at_1_1_1']:.5f}")

@@ -1,0 +1,21 @@
+MODELNORM-1 gate: after the ruff cleanup touched EVERY driver, re-run the whole pipeline and
+compare artifacts BIT-FOR-BIT against the pre-cleanup snapshots.
+
+  unit suite                 rc=0, 21 passed  (sentinel unit-rc.txt)
+  full pipeline re-run       rc=0             (sentinel reverify-rc.txt)
+
+  IDENTICAL  anchors.json
+  IDENTICAL  anchors-evidence.json
+  IDENTICAL  rank-table.json
+  IDENTICAL  seed-floor.json
+  IDENTICAL  sweep-report.json
+  IDENTICAL  judgement.json
+  DIFFERS    step1-zero-anchor.json  -- and the diff is EXACTLY the two provenance fields I
+                                        added deliberately (`"tile": 16`, `"numpy": "2.5.0"`),
+                                        +34 bytes. Every measured number is byte-identical:
+                                          total_trigram_freq 887147352.0 unchanged, and the
+                                          line is the last key before the addition.
+
+=> the cleanup (SIM115 context managers, F541, F401, B007, and the B023 loop-capture fix in
+   seed_floor.floor_of) changed NO measured value. Checked by re-running, not by reading the
+   diff and judging it cosmetic.

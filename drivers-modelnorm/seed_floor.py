@@ -119,7 +119,7 @@ def main() -> int:
                 "interaction_share_of_ss": ss_interaction / total,
             }
 
-        def floor_of(matrix: np.ndarray, drop_reference: bool) -> dict:
+        def floor_of(matrix: np.ndarray, drop_reference: bool, reference_row: int) -> dict:
             """Paired and unpaired floors. ``drop_reference`` excludes the qwerty30m row.
 
             ⚠ THE REFERENCE ROW MAKES THE PAIRED FLOOR DEGENERATE ON A saved% SCALE. saved% is
@@ -130,7 +130,8 @@ def main() -> int:
             the cancellation the paired analysis exists to measure. Measured here: 1.0000 with
             the reference in, 0.5632 with it out.
             """
-            rows = [r for r in range(len(names)) if not (drop_reference and r == qwerty_row)]
+            rows = [r for r in range(len(names))
+                    if not (drop_reference and r == reference_row)]
             spreads, per_pair = [], {}
             for i, j in itertools.combinations(rows, 2):
                 differences = matrix[i] - matrix[j]
@@ -178,9 +179,9 @@ def main() -> int:
                 "decomposition is therefore reported alongside; on blend-v1 the seed share is "
                 "small on BOTH scales, which is the substantive finding."
             ),
-            "floor_saved_pct_all_rows": floor_of(saved, drop_reference=False),
-            "floor_saved_pct_excluding_reference": floor_of(saved, drop_reference=True),
-            "floor_raw_ms_excluding_reference": floor_of(per_seed_fit, drop_reference=True),
+            "floor_saved_pct_all_rows": floor_of(saved, False, qwerty_row),
+            "floor_saved_pct_excluding_reference": floor_of(saved, True, qwerty_row),
+            "floor_raw_ms_excluding_reference": floor_of(per_seed_fit, True, qwerty_row),
         }
 
     blob = {
@@ -218,7 +219,7 @@ def main() -> int:
     print(f"WROTE {args.out}")
     for key, result in results.items():
         print(f"\n== {key} ({len(SEEDS)} seeds, blend-v1, .native) ==")
-        print(f"  positive control (seedmean rebuilds shipped native): "
+        print("  positive control (seedmean rebuilds shipped native): "
               f"max abs {result['positive_control_seedmean_reproduces_shipped_native_max_abs']:.3e}")
         for scale in ("decomposition_on_raw_ms", "decomposition_on_saved_pct"):
             d = result[scale]
@@ -234,7 +235,7 @@ def main() -> int:
                   f"paired={f['floor_paired_max_difference_spread']:.6g}  "
                   f"median_paired={f['floor_paired_median_difference_spread']:.6g}  "
                   f"ratio={f['paired_over_unpaired_ratio']:.4f}")
-            print(f"      pairs resolved vs the conservative paired floor: "
+            print("      pairs resolved vs the conservative paired floor: "
                   f"{f['pairs_resolved_against_the_conservative_paired_floor']}/{f['n_pairs']}")
         print("  ⚠ ratio EXACTLY 1.0000 in the all-rows cell is a DEGENERACY, not a finding: "
               "saved% is computed per seed against qwerty, so the reference row is (0,0,0) and "

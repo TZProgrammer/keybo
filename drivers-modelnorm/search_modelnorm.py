@@ -48,6 +48,19 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import modelnorm_eval as MN  # noqa: E402
 
+
+def _read_json(path):
+    """json.load with the handle closed (ruff SIM115)."""
+    with open(path) as handle:
+        return json.load(handle)
+
+
+def _write_json(path, payload):
+    """json.dump with the handle closed (ruff SIM115)."""
+    with open(path, "w") as handle:
+        json.dump(payload, handle, indent=1)
+
+
 POP = 64
 KIDS = 48
 _EVAL: dict = {}
@@ -321,12 +334,12 @@ def main() -> int:
     }
     start_epoch, all_keys, state, curve = 0, set(), None, []
     if args.resume and checkpoint.exists():
-        blob = json.load(open(checkpoint))
+        blob = _read_json(checkpoint)
         stored = blob.get("run_identity")
         if stored is None:
             raise SystemExit(
                 f"{checkpoint} predates run-identity stamping; refusing to resume it blind. "
-                f"Delete it to start fresh."
+                "Delete it to start fresh."
             )
         differing = {k: (stored.get(k), run_identity[k]) for k in RUN_IDENTITY
                      if stored.get(k) != run_identity[k]}
@@ -390,12 +403,13 @@ def main() -> int:
             np.save(keys_tmp, np.fromiter(all_keys, dtype=np.uint64, count=len(all_keys)))
             os.replace(keys_tmp, keys_path)
             tmp = checkpoint.with_suffix(".tmp")
-            json.dump({"run_identity": run_identity, "objective": args.objective,
-                       "weights": weights, "epoch": epoch + 1,
-                       "n_unique": len(all_keys), "islands": state, "curve": curve,
-                       "best_fit": best_overall[0], "best_layout": best_overall[1],
-                       "seed": args.seed, "budget": args.budget,
-                       "elapsed_s": time.time() - start}, open(tmp, "w"))
+            with open(tmp, "w") as handle:
+                json.dump({"run_identity": run_identity, "objective": args.objective,
+                           "weights": weights, "epoch": epoch + 1,
+                           "n_unique": len(all_keys), "islands": state, "curve": curve,
+                           "best_fit": best_overall[0], "best_layout": best_overall[1],
+                           "seed": args.seed, "budget": args.budget,
+                           "elapsed_s": time.time() - start}, handle)
             os.replace(tmp, checkpoint)
             if len(all_keys) >= args.budget:
                 log(f"budget reached at epoch {epoch + 1}")
@@ -447,7 +461,7 @@ def main() -> int:
             "speed. No layout here is promoted or adopted."
         ),
     }
-    json.dump(blob, open(out, "w"), indent=1)
+    _write_json(out, blob)
     log(f"WROTE {out}: champion {champion_layout} fitness {ordered[0][1]:.9f} "
         f"({len(all_keys):,} unique evals)")
     return 0

@@ -166,7 +166,7 @@ def main() -> int:
         }
         assert raw_rank == norm_rank, (
             f"{model}: normalization changed a WITHIN-MODEL ranking. It is a positive-scale "
-            f"affine map and cannot; this is an implementation bug.\n"
+            "affine map and cannot; this is an implementation bug.\n"
             f"  raw : {raw_rank}\n  norm: {norm_rank}"
         )
 
@@ -300,29 +300,29 @@ def main() -> int:
     print(f"WROTE {args.out}")
 
     width = max(len(n) for n in names) + 1
-    print(f"\n== normalized scale (1 = per-model optimum, 0 = random-pool mean) "
-          f"| corpus blend-v1, .native, 90 WPM ==")
+    print("\n== normalized scale (1 = per-model optimum, 0 = random-pool mean) "
+          "| corpus blend-v1, .native, 90 WPM ==")
     print(f"  {'name':{width}s} " + " ".join(f"{m:>10s}" for m in MN.MODELS) + "   blend(1,1,1)")
     for i, name in enumerate(names):
         print(f"  {name:{width}s} " + " ".join(f"{normalized[i, j]:10.6f}" for j in range(3))
               + f"   {blend[name]:.6f}")
-    print(f"\n== B: does normalizing change a ranking? ==")
-    print(f"  per model: NO (affine, positive scale — asserted)")
+    print("\n== B: does normalizing change a ranking? ==")
+    print("  per model: NO (affine, positive scale — asserted)")
     for label, comparison in comparisons.items():
         print(f"  vs {label}: {comparison['n_discordant_pairs']} discordant pair(s)")
         for x, y in comparison["discordant_pairs_vs_normalized_blend"]:
             print(f"      blend puts {x} > {y}; that aggregate disagrees "
                   f"(blend gap {abs(blend[x] - blend[y]):.6f})")
     print(f"\n  paired floor on the normalized scale (pool = these {len(names)} candidates x 3 models):")
-    print(f"      conservative (max pair spread) = "
+    print("      conservative (max pair spread) = "
           f"{floor_normalized['floor_conservative_max_pair_spread']:.6f}")
     print(f"      median pair spread             = {floor_normalized['floor_median_pair_spread']:.6f}")
-    print(f"      pairs whose sign agrees on all 3 models = "
+    print("      pairs whose sign agrees on all 3 models = "
           f"{floor_normalized['pairs_whose_sign_agrees_on_all_three_models']}/{floor_normalized['n_pairs']}")
     print(f"      model main effect = {100*decomposition_normalized['model_main_effect_share_of_ss']:.2f}% of SS; "
           f"interaction = {100*decomposition_normalized['interaction_share_of_ss']:.2f}%")
     print(f"\n  scale occupancy: blend window = {blob['design_defect_scale_occupancy']['blend_window_width']:.6f} "
-          f"of the 0-1 range")
+          "of the 0-1 range")
     return 0
 
 

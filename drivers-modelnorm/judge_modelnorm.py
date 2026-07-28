@@ -241,9 +241,9 @@ def main() -> int:
     # ---- E: the 19-gauge frame ----
     sfr = assert_sfr_is_a_permutation_invariant(analyze["rows"], everyone)
     assert sfr["is_invariant"], (
-        f"sfr is NOT invariant over the C30M layouts scored here "
+        "sfr is NOT invariant over the C30M layouts scored here "
         f"({sfr['distinct_values_over_our_c30m_layouts']}); trap 23's premise does not hold and "
-        f"the denominator below is wrong"
+        "the denominator below is wrong"
     )
     gauge_names = [g for g in GAUGE_LOWER_BETTER if g in rows[champion_name]["gauges"]]
     movable = [g for g in gauge_names if g != "sfr"]
@@ -325,14 +325,14 @@ def main() -> int:
             "win_counts_vs_incumbents": wins,
             "denominator_note": (
                 f"analyze's `gauges` block carries {len(gauge_names)} of the 19-gauge frame; the "
-                f"other 4 (genkey, oxeylyzer1, oxeylyzer2, wfd) are `community` scores and are "
+                "other 4 (genkey, oxeylyzer1, oxeylyzer2, wfd) are `community` scores and are "
                 f"counted separately above. Win counts are out of {len(movable)} MOVABLE "
-                f"keymeow-class gauges (sfr EXCLUDED: it counts doubled letters, is a "
-                f"permutation invariant within C30M, and is therefore a tie by construction -- "
-                f"trap 23; counting it would inflate every denominator by one), plus "
+                "keymeow-class gauges (sfr EXCLUDED: it counts doubled letters, is a "
+                "permutation invariant within C30M, and is therefore a tie by construction -- "
+                "trap 23; counting it would inflate every denominator by one), plus "
                 f"{len(community_lower_better)} community gauges, i.e. "
                 f"{len(movable) + len(community_lower_better)} movable of the 19-gauge frame. "
-                f"Names in my direction table absent from analyze's gauges block: "
+                "Names in my direction table absent from analyze's gauges block: "
                 f"{missing_from_gauges}."
             ),
         },
@@ -362,9 +362,9 @@ def main() -> int:
         for incumbent, result in verdict["vs_incumbents"].items():
             print(f"      vs {incumbent:14s} n_ge={result['n_ge']:2d} "
                   f"n_strict={result['n_strict']:2d} dominates={result['dominates']}")
-    print(f"\n  normalized floor: " + "  ".join(
+    print("\n  normalized floor: " + "  ".join(
         f"{n}={normalized_rows[n]['normalized_floor_min_over_models']:+.6f}" for n in champions))
-    print(f"\n== E: 19-gauge frame ==")
+    print("\n== E: 19-gauge frame ==")
     print(f"  analyze `gauges` block carries {len(gauge_names)} of 19; the other 4 "
           f"({', '.join(community_lower_better)}) are `community` scores, counted separately.")
     print(f"  movable denominator = {len(movable)} keymeow-class (sfr EXCLUDED, invariant) "

@@ -34,6 +34,19 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import modelnorm_eval as MN  # noqa: E402
 
+
+def _read_json(path):
+    """json.load with the handle closed (ruff SIM115)."""
+    with open(path) as handle:
+        return json.load(handle)
+
+
+def _write_json(path, payload):
+    """json.dump with the handle closed (ruff SIM115)."""
+    with open(path, "w") as handle:
+        json.dump(payload, handle, indent=1)
+
+
 SEEDS = {"s1": 20260728, "s2": 20260901}
 
 
@@ -79,7 +92,7 @@ def main() -> int:
 
     runs_dir = Path(args.runs or Path(args.out).parent / "runs")
     surf = MN.NativeSurfaces(corpus=args.corpus)
-    step1 = json.load(open(args.step1))
+    step1 = _read_json(args.step1)
 
     # ---- the "1" anchors, both seeds ----
     per_seed: dict[str, dict[str, dict]] = {}
@@ -89,7 +102,7 @@ def main() -> int:
             path = runs_dir / f"anchor-{model}-{tag}.json"
             if not path.is_file():
                 raise SystemExit(f"missing anchor run {path}")
-            run = json.load(open(path))
+            run = _read_json(path)
             if run["objective"] != f"solo:{model}":
                 raise SystemExit(f"{path} holds objective {run['objective']!r}, expected solo:{model}")
             if run["seed"] != SEEDS[tag]:
@@ -120,7 +133,7 @@ def main() -> int:
         for m in MN.MODELS for t in SEEDS
     }
     if len(set(budgets.values())) != 1:
-        raise SystemExit(f"anchor searches ran at DIFFERENT budgets, so the scales are not "
+        raise SystemExit("anchor searches ran at DIFFERENT budgets, so the scales are not "
                          f"comparable: {budgets}")
 
     # ---- the "0" anchor of record ----
@@ -241,12 +254,12 @@ def main() -> int:
     }
     # the anchors JSON the search consumes: a flat, minimal contract
     anchors_out = Path(args.out)
-    json.dump({
+    _write_json(anchors_out, {
         "zero": zero, "one": one, "zero_statistic": "mean", "zero_n": args.zero_n,
         "zero_seed": step1["anchor_of_record"]["seed"], "zero_sd": pool["sd"],
         "one_provenance": anchors.one_provenance,
-    }, open(anchors_out, "w"), indent=1)
-    json.dump(blob, open(anchors_out.with_name(anchors_out.stem + "-evidence.json"), "w"), indent=1)
+    })
+    _write_json(anchors_out.with_name(anchors_out.stem + "-evidence.json"), blob)
 
     print(f"WROTE {anchors_out} and {anchors_out.with_name(anchors_out.stem + '-evidence.json')}")
     print("\n== anchors (predicted ms over blend-v1, .native, 90 WPM) ==")
