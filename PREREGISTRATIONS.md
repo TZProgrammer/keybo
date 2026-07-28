@@ -9537,3 +9537,38 @@ index was the omission."* It also corrected the index's now-withdrawn seed-famil
 🟢 ONE NEW SELF-CAUGHT DEFECT THIS PASS, and the detection route is the recurring one: it globbed `runs/baseline-r*.json` to read arm G's sd and **picked up the `.ckpt.json` sidecars, whose schema differs — caught by
 a KeyError, i.e. BY RUNNING, NOT BY READING.** Nothing else retracted: it re-examined the 7 pre-prereg controls, the gate's 4 bite-modes, the triple reconciliation, the 0-of-435 enumeration and the F2 both-readings
 resolution, and all stand as written.
+
+### LANDED-2026-07-28 — 🟢 THE USER APPROVED AND ALL FOUR FIXES ARE MERGED TO `main` AND PUSHED (`b905fd7`): the search-path skipgram fix, the oxey partition fix, the qap certificate hardening, and the Spearman-Brown ceiling correction — **and every published `oxey-style` number in this ledger is now on the OLD convention**
+User instruction: *"What is this qap_bound? What is Spearman-Brown correction? What is this oxey partition fix? What is qap_bound hardening? And yes, land them"* — the explicit gate that had been held open. Landed as
+**four separate `--no-ff` merges in dependency order**, each with the full suite run after it, so a failure would have been attributable to a single merge. **`main` = `origin/main` = `b905fd7`.**
+🟢 **PREFLIGHT, before touching anything:** no live children; working tree clean; `main` in sync at 3b177bc; **a GREEN BASELINE captured first** (full suite rc=0, 0 failures) so any later red would be attributable;
+and the four branches verified to touch **DISJOINT files** under `src/`+`tests/` — zero overlap, hence no merge-order risk. ⚠ **AND THE TWO ARM BRANCHES WERE DELIBERATELY EXCLUDED:** `optimize-arm-g` and
+`optimize-arm-h` each add `src/keybo/analysis/evidence_scorer.py` (912 lines), a module ABSENT from main with no test coverage — merging either would **silently resurrect a deleted module** (the hazard `speedtie`
+flagged and I verified). Their artifacts are banked; their `src/` change stays out.
+    merge            branch               src/tests files   suite after
+    1/4  025764c     ultraaudit                   2         rc=0, 0 failures
+    2/4  f778e27     oxey-partition-fix           4         rc=0, 0 failures
+    3/4  12c006d     qap-audit                    4         rc=0, 0 failures
+    4/4  b905fd7     ceiling-sb                   8         rc=0, 0 failures
+🟢 **AND I VERIFIED THE FIXES ARE *ACTIVE*, NOT MERELY MERGED — a green suite is not proof a fix is live** (this campaign's own most-repeated lesson): `optimize.py` now uses `PRODUCTION_SKIPGRAMS` with **no remaining
+`1-skip.txt` literal**; `certificate()` **carries `scope` and refuses both a `nan` fitness and a below-bound fitness**; `spearman_brown(0.6) = 0.75` exactly; `LOLO_MIN_MARGIN = 0.03` and the margin gate **fires on a
+0.1% win**. ⚠ **My first check of the oxey fix returned FALSE and I ran it down rather than accepting it:** I had grepped `inspect.getsource(OxeyStyleScorer)`, but the delegation lives in a **module-level
+`_trigram_class`** (`oxey.py:59` imports `_v1_pattern`), outside the class body. **A behavioural test settled it: qwerty30m `oxey-style` 88.197171 -> 86.767986, a drop of 1.429 inside OXEYFIX-1's predicted 0.42-1.50
+range.** *Checking the source text for a fix is not checking the fix.*
+🔴 **THE CONSEQUENCE THAT MATTERS MOST FOR READING THIS LEDGER: `oxey-style` IS NOW A DIFFERENT NUMBER, so EVERY `oxey-style` value registered before today is on the OLD (nested `bad_redirect`) convention.** Measured
+on the post-merge `main` for the adoption set:
+    layout                          oxey-style OLD    NEW      change
+    qwerty                                91.1670   89.753    -1.414
+    arm B      flmpg-yuo,sntdcireah…        8.6110    7.928    -0.683
+    BALL-1     flmpg-yuo,sntcdireah…        7.5774    6.890    -0.687
+    arm-H hdln flmpg-,uoysntcdireah…        4.4465    3.593    -0.854
+    keybo-lsb                             -3.2497   -4.188    -0.938
+    flagship-c3                           -7.8749   -8.969    -1.094
+ These match ARM H's independently-computed fixed-convention table to 3dp (it predicted BALL-1 6.890308, arm B 7.928391 — a **cross-check by an agent that never merged the branch**). 🟢 **THE ADOPTION VERDICTS ARE
+ UNAFFECTED, WHICH WAS ESTABLISHED BEFORE THE MERGE, NOT ASSUMED AFTER IT:** OXEYFIX-1's re-adjudication showed all nine published layouts keep IDENTICAL ordering (spearman 1.000000, 0 of 36 inversions) and 400
+ near-optimal perturbations give top-10 overlap 10/10; and ARM H's fixed-convention census keeps **HEADLINE 12/0, BALL-1 6/0, MID 8/0 — all still dominate arm B.** ⚠ **But any FUTURE comparison must not mix
+ conventions: an `oxey-style` figure quoted from a pre-2026-07-28 entry is ~0.65-1.45 higher than the same layout scores today.**
+⚠ **STILL PENDING, and named so this entry is not read as "everything is done":** (1) **ADOPTING a layout remains user-gated** — six options, registered lead **BALL-1**; (2) the four re-adjudicated PREREG cells
+(:1052 Q-OBJ, :1101, :1196 "CAMPAIGN COMPLETE", :12-18 OQ-5) carry their `SUPERSEDED IN PART` annotations but **the F5M family's standing was never re-decided** — the refuted gate is annotated, not replaced;
+(3) `qap_bound`'s docstring still describes an outgoing-only relaxation while the code does halved outgoing+incoming, and the **~2.34% resolution floor is a reporting convention nobody has applied to the six
+certificates**; (4) the round-4 worklist is unrun, including **`badscissor` — the gauge the user caught — still unaudited after three rounds.**
