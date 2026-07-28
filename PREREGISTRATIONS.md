@@ -8437,3 +8437,34 @@ mean — "it saturates, so the linear slope overstates" is only true ABOVE the m
 `collin3.py` WRITES there).
 => STANDING NOTE ON PROCESS: the child replied directly to `scissorprice` (a PEER, not its child) to hand over the contradicting tangent result and de-duplicate who files against the number. That peer-to-peer
 correction is what produced the "two corrections point opposite ways" cell above — neither agent alone had it.
+
+### OXEY-DOUBLECHARGE-1 — 🟢 I MEASURED THE CONSEQUENCE OF THE NESTED COUNTER RATHER THAN ASSERTING IT: the double-charge is 1.69% of qwerty's oxey-style score but 8.5% of an optimized layout's and 148% of arm E's, yet it reorders almost nothing (spearman 0.9989, top-10 overlap 9/10 in-band) (2026-07-28)
+Follow-through on the PENALTYAUDIT-1 CORRECTION cell. Having established that `bad_redirect`'s share is a SUBSET of `redirect`'s, the obvious next question is whether the resulting
+double-charge actually matters — and the entry above only asserted that it existed. I measured it. Everything below is my own computation through the SHIPPED scorer on blend-v1.
+🟢 IT PROPAGATES INTO THE GAUGE PRINTED IN EVERY ADOPTION TABLE. `oxey.py:159-161` is `fitness = sum(self._w[name] * share for name, share in shares.items())` over all **11** shares. Because
+`shares["bad_redirect"]` is a nested subset of `shares["redirect"]` (not a disjoint class), a bad-redirect trigram contributes to BOTH terms: **+2.0 and +4.0 = +6.0**. So the `oxey-style` column in
+every table I have shown carries the double-charge.
+🟢 THE MAGNITUDE SCALES THE WRONG WAY — it is SMALLEST on the reference layout and LARGEST where the campaign actually compares:
+    layout       oxey-style  redir sh  bad sh  double-charge   as % of |score|   exclusive-class score
+    qwerty30m      88.1972    7.5204  0.7454         1.4907           **1.69%**            86.7065
+    graphite       -7.1482    1.7613  0.2198         0.4396             6.15%             -7.5878
+    lcfmk…          6.7164    1.8256  0.2784         0.5568             8.29%              6.1596
+    arm B           8.6110    2.5523  0.3669         0.7339           **8.52%**             7.8772
+    arm E          -0.9924    3.2696  0.7362         1.4724         **148.37%**            -2.4648
+ => the ABSOLUTE double-charge barely moves (0.44-1.49) while the SCORE shrinks toward zero as layouts improve, so the RELATIVE distortion grows without bound near the optimum. **Arm E's is 148% of its
+ own score — the correction is larger than the quantity.** This is the same pathology as the `saved_vs_ref_pct` coverage artifact registered earlier: a ratio whose denominator approaches zero.
+🟢 BUT IT REORDERS ALMOST NOTHING, AND I TESTED THAT ON A WIDE POOL RATHER THAN THE NINE LAYOUTS THAT SUITED ME. Recomputing every score with `redirect` made EXCLUSIVE of `bad_redirect`:
+    pool                          spearman   positions moved   top-10 overlap   mean |double-charge|   as % of |score|
+    9 published layouts           **1.000000**       0/9            10/10              —                    —
+    400 uniformly random perms      0.999013      349/400          **10/10**          2.1613             2.24%
+    400 near-optimal (arm B +-1-4 swaps)  0.998900   343/400        **9/10**          1.2987           **5.48%**
+ On the nine layouts in the adoption tables the ordering is **IDENTICAL** (spearman 1.0, graphite < arm E < puy… < pyu… < lnfdg… < lcfmk… < arm B < pyou… < qwerty both ways) — **so no published ranking
+ flips and no adoption comparison I have shown you changes.** On 400 near-optimal perturbations it displaces **one member of the top 10**, which is the honest caveat: it is inert for ranking published
+ layouts and NOT provably inert for SELECTING among near-optimal candidates.
+=> VERDICT, and it is deliberately unexciting: **a real defect (a weight's label is not the price charged), a large relative distortion exactly where the campaign works, and a near-zero consequence for
+every ranking actually published.** Registered as: do not restate any `oxey-style` number, do not re-adjudicate any dominance verdict, and do NOT quote "bad_redirect = 4.0" — the effective price is 6.0.
+⚠ WHAT I DID NOT DO: I did not change `oxey.py`. Fixing it is a one-line change (`elif` the bad case, or subtract), but the scorer's stated contract is to REPRODUCE COMMUNITY JUDGMENT, and oxeylyzer's own
+weight table (`community.py:382-389`: redirects -340, bad_redirects -490) is ALSO non-exclusive in the same way — so the nesting may be FAITHFUL to the thing being ported rather than a bug against it.
+**That question — is oxeylyzer's bad_redirect additive-on-top or exclusive? — is UNRESOLVED and is the blocker on any fix.** Answering it requires reading the upstream implementation, not our port.
+⚠ SCOPE: one corpus (blend-v1), the shipped `TRI_PS_FREQ_PRIOR`-independent pattern path only (this is a pure share-arithmetic result, no model surface involved), g-frame irrelevant here. `sfr`-style
+permutation-invariance does not apply. Nothing here is a claim about realized typing speed.
