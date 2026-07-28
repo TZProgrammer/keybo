@@ -9135,3 +9135,53 @@ one."* **Measured: it is an exact tie.** The `_lawful_rows` fixture is geometry-
 restoring passes **34/34**. Combined with the earlier `-inf` refusal work (`5e4bcd0`), branch `ceiling-sb` now carries: the Spearman-Brown correction, `keybo/verdicts.py`
 (`require_finite`/`compare_finite`/`argmax_finite`/`all_distinct`/`require_margin`/`reweighting_margin_bound`), the `ObjectiveNotEvaluated` refusal, and this gate — all local, all unpushed, **three user gates
 untouched.**
+
+### QAPBOUND-1 — 🟢 THE FILE NONE OF 159 AGENTS OPENED IS MATHEMATICALLY THE STRONGEST THING IN THE REPO: the bound has a PROOF, all six certificates SURVIVE, and the whole defect is SCOPE LABELLING — but the test suite leaves two INVALID-BOUND classes uncaught, which I reproduced (2026-07-28)
+Fresh-reader audit of `src/keybo/optimize/qap_bound.py` — 74 lines, opened by **none of the 159 agents** in the 3-round workflow, producing the registered "within N% of optimal" certificates. Child `qapaudit`,
+report `state/qapaudit/artifacts/QAP-BOUND-AUDIT.md`, 11 probe drivers committed `db3c163` on branch `qap-audit`. **No push, no CR, PREREGISTRATIONS.md untouched, shared clone never written.**
+🟢 **(1) THE COMPONENT MISMATCH IS REAL — AND THE CHILD CORRECTED THE CRITIC TWICE, BOTH OF WHICH I VERIFIED.** `certificate()` is called as `certificate(F2, T2, qap_fitness(F2, T2, best_perm))` — the **BIGRAM**
+tensors — bounding `fit_bi`, which is **34.48% of the objective's mass**; the uncertified remainder is **65.52%**, a 1.90x ratio. `spearman(fit_bi, fit_tri_corrected) = 0.9155 < 1`, and 🟢 **an ordering correlation
+is NOT a bound transfer**, since `min(A+B) >= min(A) + min(B)` with `min(B)` uncertified — the right reason, stated correctly.
+ **CORRECTION A (verified):** the search minimizes **`fit_tri_corrected`, a CUBIC objective** (`T3c[perm[I3], perm[J3], perm[L3]]`), selected conditionally at `:218-221` (`fit_fn = fit_tri_corrected if simplify
+ else fit_combined`) — **NOT `fit_combined`, which LOST the A/B.** The critic named the wrong sibling objective. Note also that `cond_rebuild.py` lives under `agent-artifacts/experiments/`, i.e. it is part of the
+ **unscoped driver surface** ULTRAAUDIT-FINAL flagged, not `src/`.
+ **CORRECTION B:** the critic's cited `:2415`/`:2455` are **off by 8** (real: `:2423`/`:2463`), and **`:287` DOES keep the qualifier** — "bigram-component" sits on line 286 and wraps. 🟢 **THE REUSABLE LESSON: a
+ LINE-scoped grep gives a FALSE NEGATIVE on wrapped markdown; grep the entry BLOCK.** That is the mechanism behind a whole class of "the qualifier is missing" claims.
+🟢 **(2) THE BOUND IS VALID, AND IT HAS A PROOF RATHER THAN AN ABSENCE OF COUNTEREXAMPLES — the strongest verification standard reached in this campaign.** `total(p) = Σ F[i,i]T[pi,pi] + 0.5*(Σ OUT_i + Σ IN_i)` is
+an **ALGEBRAIC IDENTITY** (0/300 failures on signed instances) with `OUT == IN` for every `p`, so the halving is exact and the diagonal counted exactly once; with the rearrangement argument the LAP optimum
+**provably floors the objective for ARBITRARY SIGNED F, T — stronger than the docstring claims.** Empirics: **0 violations across 2928 exhaustive brute-force cases** (n=2..7, 17 structure families including
+negative / antisymmetric / zero-diagonal) + 400k real-instance perms + an n=2 hand-algebra closed form (410 == 410.000000). Direction convention correct.
+⚠ **BUT NOT USEFULLY TIGHT — AND THIS IS THE FINDING THAT SHOULD CHANGE HOW THE CERTIFICATES ARE QUOTED: THE BOUND HAS A RESOLUTION FLOOR OF ~2.3410%.** A deep search on the certified objective ITSELF still
+certifies at 2.3410% (colemak 4.43%, best-of-20k-random 5.70%, qwerty 6.89%). **Every registered certificate (2.54-4.38%) sits inside a band whose floor is ~2.34%, so the quoted numbers are largely BOUND
+LOOSENESS, not measured search quality.** => registered: **quote the ~2.34% floor next to any certificate**, exactly as the campaign's other resolution floors must carry their (pool x replicate x scale x
+statistic) labels.
+🟢 **(3) "EIGHT ENTRIES" IS SIX, AND ALL SIX SURVIVE.** Numbered claims at 106bfbc: **:287 2.54%, :1195 3.64%, :1211 4.38%, :1884 3.35%, :2423 3.40%, :2463 3.41%** (plus 5 protocol mentions quoting no number = 11
+entries mentioning a certificate; **neither count is 8** — my own ULTRAAUDIT-FINAL entry repeated the critic's "eight" and is corrected here). **NONE is refuted:** each is mathematically TRUE because
+`OPT >= lb` implies `(found - OPT)/OPT <= (found - lb)/lb`. **They are LOOSE, not WRONG.** Four carry the qualifier; **`:2423` and `:2463` lack it ANYWHERE in their entry blocks** (`:2417-2435`, `:2457-2475`) and
+need it added — **the critic's substance is CONFIRMED at block scope even though its line numbers and its `:287` claim were wrong.** ⚠ Re-derivation deltas run -0.76..+0.88 pct-pts, but **the registered numbers
+are NOT reproducible from this repo** (each round's models are gitignored), so per trap 20 the child reported the missing input rather than asserting a discrepancy — correct handling.
+🔴 **(4) THE TEST BITES HARD (18/24 mutants CAUGHT) BUT TWO SURVIVORS ARE REAL INVALID-BOUND CLASSES — AND I REPRODUCED THEM, AFTER FIRST FAILING TO.** `tests/optimize/test_qap_bound.py` (72 lines, 8 cases)
+catches a 0.1% bound inflation, `bound := 0`, both direction flips, and the dropped halving. The two survivors read the **incoming leg along the wrong axis** (`t_in`/`f_in` row-vs-column), producing bounds that
+**EXCEED the true optimum** — a **fake TIGHT certificate**, precisely the failure mode that reads as excellent news.
+ 🟢 **MY REPRODUCTION, INCLUDING MY OWN FALSE START:** my first mutant swapped BOTH legs to the row form and gave **0/750 violations** — I had not reproduced the claim and said so before continuing. Testing the
+ legs SEPARATELY reproduces it: `t_in_row` **24/750 violations, worst +9.9%**; `f_in_row` **27/750, worst +6.4%**; **shipped 0/750; both-legs-row 0/750.** ⚠ **My counts differ from the child's 173/750 and 175/750
+ — a different instance-family draw — so the RATE is not reproduced, but the CLASS is confirmed and the shipped code is clean on every variant.** Reachable in production because **F2 and T2 are both asymmetric on
+ the real instance.** => the mutation is a *coupled* one: swapping both legs together is harmless, swapping either alone is fatal, which is why a coarse mutation survived.
+ ⚠ And the suite **never scores a real layout**, so it could not catch a qwerty-flattering error — though the child is careful that this is **NOT** the "pins one reference layout" antipattern; **it has the opposite
+ blind spot** (no real layout at all).
+🔴 **THREE MORE FINDINGS.** (a) **`certificate()`'s own statement string is UNQUALIFIED** — *"the found layout is within N% of the best possible layout"* — and the returned dict has **no scope key**, so correctness
+depends on every caller re-adding a qualifier **the API discards.** The in-file defect is verified; the causal link to `:2423`/`:2463` is INFERRED (their drivers are not in this repo). (b) **NO finiteness or
+sanity guard on `found_fitness`**: `nan` yields *"within nan% of the best possible layout"* with no raise, and `0.5*lb` yields **-50.00%** with no raise — ⚠ **a NEGATIVE gap is mathematically impossible for a real
+layout and is the precise signature of a bound/objective mismatch**, i.e. the one check that would have caught the very defect this audit is about. (c) the **docstring (`:6-9`) describes an outgoing-only
+relaxation while the code does halved outgoing+incoming** — different bounds, **1.121685e11 vs 1.124476e11**, gap 2.5957% vs 2.3410%.
+🟢 **TWO SELF-KILLS, the second worth more than several findings.** (i) the space-pin relaxation is **INERT**: the bound minimizes over all 31! while the search pins space, but the explicitly-pinned bound equals
+the free bound **to 0.0000%** because GL's LAP already puts space at slot 30. (ii) 🔴 **ITS OWN MUTATION HARNESS REPORTED THE INVERSE OF THE TRUTH** — v1 judged mutants by a **case-sensitive grep on pytest prose**,
+so `FAILED` never matched and **all 24 reported SURVIVED.** Had it shipped that, it would have published *"the gate catches nothing"* instead of 18/24. v2 gates on the **exit code**. It also corrected its own find
+pass (it had called 2.34% a LOWER bound on GL slack when it is an UPPER bound) and flagged that number as **non-independent** rather than laundering it.
+=> **NEW TRAP, and it is the most generally dangerous thing here: A MUTATION-TEST HARNESS NEEDS ITS OWN POSITIVE CONTROL** — assert it reports CAUGHT for a guaranteed-fatal mutant **before trusting any SURVIVED**.
+Every "mutation-proven" claim in this ledger (including mine) rests on a harness that was never itself controlled. ⚠ **ALSO LIVE: trap 35 in a new form — the shared clone's `.venv` carries an editable `.pth` into
+`repos/keybo/src`, so any worktree probe run with that interpreter SILENTLY TESTS THE WRONG TREE while every path looks right.** Verify `keybo.__file__` first. (I hit exactly this earlier today and only caught it
+because an expected symbol was missing.)
+=> SIX RECOMMENDED EDITS, **none made** (all local-code changes on a certificate path, so they land with the other unpushed fixes): qualify `:2423`/`:2463`; add a scope key + qualified statement to `certificate()`;
+guard `found_fitness` (non-finite, and `found < lb`); fix the docstring; raise the seed count + add an asymmetric-T case to close the `t_in`/`f_in` blind spot; record the ~2.34% resolution floor beside any quoted
+certificate. **HEADLINE: the file's MATHEMATICS is the strongest thing in it — the defect is entirely in SCOPE LABELLING.**
