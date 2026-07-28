@@ -8952,3 +8952,55 @@ sound (all 30 `_KEYS` distinct objects AND distinct signatures); `lsb` correctly
 convention"; the practice term `b` does **NOT** cancel exactly in the ranking under LOGRAT (the shipped default); `Cell.frequency` is duplicated across wpm buckets but `weighted_mae` treats it as a weight.
 => USER-GATED, NOT ACTIONED: the `optimize.py` fix (local, mutation-proven), any Spearman-Brown correction to `split_half_ceiling` (it would move registered gates and must be done with the affected entries
 re-adjudicated, not silently), and adding a strict-win term to `board_iweb_vs_blend.py`. MODELLED-ONLY caveats unchanged throughout.
+
+### ALT-IMBALANCE-DENOMINATORS + CEILING-SB-1 — 🟢 THE TWO CORRECTIONS ACTIONED, and BOTH the audit's framing and my own restatement of it needed fixing first: "7 of 12" is arithmetically impossible for the pair it was computed on, and the Spearman-Brown inflation constants were wrong (2026-07-28)
+Actioning ULTRAAUDIT-INTERIM's two consequences. Neither is user-gated (a ledger correction is standing-authorized; the code change is local-only, unpushed). **In doing so I had to correct the audit's framing
+AND my own verbatim restatement of it — the correction itself carried two defects of the class it was reporting.**
+🔴 **CORRECTION 1 — THE DENOMINATOR REBASE, AND WHY "7 OF 12 CONTESTED" IS WRONG AS STATED.** I registered the child's phrasing that CORPUS-BLEND-1's `keybo-lsb+lm` 7/15 and NO-ANCHOR-1's `archive-1843` 7/15
+"are 7 of 12 CONTESTED, i.e. majorities." **Recomputed myself, that is not a coherent rebase.** The tie set is **PAIR-SPECIFIC**, and the registered `n/15` figures are (per :6778's own semantic note) **per-gauge
+WIN COUNTS for `flagship-c3` against each incumbent** — not pairwise counts between the two layouts whose ties the child measured. Rebasing a `7/15` by subtracting the ties of a DIFFERENT pair produced, for
+`keybo-lsb+lm` vs `keybo-lsb` (9 ties, 6 contested), the impossible **"7 of 6"** — which I caught only by computing it. The correct table, measured through the shipped CLI on blend-v1:
+    flagship-c3 vs      ties  contested  majority bar   tied gauges
+    keybo-lsb              3         12           6.0   sfr, alt, imbalance
+    keybo-lsb+lm           3         12           6.0   sfr, alt, imbalance
+    lsb-sib                1         14           7.0   sfr
+    archive-1843           3         12           6.0   sfr, alt, imbalance
+    archive-1846           1         14           7.0   sfr
+    qwerty30m              1         14           7.0   sfr
+ => **REGISTERED CORRECTION: every `n/15` per-gauge win count in this ledger is on a denominator inflated by 1 to 3 TIE-BY-CONSTRUCTION cells, and the inflation is PAIR-SPECIFIC — 3 ties (sfr + alt + imbalance)
+ against `keybo-lsb`, `keybo-lsb+lm` and `archive-1843`; 1 tie (sfr alone) against `lsb-sib`, `archive-1846` and `qwerty30m`.** The majority bar therefore moves from 7.5 to **6.0** for the first group and stays
+ **7.0** for the second. **Consequence: `archive-1843`'s no-anchor `7/15` clears a 6.0 bar — so it is a MAJORITY, and the ledger's "majority LOSS at 7/15" (:6487) and "ARCHIVE-1843 7/15 — CONFIRMED" (:6774) are
+ corrected: the COUNT is confirmed, the "loss of majority" reading is NOT.** Likewise `keybo-lsb+lm`'s 7/15 (iWeb) is a majority on a 6.0 bar. ⚠ **This does NOT re-open the corpus-contingency conclusion**
+ (:6769-6773): that rests on which claims break across corpora and on the 10-axis dominance test, neither of which is a win count.
+ 🟢 **AND IT COMPLETES THE `sfr` PRECEDENT AT :7232 RATHER THAN CONTRADICTING IT.** That entry corrected every `n/15`/`n/19` for ONE permutation invariant and concluded "the verdicts do not change — a constant
+ cannot break a tie in either direction — but the denominators were wrong." **Exactly the same logic applies to `alt` and `imbalance`, with one difference that matters: `sfr` is a GLOBAL constant (1 tie in every
+ pair, self-announcing), whereas `alt`/`imbalance` tie only pairs sharing a hand partition — so the denominator correction is 1 for some pairs and 3 for others, and a single global rebase is WRONG.** The frame
+ is not "18 gauges not 19"; it is **"the live axis count is a property of the PAIR, not of the frame."** That is the generalization of the sfr entry, and it is the reusable form.
+ ⚠ AND THE SEPARATE trap-33 ITEM STANDS AS REGISTERED: SELECT-MAXIMIN-1's "keybo-lsb 8 of 45 field-best" is **0 STRICT wins** — all 8 are tie credits from `board_iweb_vs_blend.py:101-105`, a stable sort with no
+ strict-win term (the identical defect REHUNT-1 found in `readjudicate.py`). **Adding a strict-win term is a code change and is left unactioned here**; the count is corrected to 0-strict/8-with-ties.
+🟢 **CORRECTION 2 — THE SPEARMAN-BROWN FIX IS IMPLEMENTED, MUTATION-PROVEN, AND COMMITTED LOCALLY** on branch `ceiling-sb` @ **89e6b59** (worktree `/tmp/ceilingsb`, **NOT pushed**, 3 files:
+`src/keybo/training/validate.py` + 2 test files). `split_half_ceiling` gains `spearman_brown()` applied **PER BISECTION** (not to the mean — `2r/(1+r)` is non-linear, so `mean(f(r)) != f(mean(r))`) plus a
+`correct_length=False` escape hatch for artifact reconciliation. **Full suite rc=0, 0 failures; new file 14/14; MUTATION-PROVEN both ways** (reverting the wiring fails 1 test; applying the correction to the mean
+fails the per-bisection test; restoring passes).
+🔴 **TWO CONSTANTS I REGISTERED FROM THE AUDIT WERE WRONG, AND THE TEST NOW PINS THE RIGHT ONES.** The inflation factor is exactly **2/(1+r)**: **1.2500 at r=0.60 and 1.0050 at r=0.99** — NOT the 1.4434/1.0076
+I registered verbatim. **1.4434 corresponds to r=0.3856, no arm in the register.** The *conclusion* (monotone decreasing, so the noisier arm is flattered more — and specifically F5M's c=0.709 is flattered more
+than BASE's c=0.815) is unaffected. ⚠ **THAT IS EXACTLY WHY THE WRONG NUMBERS SURVIVED THREE HANDS: they pointed the right way.** A constant that supports a true conclusion is the hardest kind to catch, and
+neither the child's panel nor my own registration checked it — the test caught it on first run.
+🟢 **A SCOPE CORRECTION TO THE AUDIT'S CLAIM, now pinned separately: the ARM-ORDERING INVERSION IS FORM-DEPENDENT; the GATE FAILURE IS NOT.** Re-derived in closed form outside `validate.py` from the registered
+`c` values:
+    form                        BASE     Q25     Q20     F5M   F5M-BASE   ordering
+    as shipped (raw c)        0.9940  0.9410  0.9370  0.9740    -0.0200   BASE > F5M > Q25 > Q20
+    Spearman-Brown 2c/(1+c)   0.9021  0.8483  0.8410  0.8323    -0.0698   BASE > Q25 > Q20 > F5M
+    sqrt(c)                   0.8974  0.8432  0.8355  0.8201    -0.0772   BASE > Q25 > Q20 > F5M
+    c**0.75                   0.9444  0.8908  0.8848  0.8938    -0.0507   BASE > F5M > Q25 > Q20
+ => **the Q-OBJ F5M gate fails under ALL FOUR forms** (so "F5M is an ADOPT-CANDIDATE … inside the -0.02 gate BY A HAIR" at :1052 is **REFUTED unconditionally**), but **F5M drops below the quantile arms only under
+ Spearman-Brown and sqrt — under `c**0.75` it stays second.** So "the arm ordering inverts" must always be quoted WITH ITS FORM NAMED. **The other F5M gate moves FAVOURABLY (own-ceiling ratio 0.870 -> 0.924).**
+🟢 **I ANSWERED THE `tune.py` QUESTION I RAISED, AND THE ANSWER IS THE LESS CONVENIENT ONE.** `split_half_ceiling` takes **no `train_params`** (verified by signature), so the correction is a candidate-INDEPENDENT
+per-fold reweighting — which does NOT make the selection invariant, because `tune.py:98` picks the argmax of a **MEAN OF RATIOS**, and that is not scale-invariant. Measured over 20,000 random fold/candidate
+draws: **the argmax MOVES in 4.19%** of them. => **"the defect is confined to reporting" is NOT established; the shipped depth/params choice could have been affected.** Pinned as a test.
+🟢 **AND A PRE-EXISTING TEST WAS PINNING THE OLD SCALE — handled per the trap-13 procedure rather than by loosening it.** `test_validate_reports_no_transfer_for_a_lawless_holdout` asserted
+`ceilings["layD"] < 0.6` and broke at **0.6228**. That rise is the correction working (a lawless holdout's half-length reliability lengthens like any other), so the test now pins the **CONCLUSION every consumer
+reads** — `rho_frac_ceiling < 0.5` — which gets **STRONGER** under the fix (**0.5172 -> 0.4129**: the harness reports LESS transfer on unpredictable data, the correct direction). **Pinning the intermediate
+ceiling pinned an artifact of the old scale; pinning the ratio pins the claim.**
+=> STILL USER-GATED, unchanged: adopting a layout; landing the oxey partition fix; **and now landing this ceiling fix**, because it REFUTES a registered ADOPT-CANDIDATE gate and the affected entries (:1052,
+:1101, :1196 "CAMPAIGN COMPLETE", :12-18 OQ-5 criterion 1) must be re-adjudicated deliberately rather than moved silently. **The local commit changes no published gauge number and no layout ranking.**
