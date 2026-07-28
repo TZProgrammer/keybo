@@ -214,10 +214,9 @@ inflate every denominator by one.
 
 ### In my own work (found by testing, not by reading)
 
-6. 🟢 **The zero-padding in `fit_batch` is load-bearing.** BLAS selects its kernel from the
-   operand shape, so without a constant tile shape a layout's fit depended on **how many other
-   layouts shared its batch** (~1e-15 relative). The objective would not have been a function
-   of the layout, and neither the search nor its checkpoint-resume would be reproducible.
+6. 🟢 **The zero-padding in `fit_batch` is load-bearing.** See the dedicated section below —
+   this is the same defect class as `price_many` (`79cb175`), found independently, and there is
+   a **confirmed third instance** in the repo's frozen drivers.
 7. 🟢 **A resume with different `--epochs` is a different search.** `per_epoch` is derived from
    `--epochs`, so resuming with another value rescales every remaining epoch's spend under the
    same output filename. The checkpoint now stamps a `run_identity` over 10 knobs and refuses
@@ -240,21 +239,176 @@ measured number byte-identical (`gate-reverify.log`).
 
 ---
 
-## Predictions: 11 held, 5 failed, 2 untestable
+## The BLAS shape-dispatch defect, in full (second independent instance of `79cb175`'s class)
+
+### What the defect is
+
+A numpy `@` on a `(B, 29791) @ (29791, 3)` product does **not** return the same bits for the same
+row depending on `B`: BLAS selects its kernel and blocking from the operand shape, so a final
+*partial* tile is computed by a different code path than a full one. My tiled evaluator walked
+the batch in `TILE = 16` chunks and let the last chunk be short — so **a layout's fit depended on
+how many other layouts happened to share its batch.** The objective was therefore not a function
+of its input, and neither the search nor its checkpoint-resume could be reproducible.
+
+### Magnitude — measured over 400 batch lengths, not a single probe
+
+Probe: 400 random C30M layouts; for every batch length `L = 1…400`, score `P[:L]` with the
+**unpadded** tiling and compare each row against the same row's value in the full 400-row batch
+(3 columns per row, so 1200 comparisons per length).
+
+| quantity | value |
+|---|---|
+| **max** relative error | **1.5946e-15**  (= **7.2 × float64 eps**) |
+| **mean** relative error | 6.8675e-16 |
+| median relative error | 8.7658e-16 |
+| batch lengths showing **any** nonzero disagreement | **275 of 400 (68.8 %)** |
+| mean / max over just the affected lengths | 9.9891e-16 / 1.5946e-15 |
+| worst **absolute** error | 2.4414e-04 ms |
+| tightest adjacent gap between two of the 400 layouts | 1.0854e+05 ms |
+| ratio (error ÷ tightest gap) | **2.25e-09** — so it can reorder nothing |
+
+So "~1e-15 relative" in my callback was the **max**; the mean is ~6.9e-16, and the crucial number
+is the third one: **it is not a rare edge case — 69 % of batch lengths are affected.** A
+single-probe measurement would have understated the prevalence badly.
+
+### How I detected it
+
+Not by reading, and not by looking for it. I had written `test_fit_batch_is_tile_size_invariant`
+expecting a cache optimization to be bit-neutral, asserted `np.array_equal`, and it **failed at
+`tile=1`**. My first instinct was that my absolute tolerance was wrong (it was, separately — an
+absolute 1e-6 is below one ULP at 2.4e11, which is a *different* bug I also fixed). Converting
+the assertion to a *relative* tolerance made the tile test pass but left the real question
+unasked, so I probed **batch length** rather than tile size — and that is where the defect lives.
+The detection sequence that mattered was: *a bit-exactness assertion I expected to be trivially
+true, failing.* Had I written the test with a tolerance from the start, I would never have seen it.
+
+### The fix, and whether it is strong enough
+
+The fix is **stronger than "pad to a constant tile"** in one respect and weaker in another, and
+both halves should be stated:
+
+- **Stronger:** every matmul is issued at *exactly one* shape `(16, 29791) @ (29791, 3)`, with the
+  final partial tile **zero-padded** (padding rows contribute exactly 0 to the product and are
+  sliced off). The result is **bit-exact across every batch length** — verified 0 of 400 lengths
+  differ, where the unpadded path differed on 275. That is the property the search actually needs,
+  and it is asserted, plus a **mutation control** (`test_padding_guard_bites_if_the_fixed_shape_is_removed`)
+  that fails if the unpadded path ever becomes batch-invariant on some other BLAS, so the guard
+  cannot silently stop testing anything.
+- **Weaker:** it does **not** make the answer independent of `TILE` itself, and it cannot — the
+  tile size *is* the operand shape. Changing `TILE` still moves a fit by ~1e-15 relative. So I
+  froze `TILE = 16` as a constant and **recorded it in `identity()`** alongside the numpy version,
+  so any published number names the shape that produced it. `price_many`'s fix (one shape-invariant
+  implementation) is the stronger form; mine is "one *pinned* shape, declared in the provenance".
+  For a lookup-table objective that is sufficient; for anything published as a physical constant it
+  would not be.
+
+### Is a third instance likely? **There is one — already in the repo.**
+
+🟢 **VERIFIED, cited:** `state/keybo-optimization/artifacts/noanchor-1/drivers/fast_eval.py:283-291`
+(`SixSurface.saved_batch`) has structurally the *identical* construction — a per-row `np.bincount`
+histogram followed by an **unpadded** `W @ self.mean_flat.T`, i.e. `(B,29791) @ (29791,6)` — and
+its docstring asserts *"Verified identical to the gather to <1e-11"*, i.e. the result is
+**consumed as if shape-invariant**. `normfloor_batch` (line 304-307) routes through it, so the
+ceiling-fraction normalized floor — a *headline* axis for the campaign's dominance verdicts —
+inherits the shape dependence. I did **not** re-measure that driver (out of scope), so I claim
+only the structural identity, which is verbatim in the code. Its 1e-11 tolerance is ~4 orders
+looser than the effect, so it would not have caught it and nothing there is *wrong* today; the
+risk is that a future agent tightens that comparison, or diffs two artifacts produced at
+different batch sizes, and reads reordering noise as a finding.
+
+**Where else a numpy result is consumed as if shape-invariant — only what I actually saw, no hunt:**
+
+- `noanchor-1/drivers/fast_eval.py` `saved_batch` / `normfloor_batch` — above. **Confirmed.**
+- **My own `search_modelnorm.py` `_neighbours` path** scores a fixed 435-row block, so it is
+  shape-stable *by luck* (435 = 27×16 + 3 → one partial tile, but always the *same* partial tile).
+  Stable in practice, fragile by construction: it would break the moment the neighbourhood size
+  changed. Worth noting because "it happens to be constant" is exactly how this class hides.
+- **The general shape in this repo:** the `bincount`-then-matmul idiom is the campaign's standard
+  fast-evaluator pattern, and it was *copied* between arms (my evaluator is a rewrite of
+  `fast_eval.py`'s). So the population at risk is "every driver that batches a QAP objective",
+  and the tell is a **tolerance-based** equivalence assertion (`<1e-11`, `<1e-9`) standing in for
+  a bit-exactness one. That is a discoverable grep (`@ .*flat`/`allclose`), not a guess — but I
+  did not run it, per scope.
+
+**Why a third instance was findable but not found by either of us:** both `79cb175` and this one
+were found by an agent asserting bit-exactness where it expected triviality. `fast_eval.py`
+asserted a *tolerance* instead, so its instance has been latent and invisible since it was
+written. **The defect class is not "BLAS is nondeterministic" — it is "a tolerance-based
+equivalence test cannot detect a shape-dependence, and shape-dependence is what breaks resume
+and cross-artifact diffs."**
+
+---
+
+## Proposed standing rule: when may a resolution floor computed on design A be quoted for design B?
+
+*(Requested wording. I am the fourth agent this session to hit a non-transferring borrowed floor;
+the campaign already has the pool-naming half of this registered as trap 7 / FLOOR-METHODOLOGY-1,
+so what follows is the generalized form, not a new discovery.)*
+
+**A resolution floor is a property of a (pool × replicate-structure × scale × statistic)
+quadruple, not of a metric or of a corpus. It may be quoted for a second design only if all four
+match; if any one differs the floor must be recomputed, and the quadruple must be printed next to
+every floor so a reader can check the match without re-deriving it.** The four, and what
+"matching" means for each: (i) the **POOL** — the same candidates, and critically the same
+*kind* of candidates, because a floor estimated over near-optimal layouts and one estimated over
+random layouts are different quantities and pooling them is a Simpson artifact (trap 26); a floor
+must also not include the **reference layout** of a ratio scale, or it silently goes degenerate.
+(ii) The **REPLICATE STRUCTURE** — *what is being treated as noise*: per-seed refits, per-model
+disagreement, bootstrap draws and cross-corpus draws are four different nuisances with different
+magnitudes, and a floor built on one bounds nothing about another (mine bounds model
+disagreement at 0.2319 normalized; the seed floor on the one surviving per-seed family is
+0.3914 saved% — neither is a refinement of the other). (iii) The **SCALE** — raw units, a
+saved-vs-reference percentage, and a 0-1 anchored score are related by transforms that are *not*
+variance-preserving, so a variance decomposition computed on one does not carry: on my own data
+the seed share of SS reads 0.74% on raw ms and 0.83% on saved%, and a `saved%` scale additionally
+removes part of the nuisance *by construction*. (iv) The **STATISTIC** — max-pair-spread, median
+spread, an SD, and a p95 are not interchangeable, and a p95 over few replicates is approximately
+the maximum (trap 46), so the replicate *count* travels with the statistic.
+
+**And the operational half: absence of a match is not licence to use the nearest available
+number — it is a requirement to recompute, which is nearly always cheap.** Recomputing mine cost
+one driver and seconds of CPU, against a borrowed figure that was wrong by two orders of
+magnitude. FLAGSHIP-1's "seed = 78-83% of SS" fails clause (iii)+(i) for blend-v1 — it is an
+**iWeb** figure on a different corpus draw, and on blend-v1 the same quantity is **0.74%**. The
+diagnostic that should fire before quoting any floor is therefore: *name the pool, name the
+nuisance, name the scale, name the statistic — out loud, in the artifact.* A floor quoted without
+those four labels should be treated as un-sourced, because the four instances this session all
+looked like a metric-level constant ("the resolution floor is ~0.2 ms/char") when every one of
+them was a quadruple-level measurement.
+
+---
+
+## Predictions: 11 held, 6 failed, 1 untestable
+
+⚠ **CORRECTION:** my DONE callback and the first version of this report said "5 failed, 2
+untestable". The correct tally is **6 failed, 1 untestable** — an arithmetic slip in my own
+count, not a changed verdict. The per-row table always had six ❌ rows (P1, P6, P13, P15, P17,
+P18) and one ⚠ (P3); I had double-counted P15's "FAILED (half)" label as an untestable.
 
 Full scoring in `artifacts/PREDICTION-SCORED.md`; pre-registered in commit `412e58f`, **before**
-`runs/` existed. The failures, briefly:
+`runs/` existed. **Each failure is now classified (a) the world differed from my model of it, or
+(b) the prediction was badly posed — only (a) is evidence about keyboards:**
 
-- **P6 FAILED** and is the most informative: I predicted normalizing would re-order something
-  versus a raw aggregate. It re-orders **nothing**. Normalization changes the *interpretation*
-  of the weight (P14 held) while doing **no work** on the equal-weight ranking.
-- **P1 and P13 FAILED** on AALTO for one shared reason (defect 3 above).
-- **P15 FAILED as a bound** (n_ge 5/10 and 7/10 vs my ≤4) while **holding as a verdict** (no
-  dominator) — I set the bound without accounting for my `floor` axis being a different quantity.
-- **P17/P18 FAILED on the letter, held on the mechanism**: I forgot qwerty30m is one of the 8
-  candidates. Excluding it, the window is *tighter* than I predicted — the defect is worse than
-  I stated.
-- **P3 UNTESTABLE** because all three models' seeds landed on the identical layout (0/0).
+- **(a) P6** — the most informative: I predicted normalizing would re-order something versus a raw
+  aggregate. It re-orders **nothing**. Normalization changes the *interpretation* of the weight
+  (P14 held) while doing **no work** on the equal-weight ranking. Sharply posed, decisively wrong.
+- **(a) P1 and P13** — one fact, counted twice: **AALTO is near-saturated by layouts that already
+  exist** (arm B is at 0.9879 of its optimum), so the search finds only +0.099 pp more headroom
+  and the equal blend must surrender 0.097 of AALTO. Register as a single finding.
+- **(b) P15** — welded a *verdict* to a *bound*. The verdict held (no dominator); the bound
+  (n_ge ≤ 4) failed at 5/10 and 7/10 **and was never well-posed**, because I inherited the ceiling
+  from arms whose `floor` axis is a different quantity from mine. Carries no keyboard information.
+- **(b) P17 and P18** — one mis-posing, counted twice: I wrote the threshold over "all 8
+  candidates" while **qwerty30m is one of the 8** and is the only one far down the scale. The
+  mechanism is confirmed and the defect is *worse* than I stated (0.09-0.17 excluding it); the
+  prediction was arithmetically inconsistent with its own candidate list.
+- **P3 UNTESTABLE, and closer to (a) than (b)** — a sharp, falsifiable prediction that went 0/0
+  because all three models' seeds landed on the *identical* layout. Undefined because the world
+  was better behaved than any branch I wrote, not because the prediction was vague.
+
+**Net: two genuine surprises about the surfaces** (AALTO near-saturation; normalization re-orders
+nothing) **and two pre-registration lessons** (never weld a verdict to a bound whose scale you
+redefined; check a stated threshold against your own candidate list before committing).
 
 ---
 

@@ -1,10 +1,44 @@
 # MODELNORM-1 — predictions scored against the artifacts
 
 18 pre-registered in `PREDICTION.md` (committed `412e58f`, **before** `runs/` existed).
-**Result: 11 HELD, 5 FAILED, 2 UNTESTABLE.** Every failure is reported.
+**Result: 11 HELD, 6 FAILED, 1 UNTESTABLE.** Every failure is reported.
+
+⚠ **CORRECTION (reflection pass).** My first version of this line, my report.md, and my DONE
+callback all said "**5 FAILED, 2 UNTESTABLE**". That was an arithmetic slip in my own tally, not
+a change of any verdict: the per-row table has always shown **six** ❌ rows (P1, P6, P13, P15,
+P17, P18) and **one** ⚠ row (P3). I counted P15 as untestable because I had labelled it
+"FAILED (half)" — it is a FAILED prediction with a correct sub-claim, not an untestable one.
+Every individual verdict below is unchanged and re-derived by census from this table.
 
 All numbers: corpus **blend-v1**, `.native` frame, `TRI_PS_FREQ_PRIOR`, **BAKED 90 WPM**.
 MODELLED ONLY.
+
+## Why each failure failed: (a) the world, or (b) the posing?
+
+Only **(a)** is evidence about keyboards. **(b)** is evidence about my pre-registration
+discipline, and must not be read as a finding about layouts.
+
+| # | class | why |
+|---|---|---|
+| **P1** | **(a) the world differed** | I expected a 10M-eval search to find ≥0.5 pp more headroom below the random mean than the best existing layout does. On COMMUNITY (+2.03 pp) and POOL (+1.38 pp) it did; on **AALTO it found only +0.099 pp**, because arm B already sits at 0.9879 of AALTO's own optimum. Cleanly testable, correctly measured, and **the model of the world was wrong**: I did not expect one of the three surfaces to be near-saturated by layouts that already exist. This is a real fact about these surfaces. |
+| **P6** | **(a) the world differed** | Sharply posed and decisive: "≥1 and ≤3 adjacent transpositions" versus a raw aggregate. The answer is **0**, against the raw mean of the three surfaces *and* against raw mean-saved%. The per-model normalized scores are co-monotone enough on these 8 candidates that dividing by per-model spans cannot flip an adjacent pair. **The most informative failure in the set** and the direct answer to deliverable B. |
+| **P13** | **(a) the world differed** | Same posing quality, same underlying fact as P1: the equal blend gets within 0.014 (POOL) and 0.035 (COMMUNITY) of each model's own optimum but must surrender **0.097 of AALTO**. My "within 0.05 on every model" assumed the three optima were mutually reachable to a similar degree; they are not, and the asymmetry is AALTO's near-saturation again. P1 and P13 are **one fact counted twice** — I should register them as a single finding, not two. |
+| **P15** | **(b) badly posed** | Two claims welded into one prediction: a *verdict* ("no dominator") and a *bound* ("best n_ge ≤ 4"). The verdict **held**; the bound **failed** (5/10 blend, 7/10 solo). And the bound was never well-posed: I inherited the ≤4 ceiling from the campaign's prior best of 3/10 while my own `floor` axis is a *different quantity* (this arm's normalized min-over-three-models, not arm E's six-surface ceiling-fraction floor), so a layout optimized against that axis naturally scores well on it. **An n_ge count is not comparable across arms that define `floor` differently.** I should have pre-registered a range for the verdict only. Carries **no** information about keyboards. |
+| **P17** | **(b) badly posed** | The *mechanism* I predicted is real and confirmed — a random-layout "0" spends most of the scale where no candidate lives. But I wrote the threshold over "all 8 candidates" while **qwerty30m is itself one of the 8** and is the sole candidate far down the scale, so the stated bound (≤0.25 window) was arithmetically inconsistent with its own candidate list. Excluding it: **0.1696 / 0.0895 / 0.0962** — *tighter* than predicted. The defect is worse than I stated; the prediction was mis-written. |
+| **P18** | **(b) badly posed** | Identical defect to P17, same cause (blend window 0.3796 with qwerty30m, **0.0934** without). P17 and P18 are **one mis-posing counted twice**. |
+
+**Tally by class: 3 failures are (a) — but they reduce to 2 distinct facts** (P1 and P13 are the
+same AALTO-saturation fact); **3 are (b) — reducing to 2 distinct mis-posings** (P17 and P18 are
+the same error). So the arm produced **two genuine surprises about the surfaces** (AALTO is
+near-saturated; normalization re-orders nothing) and **two lessons about pre-registration**
+(never weld a verdict to a bound whose scale you redefined; check a stated threshold against the
+actual candidate list before committing it).
+
+**P3's UNTESTABLE is also worth classifying:** it is *not* a mis-posing. It was a sharp,
+falsifiable prediction (the three models' seed-disagreement spreads would differ ≥2×) that
+became 0/0 because **all three models' two seeds landed on the identical layout**. The
+statistic was undefined because the world was *better behaved* than any of my branches
+anticipated. That is closer to (a) than to (b).
 
 | # | Prediction | Verdict | Evidence |
 |---|---|---|---|

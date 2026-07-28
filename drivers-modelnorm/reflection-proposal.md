@@ -108,3 +108,144 @@ carries 15 (and lacks `bad-redir`, `onehand`), while `genkey`/`oxeylyzer1`/`oxey
 `community` scores. A win count printed as `n/14` while the frame is called "19-gauge" is a
 denominator error of the same family as trap 23. Count them separately and state the denominator
 on every line.
+
+---
+
+# ADDENDUM — reflection pass, 2026-07-28 (state-flush scope only; parent owns the KB pass)
+
+Three items the parent asked me to flush because they are load-bearing and were not verifiable
+from my callback. Plus loose learnings that did not fit a registry entry.
+
+## ADD-1 (upgrade of proposed T-A) — BLAS shape-dispatch is a REPEATING class, and there is a THIRD instance
+
+**This is the second independent instance in one day, in different code, by a different agent.**
+`price_many` (`79cb175`, verified: *"`_design(...) @ coeffs` dispatches to a different BLAS kernel
+by array shape, so the same level priced at n=1 and n>=2 differed in the last ULP"*, 9 of 14
+curves) and my `fit_batch`. Neither of us was looking for it. **Both were found the same way: by
+asserting BIT-EXACTNESS where the author expected the property to be trivially true, and having
+the assertion fail.**
+
+**Magnitude, measured over 400 batch lengths (not a single probe) — this is the number to quote:**
+
+| quantity | value |
+|---|---|
+| max relative error | **1.5946e-15** (= **7.2 × float64 eps**) |
+| mean relative error | 6.8675e-16 |
+| median | 8.7658e-16 |
+| **batch lengths affected** | **275 of 400 = 68.8 %** |
+| worst absolute | 2.4414e-04 ms |
+| ÷ tightest adjacent gap | 2.25e-09 → **cannot reorder** |
+
+The prevalence figure is the one that matters and the one a single probe would have missed: this
+is **not** a rare edge case.
+
+**Fix classification (asked explicitly):** *stronger* than "pad to a constant tile" on the axis
+that matters — every matmul is issued at exactly `(16, 29791) @ (29791, 3)` with the final tile
+**zero-padded**, giving **bit-exactness across all 400 batch lengths** (vs 275 differing
+unpadded), asserted plus a **mutation control** that fails if the unpadded path ever becomes
+batch-invariant on another BLAS. *Weaker* on one axis and this must be stated: it does **not**
+make the answer independent of `TILE` — the tile size *is* the operand shape, so that is
+unachievable by padding. I froze `TILE = 16` and record it (with the numpy version) in
+`identity()`, so every published number names its shape. `price_many`'s "one shape-invariant
+implementation" is the strictly stronger fix; mine is "one **pinned** shape, declared in the
+provenance" — sufficient for a lookup-table objective, insufficient for anything published as a
+physical constant.
+
+**🟢 THIRD INSTANCE, CITED (structural claim only — I did not re-measure it, out of scope):**
+`state/keybo-optimization/artifacts/noanchor-1/drivers/fast_eval.py:283-291`
+(`SixSurface.saved_batch`) is the *same construction* — per-row `np.bincount` then an **unpadded**
+`W @ self.mean_flat.T`, `(B,29791) @ (29791,6)` — and its docstring asserts *"Verified identical
+to the gather to <1e-11"*, i.e. it **consumes the result as if shape-invariant**.
+`normfloor_batch` (L304-307) routes through it, so the **ceiling-fraction normalized floor — a
+headline dominance axis — inherits the shape dependence.** Nothing there is wrong today (1e-11 is
+~4 orders looser than the effect, so it neither catches nor is broken by it); the risk is a future
+agent tightening that comparison, or diffing two artifacts produced at different batch sizes, and
+reading reordering noise as a finding.
+
+**Others I noticed (only what I saw — no hunt, per scope):** my own `search_modelnorm._neighbours`
+scores a fixed 435-row block, so it is shape-stable **by luck** (always the same partial tile) —
+stable in practice, fragile by construction, and a good illustration of how this class hides. More
+generally the `bincount`-then-matmul idiom is the campaign's standard fast-evaluator pattern and
+was **copied between arms** (mine is a rewrite of `fast_eval.py`'s), so the population at risk is
+"every driver that batches a QAP objective". **The discoverable tell is a *tolerance-based*
+equivalence assertion (`<1e-11`, `allclose`) standing in for a bit-exactness one.** A grep like
+`allclose|<1e-1[0-9]` near `@ .*flat` would enumerate it; I did not run it.
+
+**Proposed sharpening of the class name:** it is **not** "BLAS is nondeterministic". It is
+**"a tolerance-based equivalence test cannot detect shape-dependence, and shape-dependence is
+exactly what breaks checkpoint-resume and cross-artifact diffs."** That phrasing tells the next
+agent what to *write* (a bit-exactness assertion over batch lengths), not just what to fear.
+
+## ADD-2 — the standing rule for borrowing a resolution floor (requested wording)
+
+*(Full paragraph is in `report.md` under "Proposed standing rule". The one-line form:)*
+
+> **A resolution floor is a property of a (POOL × REPLICATE-STRUCTURE × SCALE × STATISTIC)
+> quadruple, not of a metric or a corpus. It may be quoted for a second design only if all four
+> match; if any differs it must be recomputed, and the quadruple must be printed beside every
+> floor so a reader can check the match without re-deriving it.**
+
+Per-clause, with what "match" means and the instance that broke it:
+- **POOL** — same candidates *and same kind* (near-optimal vs random are different quantities;
+  mixing them is a Simpson artifact, trap 26). Must **exclude the reference layout** of any ratio
+  scale, or the floor goes degenerate (my paired/unpaired ratio was forced to **exactly 1.0000**
+  with qwerty30m in, **0.5632** with it out — *a ratio of exactly 1.0000 is the tell*).
+- **REPLICATE STRUCTURE** — *what counts as noise*: per-seed refits, per-model disagreement,
+  bootstrap draws, cross-corpus draws are four different nuisances. Mine bounds **model
+  disagreement** (0.2319 normalized); the seed floor bounds **fit noise** (0.3914 saved%).
+  **Neither is a refinement of the other** and quoting one for the other is the core error.
+- **SCALE** — raw / saved-vs-reference% / 0-1 anchored are related by transforms that are **not
+  variance-preserving**, so a variance decomposition does not carry (seed share reads 0.74% on raw
+  ms vs 0.83% on saved%, and a saved% scale removes part of the nuisance *by construction*).
+- **STATISTIC** — max-pair-spread / median / SD / p95 are not interchangeable, and a p95 over few
+  replicates is ~the maximum (trap 46), so the replicate **count** travels with the statistic.
+
+**Operational half:** *absence of a match is not licence to use the nearest available number.*
+Recomputing mine cost one driver and seconds of CPU, against a borrowed figure wrong by **two
+orders of magnitude** (FLAGSHIP-1's iWeb "seed = 78-83% of SS" → **0.74%** on blend-v1; fails
+clauses SCALE+POOL). All four non-transfers this session *looked* like metric-level constants
+("the floor is ~0.2 ms/char") when every one was a quadruple-level measurement. **A floor quoted
+without its four labels should be treated as un-sourced.**
+
+## ADD-3 — a pre-registration must not weld a VERDICT to a BOUND, and must be checked against its own candidate list
+
+From classifying my own 6 failures into (a) world-differed vs (b) badly-posed — a split I
+recommend every arm adopt, because **only (a) is evidence about the object of study**:
+- **(a) 3 failures → 2 distinct facts.** P6 (normalization re-orders nothing) and P1+P13 (AALTO is
+  near-saturated: arm B at 0.9879 of its own optimum). P1 and P13 are **one fact counted twice** —
+  a pre-registration should avoid two predictions that can only fail together, or the failure
+  count over-weights one mechanism.
+- **(b) 3 failures → 2 distinct mis-posings.** **P15 welded a verdict ("no dominator") to a bound
+  ("n_ge ≤ 4")**: the verdict held, the bound failed, and the bound was never well-posed because I
+  inherited its ceiling from arms whose `floor` axis is a *different quantity* than mine. **Rule:
+  if you redefine an axis, you may pre-register the VERDICT but not a numeric bound calibrated on
+  the old axis** — and report `n_ge` as non-comparable across such arms. **P17+P18** stated a
+  threshold over "all 8 candidates" while qwerty30m *is* one of the 8 and is the sole outlier;
+  mechanism confirmed, arithmetic inconsistent with its own list. **Rule: before committing a
+  numeric threshold, evaluate it against the actual candidate list you will score.**
+
+## ADD-4 — loose learnings (no registry entry proposed)
+
+1. **`$?` read through a pipe is not the command's rc.** My first pytest invocation was
+   `pytest ... | tail`, which printed `RC=0` while pytest had **failed to spawn** (`Failed to
+   spawn: pytest`). This is trap 1's shape in a form the traps file does not name — the *pipe*,
+   not the missing sentinel. *Fix pattern:* `{ cmd > log 2>&1; echo $? > rc.txt; }` — never read
+   `$?` downstream of a pipe.
+2. **Backticks in `git commit -m` are shell-evaluated and silently delete words.** `` `qwerty_row` ``
+   vanished from a committed message, leaving only two innocuous-looking "command not found"
+   lines. The commit had already succeeded. *Fix:* `git commit -F -` with a quoted heredoc for any
+   message containing backticks or `$`. Caught only because I re-read the committed message —
+   verify the artifact (the message), not the exit code.
+3. **The Bash 10-min clamp is per-CALL, not per-job.** A loop of three ~3-min searches got killed
+   mid-third. Per-epoch checkpointing made it a non-event (resume finished in 10 s and reproduced
+   bit-exactly). *Fix:* detach anything running 3+ sub-jobs regardless of individual job size.
+4. **`analyze`'s `--ref` row is a different CHARSET (classic qwerty `;./`), so it poisons any
+   cross-row STATISTIC**, not just a count. It made `sfr` look non-invariant (2 values, numpy std
+   1.2e-3) when within C30M it is one value, std exactly 0.0. Trap 38 covers excluding it from the
+   *count*; this extends to excluding it from *statistics*.
+5. **A tolerance chosen in absolute units is meaningless without the magnitude.** My first
+   batch-vs-gather assertion used `< 1e-6` on sums of order 2.4e11 — below one ULP, so it could
+   only ever fail. Relative tolerances, or eps-multiples, for any large-magnitude accumulator.
+6. **`ticket --expect-callback` + a callback fired from the SAME subshell as the work (trap 50)
+   worked flawlessly** on both detached batches — no separate watcher process existed to die, and
+   both sentinels read 0. Worth keeping as the default recipe rather than a fallback.
