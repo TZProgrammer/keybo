@@ -9012,3 +9012,29 @@ reads** — `rho_frac_ceiling < 0.5` — which gets **STRONGER** under the fix (
 ceiling pinned an artifact of the old scale; pinning the ratio pins the claim.**
 => STILL USER-GATED, unchanged: adopting a layout; landing the oxey partition fix; **and now landing this ceiling fix**, because it REFUTES a registered ADOPT-CANDIDATE gate and the affected entries (:1052,
 :1101, :1196 "CAMPAIGN COMPLETE", :12-18 OQ-5 criterion 1) must be re-adjudicated deliberately rather than moved silently. **The local commit changes no published gauge number and no layout ranking.**
+
+### CEILING-SB-2 — 🔴 THE tune.py ARGMAX QUESTION IS UNANSWERABLE ON THE DATA IN THIS REPO, and my A/B returned a DEGENERATE "no change" that I nearly reported as a null (2026-07-28)
+Following through on the open question from CEILING-SB-1 — does the Spearman-Brown correction move the SHIPPED hyperparameter choice, rather than 4.19% of random draws? I ran the real paired A/B and the
+answer is that it cannot be run here. **Recording the failed measurement because the FAILURE MODE is the finding.**
+🔴 **WHAT I RAN AND WHAT IT RETURNED.** Paired design: identical seeded 8-candidate set (tune.py's own sampler, `default_rng(0)`), `tune_lolo` over the community bigram strokes, `correct_length=False` vs `True`,
+argmax compared. Result: **`ARGMAX MOVES: False`, `full RANKING identical: True`** — and **every candidate scored `-inf` in BOTH arms.** A comparison in which every score is `-inf` is **degenerate, not null**;
+"the argmax did not move" is true of any two identical constant functions and carries no information about the correction. **Had I read only the VERDICT line I would have registered "the shipped argmax is
+stable" — the exact substitution of a label for a measurement this campaign keeps cataloguing.**
+🟢 **ROOT CAUSE, TRACED NOT GUESSED.** `tune.py:104` sets `mean_frac = -inf` when `fracs` is empty, and `fracs` collects only non-`None` `rho_frac_ceiling` values. Every fold returned `frac=None` because
+**every fold's CEILING is `nan`** — while `rho` computed fine (0.447-0.794 across the 9 folds). `split_half_ceiling` bisects **PARTICIPANTS** and returns `nan` at `validate.py:433-434` when
+`len(all_pids) < 2`. Counted per layout in the community file: **every one of the 11 layouts has EXACTLY 1 participant.** Swept every `.tsv` in `data/`: **`bistrokes_community.tsv` 11 layouts / max 1 pid per
+layout / 0 folds with >=2 pids; both tristroke files yield 0 layouts at this filter.** => **there is NO dataset in this repo on which `split_half_ceiling` can produce a finite value.** The Aalto stroke corpus
+the registered ceilings (0.709-0.815) were computed on is **not present locally**.
+=> **REGISTERED STATUS: the tune.py argmax question is BLOCKED ON MISSING DATA, not on effort.** What would settle it: the multi-participant stroke corpus behind the registered ceilings, then re-run this exact
+paired A/B (driver kept at `/tmp/tune_ab3.py`; it is 10 lines and reproducible from this entry). **The standing claim remains what CEILING-SB-1 registered — the correction moves the argmax in 4.19% of random
+fold/candidate draws — which is a BOUND on the risk, NOT a measurement of the shipped choice. Do not upgrade it to "measured" and do not downgrade it to "no effect".**
+⚠ **AND A SECOND-ORDER FINDING WORTH MORE THAN THE ORIGINAL QUESTION: `tune.py` SILENTLY SELECTS ON `-inf`.** With no ceiling obtainable, every candidate ties at `-inf`, the tau gate then decides, and
+`tune_lolo` returns a champion **with no error, no warning, and no indication that its stated objective was never evaluated.** A user running `keybo tune --objective lolo` on single-participant data gets a
+confident hyperparameter recommendation chosen by **the tie-break alone**. This is the same shape as the `sfr`/`alt`/`imbalance` tie-credit defects (a stable sort deciding what the metric could not) and the same
+shape as `-inf` standing in for "not measured". **NOT FIXED — flagged. A `fracs`-empty guard should raise or at minimum warn, and that is a code change on the training path.**
+🟢 CONTROLS: the two starved folds were dropped BEFORE tuning and named in the log (`custom-0f8904ec…octahedron`, `qwerty@ortholinear…` at 2 rows/22 samples), leaving 9 folds / 2953 rows — recorded so the drop
+cannot be mistaken for a filter that produced the result. The `-inf` degeneracy is present at BOTH `correct_length` settings, so it is not an artifact of my change. The `ceiling-sb` branch itself is unaffected:
+full suite still rc=0, 14/14 new tests, mutation-proven — **this entry retracts nothing in CEILING-SB-1; it only refuses to close its open question.**
+=> METHOD NOTE: this is the third time in two days that a headline verdict line was true-but-empty (`analyze --help` exiting 0 with no output; `is_running` reporting done for a process that never existed; and now
+`ARGMAX MOVES: False` over two all-`-inf` arms). **The common shape: a comparison whose operands were never computed returns the answer that means "no difference".** Guard by asserting the operands are FINITE
+before comparing them, not by reading the verdict.
