@@ -2420,7 +2420,7 @@ runs/p11_final.json (bigram_cal group-mean-era models + join trigram, rng 881333
   w=0.5 hcgkm.,ouylrstdpnaiezxwbvfjq;/  +3.95%            sfb 0.98%  outer-first 0.57%
   w=1   gnldk.,yousrthmpcieaqxzbvfwj;/  +3.90%            sfb 0.76%  outer-first 0.48%
   w=2   uoy,.kdlnvaeicpmhtrs;/jwbgfzxq  +3.86%            sfb 0.83%  outer-first 0.44%
-  GL certificate 3.40%. Scoreboard: P11 +4.02% > P10 +3.95% > colemak +2.07%.
+  GL BIGRAM-COMPONENT certificate 3.40% (qualifier added 2026-07-28 per QAPBOUND-1: `certificate()` is called on F2,T2 so it bounds `fit_bi` = 34.48% of the objective's mass, NOT the cubic objective the search minimizes; and the bound's own resolution floor is ~2.34%, so this number is mostly bound looseness — it is TRUE but LOOSE, not a measure of search quality). Scoreboard: P11 +4.02% > P10 +3.95% > colemak +2.07%.
 THE CALIBRATION'S SIGNATURE, measured: the family's outer-first (calibrated-class)
 corpus share collapses to 0.44-0.57% vs P10's 1.22% and qwerty's 1.08% — the optimizer
 now actively avoids the pinky/ring-initiated same-row rolls it can finally price.
@@ -2460,7 +2460,7 @@ runs/p11F_final.json (bigram_cal + join-LOGRAT trigram, rng 882333):
   w=0.5 cgldk.,yousrthmpnieaqxwbvfzj;/  +4.00%  sfb 1.09%  outer-first 0.42%  <= the pick
   w=1   uoy,.kdlnbaeicpmhtrs;/jwqgfvxz  +3.89%  sfb 0.87%
   w=2   uoy,.kdlnvaeicpmhtrs;/jwbgfzxq  +3.86%  sfb 0.83%
-  GL certificate 3.41%. Cross-family: P10-w0 regret +0.042% (plateau), outer-first
+  GL BIGRAM-COMPONENT certificate 3.41% (qualifier added 2026-07-28 per QAPBOUND-1: bounds `fit_bi` only, 34.48% of the mass, against a ~2.34% resolution floor). Cross-family: P10-w0 regret +0.042% (plateau), outer-first
   1.22% -> 0.50%. The w=0.5 member is speed-TIED with w=0 (+4.00 vs +3.99 = noise)
   at sfb 1.09% and the family's lowest outer-first share — the recommended pick.
 MULTI-WPM ARGMAX (brainstorm #3, the registered stage): the wpm-90 champion carries
@@ -9204,3 +9204,27 @@ not repeatable.
 **branch-only symbol** is importable; (3) inject one guaranteed-fatal mutant and confirm the harness reports it CAUGHT — **before** trusting any SURVIVED. All three are seconds of work and each one has already
 produced a false result somewhere in this campaign. **The general principle, which is the campaign's own most-repeated finding turned on the tools: an instrument that reports "no problem" must be shown capable of
 reporting a problem.**
+
+### QAPBOUND-FIX-1 — 🟢 THE THREE DIAGNOSED-BUT-UNFIXED DEFECTS ARE NOW FIXED, and the harness pre-flight is SHIPPED AS CODE rather than registered as a lesson (2026-07-28)
+Actioning QAPBOUND-1's recommendations that were code or ledger edits I own. Branch `qap-audit` @ **0bf6a55** (local, **NOT pushed**); ledger qualifiers pushed with this entry. Full suite **rc=0**, ruff clean,
+**mutation-proven five ways** (3/1/1/1/1 failures, restore green).
+🟢 **(1) THE TWO INVALID-BOUND CLASSES NOW HAVE REGRESSION TESTS** (`tests/optimize/test_qap_bound_invalid_classes.py`). Each single-leg axis swap is tested SEPARATELY, because **the mutation is COUPLED**: swapping
+BOTH incoming legs to the row form is harmless (0/750 violations) while either alone is fatal — `t_in_row` 24/750 worst **+9.9%**, `f_in_row` 27/750 **+6.4%**, shipped **0/750**. **That coupling is why the original
+24-mutant sweep found nothing: a mutation operator that flips "in" to "out" everywhere at once cannot see it.** A companion test pins that a SYMMETRIC instance family **cannot** expose either class, documenting the
+old suite's blind spot rather than asserting around it.
+🟢 **(2) `certificate()` NO LONGER DISCARDS ITS SCOPE, AND REFUSES TWO IMPOSSIBLE INPUTS.** It now takes `scope=`, carries it in the returned dict, and renders it into `statement` — so a caller can no longer drop a
+qualifier the API threw away (the mechanism behind `:2423`/`:2463`). And it raises `CertificateScopeError` on: a **non-finite** `found_fitness` (previously rendered *"within nan% of the best possible layout"*), and
+`found_fitness < lower_bound` (previously **-50.00%**). ⚠ **The second is the important one: a negative gap is mathematically impossible for a layout scored on the bound's own objective, so it is the precise
+signature of a bound/objective mismatch — the ONE check that would have caught the very defect this module was audited for, at the call site, years of certificates ago.**
+🟢 **(3) THE PRE-FLIGHT IS NOW `keybo/testkit.py`, NOT A PARAGRAPH.** MUTATION-HARNESS-CONTROL-1 registered it as a lesson and it would have recurred; it now ships as five callable guards, each encoding a failure
+that ACTUALLY happened in this campaign: `assert_module_under` (an editable `.pth` shadowing a worktree while every printed path looks right), `assert_branch_only_symbol` (the positive form — a wrong-tree import
+that paths cannot reveal), `assert_harness_detects_a_fatal_mutant` (the harness that reported **24/24 SURVIVED** from a case-sensitive grep on pytest prose — this one gates on the EXIT CODE, refuses to start from a
+red suite, and verifies `restore()` returned to green), `assert_operands_computed` (the all-`-inf` A/B), and `assert_discriminating` (the saturated metric whose leaderboard order was a stable-sort artifact). **I ran
+the pre-flight on this very work: imports resolve under `/tmp/qapaudit` and the branch-only symbol is present.**
+🟢 **THE LEDGER QUALIFIERS ARE ADDED IN PLACE — and I verified the full census rather than fixing only the two named.** `:2423` and `:2463` said bare *"GL certificate 3.40%/3.41%"*, and their only occurrence of
+"bigram" was a **model filename** (`runs/p11_final.json (bigram_cal …)`) — not a certificate qualifier, which is why a keyword grep at block scope looked reassuring. Both now read **"GL BIGRAM-COMPONENT
+certificate"** with the scope (`fit_bi` = 34.48% of the objective's mass, NOT the cubic objective the search minimizes) and the **~2.34% resolution floor** inline. Census after the edit: **all six numbered
+certificates carry a scope word** — `:287` ("bigram-component", on a wrapped line), `:1195`, `:1211`, `:1884` (already explicit), `:2423`, `:2463` (fixed here).
+⚠ **NOT DONE, deliberately and named so it is not mistaken for complete:** the docstring's outgoing-only description vs the implemented halved outgoing+incoming (a comment fix, bundled with nothing urgent), the
+seed-count raise + asymmetric-T case inside the ORIGINAL `test_qap_bound.py` (the new file covers the class; consolidating is cosmetic), and the six unpushed code fixes across four branches — those remain
+**user-gated** along with adopting a layout.
