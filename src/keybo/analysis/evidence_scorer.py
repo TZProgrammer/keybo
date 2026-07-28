@@ -467,6 +467,35 @@ class LossCurve:
         design = _design(self.form, np.array([value]), self.knot)
         return float((design @ np.array(self.coeffs))[0])
 
+    def price_many(self, levels: np.ndarray, policy: str = EXTRAPOLATE) -> np.ndarray:
+        """Vectorized :meth:`price` — the entry point a SEARCH must call.
+
+        This exists because its absence caused a real defect. ARM D found that the optimizer's
+        fast path had a HAND-ROLLED vectorized `price` that never touched :class:`LossCurve`, so
+        making :meth:`price` policy-aware did not clamp any search at all: the policy plumbing
+        and the code an optimizer actually runs were two different implementations (TOOLING-TRAPS
+        #28 — a hand-rolled reimplementation of a validated function loses the validation). The
+        7 policy tests could not catch it: they exercise the curve, not the search.
+
+        Semantics are IDENTICAL to :meth:`price` element-wise, including the policy, so a caller
+        can pin one against the other at exact float equality — and the test suite does.
+        """
+        values = np.asarray(levels, dtype=float)
+        if policy not in DOMAIN_POLICIES:
+            raise ValueError(f"unknown domain policy {policy!r}: not one of {DOMAIN_POLICIES}")
+        outside = (values < self.domain[0]) | (values > self.domain[1])
+        if policy == REJECT and bool(outside.any()):
+            first = float(values[outside][0])
+            raise OutOfDomainError(
+                f"{self.metric} level {first:.4f} is outside the fitted domain "
+                f"[{self.domain[0]:.4f}, {self.domain[1]:.4f}]; the price there is "
+                f"extrapolation, not a measurement"
+            )
+        if policy == CLAMP:
+            values = np.clip(values, self.domain[0], self.domain[1])
+        design = _design(self.form, values, self.knot)
+        return design @ np.array(self.coeffs)
+
     def in_domain(self, level: float) -> bool:
         return self.domain[0] <= float(level) <= self.domain[1]
 

@@ -96,3 +96,46 @@ def test_unknown_policy_is_refused():
     curve = _hinge("comfort", COMFORT_DOMAIN, knot=9.2622)
     with pytest.raises(ValueError, match="unknown domain policy"):
         curve.price(7.0, policy="soft")
+
+
+# --- the vectorized path must be the SAME function (ARM D found it was not) ----------------
+
+
+def test_price_many_matches_price_exactly_under_every_policy():
+    """The defect ARM D caught: the optimizer's fast path had its OWN vectorized price, so the
+    policy never reached a search. Pin the two at EXACT float equality, not approximately —
+    anything looser lets a reimplementation drift back apart.
+    """
+    import numpy as np
+
+    curve = _hinge("sr-roll", SR_ROLL_DOMAIN, knot=5.0)
+    levels = np.array([0.5, 1.9997, 3.0, 5.0, 8.3369, 12.0, SR_ROLL_LEVEL, 60.0])
+    for policy in (EXTRAPOLATE, CLAMP):
+        vector = curve.price_many(levels, policy=policy)
+        scalar = [curve.price(float(x), policy=policy) for x in levels]
+        assert list(vector) == scalar, policy
+
+
+def test_price_many_clamp_saturates_like_the_scalar_path():
+    import numpy as np
+
+    curve = _hinge("comfort", COMFORT_DOMAIN, knot=9.2622)
+    far = curve.price_many(np.array([COMFORT_DOMAIN[0] - 50.0]), policy=CLAMP)[0]
+    edge = curve.price(COMFORT_DOMAIN[0], policy=EXTRAPOLATE)
+    assert far == pytest.approx(edge)
+
+
+def test_price_many_rejects_out_of_domain_under_reject():
+    import numpy as np
+
+    curve = _hinge("sr-roll", SR_ROLL_DOMAIN, knot=5.0)
+    with pytest.raises(OutOfDomainError, match="sr-roll"):
+        curve.price_many(np.array([3.0, SR_ROLL_LEVEL]), policy=REJECT)
+
+
+def test_price_many_refuses_an_unknown_policy():
+    import numpy as np
+
+    curve = _hinge("comfort", COMFORT_DOMAIN, knot=9.2622)
+    with pytest.raises(ValueError, match="unknown domain policy"):
+        curve.price_many(np.array([7.0]), policy="soft")
