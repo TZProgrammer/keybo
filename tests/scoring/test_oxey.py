@@ -71,6 +71,17 @@ def test_sfb_and_roll_terms_move_the_score(corpora):
 
 
 def test_pattern_shares_and_weighted_fitness_are_value_pinned(corpora):
+    """Value pin on the tiny fixture corpus.
+
+    ⚠️ ``redirect`` is 0.0 and ``bad_redirect`` is 14.2857 — that is the point, not a gap.
+    Exactly one fixture trigram is classified at all: ``was`` on qwerty is L-ring ->
+    L-pinky -> L-ring, a same-hand reversal with no index finger, i.e. a BAD redirect. The
+    two redirect classes are mutually exclusive (upstream dispatches one class per trigram),
+    so it counts once, in the worse class. It used to count in BOTH, which is why this pin
+    read 14.2857 twice and the fitness was 598.6822: the difference,
+    ``598.6822 - 570.1108 = 28.5714``, is exactly ``redirect`` weight 2.0 x the 14.2857
+    share it should never have had. See tests/scoring/test_oxey_trigram_partition.py.
+    """
     bigrams, skipgrams, trigrams = corpora
     lay = Layout(NAMED_LAYOUTS["qwerty"], ROW_STAGGERED_30)
     scorer = OxeyStyleScorer(bigrams, skipgrams, trigrams)
@@ -84,14 +95,14 @@ def test_pattern_shares_and_weighted_fitness_are_value_pinned(corpora):
             "inroll": 8.823529411764707,
             "outroll": 0.0,
             "onehand": 0.0,
-            "redirect": 14.285714285714286,
+            "redirect": 0.0,
             "bad_redirect": 14.285714285714286,
             "alternate": 55.88235294117647,
             "imbalance": 29.41176470588235,
         },
         abs=1e-12,
     )
-    assert scorer.fitness(lay) == pytest.approx(598.6822001527885, abs=1e-12)
+    assert scorer.fitness(lay) == pytest.approx(570.1107715813598, abs=1e-12)
 
 
 def test_rolls_are_rewarded_not_penalized(corpora):
