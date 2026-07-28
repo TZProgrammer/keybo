@@ -281,6 +281,68 @@ def cross_source_agreement(targets: dict[str, np.ndarray]) -> dict:
     }
 
 
+def consensus_disagreement_ratio(targets: dict[str, np.ndarray]) -> dict:
+    """C/D — the ratio of CONSENSUS spread to DISAGREEMENT spread across independent sources.
+
+    POOLSWEEP-1 (ledger 873afb7) identified this as the quantity that actually sets the
+    cross-source ceiling. Decomposing two z-scored independent sources into consensus
+    ``C = (zA + zB) / 2`` and disagreement ``D = (zA - zB) / 2``, the measured ceiling is a
+    near-deterministic monotone function of ``C/D`` alone: Spearman(rho, log C/D) =
+    **+0.9991 / +0.9998 / +0.9998** across 49 pool cells on blend-seed0 / blend-seed7 / iWeb,
+    with rho spanning -0.9886 to +0.9977 over a ~450x range in C/D.
+
+    Why it beats an effective-dof floor as a guard, which is the whole reason this exists:
+    restriction has **two opposite modes**. Restricting ``D`` alone drives the ceiling to
+    +0.9999; restricting ``C`` alone drives it to -0.9886. Both LOWER the pool's spread and
+    both LOWER effective dof, so no scalar narrowness statistic can tell them apart — and
+    ``NARROW_POOL_DOF`` accordingly false-positived at interp-f0.25 (dof 2.43 with a perfectly
+    healthy ceiling of +0.9244).
+
+    It is also computable BEFORE any fit, so it can refuse a bad pool rather than annotate a
+    bad result. Reference values: random-wide C/D = 3.06 (ceiling +0.797); the near-optimal
+    archive C/D = 1.058 (ceiling +0.218); archive + ONE random transposition C/D = 3.82
+    (ceiling +0.816) at unchanged layout quality.
+
+    Z-scoring is per-source over the pool itself, so the ratio is scale-free and needs no
+    external reference bank.
+    """
+    names = [n for n in targets]
+    pairs: dict[str, float] = {}
+    for index, first in enumerate(names):
+        for second in names[index + 1 :]:
+            independent, _ = sources_independent(first, second)
+            if not independent:
+                continue
+            a = np.asarray(targets[first], dtype=float)
+            b = np.asarray(targets[second], dtype=float)
+            finite = np.isfinite(a) & np.isfinite(b)
+            a, b = a[finite], b[finite]
+            if a.size < 3:
+                continue
+            sd_a, sd_b = a.std(), b.std()
+            if sd_a == 0 or sd_b == 0:
+                continue
+            za, zb = (a - a.mean()) / sd_a, (b - b.mean()) / sd_b
+            c_spread = float(((za + zb) / 2.0).std())
+            d_spread = float(((za - zb) / 2.0).std())
+            if d_spread == 0:
+                pairs[f"{first}|{second}"] = float("inf")
+            else:
+                pairs[f"{first}|{second}"] = c_spread / d_spread
+    finite_values = np.array([v for v in pairs.values() if np.isfinite(v)])
+    return {
+        "pairwise": pairs,
+        "min": float(finite_values.min()) if len(finite_values) else float("nan"),
+        "mean": float(finite_values.mean()) if len(finite_values) else float("nan"),
+        "interpretation": (
+            "C/D sets the cross-source ceiling (Spearman(rho, log C/D) = +0.999). A LOW value "
+            "means the pool retains disagreement but not consensus, so no weight set fitted "
+            "on it can transfer. Unlike an effective-dof floor this distinguishes the two "
+            "opposite modes of restriction, and it is computable before any fit."
+        ),
+    }
+
+
 def sources_independent(fit_source: str, test_source: str) -> tuple[bool, str]:
     """Whether a (fit, test) surface pair constitutes an out-of-sample test.
 

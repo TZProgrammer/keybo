@@ -537,12 +537,28 @@ def _weights_with_dof(dof: float) -> E.EvidenceWeights:
     )
 
 
-def test_narrow_pool_is_flagged_and_a_wide_one_is_not():
-    """Measured thresholds: the archive pool sits at dof 3.99 and loses every cell; the
-    random pool sits at 5.03 and wins every cell."""
-    assert _weights_with_dof(3.99).transfer_warning() is not None
-    assert "NARROW POOL" in _weights_with_dof(3.99).transfer_warning()
+def test_effective_dof_alone_no_longer_flags_a_pool():
+    """⚠ REPLACES a test that pinned the RETIRED effective-dof branch.
+
+    That test asserted dof 3.99 -> warning and 5.03 -> silence, i.e. it pinned exactly the
+    archive-vs-random contrast the floor had been calibrated on — circular, and POOLSWEEP-1
+    (ledger 873afb7) measured the floor false-positiving at interp-f0.25 (dof 2.43 with a
+    healthy cross-source ceiling of +0.9244). dof is now a diagnostic only: on its own it
+    must produce NO warning at ANY value, including well below the old floor.
+    """
+    assert _weights_with_dof(3.99).transfer_warning() is None
+    assert _weights_with_dof(2.43).transfer_warning() is None
     assert _weights_with_dof(5.03).transfer_warning() is None
+
+
+def test_cd_ratio_is_what_flags_a_pool_now():
+    """The replacement contract: C/D below the floor is a DO-NOT-TRUST, above it is silence."""
+    weights = _weights_with_dof(4.0)
+    fired = weights.transfer_warning(cd_ratio=1.058)  # the measured archive ratio
+    assert fired is not None and "DO NOT TRUST" in fired
+    assert "consensus/disagreement" in fired
+    assert weights.transfer_warning(cd_ratio=3.06) is None  # random-wide
+    assert weights.transfer_warning(cd_ratio=3.817) is None  # archive + ONE swap
 
 
 def test_low_source_agreement_escalates_to_do_not_trust():
@@ -555,9 +571,24 @@ def test_low_source_agreement_escalates_to_do_not_trust():
 
 
 def test_transfer_warning_travels_in_the_serialized_artifact():
-    payload = _weights_with_dof(3.99).to_dict()
-    assert payload["transfer_warning"] is not None
-    assert payload["effective_dof"] == pytest.approx(3.99)
+    """⚠ REWRITTEN by GUARD-CD-1, and the original caught a REAL gap rather than merely going
+    stale: it asserted a warning from `to_dict()` on dof alone, and `to_dict` called
+    `transfer_warning()` with NO arguments. Once the verdict depends on C/D — a property of the
+    POOL, not of this object — an unattached artifact would have silently carried NO verdict.
+    Hence `attach_pool_guards`, and hence this test now pins the attached path.
+    """
+    unattached = _weights_with_dof(3.99).to_dict()
+    assert unattached["transfer_warning"] is None  # dof alone must NOT manufacture a verdict
+    assert unattached["effective_dof"] == pytest.approx(3.99)
+    assert unattached["pool_guards"]["cd_ratio"] is None
+
+    attached = (
+        _weights_with_dof(3.99).attach_pool_guards(cd_ratio=1.058, source_agreement=0.265).to_dict()
+    )
+    assert attached["transfer_warning"] is not None
+    assert "DO NOT TRUST" in attached["transfer_warning"]
+    assert attached["pool_guards"]["cd_ratio"] == pytest.approx(1.058)
+    assert attached["pool_guards"]["cd_floor"] == pytest.approx(2.0)
 
 
 def test_cross_source_agreement_uses_only_independent_pairs():

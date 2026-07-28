@@ -135,10 +135,25 @@ EXPECTED_SIGN: dict[str, float] = {
     "oxey-style": +1.0,
 }
 
-#: Effective-dof floor below which a fitting pool is flagged as narrow. Set from the measured
-#: reversal: the archive pool (all near-optimal layouts) sits at 3.99 and the weights fitted
-#: there lose every cross-source cell; the random pool sits at 5.03 and wins every one.
+#: ⚠ DEPRECATED AS A GUARD — retained for diagnostics only, never to gate a verdict.
+#: It was calibrated on the SAME archive-vs-random contrast it was then used to detect
+#: (archive 3.99 / random 5.03), which is circular, and POOLSWEEP-1 (ledger 873afb7) measured
+#: it FALSE-POSITIVING at interp-f0.25: effective dof 2.43 with a perfectly healthy
+#: cross-source ceiling of +0.9244. Root cause: restriction has TWO OPPOSITE MODES (removing
+#: consensus vs removing disagreement) and both lower effective dof, so no scalar narrowness
+#: statistic can tell a fatal pool from a fine one. Use NARROW_POOL_CD instead.
 NARROW_POOL_DOF = 4.5
+
+#: C/D floor — the PRIMARY pool guard, replacing NARROW_POOL_DOF. POOLSWEEP-1 identified the
+#: consensus/disagreement ratio as the quantity that actually sets the cross-source ceiling
+#: (Spearman(rho, log C/D) = +0.999 over 49 cells x 3 corpora). Measured anchors: the
+#: near-optimal archive sits at C/D 1.058 with ceiling +0.218 and loses 12/12 cross-source
+#: cells; random-wide sits at 3.06 with ceiling +0.797 and wins 12/12; archive + ONE random
+#: transposition sits at 3.82 with ceiling +0.816 at unchanged layout quality. The floor is
+#: placed at 2.0 — above every failing pool measured and below every passing one — and is
+#: deliberately closer to the failing end. Unlike the dof floor this is computable BEFORE any
+#: fit, so it can refuse a bad pool rather than annotate a bad result.
+NARROW_POOL_CD = 2.0
 
 #: Cross-source agreement below which a weight set must not be used for ranking at all.
 #: Measured: +0.835 on the wide pool (weights transfer, 12/12 wins) vs +0.265 on the narrow
@@ -649,6 +664,11 @@ class EvidenceWeights:
     surrogate_r2_in_sample: float
     surrogate_r2_holdout: float | None
     base_value: float
+    #: Pool guards, attached AFTER construction by `attach_pool_guards` because they are
+    #: properties of the fitting POOL rather than of the fitted weights. Left None they simply
+    #: produce no verdict — which is why `attach_pool_guards` exists and the CLI always calls it.
+    cd_ratio: float | None = None
+    source_agreement: float | None = None
     notes: list[str] = field(default_factory=list)
 
     # -- scoring ----------------------------------------------------------------------
@@ -695,7 +715,9 @@ class EvidenceWeights:
     def score_layout(self, lay30: str, context: GaugeContext) -> dict:
         return self.score(context.vector(lay30))
 
-    def transfer_warning(self, source_agreement: float | None = None) -> str | None:
+    def transfer_warning(
+        self, source_agreement: float | None = None, cd_ratio: float | None = None
+    ) -> str | None:
         """The caveat a caller must see when the fitting pool is too narrow to transfer.
 
         Measured, not asserted: the same pipeline that beats genkey / oxeylyzer-1 /
@@ -712,7 +734,15 @@ class EvidenceWeights:
         So a weight set fitted on a narrow pool must not be quoted as a general scorer, and
         this string is how the artifact says so.
         """
-        narrow = self.effective_dof < NARROW_POOL_DOF
+        if cd_ratio is not None and cd_ratio < NARROW_POOL_CD:
+            return (
+                f"DO NOT TRUST FOR RANKING: the fitting pool's consensus/disagreement ratio "
+                f"is {cd_ratio:.3f}, below {NARROW_POOL_CD}. The pool retains the sources' "
+                f"DISAGREEMENT but not their CONSENSUS, so there is no shared signal to learn "
+                f"and no weight set fitted here can transfer (measured: C/D 1.058 -> ceiling "
+                f"+0.218, 0 of 12 cross-source cells). This is computable before any fit — "
+                f"widen the pool, or use the community scorers."
+            )
         if source_agreement is not None and source_agreement < NARROW_POOL_SOURCE_AGREEMENT:
             return (
                 f"DO NOT TRUST FOR RANKING: the fitting pool's cross-source agreement is "
@@ -721,13 +751,13 @@ class EvidenceWeights:
                 f"(mean Spearman -0.308) because there is too little shared signal to learn. "
                 f"Fit on a wider pool, or use the community scorers."
             )
-        if narrow:
-            return (
-                f"NARROW POOL WARNING: effective dof {self.effective_dof:.2f} over "
-                f"{len(LIVE_GAUGES)} gauges is below {NARROW_POOL_DOF}. These weights may be "
-                f"fitting this pool's idiosyncrasy rather than transferable structure — "
-                f"validate cross-source before ranking with them."
-            )
+        # ⚠ NO effective-dof branch. It used to fire here on `self.effective_dof <
+        # NARROW_POOL_DOF`, but that floor was calibrated on the very contrast it was used to
+        # detect and POOLSWEEP-1 measured it false-positiving at interp-f0.25 (dof 2.43,
+        # ceiling +0.9244). A pool can be narrow in the HARMLESS direction — restricted
+        # disagreement rather than restricted consensus — which raises the ceiling to +0.9999
+        # while lowering dof. effective_dof stays on the artifact as a diagnostic; it must not
+        # gate a verdict. See NARROW_POOL_DOF's own docstring.
         return None
 
     def sign_audit(self) -> dict:
@@ -787,6 +817,19 @@ class EvidenceWeights:
         rows.sort(key=lambda r: -r["shap_share_pct"])
         return rows
 
+    def attach_pool_guards(
+        self, cd_ratio: float | None, source_agreement: float | None
+    ) -> EvidenceWeights:
+        """Record the fitting pool's guard values so they survive into `to_dict`.
+
+        Separate from the constructor because both quantities describe the POOL the weights
+        were fitted on, not the weights: they are computed from the multi-source targets, which
+        the fitting routine does not own. Returns self so it can be chained at the call site.
+        """
+        self.cd_ratio = cd_ratio
+        self.source_agreement = source_agreement
+        return self
+
     def to_dict(self) -> dict:
         return {
             "source": self.source,
@@ -812,7 +855,25 @@ class EvidenceWeights:
                 }
                 for key, members in self.clusters.items()
             },
-            "transfer_warning": self.transfer_warning(),
+            # The guards must SURVIVE SERIALIZATION. Before GUARD-CD-1 this called
+            # transfer_warning() with no arguments, which was harmless only while the retired
+            # effective-dof branch could fire from `self` alone. Now that the verdict depends
+            # on C/D — a property of the POOL, not of this object — the values have to be
+            # attached (see `attach_pool_guards`) or the artifact silently carries no verdict.
+            "transfer_warning": self.transfer_warning(
+                source_agreement=self.source_agreement, cd_ratio=self.cd_ratio
+            ),
+            "pool_guards": {
+                "cd_ratio": self.cd_ratio,
+                "cd_floor": NARROW_POOL_CD,
+                "source_agreement": self.source_agreement,
+                "source_agreement_floor": NARROW_POOL_SOURCE_AGREEMENT,
+                "effective_dof": self.effective_dof,
+                "effective_dof_note": (
+                    "diagnostic ONLY — never gates a verdict; the old NARROW_POOL_DOF floor was "
+                    "circular and false-positived at dof 2.43 with a healthy +0.9244 ceiling"
+                ),
+            },
             "sign_audit": self.sign_audit(),
             "notes": [*self.notes, MODELLED_ONLY_NOTE, SOURCE_INDEPENDENCE_NOTE],
         }

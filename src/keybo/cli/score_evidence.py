@@ -187,7 +187,11 @@ def _available(surface_dir: str, frame: str) -> list[str]:
     return names
 
 
-def _print_weights(weights: E.EvidenceWeights) -> None:
+def _print_weights(
+    weights: E.EvidenceWeights,
+    agreement_mean: float | None = None,
+    cd_min: float | None = None,
+) -> None:
     print(f"\nfitted on {weights.source} ({weights.frame} frame), corpus {weights.corpus}")
     print(f"pool: {weights.pool_label}, n={weights.n_layouts}; frame: {E.FRAME_NOTE}")
     print(
@@ -234,7 +238,7 @@ def _print_weights(weights: E.EvidenceWeights) -> None:
             f"CONTRADICT the mechanism: {listed}."
             f"\n    {audit['interpretation']}"
         )
-    warning = weights.transfer_warning()
+    warning = weights.transfer_warning(source_agreement=agreement_mean, cd_ratio=cd_min)
     if warning:
         print(f"\n  ⚠ {warning}")
 
@@ -374,9 +378,19 @@ def run(args: argparse.Namespace) -> int:
         y=targets[args.fit_source],
         seed=args.seed,
     )
-    _print_weights(weights)
+    # Compute both pool guards BEFORE anything is ranked. C/D is the primary one (POOLSWEEP-1):
+    # it distinguishes the two opposite modes of restriction, which effective dof cannot.
+    cd_block = V.consensus_disagreement_ratio(targets)
+    agreement_block = V.cross_source_agreement(targets)
+    cd_min = cd_block["min"] if np.isfinite(cd_block["min"]) else None
+    agreement_mean = agreement_block["mean"] if np.isfinite(agreement_block["mean"]) else None
+    # Attach the guards to the weights object so they survive into the serialized artifact,
+    # not just the console output (the gap that GUARD-CD-1's own test suite caught).
+    weights.attach_pool_guards(cd_ratio=cd_min, source_agreement=agreement_mean)
+    _print_weights(weights, agreement_mean=agreement_mean, cd_min=cd_min)
 
     payload: dict = {
+        "pool_guards": {"consensus_disagreement": cd_block, "source_agreement": agreement_block},
         "weights": weights.to_dict(),
         "pool": pool_label,
         "surface_frame": args.surface_frame,
