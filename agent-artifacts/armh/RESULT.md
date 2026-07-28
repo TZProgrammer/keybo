@@ -321,3 +321,120 @@ caught by running rather than by reading.
   range).
 - **`sd_G` = 0.049171 and the borrowed 0.0617 appear in NO primary verdict** — sensitivity only,
   and labelled as different quadruples throughout.
+
+---
+
+# ADDENDUM (POST-HOC) — RESPONSE TO ARM G'S RELAYED FALSE-EMPTY WARNING
+
+⚠ **Everything in this addendum was computed AFTER the result commit `c85623d`, in response to a
+relay from ARM G. It changes NO registered verdict.** The prereg (`491138b`), the judge
+(`2b90b47`) and the result above stand exactly as committed. Artifact:
+`state/armh/artifacts/armg-relay-response.json`. I re-derived arm G's numbers from its own
+`armh-feasibility-warning.json` rather than from the relay summary.
+
+Arm G warned that with 13 hard caps a random-start search may never *enter* the feasible set, so
+an arm could report **EMPTY** having only established **UNREACHABLE**, and it named a leading
+third outcome: *"REAL AND INDIVIDUALLY COLLECTABLE YET JOINTLY INFEASIBLE under full
+non-inferiority."* Its evidence: over its own 273-layout archive, **0 satisfy the 13 caps
+jointly, and still 0 after dropping ANY single cap.**
+
+## 🔴 ARM G'S LEADING HYPOTHESIS IS REFUTED — AND I TEST IT AT ARM G'S OWN BAND, NOT MINE
+
+The obvious objection to my refuting it is that my `sd_H` band is looser. So I tested against
+**arm G's own speed cap** (253.99892068405563 = armB + 2·`sd_G`):
+
+| layout | ms/char | 13 caps violated | inside ARM G's cap | FEASIBLE at ARM G's band |
+|---|---|---|---|---|
+| BALL-1 `flmpg-yuo,sntcdireahkxbwv'.jzq` | 253.966426 | **0** | **YES** | 🟢 **YES** |
+| MID `flmpg.yuo,sntcdireahkxbwv'-jzq` | 253.988534 | **0** | **YES** | 🟢 **YES** |
+| HEADLINE `flmpg-,uoysntcdireahkxvwb.'jzq` | 254.039627 | **0** | no | no |
+
+=> **2 of my 3 collected layouts satisfy all 13 caps AND sit inside ARM G's OWN speed cap.** The
+refutation therefore cannot be an artifact of my larger `sd_H`. **Arm G's "0 of 273" is a
+property of its ARCHIVE, not of the feasible set** — and I confirmed **BALL-1 is absent from arm
+G's recovered archive**. The reason is the mechanism **arm G itself diagnosed**: its `D` made
+`oxey-style` the cheapest axis to trade away, so it never searched the region where `oxey`
+improves while the other 13 hold. Its own self-kill predicts precisely this blind spot; its
+false-empty warning then inherited it.
+
+⚠ **This is a refutation of arm G's HYPOTHESIS, not of its WARNING.** The warning is sound and
+its two defenses are the right ones — see below. What is refuted is the specific claim that the
+constraints are *jointly* unsatisfiable.
+
+## ARM G'S TWO DEFENSES — both were already in place, and defense 1 was decisive
+
+**Defense 1 (seed an island from arm B): already implemented and declared in prereg §3** as
+`armh-warm`, fail-loud (asserted arm B present in **20/20 islands with `V = 0`**, else rc=1 —
+trap 10). **It was decisive exactly as arm G predicted:** warm returned **5/5 feasible**
+champions; cold returned **0/5** (my own self-adverse P2, which held). Without it this arm would
+have had nothing — so arm G's diagnosis of the failure mode is **confirmed**, even though its
+conclusion about the feasible set is not.
+
+**Defense 2 (per-constraint histogram + min caps violated, so EMPTY ≠ UNREACHABLE): I had this
+only partially.** Computed now in arm G's exact format over my **723-layout** archive:
+
+| | ARM G (273) | ARM H (723) |
+|---|---|---|
+| joint 13 caps | **0** | **5** |
+| min caps violated | **3** | **0** |
+| `sfs-dist` ok | 0.4% | 6.4% |
+| `sr-roll` ok | 2.2% | 6.4% |
+| `roll` ok | 1.1% | 7.9% |
+| `sfs` ok | 2.6% | 8.0% |
+| `comfort` ok | 10.3% | 18.3% |
+
+**`min_caps_violated = 0` is the number that settles EMPTY-vs-UNREACHABLE for this arm:** my
+search *reached* the feasible set, so I never had to distinguish them — I reported COLLECTED, not
+EMPTY. ⚠ **And the comparison caveat, which cuts against reading anything into the rate
+differences:** my archive includes warm runs *seeded from arm B*, i.e. drawn from the feasible
+neighbourhood **by design**. A per-constraint rate difference between the two archives is a
+statement about the two **searches**, not about the geometry.
+
+Arm G's `sfs`/`sfs-dist` diagnosis does survive as the **local** binder: those two plus
+`sr-roll`/`roll` are the four scarcest constraints in **both** archives, they are the axes arm B
+is **best-of-six** on, and `sfs`/`sfs-dist`/`sr-roll` are exactly the three axes where my
+headline's "win" is **negligible** (< 0.3% of both yardsticks). Three independent routes to the
+same geometry.
+
+## 🟢 ARM G'S "SAME PYTHON OBJECTS" DISCIPLINE — VERIFIED RATHER THAN ASSERTED
+
+It was already in place: `search.py`, `judge_armh.py`, `gate_armh.py` and `verify_headline.py`
+all `import armh_constants as AH`. But I had **not checked it**, which is the same
+*a-label-is-not-its-referent* error one level up. Now measured: **`search.AH is judge.AH` →
+`True`**, and **`search.AH.ARMH_REF is judge.AH.ARMH_REF` → `True`**. The caps, `TOL`,
+directions and reference values are literally the same objects and cannot diverge between run
+time and judge time. ⚠ **Residual risk arm G's framing understates:** object identity does not
+prove the two paths compute the same *function* of them — that is what C3/C4 cover (cross-path
+pin 1.233e-14, mutation-proven). **Both checks are needed; neither implies the other.**
+
+## 🔴 ARM G'S SHARPEST POINT IS A REAL GAP IN MY PREREG — CONCEDED
+
+I pre-registered sensitivity over alternative **ruler VALUES** (3 rulers, prereg §5) — which was
+decisive and killed my headline's ruler-robustness. I did **not** pre-register sensitivity over
+alternative **STATISTICS** for `sd_H`. Arm G is right that this is a gap, and a post-hoc
+computation cannot repair it — it can only report the answer:
+
+| statistic | sd | 2·sd | BALL-1 | MID | HEADLINE |
+|---|---|---|---|---|---|
+| **sd ddof=1 n=5 (REGISTERED)** | 0.099525 | 0.199051 | IN | IN | IN |
+| sd ddof=0 n=5 | 0.089018 | 0.178036 | IN | IN | IN |
+| range/2 | 0.120409 | 0.240818 | IN | IN | IN |
+| MAD ×1.4826 (robust) | 0.054046 | 0.108091 | IN | IN | **OUT** |
+| mean-abs-dev ×1.2533 | 0.092782 | 0.185563 | IN | IN | IN |
+| IQR/1.349 | 0.066271 | 0.132543 | IN | IN | **OUT** |
+| sd ddof=1 incl. repro control (n=6) | 0.089502 | 0.179004 | IN | IN | IN |
+| sd ddof=1 trimmed, drop max (n=4) | 0.044058 | 0.088116 | IN | IN | **OUT** |
+| sd ddof=1 excl. the arm-B recovery (n=4) | 0.103808 | 0.207615 | IN | IN | IN |
+
+> **BALL-1: in-band under 9 of 9. MID: 9 of 9. HEADLINE: 6 of 9.**
+
+**This strengthens the result's robust core and weakens its headline further, in the same
+direction my own self-separation already pushed.** Combined with the 3-ruler table:
+**BALL-1 and MID are in-band under every ruler AND every statistic tested (3/3 and 9/9);
+the headline under 1/3 rulers and 6/9 statistics.** My registered primary statistic is the
+**third-loosest of the nine** — and the three that exclude the headline are all the **robust**
+(outlier-resistant) ones, which is the honest direction to note rather than bury.
+
+=> **REGISTERED FOR THE NEXT ARM:** pre-register sensitivity over both axes — alternative ruler
+**values** *and* alternative **statistics** for your own decision statistic. Arm G found this
+gap in my prereg after finding it in its own; that makes it a **class**, not two incidents.
