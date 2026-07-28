@@ -1,0 +1,141 @@
+weights: source=COMMUNITY_BASE frame=native corpus=blend-v1 pool=archive-400 n=400
+  surrogate R2: in-sample 0.9765  holdout 0.7591  effective dof 3.9945
+  (arm D's random400 fit for contrast: in-sample 0.9493  holdout 0.4286  dof 5.0334)
+
+gauge        ARCHIVE domain             RANDOM400 domain            overlap
+sfb          [     1.5249,    3.0644] [     5.2024,   17.9316]    False
+sfs          [     6.2640,    9.5112] [     6.7450,   16.2706]     True
+sfb-dist     [     1.7677,    3.7523] [     7.2185,   27.2392]    False
+sfs-dist     [     7.4428,   11.9722] [     9.3687,   23.8753]     True
+lsb          [     0.4769,    2.3568] [     0.2904,    7.6595]     True
+lsb-dist     [     1.0372,    4.9971] [     0.6502,   16.7225]     True
+alt          [    35.1279,   45.7982] [    19.0252,   34.9403]    False
+roll         [    39.2728,   46.1020] [    27.4479,   43.5003]     True
+sr-roll      [    11.3865,   18.0617] [     1.9997,    8.3369]    False
+redir        [     2.3512,    6.2402] [     5.5476,   17.3492]     True
+scissor      [     0.0554,    0.4092] [     0.2740,    5.1338]     True
+imbalance    [     1.1085,    6.4193] [     0.2132,   38.9875]     True
+oxey-style   [    -5.2636,   17.4515] [    44.7197,  197.1279]    False
+comfort      [     3.2519,    3.8371] [     6.5236,   11.5644]    False
+
+6 of 14 domains are FULLY DISJOINT between the two fits
+
+gauge        form       min@        min lvl  min price    range   shap%  expsign
+sfb          hinge      lo           1.5249    -0.2021   0.3214    6.26     +1.0
+sfs          hinge      lo           6.2640    -0.4554   0.6525    9.19     +1.0
+sfb-dist     hinge      lo           1.7677    -0.1747   0.3102    5.12     +1.0
+sfs-dist     hinge      lo           7.4428    -0.4429   1.3549   22.48     +1.0
+lsb          hinge      lo           0.4769    -0.0367   0.3647    3.71     +1.0
+lsb-dist     hinge      interior     3.6816    -0.0240   0.1662    1.90     +1.0
+alt          hinge      hi          45.7982    -0.0844   0.1795    3.53     -1.0
+roll         hinge      interior    41.6351    -0.0488   0.1703    3.58     -1.0
+sr-roll      quadratic  interior    16.4897    -0.1419   0.4932    8.62     -1.0
+redir        hinge      lo           2.3512    -0.2272   0.2739    4.14     +1.0
+scissor      quadratic  lo           0.0554    -0.1159   0.2446    3.90     +1.0
+imbalance    hinge      interior     2.0780    -0.0422   0.2409    4.26     +1.0
+oxey-style   hinge      interior     2.2983    -0.1817   0.7172   12.15     +1.0
+comfort      hinge      hi           3.8371    -0.8036   0.9456   11.16     +1.0
+
+CLAMPED LOWER BOUND (sum of per-gauge in-domain minima) = -2.9814
+CLAMPED UPPER BOUND                                     = 3.4537
+total in-domain signal (sum of per-gauge ranges)         = 6.4350
+  (arm D's random400 in-domain signal was 48.8093, lower bound -26.0311)
+  The bound is NOT necessarily attainable: one permutation must produce all 14 levels
+  at once, and the gauges are correlated.
+
+corpus dir: /tmp/arme/data/corpus/blend-v1
+
+layout              ms/char   ev CLAMP   ev EXTRAP  clamp-ext  n_ood
+armA               256.8466    -1.2976     -1.3541     0.0564      6
+armB               253.9006    -0.2324     -0.2324     0.0000      0
+armC               256.0220    -1.5063     -1.7474     0.2411      4
+armD               269.2762    -0.1375    -22.8256    22.6881      9
+keybo-lsb          254.6307    -1.1902     -1.1902     0.0000      0
+lsb-sib            254.7058    -1.8638     -1.8610    -0.0028      1
+archive-1843       254.8436    -1.3652     -1.3658     0.0006      2
+archive-1846       254.7961    -1.2961     -1.2937    -0.0024      1
+keybo-lsb+lm       254.6847    -0.9206     -0.9206     0.0000      0
+qwerty30m          264.1389     1.9434     -4.6183     6.5617     14
+graphite           258.1696    -1.8973     -2.3354     0.4381      3
+semimak            257.3915    -1.8358     -2.0781     0.2423      6
+flagship-c3        254.9761    -1.5899     -1.5846    -0.0053      1
+
+HEADROOM from keybo-lsb (ms/char 254.6307, n_ood 0/14):
+gauge            level   clamped     wants  headroom   dir  expsign  mechanism   shap%
+sfb             1.6231    1.6231    1.5249    0.0312  down     +1.0      right    6.26
+sfs             7.6488    7.6488    6.2640    0.4661  down     +1.0      right    9.19
+sfb-dist        1.9031    1.9031    1.7677    0.0274  down     +1.0      right    5.12
+sfs-dist        8.9906    8.9906    7.4428    0.1875  down     +1.0      right   22.48
+lsb             0.9219    0.9219    0.4769    0.0042  down     +1.0      right    3.71
+lsb-dist        1.8960    1.8960    3.6816    0.0193    up     +1.0      WRONG    1.90
+alt            45.1561   45.1561   45.7982    0.0563    up     -1.0      right    3.53
+roll           41.6249   41.6249   41.6351    0.0007    up     -1.0      right    3.58
+sr-roll        12.6921   12.6921   16.4897    0.2731    up     -1.0      right    8.62
+redir           3.3584    3.3584    2.3512    0.2552  down     +1.0      right    4.14
+scissor         0.1429    0.1429    0.0554    0.1189  down     +1.0      right    3.90
+imbalance       2.0779    2.0779    2.0780   -0.0000  none     +1.0   attained    4.26
+oxey-style     -3.2497   -3.2497    2.2983    0.0113    up     +1.0      WRONG   12.15
+comfort         3.7109    3.7109    3.8371    0.3400    up     +1.0      WRONG   11.16
+  remaining clamped headroom = 1.7911
+    mechanism-RIGHT (also makes it faster):   1.4205 ( 79.3%)
+    mechanism-WRONG (makes it slower):        0.3706 ( 20.7%)
+    [arm D's figure from arm A's champion was 92.5% WRONG]
+
+HEADROOM from armB (ms/char 253.9006, n_ood 0/14):
+gauge            level   clamped     wants  headroom   dir  expsign  mechanism   shap%
+sfb             2.5391    2.5391    1.5249    0.3211  down     +1.0      right    6.26
+sfs             6.7995    6.7995    6.2640    0.1802  down     +1.0      right    9.19
+sfb-dist        3.0423    3.0423    1.7677    0.2377  down     +1.0      right    5.12
+sfs-dist        8.0056    8.0056    7.4428    0.0682  down     +1.0      right   22.48
+lsb             1.1411    1.1411    0.4769    0.0063  down     +1.0      right    3.71
+lsb-dist        2.3227    2.3227    3.6816    0.0147    up     +1.0      WRONG    1.90
+alt            37.1373   37.1373   45.7982    0.1651    up     -1.0      right    3.53
+roll           45.4421   45.4421   41.6351    0.0279  down     -1.0      WRONG    3.58
+sr-roll        17.8131   17.8131   16.4897    0.0332  down     -1.0      WRONG    8.62
+redir           4.4206    4.4206    2.3512    0.1906  down     +1.0      right    4.14
+scissor         0.2567    0.2567    0.0554    0.2149  down     +1.0      right    3.90
+imbalance       4.8754    4.8754    2.0780    0.0671  down     +1.0      right    4.26
+oxey-style      8.6110    8.6110    2.2983    0.2988  down     +1.0      right   12.15
+comfort         3.4140    3.4140    3.8371    0.9233    up     +1.0      WRONG   11.16
+  remaining clamped headroom = 2.7490
+    mechanism-RIGHT (also makes it faster):   1.7499 ( 63.7%)
+    mechanism-WRONG (makes it slower):        0.9991 ( 36.3%)
+    [arm D's figure from arm A's champion was 92.5% WRONG]
+
+over the near-optimal band (10 layouts): which gauges does CLAMP freeze?
+gauge                      clamped levels  frozen?  n outside   shap%
+sfb          [     1.5249,     3.0644]    False          2    6.26
+sfs          [     6.2640,     7.6488]    False          1    9.19
+sfb-dist     [     1.7677,     3.7523]    False          2    5.12
+sfs-dist     [     7.4428,     8.9906]    False          2   22.48
+lsb          [     0.6268,     1.3062]    False          0    3.71
+lsb-dist     [     1.4255,     2.8836]    False          0    1.90
+alt          [    35.1279,    45.1561]    False          1    3.53
+roll         [    39.2728,    45.4421]    False          1    3.58
+sr-roll      [    11.3865,    17.8343]    False          1    8.62
+redir        [     2.3512,     5.9184]    False          1    4.14
+scissor      [     0.0889,     0.4092]    False          1    3.90
+imbalance    [     1.1085,     6.4193]    False          2    4.26
+oxey-style   [    -5.2636,    17.4515]    False          7   12.15
+comfort      [     3.2519,     3.8371]    False          3   11.16
+
+CLAMP freezes 0.00% of the fitted attribution into a CONSTANT across the band
+  (under random400 it froze 82.55%)
+
+degeneracy over the band: 0 exact ties
+  band spread: ev_CLAMP 1.7263 vs ev_EXTRAPOLATE 22.5932 (0.076x); total in-domain signal 6.4350
+
+spearman(ev, ms/char) IN THE BAND (n=10): CLAMP -0.1758 | EXTRAPOLATE -0.7333   (want +1)
+spearman over the SIX INCUMBENTS only (n=6): CLAMP -0.6000
+spearman(ev, ms/char) on 400 RANDOM perms: CLAMP -0.0533 | EXTRAPOLATE -0.4419
+  ⚠ trap 52: the archive fit's pool is the ARCHIVE, so neither of these is the
+    in-sample number — but a wide-pool rho still says nothing about the narrow band.
+
+WROTE /local/home/zegertho/agent/state/arme/artifacts/prerun-arme.json
+
+---TIMING---
+command: uv run --no-sync python /local/home/zegertho/agent/state/arme/artifacts/drivers/prerun_arme.py
+elapsed_ms: 2479
+exit_code: 0
+timed_out: false
+---/TIMING---

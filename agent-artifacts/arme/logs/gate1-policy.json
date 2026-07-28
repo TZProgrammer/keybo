@@ -1,0 +1,581 @@
+{
+ "gate": "arm E gate 1 \u2014 policy path validated on the ARCHIVE curves",
+ "weights_json": "/local/home/zegertho/agent/state/evidence-scorer/artifacts/arm-archive400-native.json",
+ "weights_meta": {
+  "source": "COMMUNITY_BASE",
+  "surface_frame": "native",
+  "surface_sha256": "e0d1d2d3fb1d7c14a37891d0cce556af3a16a7d497f04a286305c31aa6fdac04",
+  "corpus": "blend-v1",
+  "corpus_sha256": {
+   "bigrams.txt": "13abca624f3ecff211b11df797f0cb9119cbf1924bc2f56ab2a8daf0c590bc24",
+   "trigrams.txt": "19806532ee3567f5afe4311e51f346b6c36375030f473fe3f68a6a3dc21beb61",
+   "1-skip.txt": "df5f2f1aa48f954f5a809d65ad111f8aa4bfcdbc0da1d528776bbc31d5ebe3c8",
+   "1-skip31.txt": "df5f2f1aa48f954f5a809d65ad111f8aa4bfcdbc0da1d528776bbc31d5ebe3c8"
+  },
+  "pool": "archive-400",
+  "n_layouts": 400,
+  "frame": "geometry-only (g); the layout-independent b(ngram) term is excluded",
+  "gauges": [
+   "sfb",
+   "sfs",
+   "sfb-dist",
+   "sfs-dist",
+   "lsb",
+   "lsb-dist",
+   "alt",
+   "roll",
+   "sr-roll",
+   "redir",
+   "scissor",
+   "imbalance",
+   "oxey-style",
+   "comfort"
+  ],
+  "excluded_invariant_gauges": [
+   "sfr"
+  ],
+  "effective_dof": 3.9944833399343915,
+  "surrogate_r2_in_sample": 0.9764749937143651,
+  "surrogate_r2_holdout": 0.7590875063867077,
+  "base_value_ms_per_trigram": 258.3267517089844,
+  "clusters": {
+   "sfb+sfb-dist": {
+    "members": [
+     "sfb",
+     "sfb-dist"
+    ],
+    "shap_share_pct": 11.381979054691145,
+    "weight_ms_per_unit_sum": 0.3942865924725353
+   },
+   "sfs+sfs-dist": {
+    "members": [
+     "sfs",
+     "sfs-dist"
+    ],
+    "shap_share_pct": 31.672600912741416,
+    "weight_ms_per_unit_sum": 0.5025191760697088
+   },
+   "lsb+lsb-dist": {
+    "members": [
+     "lsb",
+     "lsb-dist"
+    ],
+    "shap_share_pct": 5.607336942031365,
+    "weight_ms_per_unit_sum": 0.08153142870049307
+   },
+   "alt": {
+    "members": [
+     "alt"
+    ],
+    "shap_share_pct": 3.527248319326258,
+    "weight_ms_per_unit_sum": -0.013775792754589733
+   },
+   "roll": {
+    "members": [
+     "roll"
+    ],
+    "shap_share_pct": 3.5790147031924913,
+    "weight_ms_per_unit_sum": -0.019112045873956804
+   },
+   "sr-roll": {
+    "members": [
+     "sr-roll"
+    ],
+    "shap_share_pct": 8.61991122846089,
+    "weight_ms_per_unit_sum": -0.05935132111886575
+   },
+   "redir": {
+    "members": [
+     "redir"
+    ],
+    "shap_share_pct": 4.140587083852822,
+    "weight_ms_per_unit_sum": -0.030455645540915864
+   },
+   "scissor": {
+    "members": [
+     "scissor"
+    ],
+    "shap_share_pct": 3.904966877403441,
+    "weight_ms_per_unit_sum": 0.7479067007081037
+   },
+   "imbalance": {
+    "members": [
+     "imbalance"
+    ],
+    "shap_share_pct": 4.2602856897000585,
+    "weight_ms_per_unit_sum": 0.0021476498537045655
+   },
+   "oxey-style": {
+    "members": [
+     "oxey-style"
+    ],
+    "shap_share_pct": 12.149553446856729,
+    "weight_ms_per_unit_sum": 0.03176278460322662
+   },
+   "comfort": {
+    "members": [
+     "comfort"
+    ],
+    "shap_share_pct": 11.15652475852733,
+    "weight_ms_per_unit_sum": -1.6176185072192513
+   }
+  },
+  "transfer_warning": "NARROW POOL WARNING: effective dof 3.99 over 14 gauges is below 4.5. These weights may be fitting this pool's idiosyncrasy rather than transferable structure \u2014 validate cross-source before ranking with them.",
+  "sign_audit": {
+   "n_checked": 14,
+   "n_plausible": 12,
+   "n_implausible": 2,
+   "implausible": [
+    {
+     "metric": "comfort",
+     "weight": -1.6176185072192513,
+     "expected_sign": 1.0
+    },
+    {
+     "metric": "redir",
+     "weight": -0.030455645540915864,
+     "expected_sign": 1.0
+    }
+   ],
+   "interpretation": "a sign that contradicts the mechanism is more likely the correlated frame (effective dof ~5 over 14 axes) than a discovery. Read the CLUSTER column and the ensemble ranking; do NOT quote a single gauge's weight as its evidence-based price."
+  },
+  "notes": [
+   "MODELLED ONLY: every price here is attribution of a FITTED timing surface, not a measurement of realized typing speed. Held-layout transfer is saturated and the human-validation phase was cancelled, so no number here predicts how fast anyone types.",
+   "AALTO is NOT independent of data/models/k31: the time card's served surface T2[a,b]+Tcond[a,b,c] is bit-identical to AALTO_BASE (max abs diff 0.0 over 31^3 cells). POOL is not independent of AALTO+COMMUNITY either (it pools them). So the strongest available test is fit-on-COMMUNITY / score-on-AALTO and its reverse, and any POOL cell must be read as partially in-sample."
+  ]
+ },
+ "corpus_dir": "/tmp/arme/data/corpus/blend-v1",
+ "n_checks": 113,
+ "n_failures": 0,
+ "failures": [],
+ "per_gauge": {
+  "sfb": {
+   "domain": [
+    1.524943968015252,
+    3.0644003739774393
+   ],
+   "form": "hinge",
+   "knot": 2.537354166189906,
+   "n_levels": 43,
+   "A_ulp_vs_scalar": 22,
+   "A_bound_ratio_vs_scalar": 0.004624732503491364,
+   "B_in_domain_bitwise_identical": true,
+   "C_saturates": true,
+   "D_ulp_vs_armD": 4,
+   "D_bound_ratio_vs_armD": 0.0008213446474107327,
+   "D_same_ordering_as_armD": true,
+   "shape_dispatch_ulp": 5,
+   "shape_dispatch_bound_ratio": 0.00120462898151933,
+   "shape_dispatch_distinct_values": 2
+  },
+  "sfs": {
+   "domain": [
+    6.264044169807844,
+    9.511176764147987
+   ],
+   "form": "hinge",
+   "knot": 8.202699302617466,
+   "n_levels": 43,
+   "A_ulp_vs_scalar": 32,
+   "A_bound_ratio_vs_scalar": 0.004573909991466345,
+   "B_in_domain_bitwise_identical": true,
+   "C_saturates": true,
+   "D_ulp_vs_armD": 4,
+   "D_bound_ratio_vs_armD": 0.0004733695456087806,
+   "D_same_ordering_as_armD": true,
+   "shape_dispatch_ulp": 23,
+   "shape_dispatch_bound_ratio": 0.0029494960537119726,
+   "shape_dispatch_distinct_values": 2
+  },
+  "sfb-dist": {
+   "domain": [
+    1.7677234712102265,
+    3.7522788352588203
+   ],
+   "form": "hinge",
+   "knot": 2.839245492613646,
+   "n_levels": 43,
+   "A_ulp_vs_scalar": 20,
+   "A_bound_ratio_vs_scalar": 0.016396168814424995,
+   "B_in_domain_bitwise_identical": true,
+   "C_saturates": true,
+   "D_ulp_vs_armD": 0,
+   "D_bound_ratio_vs_armD": 0.0,
+   "D_same_ordering_as_armD": true,
+   "shape_dispatch_ulp": 6,
+   "shape_dispatch_bound_ratio": 0.0018793737028844587,
+   "shape_dispatch_distinct_values": 2
+  },
+  "sfs-dist": {
+   "domain": [
+    7.4427550971506085,
+    11.972191310414058
+   ],
+   "form": "hinge",
+   "knot": 9.232873476566512,
+   "n_levels": 43,
+   "A_ulp_vs_scalar": 12,
+   "A_bound_ratio_vs_scalar": 0.004502313616695327,
+   "B_in_domain_bitwise_identical": true,
+   "C_saturates": true,
+   "D_ulp_vs_armD": 2,
+   "D_bound_ratio_vs_armD": 0.0009143489336406096,
+   "D_same_ordering_as_armD": true,
+   "shape_dispatch_ulp": 3,
+   "shape_dispatch_bound_ratio": 0.00319018125456701,
+   "shape_dispatch_distinct_values": 2
+  },
+  "lsb": {
+   "domain": [
+    0.4769100348056702,
+    2.3567914226306836
+   ],
+   "form": "hinge",
+   "knot": 1.7025404358179856,
+   "n_levels": 43,
+   "A_ulp_vs_scalar": 1,
+   "A_bound_ratio_vs_scalar": 0.01726212315716077,
+   "B_in_domain_bitwise_identical": true,
+   "C_saturates": true,
+   "D_ulp_vs_armD": 1,
+   "D_bound_ratio_vs_armD": 0.012692124314572744,
+   "D_same_ordering_as_armD": true,
+   "shape_dispatch_ulp": 0,
+   "shape_dispatch_bound_ratio": 0.0,
+   "shape_dispatch_distinct_values": 1
+  },
+  "lsb-dist": {
+   "domain": [
+    1.0371902308384109,
+    4.997129390277302
+   ],
+   "form": "hinge",
+   "knot": 3.6817553111446246,
+   "n_levels": 43,
+   "A_ulp_vs_scalar": 3,
+   "A_bound_ratio_vs_scalar": 0.0164490700027286,
+   "B_in_domain_bitwise_identical": true,
+   "C_saturates": true,
+   "D_ulp_vs_armD": 1,
+   "D_bound_ratio_vs_armD": 0.004896285200952185,
+   "D_same_ordering_as_armD": true,
+   "shape_dispatch_ulp": 1,
+   "shape_dispatch_bound_ratio": 0.0038015452579758017,
+   "shape_dispatch_distinct_values": 2
+  },
+  "alt": {
+   "domain": [
+    35.127943206924776,
+    45.798176070136044
+   ],
+   "form": "hinge",
+   "knot": 44.5171336926002,
+   "n_levels": 43,
+   "A_ulp_vs_scalar": 7,
+   "A_bound_ratio_vs_scalar": 0.012674148314906318,
+   "B_in_domain_bitwise_identical": true,
+   "C_saturates": true,
+   "D_ulp_vs_armD": 0,
+   "D_bound_ratio_vs_armD": 0.0,
+   "D_same_ordering_as_armD": true,
+   "shape_dispatch_ulp": 2,
+   "shape_dispatch_bound_ratio": 0.004153796959213749,
+   "shape_dispatch_distinct_values": 2
+  },
+  "roll": {
+   "domain": [
+    39.27284800746711,
+    46.102045114000425
+   ],
+   "form": "hinge",
+   "knot": 41.63495518951657,
+   "n_levels": 43,
+   "A_ulp_vs_scalar": 256,
+   "A_bound_ratio_vs_scalar": 0.0050057441329177926,
+   "B_in_domain_bitwise_identical": true,
+   "C_saturates": true,
+   "D_ulp_vs_armD": 4,
+   "D_bound_ratio_vs_armD": 0.00020944231971139454,
+   "D_same_ordering_as_armD": true,
+   "shape_dispatch_ulp": 27,
+   "shape_dispatch_bound_ratio": 0.0029400050640189562,
+   "shape_dispatch_distinct_values": 2
+  },
+  "sr-roll": {
+   "domain": [
+    11.386485102254266,
+    18.061724687972347
+   ],
+   "form": "quadratic",
+   "knot": null,
+   "n_levels": 42,
+   "A_ulp_vs_scalar": 512,
+   "A_bound_ratio_vs_scalar": 0.01414970016923473,
+   "B_in_domain_bitwise_identical": true,
+   "C_saturates": true,
+   "D_ulp_vs_armD": 70,
+   "D_bound_ratio_vs_armD": 0.002965955691786834,
+   "D_same_ordering_as_armD": true,
+   "shape_dispatch_ulp": 0,
+   "shape_dispatch_bound_ratio": 0.0,
+   "shape_dispatch_distinct_values": 1
+  },
+  "redir": {
+   "domain": [
+    2.351168766006416,
+    6.240166484725282
+   ],
+   "form": "hinge",
+   "knot": 3.0502750991663556,
+   "n_levels": 43,
+   "A_ulp_vs_scalar": 64,
+   "A_bound_ratio_vs_scalar": 0.010503748326084732,
+   "B_in_domain_bitwise_identical": true,
+   "C_saturates": true,
+   "D_ulp_vs_armD": 10,
+   "D_bound_ratio_vs_armD": 0.0013005206452947906,
+   "D_same_ordering_as_armD": true,
+   "shape_dispatch_ulp": 0,
+   "shape_dispatch_bound_ratio": 0.0,
+   "shape_dispatch_distinct_values": 1
+  },
+  "scissor": {
+   "domain": [
+    0.05537343156605177,
+    0.40920119629034246
+   ],
+   "form": "quadratic",
+   "knot": null,
+   "n_levels": 42,
+   "A_ulp_vs_scalar": 4,
+   "A_bound_ratio_vs_scalar": 0.011020995522208898,
+   "B_in_domain_bitwise_identical": true,
+   "C_saturates": true,
+   "D_ulp_vs_armD": 2,
+   "D_bound_ratio_vs_armD": 0.004260617704938359,
+   "D_same_ordering_as_armD": true,
+   "shape_dispatch_ulp": 0,
+   "shape_dispatch_bound_ratio": 0.0,
+   "shape_dispatch_distinct_values": 1
+  },
+  "imbalance": {
+   "domain": [
+    1.108514147153499,
+    6.419324634890699
+   ],
+   "form": "hinge",
+   "knot": 2.077878600654005,
+   "n_levels": 43,
+   "A_ulp_vs_scalar": 256,
+   "A_bound_ratio_vs_scalar": 0.012118394229791536,
+   "B_in_domain_bitwise_identical": true,
+   "C_saturates": true,
+   "D_ulp_vs_armD": 31,
+   "D_bound_ratio_vs_armD": 0.003202600913011576,
+   "D_same_ordering_as_armD": true,
+   "shape_dispatch_ulp": 0,
+   "shape_dispatch_bound_ratio": 0.0,
+   "shape_dispatch_distinct_values": 1
+  },
+  "oxey-style": {
+   "domain": [
+    -5.263564999911996,
+    17.451547826755984
+   ],
+   "form": "hinge",
+   "knot": 2.2991923217992802,
+   "n_levels": 43,
+   "A_ulp_vs_scalar": 1,
+   "A_bound_ratio_vs_scalar": 0.012226033814347928,
+   "B_in_domain_bitwise_identical": true,
+   "C_saturates": true,
+   "D_ulp_vs_armD": 1,
+   "D_bound_ratio_vs_armD": 0.007163073971365435,
+   "D_same_ordering_as_armD": true,
+   "shape_dispatch_ulp": 0,
+   "shape_dispatch_bound_ratio": 0.0,
+   "shape_dispatch_distinct_values": 1
+  },
+  "comfort": {
+   "domain": [
+    3.25194493025,
+    3.83714651302
+   ],
+   "form": "hinge",
+   "knot": 3.485923909,
+   "n_levels": 43,
+   "A_ulp_vs_scalar": 10,
+   "A_bound_ratio_vs_scalar": 0.005608631089799133,
+   "B_in_domain_bitwise_identical": true,
+   "C_saturates": true,
+   "D_ulp_vs_armD": 1,
+   "D_bound_ratio_vs_armD": 0.0019516594473489163,
+   "D_same_ordering_as_armD": true,
+   "shape_dispatch_ulp": 0,
+   "shape_dispatch_bound_ratio": 0.0,
+   "shape_dispatch_distinct_values": 1
+  }
+ },
+ "criterion": "|a-b| <= FLOP_SLACK * n * eps * sum|term| (the dot-product rounding bound), NOT a ULP count \u2014 ULP measures spacing at the RESULT, which explodes under cancellation and would flag correct arithmetic",
+ "flop_slack": 16,
+ "search_accept_threshold": 1e-12,
+ "worst_bound_ratio_price_many_vs_scalar": 0.01726212315716077,
+ "worst_bound_ratio_price_many_vs_armD_clamped_curve": 0.012692124314572744,
+ "worst_bound_ratio_price_many_across_batch_shapes": 0.004153796959213749,
+ "price_many_shape_dispatch_finding": "LossCurve.price_many is NOT bit-equal to LossCurve.price for n>=2, and is not bit-equal to ITSELF across batch shapes: `price` evaluates a length-1 array while `price_many` evaluates length n, and `_design(...) @ coeffs` dispatches to a different BLAS kernel by shape. 7 of 14 archive curves show it. Arm D's elementwise ClampedCurve is 0 ULP across shapes. So the brief's 'pin at EXACT float equality against price_many' is unsatisfiable by construction, and the 4 shipped tests cannot catch it (fixed-length arrays on both sides / pytest.approx). Bounded by check F: identical argmin and identical full ordering.",
+ "totals_pin": {
+  "max_abs_diff": 1.3322676295501878e-15,
+  "ulp": 16,
+  "rel_of_score_range": 3.2644438953394737e-16,
+  "same_argmin": true,
+  "identical_ordering": true,
+  "score_range": 4.081147271215833
+ },
+ "clamp_changes_total_on": 2058,
+ "n_test_layouts": 2061,
+ "mutation_control": [
+  {
+   "mutation": "knot shifted 1e-6",
+   "bound_ratio": 131698157.66093436,
+   "gate_bites": true,
+   "asserted": true
+  },
+  {
+   "mutation": "domain widened 1%",
+   "bound_ratio": 464052415351.9447,
+   "gate_bites": true,
+   "asserted": true
+  },
+  {
+   "mutation": "NO clamp (extrapolating)",
+   "bound_ratio": 92810483070388.12,
+   "gate_bites": true,
+   "asserted": true
+  },
+  {
+   "mutation": "coefficient x(1+1e-12)",
+   "bound_ratio": 45.249013140255656,
+   "gate_bites": true,
+   "asserted": true
+  },
+  {
+   "mutation": "coefficient +1 ULP (sub-bound)",
+   "bound_ratio": 0.005343530129930994,
+   "gate_bites": false,
+   "asserted": false
+  }
+ ],
+ "sensitivity_floor_relative_coeff_error": 1e-13,
+ "incumbent_ood_census_archive_weights": {
+  "keybo-lsb": {
+   "n_ood": 0,
+   "gauges": []
+  },
+  "lsb-sib": {
+   "n_ood": 1,
+   "gauges": [
+    "oxey-style"
+   ]
+  },
+  "archive-1843": {
+   "n_ood": 2,
+   "gauges": [
+    "redir",
+    "oxey-style"
+   ]
+  },
+  "archive-1846": {
+   "n_ood": 1,
+   "gauges": [
+    "oxey-style"
+   ]
+  },
+  "keybo-lsb+lm": {
+   "n_ood": 0,
+   "gauges": []
+  },
+  "qwerty30m": {
+   "n_ood": 14,
+   "gauges": [
+    "sfb",
+    "sfs",
+    "sfb-dist",
+    "sfs-dist",
+    "lsb",
+    "lsb-dist",
+    "alt",
+    "roll",
+    "sr-roll",
+    "redir",
+    "scissor",
+    "imbalance",
+    "oxey-style",
+    "comfort"
+   ]
+  },
+  "graphite": {
+   "n_ood": 3,
+   "gauges": [
+    "scissor",
+    "oxey-style",
+    "comfort"
+   ]
+  },
+  "semimak": {
+   "n_ood": 6,
+   "gauges": [
+    "sfb",
+    "sfb-dist",
+    "sfs-dist",
+    "redir",
+    "scissor",
+    "imbalance"
+   ]
+  },
+  "flagship-c3": {
+   "n_ood": 1,
+   "gauges": [
+    "oxey-style"
+   ]
+  },
+  "armA": {
+   "n_ood": 6,
+   "gauges": [
+    "sfb",
+    "sfb-dist",
+    "sfs-dist",
+    "imbalance",
+    "oxey-style",
+    "comfort"
+   ]
+  },
+  "armB": {
+   "n_ood": 0,
+   "gauges": []
+  },
+  "armC": {
+   "n_ood": 4,
+   "gauges": [
+    "sfs",
+    "sfs-dist",
+    "oxey-style",
+    "comfort"
+   ]
+  },
+  "armD": {
+   "n_ood": 9,
+   "gauges": [
+    "sfb",
+    "sfb-dist",
+    "alt",
+    "roll",
+    "sr-roll",
+    "scissor",
+    "imbalance",
+    "oxey-style",
+    "comfort"
+   ]
+  }
+ },
+ "modelled_only": "MODELLED ONLY: fitted-surface attribution, not measured typing speed."
+}

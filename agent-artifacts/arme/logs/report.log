@@ -1,0 +1,96 @@
+judging 14 layouts: ['champ-archive', 'champ-domain', 'champ-evidence', 'champ-baseline', 'champ-constrained', 'keybo-lsb', 'lsb-sib', 'archive-1843', 'archive-1846', 'keybo-lsb+lm', 'flagship-c3', 'qwerty30m', 'graphite', 'semimak']
+computing paired resolution (loads 6 models, keeps seed tables) ...
+deriving corpus-matched ceilings + normalized floors ...
+running keybo analyze --json on all layouts ...
+building dominance axes ...
+checking the clamp BINDS on arm E's champion ...
+  clamp binds on all 14 gauges (worst |reward outside| = 0.000e+00)
+building an independent perturbation pool for the in-band rank test ...
+
+==============================================================================================================================
+ARM E board — corpus blend-v1 (production default), .native frame, 90 WPM. MODELLED ONLY.
+layout           ARCH clamp r400 clamp r400 extr   ms/char vs best inc  normfloor ood_A ood_R  dom?
+------------------------------------------------------------------------------------------------------------------------------
+champ-archive       -2.6902   -18.4729  -37.0958  258.1803     +3.5495   0.398631     6     9    no
+champ-domain        -0.1375   -23.3157  -23.5812  269.2762    +14.6455  -0.563179     9     3    no
+champ-evidence      -1.2976   -18.6413  -45.4363  256.8466     +2.2158   0.583619     6    10    no
+champ-baseline      -0.2324   -18.5790  -41.3178  253.9006     -0.7302   0.600450     0    10    no
+champ-constrained    -1.5063   -18.5202  -45.0664  256.0220     +1.3912   0.568914     4    10    no
+keybo-lsb           -1.1902   -17.8939  -37.4618  254.6307     +0.0000   0.726952     0     9      
+lsb-sib             -1.8638   -18.4986  -37.5827  254.7058     +0.0750   0.739914     1     9      
+archive-1843        -1.3652   -18.3161  -38.9624  254.8436     +0.2129   0.744198     2     9      
+archive-1846        -1.2961   -18.3966  -39.1339  254.7961     +0.1653   0.745186     1     9      
+keybo-lsb+lm        -0.9206   -17.8939  -38.3090  254.6847     +0.0539   0.730176     0     9      
+flagship-c3         -1.5899   -18.5402  -38.9980  254.9761     +0.3454   0.745096     1     9      
+qwerty30m            1.9434    -6.9764   -6.9764  264.1389     +9.5082   0.000000    14     0      
+graphite            -1.8973   -18.5975  -37.2531  258.1696     +3.5388   0.601021     3     8      
+semimak             -1.8358   -18.5026  -36.7063  257.3915     +2.7608   0.551121     6     8      
+------------------------------------------------------------------------------------------------------------------------------
+⚠ FOUR DIFFERENT RULERS. arm E optimized ARCH-clamp; arm D r400-clamp; arms A/C
+  r400-extrap. Cross-arm comparison of any single evidence column is meaningless.
+  ood_A = out-of-domain count vs the ARCHIVE domains; ood_R = vs random400's.
+best incumbent on ms/char: keybo-lsb at 254.6307
+
+PAIRED resolution over the NEAR-OPTIMAL pool (n=11: champ-archive, champ-domain, champ-evidence, champ-baseline, champ-constrained, keybo-lsb, lsb-sib, archive-1843, archive-1846, keybo-lsb+lm, flagship-c3):
+  median 0.1406 | max (conservative) 0.4964 | p95 0.4387 ms/char
+  UNPAIRED floor 0.4628 is the WRONG ruler (trap 37)
+  SS shares: layout 99.55% | seed 0.37% | residual 0.08%
+  (full pool n=14 incl. qwerty/graphite/semimak: median 0.1581, seed 0.39% of SS — a DIFFERENT pool, hence a different floor)
+
+DEFICIT RECOVERY (arm A's +2.9460 ms/char deficit vs arm B):
+  arm C recovered 28.0%  |  arm D recovered -421.9%  |  arm E recovered -45.3%
+  arm E vs arm B      +4.2797 ms/char = 8.62x the conservative paired floor
+  arm E vs keybo-lsb    +3.5495
+  arm E vs arm D      -11.0959
+  arm E vs qwerty30m  -5.9586
+  PRE-REGISTERED OUTCOME: ['E3_at_or_worse_than_armA']
+    E1 (<=254.63, inside incumbent band): False
+    E2 (254.63-256.9):                    False
+    E3 (>=256.9):                         True
+    worse than qwerty30m:                 False
+
+CLAMP BINDING (P6): all_bind=True, worst |reward outside| = 0.000e+00
+OUT-OF-DOMAIN (vs the ARCHIVE domains): arm E 6/14; 6 of those clamp to that gauge's OWN optimum; 9 of 14 archive curves are minimized AT an edge
+DEGENERACY in arm E's top50: 50 distinct fitness values, largest plateau 1 layouts, spread 0.024164
+
+PAIRWISE: 40 of 55 champion/incumbent pairs resolve at the conservative floor 0.4964
+
+PLATEAU CENSUS (final population, epoch 49):
+  2560 slots -> 1698 distinct layouts -> 1698 distinct objective values (1.0000 per layout)
+  0 plateaus, largest 1 layouts; champion tied with 0 others
+
+IN-BAND RANK TEST (n=3600 incumbent perturbations, chosen by NEITHER objective; instrument control rho=1.0000):
+  band             n  ARCH clamp  ARCH extr  r400 clamp  r400 extr
+  all           3600     +0.7272    -0.1213     +0.5586    +0.9017
+  <=257.0       1010     +0.4195    +0.1111     +0.1237    +0.5966
+  <=256.0        590     +0.2568    +0.1842     +0.0416    +0.3184
+  <=255.5        305     +0.1609    +0.1413     -0.0692    +0.1293
+  <=255.0        104     +0.0580    +0.0100     +0.0274    +0.0809
+  (want +1 if the weights inform about speed; <=0 means a good score is NOT
+   evidence of a fast layout, so the champion must be read on ms/char alone.
+   ARCH clamp is ARM E's own ruler — that is the column arm E rests on.)
+  P16, arm E's OWN final population (n=2560): rho(ARCH clamp, ms/char) = +0.3214
+    ms/char 256.8992..270.0634; best-ev layout is 258.1803 ms/char while the FASTEST scores -2.4660 (min -2.6902)
+
+CHAMPION DRIVERS (P14): largest attribution = sfs-dist at 22.48%
+  comfort 4.0015 in [3.25194493025, 3.83714651302]: pinned_hi=True pinned_lo=False at_own_optimum=True (11.16% of attribution)
+  6 of 14 gauges sit at their own clamped optimum
+
+CHAMPION MOVES vs keybo-lsb: 7 mechanism-right, 7 mechanism-WRONG (40.84% of attribution moved the wrong way)
+  sfs-dist        8.9906 ->    7.3181  down sgn+1  right (22.48%)
+  oxey-style     -3.2497 ->   -0.9924  up   sgn+1  WRONG (12.15%)
+  comfort         3.7109 ->    4.0015  up   sgn+1  WRONG (11.16%)
+  sfs             7.6488 ->    6.1922  down sgn+1  right (9.19%)
+  sr-roll        12.6921 ->   15.1349  up   sgn-1  right (8.62%)
+  sfb             1.6231 ->    1.4014  down sgn+1  right (6.26%)
+  sfb-dist        1.9031 ->    1.6459  down sgn+1  right (5.12%)
+  imbalance       2.0779 ->    2.4345  up   sgn+1  WRONG (4.26%)
+  redir           3.3584 ->    6.1491  up   sgn+1  WRONG (4.14%)
+  scissor         0.1429 ->    0.0548  down sgn+1  right (3.90%)
+  lsb             0.9219 ->    1.6422  up   sgn+1  WRONG (3.71%)
+  roll           41.6249 ->   42.7950  up   sgn-1  right (3.58%)
+  alt            45.1561 ->   41.4455  down sgn-1  WRONG (3.53%)
+  lsb-dist        1.8960 ->    3.5100  up   sgn+1  WRONG (1.90%)
+
+WROTE /local/home/zegertho/agent/state/arme/artifacts/judgement.json
+key check: all 15 cited top-level keys present

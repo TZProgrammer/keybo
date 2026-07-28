@@ -1,0 +1,66 @@
+weights: source=COMMUNITY_BASE frame=native corpus=blend-v1 pool=archive-400 n=400
+
+gauge        form       domain                       A/bnd  A ulp  B bitwise   C sat   D/bnd  D order  s ulp    s#
+sfb          hinge      [   1.5249,    3.0644]   0.005     22       True    True   0.001     True      5     2
+sfs          hinge      [   6.2640,    9.5112]   0.005     32       True    True   0.000     True     23     2
+sfb-dist     hinge      [   1.7677,    3.7523]   0.016     20       True    True   0.000     True      6     2
+sfs-dist     hinge      [   7.4428,   11.9722]   0.005     12       True    True   0.001     True      3     2
+lsb          hinge      [   0.4769,    2.3568]   0.017      1       True    True   0.013     True      0     1
+lsb-dist     hinge      [   1.0372,    4.9971]   0.016      3       True    True   0.005     True      1     2
+alt          hinge      [  35.1279,   45.7982]   0.013      7       True    True   0.000     True      2     2
+roll         hinge      [  39.2728,   46.1020]   0.005    256       True    True   0.000     True     27     2
+sr-roll      quadratic  [  11.3865,   18.0617]   0.014    512       True    True   0.003     True      0     1
+redir        hinge      [   2.3512,    6.2402]   0.011     64       True    True   0.001     True      0     1
+scissor      quadratic  [   0.0554,    0.4092]   0.011      4       True    True   0.004     True      0     1
+imbalance    hinge      [   1.1085,    6.4193]   0.012    256       True    True   0.003     True      0     1
+oxey-style   hinge      [  -5.2636,   17.4515]   0.012      1       True    True   0.007     True      0     1
+comfort      hinge      [   3.2519,    3.8371]   0.006     10       True    True   0.002     True      0     1
+
+A worst |price_many - price| / rounding bound  = 0.017 (must be <= 1.0)
+D worst |price_many(CLAMP) - armD| / bound     = 0.013 (must be <= 1.0)
+  worst shape-dispatch deviation / bound = 0.004
+  (that last number is the numpy matmul shape-dispatch artifact: `price` evaluates a
+   length-1 array and `price_many` length n, so `_design @ coeffs` takes a different
+   BLAS path. It is why 'pin at EXACT float equality' is unsatisfiable against
+   price_many — it is not bit-equal to itself. Arm D's elementwise ClampedCurve is
+   0 ULP across all shapes. Recorded as a finding; check F bounds what it can affect.)
+
+corpus dir: /tmp/arme/data/corpus/blend-v1
+
+E: search objective == sum(price_many(CLAMP)) BITWISE on 2061 layouts; clamp changes the total on 2058/2061
+   max|price_many(EXTRAP) - evobj total| = 1.421e-14
+F: over 2061 layouts spanning 4.0811 score units, price_many vs armD hand-rolled:
+   worst |diff| 1.332e-15 (16 ULP) = 3.264e-16 of the score range; same argmin True; identical full ordering True
+   search accept threshold 1e-12 is 7.51e+02x larger, so no accept/reject decision can turn on it
+
+out-of-domain census under ARCHIVE weights (the premise arm E rests on):
+  keybo-lsb         0/14  []
+  lsb-sib           1/14  ['oxey-style']
+  archive-1843      2/14  ['redir', 'oxey-style']
+  archive-1846      1/14  ['oxey-style']
+  keybo-lsb+lm      0/14  []
+  qwerty30m        14/14  ['sfb', 'sfs', 'sfb-dist', 'sfs-dist', 'lsb', 'lsb-dist', 'alt', 'roll', 'sr-roll', 'redir', 'scissor', 'imbalance', 'oxey-style', 'comfort']
+  graphite          3/14  ['scissor', 'oxey-style', 'comfort']
+  semimak           6/14  ['sfb', 'sfb-dist', 'sfs-dist', 'redir', 'scissor', 'imbalance']
+  flagship-c3       1/14  ['oxey-style']
+  armA              6/14  ['sfb', 'sfb-dist', 'sfs-dist', 'imbalance', 'oxey-style', 'comfort']
+  armB              0/14  []
+  armC              4/14  ['sfs', 'sfs-dist', 'oxey-style', 'comfort']
+  armD              9/14  ['sfb', 'sfb-dist', 'alt', 'roll', 'sr-roll', 'scissor', 'imbalance', 'oxey-style', 'comfort']
+
+G: mutation control — does this gate actually bite, and how small a defect can it see?
+   knot shifted 1e-6                deviation/bound =    1.317e+08  bites: True
+   domain widened 1%                deviation/bound =    4.641e+11  bites: True
+   NO clamp (extrapolating)         deviation/bound =    9.281e+13  bites: True
+   coefficient x(1+1e-12)           deviation/bound =    4.525e+01  bites: True
+   coefficient +1 ULP (sub-bound)   deviation/bound =    5.344e-03  bites: False   <-- documented blind spot, not asserted
+   SENSITIVITY FLOOR: catches a relative coefficient error >= 1e-13; anything below that is under the rounding bound and undetectable in principle.
+
+GATE 1: 113 checks, 0 failures — PASS
+
+---TIMING---
+command: uv run --no-sync python /local/home/zegertho/agent/state/arme/artifacts/drivers/gate1_policy.py
+elapsed_ms: 3945
+exit_code: 0
+timed_out: false
+---/TIMING---

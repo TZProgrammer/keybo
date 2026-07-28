@@ -1,0 +1,66 @@
+{
+ "scratch": "/tmp/arme-gate2-j3taut8x",
+ "budget": 40000,
+ "islands": 4,
+ "epochs": 2,
+ "seed": 20260728,
+ "positive_control_armA": {
+  "champion": {
+   "layout": "ugf.ybplcmreioahdntskz,j'wqxv-",
+   "fitness": -43.567599284396664
+  },
+  "frozen_champion": {
+   "layout": "ugf.ybplcmreioahdntskz,j'wqxv-",
+   "fitness": -43.567599284396664
+  },
+  "unique_evals": 45181,
+  "frozen_unique_evals": 45181
+ },
+ "positive_control_armD": {
+  "champion": {
+   "layout": "'.nvwpu-odltrhcabxie,sgzkqmjfy",
+   "fitness": -22.203251644142952
+  },
+  "frozen_champion": {
+   "layout": "'.nvwpu-odltrhcabxie,sgzkqmjfy",
+   "fitness": -22.203251644142952
+  },
+  "unique_evals": 46072,
+  "frozen_unique_evals": 46072
+ },
+ "armE_objective": {
+  "type": "ValidatedClampedEval",
+  "policy": "clamp",
+  "pool": "archive-400",
+  "clamp_vs_extrap_max_gap": 6.561704621033781
+ },
+ "one_variable": {
+  "gauges_bitwise_identical": true,
+  "armD_pool": "random-c30m-400",
+  "armE_pool": "archive-400",
+  "score_max_gap": 17.1005035093551
+ },
+ "P6_clamp_binds": {
+  "worst_reward_outside": 0.0,
+  "n_pairs": 56,
+  "worst_reassociation_deviation": 2.220446049250313e-16,
+  "n_pushes": 56
+ },
+ "resume": {
+  "killed_after_epoch": 1,
+  "straight": {
+   "layout": "qjvgu-wz'xtiordphenasby.,mfklc",
+   "fitness": -1.433529684723406
+  },
+  "resumed": {
+   "layout": "qjvgu-wz'xtiordphenasby.,mfklc",
+   "fitness": -1.433529684723406
+  },
+  "unique_straight": 42605,
+  "unique_resumed": 42605
+ },
+ "n_checks": 85,
+ "n_failures": 0,
+ "failures": [],
+ "modelled_only": "MODELLED ONLY: fitted-surface attribution, not measured typing speed."
+}

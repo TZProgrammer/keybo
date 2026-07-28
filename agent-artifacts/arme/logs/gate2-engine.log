@@ -1,0 +1,102 @@
+scratch /tmp/arme-gate2-j3taut8x
+
+1. POSITIVE CONTROL, ARM A — search_arme.py --arm evidence vs the FROZEN search.py
+  ok    champion identical: ugf.ybplcmreioahdntskz,j'wqxv- vs ugf.ybplcmreioahdntskz,j'wqxv-
+  ok    fitness identical: -43.567599284396664 vs -43.567599284396664
+  ok    unique_evals identical: 45181 vs 45181
+  ok    top50 order identical
+  ok    arm A labelled extrapolate, got 'extrapolate'
+
+2. POSITIVE CONTROL, ARM D — search_arme.py --arm domain vs FROZEN search_armd.py
+  ok    champion identical: '.nvwpu-odltrhcabxie,sgzkqmjfy vs '.nvwpu-odltrhcabxie,sgzkqmjfy
+  ok    fitness identical: -22.203251644142952 vs -22.203251644142952
+  ok    unique_evals identical: 46072 vs 46072
+  ok    top50 order identical
+
+3. ARM E's WORKER OBJECTIVE
+  ok    worker objective is ValidatedClampedEval: ValidatedClampedEval
+  ok    policy is 'clamp'
+  ok    arm E's weights json is /local/home/zegertho/agent/state/evidence-scorer/artifacts/arm-archive400-native.json
+  ok    loaded weights pool is 'archive-400'
+  ok    loaded weights frame is 'native'
+  ok    corpus is /tmp/arme/data/corpus/blend-v1
+  ok    arm E's search objective == the independently computed CLAMPED archive total
+  ok    ...and the clamp is not inert: max|clamp - extrap| = 6.5617
+
+4. ARM E vs ARM D — identical gauges (one variable changed), different score
+  ok    arm D worker is ClampedEval: ClampedEval
+  ok    every gauge value is BITWISE identical between the two workers (same corpus, kernels and denominators — so only the curves differ)
+  ok    ...while the scores differ (max gap 17.1005)
+  ok    arm D's pool is 'random-c30m-400'
+
+5. P6 (the abort condition) — measured through arm E's own search objective
+  ok    (a) the total moves by the edge-price delta and nothing else: worst re-association deviation 2.220e-16 over 56 pushes (tolerance 1e-9)
+  ok    P6 sfb: 50 domain-widths past the ceiling buys EXACTLY nothing
+  ok    P6 sfb: 1000 domain-widths past the ceiling buys EXACTLY nothing
+  ok    P6 sfb: 50 domain-widths past the floor buys EXACTLY nothing
+  ok    P6 sfb: 1000 domain-widths past the floor buys EXACTLY nothing
+  ok    P6 sfs: 50 domain-widths past the ceiling buys EXACTLY nothing
+  ok    P6 sfs: 1000 domain-widths past the ceiling buys EXACTLY nothing
+  ok    P6 sfs: 50 domain-widths past the floor buys EXACTLY nothing
+  ok    P6 sfs: 1000 domain-widths past the floor buys EXACTLY nothing
+  ok    P6 sfb-dist: 50 domain-widths past the ceiling buys EXACTLY nothing
+  ok    P6 sfb-dist: 1000 domain-widths past the ceiling buys EXACTLY nothing
+  ok    P6 sfb-dist: 50 domain-widths past the floor buys EXACTLY nothing
+  ok    P6 sfb-dist: 1000 domain-widths past the floor buys EXACTLY nothing
+  ok    P6 sfs-dist: 50 domain-widths past the ceiling buys EXACTLY nothing
+  ok    P6 sfs-dist: 1000 domain-widths past the ceiling buys EXACTLY nothing
+  ok    P6 sfs-dist: 50 domain-widths past the floor buys EXACTLY nothing
+  ok    P6 sfs-dist: 1000 domain-widths past the floor buys EXACTLY nothing
+  ok    P6 lsb: 50 domain-widths past the ceiling buys EXACTLY nothing
+  ok    P6 lsb: 1000 domain-widths past the ceiling buys EXACTLY nothing
+  ok    P6 lsb: 50 domain-widths past the floor buys EXACTLY nothing
+  ok    P6 lsb: 1000 domain-widths past the floor buys EXACTLY nothing
+  ok    P6 lsb-dist: 50 domain-widths past the ceiling buys EXACTLY nothing
+  ok    P6 lsb-dist: 1000 domain-widths past the ceiling buys EXACTLY nothing
+  ok    P6 lsb-dist: 50 domain-widths past the floor buys EXACTLY nothing
+  ok    P6 lsb-dist: 1000 domain-widths past the floor buys EXACTLY nothing
+  ok    P6 alt: 50 domain-widths past the ceiling buys EXACTLY nothing
+  ok    P6 alt: 1000 domain-widths past the ceiling buys EXACTLY nothing
+  ok    P6 alt: 50 domain-widths past the floor buys EXACTLY nothing
+  ok    P6 alt: 1000 domain-widths past the floor buys EXACTLY nothing
+  ok    P6 roll: 50 domain-widths past the ceiling buys EXACTLY nothing
+  ok    P6 roll: 1000 domain-widths past the ceiling buys EXACTLY nothing
+  ok    P6 roll: 50 domain-widths past the floor buys EXACTLY nothing
+  ok    P6 roll: 1000 domain-widths past the floor buys EXACTLY nothing
+  ok    P6 sr-roll: 50 domain-widths past the ceiling buys EXACTLY nothing
+  ok    P6 sr-roll: 1000 domain-widths past the ceiling buys EXACTLY nothing
+  ok    P6 sr-roll: 50 domain-widths past the floor buys EXACTLY nothing
+  ok    P6 sr-roll: 1000 domain-widths past the floor buys EXACTLY nothing
+  ok    P6 redir: 50 domain-widths past the ceiling buys EXACTLY nothing
+  ok    P6 redir: 1000 domain-widths past the ceiling buys EXACTLY nothing
+  ok    P6 redir: 50 domain-widths past the floor buys EXACTLY nothing
+  ok    P6 redir: 1000 domain-widths past the floor buys EXACTLY nothing
+  ok    P6 scissor: 50 domain-widths past the ceiling buys EXACTLY nothing
+  ok    P6 scissor: 1000 domain-widths past the ceiling buys EXACTLY nothing
+  ok    P6 scissor: 50 domain-widths past the floor buys EXACTLY nothing
+  ok    P6 scissor: 1000 domain-widths past the floor buys EXACTLY nothing
+  ok    P6 imbalance: 50 domain-widths past the ceiling buys EXACTLY nothing
+  ok    P6 imbalance: 1000 domain-widths past the ceiling buys EXACTLY nothing
+  ok    P6 imbalance: 50 domain-widths past the floor buys EXACTLY nothing
+  ok    P6 imbalance: 1000 domain-widths past the floor buys EXACTLY nothing
+  ok    P6 oxey-style: 50 domain-widths past the ceiling buys EXACTLY nothing
+  ok    P6 oxey-style: 1000 domain-widths past the ceiling buys EXACTLY nothing
+  ok    P6 oxey-style: 50 domain-widths past the floor buys EXACTLY nothing
+  ok    P6 oxey-style: 1000 domain-widths past the floor buys EXACTLY nothing
+  ok    P6 comfort: 50 domain-widths past the ceiling buys EXACTLY nothing
+  ok    P6 comfort: 1000 domain-widths past the ceiling buys EXACTLY nothing
+  ok    P6 comfort: 50 domain-widths past the floor buys EXACTLY nothing
+  ok    P6 comfort: 1000 domain-widths past the floor buys EXACTLY nothing
+  ok    P6 HEADLINE: worst |reward for going N domain-widths outside| = 0.000e+00 over 56 pairs on all 14 gauges — must be exactly 0.000e+00
+     worst |reward outside| = 0.000e+00 over 56 pairs, all 14 gauges
+
+6. CHECKPOINT/RESUME BIT-EXACTNESS (trap 36)
+     (killed after epoch 1; resuming)
+  ok    champion identical: qjvgu-wz'xtiordphenasby.,mfklc vs qjvgu-wz'xtiordphenasby.,mfklc
+  ok    fitness identical: -1.433529684723406 vs -1.433529684723406
+  ok    unique_evals identical: 42605 vs 42605 (trap 36: verdicts matching is NOT enough, the COUNT has to match)
+  ok    top50 order identical
+  ok    arm E labelled clamp, got 'clamp'
+  ok    arm E labelled archive-400, got 'archive-400'
+
+GATE 2: 85 checks, 0 failures — PASS
