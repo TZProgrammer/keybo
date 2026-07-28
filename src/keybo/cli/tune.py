@@ -36,6 +36,14 @@ def add_arguments(parser: argparse.ArgumentParser) -> None:
         default=[0],
         help="Training seeds per candidate for --objective lolo",
     )
+    parser.add_argument(
+        "--allow-unevaluated-objective",
+        action="store_true",
+        help="Proceed even if NO fold yields a finite rho/ceiling, in which case every "
+        "candidate ties at -inf and the tau gate alone picks the winner. Off by default: "
+        "the resulting params file is indistinguishable from a real one, so the default is "
+        "to refuse. Use only when you want the tau-gated result knowingly.",
+    )
 
 
 def run(args: argparse.Namespace) -> int:
@@ -55,7 +63,7 @@ def run(args: argparse.Namespace) -> int:
     if args.objective == "lolo":
         import numpy as np
 
-        from keybo.training.tune import tune_lolo
+        from keybo.training.tune import ObjectiveNotEvaluated, tune_lolo
 
         rng = np.random.default_rng(args.seed)
         candidates = [
@@ -68,9 +76,19 @@ def run(args: argparse.Namespace) -> int:
             }
             for _ in range(args.n_iter)
         ]
-        best, leaderboard = tune_lolo(
-            rows, candidates=candidates, seeds=args.lolo_seeds, ngram=args.ngram
-        )
+        try:
+            best, leaderboard = tune_lolo(
+                rows,
+                candidates=candidates,
+                seeds=args.lolo_seeds,
+                ngram=args.ngram,
+                allow_unevaluated_objective=args.allow_unevaluated_objective,
+            )
+        except ObjectiveNotEvaluated as exc:
+            # Refuse BEFORE writing --output: a params file from an unevaluated objective is
+            # indistinguishable from a real one once on disk, and this command's own final
+            # line calls it "Best hyperparameters".
+            raise SystemExit(f"keybo tune --objective lolo: {exc}") from exc
         for params, score in leaderboard[:5]:
             print(f"  rho/ceiling {score:+.4f}  {params}")
     else:
