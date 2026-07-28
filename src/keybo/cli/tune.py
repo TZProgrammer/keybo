@@ -37,6 +37,21 @@ def add_arguments(parser: argparse.ArgumentParser) -> None:
         help="Training seeds per candidate for --objective lolo",
     )
     parser.add_argument(
+        "--min-margin",
+        type=float,
+        default=None,
+        help="Smallest RELATIVE margin a lolo selection must clear to be reported as a "
+        "winner (default: keybo.training.tune.LOLO_MIN_MARGIN, derived from the ceiling "
+        "reweighting bound). 0 disables the check.",
+    )
+    parser.add_argument(
+        "--allow-unresolvable-margin",
+        action="store_true",
+        help="Warn instead of refusing when the top two candidates are closer than "
+        "--min-margin. Off by default: a champion chosen inside the resolvable margin is "
+        "indistinguishable from a real one in the output.",
+    )
+    parser.add_argument(
         "--allow-unevaluated-objective",
         action="store_true",
         help="Proceed even if NO fold yields a finite rho/ceiling, in which case every "
@@ -63,7 +78,12 @@ def run(args: argparse.Namespace) -> int:
     if args.objective == "lolo":
         import numpy as np
 
-        from keybo.training.tune import ObjectiveNotEvaluated, tune_lolo
+        from keybo.training.tune import (
+            LOLO_MIN_MARGIN,
+            ObjectiveNotEvaluated,
+            tune_lolo,
+        )
+        from keybo.verdicts import MarginTooSmall
 
         rng = np.random.default_rng(args.seed)
         candidates = [
@@ -83,8 +103,10 @@ def run(args: argparse.Namespace) -> int:
                 seeds=args.lolo_seeds,
                 ngram=args.ngram,
                 allow_unevaluated_objective=args.allow_unevaluated_objective,
+                min_margin=(LOLO_MIN_MARGIN if args.min_margin is None else args.min_margin),
+                allow_unresolvable_margin=args.allow_unresolvable_margin,
             )
-        except ObjectiveNotEvaluated as exc:
+        except (ObjectiveNotEvaluated, MarginTooSmall) as exc:
             # Refuse BEFORE writing --output: a params file from an unevaluated objective is
             # indistinguishable from a real one once on disk, and this command's own final
             # line calls it "Best hyperparameters".

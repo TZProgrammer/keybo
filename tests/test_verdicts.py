@@ -14,10 +14,13 @@ import pytest
 
 from keybo.verdicts import (
     EmptyComparison,
+    MarginTooSmall,
     all_distinct,
     argmax_finite,
     compare_finite,
     require_finite,
+    require_margin,
+    reweighting_margin_bound,
 )
 
 
@@ -100,3 +103,69 @@ def test_a_real_no_difference_result_is_NOT_an_error() -> None:
     a, b = compare_finite([1.0, 2.0], [1.0, 2.0], "before vs after")
     assert a == b, "identical finite operands are a legitimate null result"
     assert math.isclose(sum(a), sum(b))
+
+
+# --- the minimum-margin rule -------------------------------------------------------------
+
+
+def test_the_bound_is_the_weights_relative_half_range_in_closed_form() -> None:
+    """Derived, not sampled — so the shipped constant has a justification, not a provenance."""
+    # Spearman-Brown weight is (1+c)/2 per fold; this ledger's ceilings span [0.709, 0.815].
+    ledger = reweighting_margin_bound([(1 + c) / 2 for c in (0.709, 0.815)])
+    assert ledger == pytest.approx(0.0301, abs=1e-4)
+    # a wider assumed ceiling range gives a strictly larger bound
+    wide = reweighting_margin_bound([(1 + c) / 2 for c in (0.50, 0.95)])
+    assert wide == pytest.approx(0.1304, abs=1e-4)
+    assert wide > ledger
+    # identical weights cannot move anything
+    assert reweighting_margin_bound([0.9, 0.9]) == 0.0
+
+
+def test_the_bound_rejects_nonpositive_weights() -> None:
+    with pytest.raises(EmptyComparison):
+        reweighting_margin_bound([0.0, 0.9])
+    with pytest.raises(EmptyComparison):
+        reweighting_margin_bound([0.5, float("nan")])
+
+
+def test_require_margin_passes_a_clear_win_and_refuses_a_narrow_one() -> None:
+    assert require_margin([0.90, 0.50, 0.10], "sel", min_margin=0.03) == 0
+    with pytest.raises(MarginTooSmall) as exc:
+        require_margin([0.900, 0.899], "lolo selection", min_margin=0.03)
+    msg = str(exc.value)
+    assert "lolo selection" in msg
+    assert "do not read it as a winner" in msg
+
+
+def test_require_margin_is_RELATIVE_by_default_and_absolute_on_request() -> None:
+    # gap 0.02 on a winner of 1.0 -> relative 2%, below a 3% bar
+    with pytest.raises(MarginTooSmall):
+        require_margin([1.00, 0.98], "sel", min_margin=0.03)
+    # the same gap passes an ABSOLUTE 0.01 bar
+    assert require_margin([1.00, 0.98], "sel", min_margin=0.01, relative=False) == 0
+    # and relative scales with magnitude: the same 0.02 gap on a winner of 0.10 is 20%
+    assert require_margin([0.10, 0.08], "sel", min_margin=0.03) == 0
+
+
+def test_require_margin_inherits_the_finite_guard() -> None:
+    with pytest.raises(EmptyComparison):
+        require_margin([float("-inf")] * 2, "sel", min_margin=0.03)
+
+
+def test_a_single_candidate_has_no_margin_to_check() -> None:
+    assert require_margin([0.5], "sel", min_margin=0.99) == 0
+
+
+def test_min_margin_zero_disables_the_gate_and_negatives_are_rejected() -> None:
+    assert require_margin([0.9000, 0.8999], "sel", min_margin=0.0) == 0
+    with pytest.raises(ValueError):
+        require_margin([0.9, 0.5], "sel", min_margin=-0.1)
+
+
+def test_the_documented_shipped_margin_CLEARS_the_shipped_threshold() -> None:
+    """Why this gate guards future selections rather than retracting a past one."""
+    from keybo.training.tune import LOLO_MIN_MARGIN
+
+    # tune_lolo's docstring: depth-5 lost ~0.06 rho/ceiling to depth-3, on scores near 0.93
+    assert require_margin([0.93, 0.87], "shipped", min_margin=LOLO_MIN_MARGIN) == 0
+    assert LOLO_MIN_MARGIN < 0.06 / 0.93

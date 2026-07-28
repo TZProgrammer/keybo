@@ -751,10 +751,27 @@ def test_validate_rejects_mismatched_ngram_length():
 # --- C1: tune retargeted at the harness --------------------------------------------------
 
 
-def test_tune_lolo_prefers_transfer_over_memorization():
-    """The LOLO tuner must rank a shallow (transfer-friendly) candidate above a deep
-    (memorization-prone) one in the lawful world — the exact preference the CV-MAE tuner
-    gets wrong. Small n keeps it fast; candidates passed explicitly for determinism."""
+def test_tune_lolo_scores_both_depths_and_this_fixture_CANNOT_separate_them():
+    """The LOLO tuner's mechanics, and an honest statement of what this fixture can show.
+
+    RENAMED from ``test_tune_lolo_prefers_transfer_over_memorization`` (2026-07-28), because
+    it never demonstrated that preference. Measured: this fixture is geometry-lawful with
+    sigma=4 noise, so BOTH depth-2 and depth-8 reach rho == 1.0 against a ceiling of 1.0 on
+    every fold — ``rho_frac_ceiling`` saturates at exactly 1.000000 for both, and the gap is
+    0.000000. The old ``leaderboard[0][1] >= leaderboard[1][1]`` assertion is satisfied by a
+    TIE, so "shallow ranks above deep" was a stable-sort artifact, not a preference — the same
+    tie-credit defect found in ``readjudicate.py`` and ``board_iweb_vs_blend.py``.
+
+    So this test now asserts only what it can establish (both candidates score, finitely, and
+    the leaderboard is ordered), and asserts the tie EXPLICITLY so a future fixture change
+    that creates real separation shows up here rather than passing silently. The
+    minimum-margin gate is disabled for the same reason it would otherwise fire: there is no
+    margin to resolve.
+
+    A real transfer-over-memorization test needs a fixture where the deep model can actually
+    overfit — unlawful per-layout idiosyncrasy the shallow model cannot absorb. That fixture
+    does not exist yet; writing it is the open work this rename exposes.
+    """
     from keybo.training.tune import tune_lolo
 
     rows = _lawful_rows(n_pids=8, samples_per_pid=6)
@@ -771,12 +788,16 @@ def test_tune_lolo_prefers_transfer_over_memorization():
         wpm_hi=100,
         bucket_width=40,
         min_cell_samples=4,
+        min_margin=0.0,  # nothing to resolve: see the docstring
     )
     assert best in candidates
     # Leaderboard is (params, score) sorted best-first, scores finite.
     assert len(leaderboard) == 2
     assert leaderboard[0][1] >= leaderboard[1][1]
     assert all(np.isfinite(s) for _, s in leaderboard)
+    # The tie is the measured fact, pinned so a change in either direction is visible.
+    assert leaderboard[0][1] == pytest.approx(leaderboard[1][1], abs=1e-12)
+    assert leaderboard[0][1] == pytest.approx(1.0, abs=1e-12), "saturated ceiling"
 
 
 # --- magnitude metrics (user directive: ordering is not enough) --------------------------

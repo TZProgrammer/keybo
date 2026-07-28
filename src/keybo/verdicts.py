@@ -92,6 +92,71 @@ def argmax_finite(scores: Sequence[float], what: str) -> int:
     return best
 
 
+class MarginTooSmall(ValueError):
+    """A winner was selected by less than the margin the scoring rule can actually resolve.
+
+    ``argmax`` answers "which is largest", never "is the difference real". When the score is
+    a mean over folds of ``rho / ceiling``, a change in how the ceiling is computed reweights
+    the folds — so a selection decided by a margin smaller than that reweighting can move is
+    an artifact of the denominator convention, not a measurement.
+    """
+
+
+def reweighting_margin_bound(weights: Iterable[float]) -> float:
+    """Largest RELATIVE shift a per-fold reweighting can induce in a mean-of-ratios score.
+
+    Closed form rather than sampled: if each fold's contribution is scaled by ``w_f``, the
+    achievable relative change in a mean-over-folds is bounded by the weights' relative
+    half-range ``(max - min) / (max + min)`` — attained when the two candidates put their
+    advantage on opposite extremes of the weight range.
+
+    For the Spearman-Brown length correction the weight is ``(1 + c) / 2`` per fold, so pass
+    ``[(1 + c) / 2 for c in ceilings]``. On this ledger's registered ceilings
+    ([0.709, 0.815]) that gives 0.0301, and a 400k-pair random search found no flip at a
+    margin above 0.0056 — i.e. the closed form is the conservative side of the empirical one,
+    which is the direction a guard should err in.
+    """
+    w = require_finite(weights, "reweighting weights")
+    lo, hi = min(w), max(w)
+    if lo <= 0.0:
+        raise EmptyComparison(
+            f"reweighting weights must be positive to bound a ratio shift, got min {lo!r}"
+        )
+    return (hi - lo) / (hi + lo)
+
+
+def require_margin(
+    scores: Sequence[float], what: str, *, min_margin: float, relative: bool = True
+) -> int:
+    """``argmax_finite`` that also refuses when the top two are closer than ``min_margin``.
+
+    ``relative=True`` (default) compares the gap against ``min_margin * |winner|``, matching
+    :func:`reweighting_margin_bound`, which is a relative quantity. Pass ``relative=False``
+    for an absolute threshold in the score's own units.
+
+    Raises :class:`MarginTooSmall` rather than returning a winner, for the same reason
+    ``tune_lolo`` raises rather than tie-breaking: a champion chosen inside the noise floor is
+    indistinguishable from a real one in the output.
+    """
+    if min_margin < 0.0:
+        raise ValueError(f"min_margin must be non-negative, got {min_margin!r}")
+    best = argmax_finite(scores, what)
+    if len(scores) < 2:
+        return best
+    runner_up = max(s for i, s in enumerate(scores) if i != best)
+    gap = float(scores[best]) - float(runner_up)
+    threshold = min_margin * abs(float(scores[best])) if relative else min_margin
+    if gap < threshold:
+        kind = "relative" if relative else "absolute"
+        raise MarginTooSmall(
+            f"{what}: winner beats the runner-up by {gap:.6g}, below the {kind} "
+            f"minimum-resolvable margin {threshold:.6g} (min_margin={min_margin:.6g}). "
+            f"The selection is inside what the scoring rule can resolve — widen the margin, "
+            f"add folds/seeds, or report a tie; do not read it as a winner."
+        )
+    return best
+
+
 def all_distinct(values: Sequence[float], what: str, *, tol: float = 0.0) -> bool:
     """Whether ``values`` are pairwise distinct — the cheap test for a hidden invariant.
 

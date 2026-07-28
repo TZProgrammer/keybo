@@ -18,7 +18,6 @@ import pytest
 
 from keybo.training.validate import spearman_brown, split_half_ceiling
 
-
 # --- the correction itself --------------------------------------------------------------
 
 

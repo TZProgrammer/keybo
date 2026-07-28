@@ -17,6 +17,8 @@ from sklearn.metrics import make_scorer, mean_absolute_error
 from sklearn.model_selection import RandomizedSearchCV
 from xgboost import XGBRegressor
 
+from keybo.verdicts import MarginTooSmall, require_margin
+
 _PARAM_DISTRIBUTIONS = {
     "max_depth": randint(3, 8),
     "learning_rate": uniform(0.005, 0.1),
@@ -57,6 +59,20 @@ def tune_hyperparameters(
     )
     search.fit(X, y)
     return dict(search.best_params_)
+
+
+#: Smallest RELATIVE margin a lolo selection must clear to be reported as a winner.
+#:
+#: Derived, not chosen: the score is a mean over folds of ``rho / ceiling``, so a change in the
+#: ceiling convention reweights each fold by ``(1 + c) / 2``. Over this ledger's registered
+#: ceilings ([0.709, 0.815]) ``reweighting_margin_bound`` gives **0.0301**, and a 400k-pair
+#: random search found no ordering flip at a margin above 0.0056 — so the closed form is the
+#: conservative side of the empirical one. Rounded to 0.03.
+#:
+#: The one documented shipped margin (the depth-5-vs-depth-3 comparison in ``tune_lolo``'s
+#: docstring, ~0.06 rho/ceiling) is 2.0x this, which is why the shipped selection is robust and
+#: this gate is a guard on FUTURE selections rather than a retraction of a past one.
+LOLO_MIN_MARGIN = 0.03
 
 
 class ObjectiveNotEvaluated(RuntimeError):
@@ -110,6 +126,8 @@ def tune_lolo(
     bucket_width: int = 20,
     min_cell_samples: int = 10,
     allow_unevaluated_objective: bool = False,
+    min_margin: float = LOLO_MIN_MARGIN,
+    allow_unresolvable_margin: bool = False,
 ) -> tuple[dict, list[tuple[dict, float]]]:
     """Hyperparameter selection scored by TRANSFER, not fit (backlog C1).
 
@@ -184,4 +202,19 @@ def tune_lolo(
     # BEFORE this point rather than trying to distinguish them from the leaderboard.
     gated = [(p, f if t >= best_tau - 1e-9 else float("-inf")) for p, f, t in results]
     leaderboard = sorted(gated, key=lambda pf: -pf[1])
+
+    # Minimum-margin gate. The score is a mean over folds of rho/ceiling, so a change in how
+    # the ceiling is computed reweights the folds; a win decided by less than that reweighting
+    # can move is a convention artifact, not a measurement. The default bound is derived from
+    # THIS ledger's registered ceilings via reweighting_margin_bound; pass min_margin=0.0 to
+    # disable (e.g. reproducing a historical selection).
+    finite = [s for _p, s in leaderboard if math.isfinite(s)]
+    if len(finite) >= 2 and min_margin > 0.0:
+        try:
+            require_margin(finite, "lolo hyperparameter selection", min_margin=min_margin)
+        except MarginTooSmall as exc:
+            if not allow_unresolvable_margin:
+                raise
+            warnings.warn(str(exc), UnevaluatedObjectiveWarning, stacklevel=2)
+
     return leaderboard[0][0], leaderboard
