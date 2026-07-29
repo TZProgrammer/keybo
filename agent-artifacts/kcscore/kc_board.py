@@ -186,17 +186,32 @@ def main() -> int:
 
     w("## Gauge profiles — do they get there the same way?")
     w("")
-    ourfast = [ours[n] for n in ("arm-B", "BALL-1", "arm-H", "keybo-lsb", "flagship-c3")]
+    w("**Our candidates are split into their two families here, deliberately.** Averaging them")
+    w("into one 'ours' column produces a SIGN FLIP on `roll`/`sr-roll`: the flmpg arms sit above")
+    w("keycraft on both, the pyuo family sits below. A single mean would have supported the true")
+    w("conclusion ('different geometric routes') with a false mechanism ('we roll more'), which")
+    w("is only true of one of our two families.")
+    w("")
+    flmpg = [ours[n] for n in ("arm-B", "BALL-1", "arm-H")]
+    pyuo = [ours[n] for n in ("keybo-lsb", "keybo-lsb+lm", "keybo-c30m", "flagship-c3")]
     band = sorted(
         [r for r in faith if abs(r["coverage_pct"] - 87.494) < 1e-3],
         key=lambda r: r["ms_per_char"],
     )[:8]
-    w("| gauge | ours (mean of 5 fastest) | keycraft (mean of 8 fastest faithful) | Δ |")
-    w("|---|---:|---:|---:|")
+    w(
+        "| gauge | ours: flmpg arms (3) | ours: pyuo family (4) | keycraft: 8 fastest faithful | robust? |"
+    )
+    w("|---|---:|---:|---:|---|")
     for g in GAUGES:
-        a = st.mean([r["gauges"][g] for r in ourfast])
+        a1 = st.mean([r["gauges"][g] for r in flmpg])
+        a2 = st.mean([r["gauges"][g] for r in pyuo])
         b = st.mean([r["gauges"][g] for r in band])
-        w(f"| `{g}` | {a:.4f} | {b:.4f} | {b - a:+.4f} |")
+        # A separation is only robust if BOTH our families fall on the same side of keycraft.
+        robust = "**yes**" if (a1 - b) * (a2 - b) > 0 else "no — our families straddle keycraft"
+        w(f"| `{g}` | {a1:.4f} | {a2:.4f} | {b:.4f} | {robust} |")
+    w("")
+    w("The only large, sign-consistent separation is **`scissor`**: both our families sit at")
+    w("0.15–0.21 against keycraft's 0.47, i.e. keycraft's fastest carry ~2.75x our scissor mass.")
     w("")
     Path("/tmp/kc_board.md").write_text("\n".join(out) + "\n")
     print("\n".join(out))
