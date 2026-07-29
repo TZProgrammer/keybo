@@ -213,3 +213,38 @@ guard fails loudly instead of silently testing nothing.
    auditable rather than suspicious.
 5. **A parent's correction is a claim.** The parent's own correction #2 carried a wrong constant
    (9 vs 7). Re-deriving a handed-down figure cost ~3 minutes and caught it.
+
+---
+
+## E. LATE ADDITION (found during the state flush itself)
+
+### E1 🟢 A SHA written INSIDE the artifact it points at is self-invalidating — a fixpoint bug, not a typo
+
+**Proposed home:** `.agent/knowledge/workflow/` (reports / handoff hygiene).
+
+I wrote "HEAD = `477bd64`" into `report.md`'s recovery block, then committing that report moved HEAD to
+`f2d76f8` — so the recovery pointer named the commit **before** the recovery block existed. I corrected
+it; that commit moved HEAD again. **Chasing it never converges.**
+
+**The rule:** a recovery pointer must be **resolvable from the thing it is stored in**, or it decays on
+its next edit. Concretely, in any handoff doc that lives in the repo it describes:
+
+* name the **branch** (durable handle), not the SHA, as the primary pointer;
+* if a SHA is given, label it *last-known* and give the resolver: `git rev-parse <branch>`;
+* pin recipes to the **branch** (`git worktree add --detach /tmp/x <branch>`), not to an aging SHA;
+* don't quote a fixed commit **count** — give `git rev-list --count <base>..<branch>`;
+* replace "this earlier test result still holds" with the **command that proves it**
+  (`git diff --stat <tested-sha>..<branch> -- src tests`, expect empty), so the reader verifies
+  instead of trusting.
+
+This is the campaign's *name-is-not-thing* principle in a new place: **a SHA in prose is a claim about
+a ref; the ref is the fact.**
+
+### E2 🟡 `git worktree add <path> <branch>` fails while another worktree holds that branch
+
+*"fatal: 'normgauge' is already used by worktree at /tmp/normgauge"* — git refuses to check one branch
+out twice. A recovery recipe written for after-destruction therefore **fails when tested before
+destruction**, which is the only time you can test it. **`--detach` works in both states**, so a
+recipe should use `--detach` if it is ever to be validated at authoring time. (And if the old worktree
+was `rm -rf`'d rather than `git worktree remove`'d, `git worktree prune` clears the stale
+registration — the branch itself is unaffected either way.)
