@@ -9940,3 +9940,47 @@ of mine is now unmistakable and worth stating as the lesson: every one was a TRU
 surviving because the statement was true *somewhere*. **"Report what an n is an n OF" must extend to every claim DERIVED from an n, not just the n itself.**
 => STATUS: still not a verdict. Its prereg is committed at **`8168a82` BEFORE either arm ran**; ARM-G (measuring the OPTIMISM GAP between believed CV MAE and honest leave-one-LAYOUT-out MAE across shipped-ungrouped KFold vs
 shuffled KFold vs GroupKFold — a magnitude, not just "the params differ") is running, and ARM-M (`monotone_constraints`, judged on pooled `tau_heldout`) is queued behind it.
+
+### TRAVEL-1 — 🔴 THE USER'S OFF-HOME-PINKY CLAIM IS UNSUPPORTED AND ITS SIGN IS INVERTED (r = −0.478, reproduced: MORE off-home pinky goes with FASTER predicted typing); 🟢 travel_total is REDUNDANT (|r| = 0.970 with sfb-dist) but off-home IS informative and both separate the 9 pairs the frame ties BY CONSTRUCTION (2026-07-29)
+User asks: a per-finger travel percentage summing to 100%, and *"off-home pinky usage. Pinky being used a lot is mostly fine, as long as it stays on the home row."* Child `travel`, branch `finger-travel` (8 commits, tree clean
+at `2733be2`), **not pushed, no CR, PREREGISTRATIONS.md untouched**, full repo suite **rc=0**. Definition pre-registered in its own commit `3df98cf` **before measuring**.
+🟢 **THE DEFINITION IT PICKED, and it settled the design question by PROOF rather than preference: finger-travel = LAG-1-RESOLVED PATH LENGTH per finger, an exact partition of 100%.** Same-finger bigrams charge the OBSERVED
+`dist(k1,k2)`; different-finger charge the MODELLED `dist(home,k2)`. Chosen over static displacement because *"displacement cannot tell 'shuttles between three off-home keys' from 'hits one three times'."* ⚠ **And it PROVED IN
+CODE that strict return-to-home is exactly 2x static and therefore CANNOT change a share — so it is not an independent third option**, which removes one of the three branches I asked it to weigh. Not slowness-scaled (separate
+column). ⚠ **LOAD-BEARING LIMIT IT FOUND RATHER THAN ASSUMED: no raw-text corpus ships, so a TRUE path is not computable — 88-97% of the headline is the MODELLED branch** (observed fraction 3.08-11.66%, published per row).
+🔴 **THE USER'S CLAIM IS UNSUPPORTED, AND I REPRODUCED THE SIGN INVERSION MYSELF.** Over 8 layouts on blend-v1: **pearson(off-home pinky %, ms/char) = −0.478, spearman −0.491** (child: −0.53, sign-stable) — i.e. **MORE
+off-home pinky mass goes with FASTER predicted typing.**
+    layout       off-home pinky %   ms/char
+    colemak                 0.564    258.24   <- BEST on the user's metric, 4.3 ms/char SLOWER than arm B
+    graphite                2.748    258.17
+    qwerty30m               3.206    264.14
+    arm B                   4.373    253.90   <- fastest
+    BALL-1                  4.373    253.97
+    armH-hdln               4.645    254.04
+    semimak                 5.063    257.39
+    keybo-lsb               7.086    254.63
+ ⚠ **So a naive "minimize off-home pinky" reading picks COLEMAK over keybo-lsb — a 3.6 ms/char regression by the child's measure.** And **it is not the term carrying the signal**: off-home adds **+0.065 R2** over an `sfb`
+ frequency control, pinky-TOTAL adds **+0.069**, and **the control alone explains 6.2x/21.7x more than either.** => **the same shape as `bad_scissor`, where bigram FREQUENCY explained more variance than any geometric axis.**
+ 🟢 **AND THE PINKY IS NOT SPECIAL — the ROW RESTRICTION is the durable idea:** index .398 > ring .319 > **pinky .296** > middle .278. **The user's framing generalizes; the pinky part of it does not.**
+ ⚠ **DO NOT OPTIMIZE EITHER: a 1-swap cuts travel 10.17% and makes predicted time 2.68 ms/char WORSE.**
+🟢 **INFORMATIVE-OR-REDUNDANT, BOTH ANSWERS, and it recommended against half its own deliverable: `travel_total` is REDUNDANT — |r| = 0.970 with `sfb-dist`. "Do NOT ship as a 16th gauge."** ⚠ `off-home` **IS** informative —
+closest single incumbent is `alt` at only **0.605**. And `travel_pinky_share` / `pinky_off_home` are **near-duplicates of EACH OTHER (r = +0.935)** — ship one, and it recommends `off-home`.
+🟢 **THE BEST RESULT, and it is exactly the high-value case I asked for: BOTH metrics separate all 9 field pairs that `alt`/`imbalance`/`sfr` tie BY CONSTRUCTION** — and it **re-verified that invariance itself** (600
+within-hand-swap checks, **0 movement**) rather than taking the ledger's word. ⚠ **They are also COMPLEMENTARY: arm B vs BALL-1 tie on off-home at EXACTLY 0.00 while travel splits them 2.01%.** => a genuinely new axis, not a
+fifteenth restatement.
+🟢 **MY OWN NUMBERS REPRODUCE at 0.0045 pp over 21 cells, and the convention fork is identified exactly:** `DislocationScorer._letter_freqs` includes space-TOUCHING bigrams while skipping the space CHARACTER, with **no layout
+restriction**; its default was the `kmstats`/`bad_scissor` convention, which reads keybo-lsb **8.00 vs my 7.09** — **a denominator fork, not an error.** Both ship, named, since **the numerator is bit-identical and only the
+denominator moves.**
+🟢 **TEN SELF-KILLS, FIVE OF THEM THE SAME SHAPE — "a single number standing in for a distribution, and in every one that number sat at the end of the range flattering my own claim."** Headline: **`travel~time` r = +0.82 was a
+LEVERAGE ARTIFACT of the two qwerty boards — it FLIPS to −0.87 without them, and Spearman over all 18 is −0.09.** It nearly shipped *"more travel is slower."* ⚠ **And it killed its own direction-channel finding by half:
+travel DOES move under corpus reversal where all 11 `kmstats` gauges are exactly blind — but 100% of that movement lives in the MODELLED branch (observed moves EXACTLY zero), so it is a property of its assumption, not an
+observed asymmetry.** 6 of 7 predictions confirmed; P4 partial (**keybo-lsb is NOT the field's worst — `p13stab-win` is, under both conventions, at 8.17 off-home and 22.05% of ALL travel on the pinkies**).
+🟢 **RANKING, for the record:** travel LEVEL — qwerty/qwerty30m travel **~1.9x** every optimized board (5.1e8 vs 2.2-2.8e8); **colemak is the DISPERSION extreme** (gini 0.490, **31.8% on R-index, 1.4% on pinkies**), **semimak
+the most even (0.234)**. off-home pinky — colemak 0.56 best, p13stab-win 8.17 worst, keybo-lsb 7.09.
+🔴 **A LATENT LANDMINE IT FOUND AND I CONFIRMED THE MECHANISM OF: a bare `%` in a CLI module docstring breaks `keybo` WITH NO ARGUMENTS AND `--help` FOR EVERY SUBCOMMAND.** `cli/__main__.py:51` does
+`subparsers.add_parser(name, help=module.__doc__)`, and argparse %-expands `help=`. ⚠ **It is invisible to single-file test runs.** 🟢 **I scanned all 16 shipped `keybo.cli.*` docstrings: 0 bare-% occurrences, so `main` is
+CLEAN** — the bug was introduced on the child's own branch and it fixed it there, pinned by a positive-controlled scan. **Worth landing that scan as a test regardless: the failure mode is a one-character edit away in a file
+anyone touches.** (My own `%` signs added to `analyze.py` today are in a runtime print string, not a docstring — verified.)
+=> 🟢 **ITS TOP PROPOSAL, and I agree it is the standing trap-#9 surface: `docs/denominator-conventions.md`. FOUR modules independently re-derive a "letter/bigram mass" denominator with DIFFERENT space/restriction rules**
+(`_letter_freqs`, `kmstats`, `oxey.pattern_shares`, `comfort`/full-mass); **each documented locally, NONE centrally.** That gap cost this arm ~40 minutes, cost the cyanophage audit a near-published "fake 2x disagreement", and
+is the same fork that made keycraft's raw numbers 0.45-0.60x ours. **Three independent agents hit it in one day.**
