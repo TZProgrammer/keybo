@@ -380,12 +380,12 @@ class OffHomeUsage(_PartitionBase):
     under letter-freqs. Neither is wrong; quoting one as if it were the other is.
 
     ⚠ **A CONSEQUENCE THAT MUST NOT BE PAPERED OVER: under ``letter-freqs``, ``usage`` sums to
-    ~93.5%, NOT 100%.** The convention keeps corpus mass the board cannot type in the
-    denominator, and that mass belongs to no finger, so the eight cells provably cannot sum to
-    100. It is therefore an exact partition of :meth:`coverage_pct`, not of 100 — and the missing
-    ~6.5 pp is the layout's charset gap, which is real information rather than an error to
-    normalize away. ``restricted`` sums to exactly 100 because its denominator excludes that mass
-    from numerator and denominator alike. :meth:`report` publishes ``coverage_pct`` and
+    92.4-93.5% (layout-dependent), NOT 100%.** The convention keeps corpus mass the board cannot
+    type in the denominator, and that mass belongs to no finger, so the eight cells provably cannot
+    sum to 100. It is therefore an exact partition of :meth:`coverage_pct`, not of 100 — and the
+    missing 6.5-7.6 pp is the layout's charset gap, which is real information rather than an error
+    to normalize away. ``restricted`` sums to exactly 100 because its denominator excludes that
+    mass from numerator and denominator alike. :meth:`report` publishes ``coverage_pct`` and
     ``usage_sums_to`` so the reader can see which regime they are in instead of inferring it from
     a number that looks a bit low.
     """
