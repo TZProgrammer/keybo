@@ -9013,6 +9013,7 @@ ceiling pinned an artifact of the old scale; pinning the ratio pins the claim.**
 => STILL USER-GATED, unchanged: adopting a layout; landing the oxey partition fix; **and now landing this ceiling fix**, because it REFUTES a registered ADOPT-CANDIDATE gate and the affected entries (:1052,
 :1101, :1196 "CAMPAIGN COMPLETE", :12-18 OQ-5 criterion 1) must be re-adjudicated deliberately rather than moved silently. **The local commit changes no published gauge number and no layout ranking.**
 
+### ⚠⚠ CEILING-SB-2 IS FRAME-SCOPED AND ITS BLOCKER CLAIM IS REFUTED ON THE FRAME THAT MATTERS (amended 2026-07-29 per KAGGLE-1; see the KAGGLE-1 CEILING addendum at the end of this file) — the entry below concluded "the tune.py argmax question is UNANSWERABLE" and "blocked on MISSING DATA" because every noise ceiling was `nan`. **That is TRUE on the COMMUNITY frame and FALSE on the AALTO/k31 frame, which is what `keybo tune` reads by DEFAULT and what the production models were fitted on.** I re-measured `split_half_ceiling` on `bistrokes31_v1.tsv`: **4 of 4 folds FINITE** — azerty 0.8706 (166 participants), dvorak 0.7988 (64), qwerty 0.9907 (54,689), qwertz 0.9184 (485). => **`--objective lolo` IS scoreable there, so "tuning is blocked on data, not effort" is NOT available as a blocker.** The `ObjectiveNotEvaluated` guard shipped today is doing its job as a guard against the COMMUNITY frame, not as a statement that the objective is dead. Read the entry below with that scope attached.
 ### CEILING-SB-2 — 🔴 THE tune.py ARGMAX QUESTION IS UNANSWERABLE ON THE DATA IN THIS REPO, and my A/B returned a DEGENERATE "no change" that I nearly reported as a null (2026-07-28)
 Following through on the open question from CEILING-SB-1 — does the Spearman-Brown correction move the SHIPPED hyperparameter choice, rather than 4.19% of random draws? I ran the real paired A/B and the
 answer is that it cannot be run here. **Recording the failed measurement because the FAILURE MODE is the finding.**
@@ -9911,3 +9912,31 @@ disagrees with itself on this cell.**
 instrument at two aggregation levels, NOT two confirmations** — and that its field-sweep classifier is positive-controlled to 0.000e+00 against shipped `KmStats`, i.e. **it IS the shipped gauge, not an independent one.**
 => ⚠ **FRAME: everything MODELLED (g-frame, baked 90 WPM, blend-v1, 1-skip31). NOTHING here measures realized typing FEEL, which is what the user's claim is about.** The +14.29 ms per occurrence is **~1 significant figure**
 (per-seed 11.75 / 14.32 / 16.80, spread 5.05, all three seeds sign-agree).
+
+### KAGGLE-1 CEILING ADDENDUM — 🔴 A BLOCKER I REGISTERED IS REFUTED, AND IT WAS A SCOPE ERROR OF EXACTLY THE KIND MY OWN RULE NAMES: the noise ceiling is computable on the AALTO frame (4/4 folds finite, 64-54,690 participants per layout), so transfer-scored tuning is REOPENED (2026-07-29)
+Third brief claim of mine that `kaggle` has refuted, and this one I had marked 🔴 as a blocker — so it changes what is open rather than just what is true.
+🔴 **WHAT I CLAIMED (CEILING-SB-2, and repeated in the kaggle brief):** *"`tune.py --objective lolo` CANNOT CURRENTLY SCORE AT ALL on this data: the noise ceiling needs >=2 participants per layout, every layout has 1, so
+every ceiling is `nan` and every candidate ties at `-inf` … 'tune the hyperparameters' is blocked on DATA, not effort."*
+🟢 **MEASURED, AND I REPRODUCED IT INDEPENDENTLY — 4 of 4 folds FINITE on the aalto k31 bigram frame** (`split_half_ceiling`, shipped code, leave-one-layout-out test split):
+    layout    ceiling   participants   cells      (child, n_boot=10)      (mine, n_boot=4)
+    azerty     0.8751        166        1001      0.8750926551111002      0.8706
+    dvorak     0.7892         64         799      0.7892358437911149      0.7988
+    qwerty     0.9906     54,690       2648      0.9905723741741344      0.9907
+    qwertz     0.9211        485       1406      0.9210966192706895      0.9184
+ Values differ only by `n_boot` (mine 4 vs its 10); **`finite=True` on all four in both runs**, and the participant counts match exactly. I also confirmed them by a direct TSV parse independent of the loader: **azerty 166,
+ dvorak 64, qwerty 54,690, qwertz 485.**
+🟢 **THE ERROR IS PRECISELY THE ONE MY OWN RULE NAMES — "report what an n is an n OF."** The claim is **TRUE on the COMMUNITY frame** (12 labels, 7 participants, one participant per label, so bisecting participants *within a
+label* yields nothing — which is why the `ObjectiveNotEvaluated` guard fires there) and **FALSE on the AALTO/k31 frame, which is what `keybo tune` reads BY DEFAULT and what the production models were fitted on**, where every
+layout has **>=64 participants.** I attached a frame to the participant COUNTS after being corrected twice, and then left the same frame off the CONSEQUENCE.
+⚠ **CONSEQUENCE, and the child flagged it AGAINST ITS OWN ARM rather than burying it: "tuning is blocked on data, not effort" DOES NOT HOLD for the aalto frame. `--objective lolo` IS scoreable there.** => **transfer-scored
+tuning is REOPENED as a live option on the frame that matters.** 🟢 **What this does NOT do: it does not reopen the 99-arm sweep null**, which stands on its own evidence (no arm beat the per-surface peak under BH-FDR and
+Bonferroni) — the child explicitly declined to reopen it. **And the `ObjectiveNotEvaluated` guard shipped today is VINDICATED, not undermined: it is a correct guard against the community frame, not a claim that the objective
+is dead.** CEILING-SB-2 is amended in place with that scope.
+🟢 **AND THE IN-TREE CONTRADICTION IS NOW FULLY CLOSED: `dvorak` has EXACTLY 64 participants** — the *"so a **64-participant** layout can't dominate"* in `train.py:63`'s `LAYOUT_WEIGHT_CAP` docstring. **That comment was
+naming a real layout in the real training frame the entire time**, and it sat 60 lines from the loader while I asserted "1 participant per layout" across six briefs and two ledger entries. ⚠ **A docstring that names a
+specific number is a testable claim about the data; I read it as prose.**
+=> RUNNING TALLY: **this is the third `kaggle` refutation of my brief (fold count, KFold mechanism, and now the ceiling blocker) and the ninth wrong claim of the campaign's signature class.** ⚠ **The pattern across all three
+of mine is now unmistakable and worth stating as the lesson: every one was a TRUE statement about the COMMUNITY frame asserted about the AALTO frame.** Not arithmetic errors — **scope errors**, all in the same direction, all
+surviving because the statement was true *somewhere*. **"Report what an n is an n OF" must extend to every claim DERIVED from an n, not just the n itself.**
+=> STATUS: still not a verdict. Its prereg is committed at **`8168a82` BEFORE either arm ran**; ARM-G (measuring the OPTIMISM GAP between believed CV MAE and honest leave-one-LAYOUT-out MAE across shipped-ungrouped KFold vs
+shuffled KFold vs GroupKFold — a magnitude, not just "the params differ") is running, and ARM-M (`monotone_constraints`, judged on pooled `tau_heldout`) is queued behind it.
