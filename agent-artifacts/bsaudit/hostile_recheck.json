@@ -1,0 +1,41 @@
+{
+  "H1": {
+    "iweb": {
+      "max_pct": 10.130171487408688,
+      "max_layout": "qwerty30m",
+      "over_a_tenth": [
+        "qwerty30m"
+      ]
+    },
+    "blend-v1": {
+      "max_pct": 12.90836779940338,
+      "max_layout": "qwerty30m",
+      "over_a_tenth": [
+        "qwerty30m",
+        "qwerty",
+        "graphite",
+        "archive-1846"
+      ]
+    }
+  },
+  "H2": {
+    "user_visible": true,
+    "printed_sum": 3.6510003437559746,
+    "share": 4.116837973941816,
+    "hidden_mass": 0.4658376301858418,
+    "n_keys_after_drift": 9
+  },
+  "H3": {
+    "bad_scissor_on_K31": "ACCEPTED, share=0.0",
+    "scissor_severity_on_K31": "ACCEPTED, 0.0",
+    "bad_scissor_on_four_row": "REFUSED: bad-scissor is defined for the three-row board (rows [1, 2, ",
+    "reachable_via_analyze": false,
+    "k31_support_size": 116,
+    "k30_support_size": 108
+  },
+  "H4": {
+    "independent_support": 108,
+    "mismatches": 0,
+    "agrees_with_shipped": true
+  }
+}
