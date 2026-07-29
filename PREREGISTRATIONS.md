@@ -9862,3 +9862,52 @@ keycraft layouts are NOT 30 extra folds: they are unlabelled predictions with no
 Immaterial to results. All `oxey-style` values are **FRESH post-fix** (its tree carries `33b7bf1`/`4d37f72`).
 => FOUR IMPROVEMENT PROPOSALS registered from it, two worth acting on: **`analyze` should FLAG cross-coverage comparisons** (the trap that would have produced a wrong headline here), and **`saved_vs_ref_pct` mixes
 normalizations** (`timecard.py:148-155`) — consistent with the registered coverage-artifact finding on that field.
+
+### YUO-1 — 🟢 THE USER WAS LITERALLY CORRECT AND I NEARLY "CORRECTED" THEM: on keybo-lsb the cheap monotone roll SPELLS `yuo` (frequency 4,146) while `you` (1,661,958) gets the reversal; and on arm B / BALL-1 `you` is the MOST EXPENSIVE OF ALL SIX ORDERINGS (2026-07-29)
+User observation: *"We have many layouts optimizing the 'yuo' trigram, but this is very clunky to type. Rolling y -> o -> u is much better. Are our models capable of detecting this y -> u -> o clunkiness?"* Child `yuo`, branch
+`yuo-direction` (`0ba2672` + `979e80c`), tree clean, nothing pushed, no layout adopted. Full suite **903 passed / 3 skipped / 0 failed**, ⚠ **rc read from the RESULT-CHARACTER CENSUS, not the exit code — a first attempt was
+killed by its own `pkill` and reported rc=0 while stopping at 31%.** That is a new instance of the campaign's exit-code-is-not-a-verdict class.
+🟢 **THE ANSWER: THE MODELS CAN SEE IT, PER INSTRUMENT.** The **served BIGRAM frame** has no direction CHANNEL (0 across the 12 NON-LANDING features over 870 ordered pairs; `angle`/`inwards`/`outwards` all 0) but is **not
+order-blind overall** — max over all 20 features is 1.0, moved by exactly the 8 landing-only features. ⚠ **Both of my numbers were right WITH THEIR QUANTIFIERS, and the child's own prose had been loose the same way** — a
+symmetric admission worth recording. The **TRIGRAM frame DOES see it: 10 of 46 features move on the same three keys** (`redirect` 0->1, `sg_dx` 2->1, `sg_distance` 2->1, plus bg1/bg2 finger one-hots). **All three fitted
+surfaces price the six orders differently and all rank the monotone roll cheapest.** ⚠ And a shipped gauge cannot help: **`sr-roll` can NEVER credit it — `_is_roll` requires `a.hand != c.hand`, so no same-hand run is ever
+an sr-roll.**
+🟢 **I REPRODUCED THE STRUCTURE INDEPENDENTLY AND FOUND IT SHARPER THAN REPORTED.** Pricing all six permutations of `y`/`u`/`o` on the SAME three slots through `_Tc`:
+    keybo-lsb (LR,LM,LI row 2):  yuo 105.813 < uyo 111.328 < **you 125.851** < uoy 129.513 < ouy 131.575 < oyu 133.622   (span 27.809 ms)
+ My absolute values differ from the child's 248.152/254.286 because I read `_Tc` alone while it used the full surface including the bigram term — **but the ORDERING and the conclusion reproduce exactly: the order IS priced,
+ and `yuo` is the CHEAPEST of all six while `you` is third.** => **the user's one number is confirmed: `you` != `uoy`.**
+🔴 **AND THE ADOPTION-RELEVANT FINDING, WHICH I MEASURED AND THE CHILD DID NOT REPORT AT THIS RESOLUTION: on arm B and BALL-1, `you` is RANK 6 OF 6 — the MOST EXPENSIVE ordering available on those three slots — while their
+cheapest is `ouy` at corpus frequency 4,220.** Per-layout:
+    layout        cheapest order   its corpus freq    rank of `you`   `you` freq
+    arm B              ouy               4,220              6/6       1,661,958
+    BALL-1             ouy               4,220              6/6       1,661,958
+    keybo-lsb          yuo               4,146              3/6       1,661,958
+    armH-hdln          you           1,661,958              1/6       1,661,958
+    graphite           you           1,661,958              1/6       1,661,958
+ => **`armH-hdln` and `graphite` spend their cheapest ordering on the 1.66M-frequency word; arm B and BALL-1 spend it on a four-figure one and pay the worst-case price on `you`.** ⚠ **This is a real discriminator between
+ the adoption candidates that NO gauge in the frame reports.**
+🟢 **THE USER'S PHRASING WAS LITERALLY CORRECT, NOT A SLIP FOR "you" — and the child says it nearly "corrected" them.** On keybo-lsb/+lm the cheap monotone roll **literally spells `yuo`, frequency 4,146**, while `you` at
+**1,661,958** gets the reversal. **6 of 15 registry layouts spend their cheap roll on a FOUR-FIGURE-frequency ordering.** The layouts really are *"optimizing the yuo trigram."*
+🔴 **BUT THE SWAP IS A TIE, NOT A WIN — and this is where it killed its own headline.** Both improvements (keybo-lsb **−0.001622**, +lm **−0.002453**) are **275-410x BELOW the measured 0.6654644 floor.** Only 4 of 10 deltas
+resolve **and all four are the swap making the layout WORSE.** => **the answer to "why didn't the optimizer avoid it" is (a) real-but-outweighed, NOT (b) never-searched:** on keybo-lsb `you` alone is −23.75M ms but the NET
+is **−1.44M ms**, because the same transposition moves **4,968 trigrams** and **`ion` +109.7M dominates. ~16x cancelled.**
+🟢 **SYSTEMATIC, and it lands on the open adoption gate.** Top-200 letter-trigram redirect mass (shared denominator 182,407,426): **qwerty/qwerty30m 17.506%, colemak 10.363%, BALL-1/MID/arm B 4.857%, p13stab-win 4.140%,
+armH-hdln 3.946%, … flagship-c3 / archive-1843 / archive-1846 = 0.000%.** ⚠ **The lead candidates BALL-1, arm B and MID all carry `you` as their single worst redirect (1-swap repairable); armH-hdln does not have the `you`
+problem; and flagship-c3 — which the user independently raised on other grounds — carries ZERO.** The child correctly made no recommendation.
+🟢 **THREE SELF-KILLS, and the second is the most useful.** (i) *"swapped variant is faster"* **WITHDRAWN** — below floor. (ii) *"the model prefers monotone rolls"* **REFUTED BY ITS OWN TEST: monotone is cheapest in only
+110/378 = 29.1% of same-hand three-finger triples — BELOW the 2-in-6 chance rate.** It holds SAME-ROW (57.1%, paired +1.50 ms) and **INVERTS off-row (−5.58 ms)**. => **the user's claim is same-row and SURVIVES; the child's
+generalization did not.** (iii) ⚠ **one probe was IMPOSSIBLE, not negative** — it sought redirect+monotone orders sharing both endpoints, but **with three distinct keys the endpoints determine the middle key, so the set is
+EMPTY**; it printed *"0 pairs => not separable"* and it nearly filed that as a finding. Redone matched on the skipgram tuple: **50.0% => with skip distance held fixed the direction flag alone carries no sign**, so *"the
+model prices clunkiness"* **OVERCLAIMS** — it prices **this finger path**, and direction vs first-third distance are **confounded on this board.**
+🟢 **AND IT RESOLVED AN APPARENT CONTRADICTION IN THIS LEDGER THAT I HAD NOT NOTICED: "kmstats is EXACTLY direction-blind" and "kmstats `redir` flags the user's cell" are BOTH TRUE because they quantify over DIFFERENT GROUP
+ACTIONS.** `redir` is invariant under **FULL REVERSAL (6/6)** and **NOT** under **SWAPPING TWO OF THREE (2/6)**. => **corpus reversal is the WRONG INSTRUMENT for this question, and the blindness result does not undercut the
+finding.** That is the second time in two days an agent has caught a **wrong-instrument** error (cyano's mirror test was the first).
+🔴 **IT ALSO REVERSED ITS OWN CAVEAT AGAINST ITS OWN HEADLINE, using my #2 correction.** The AALTO tables ARE on disk, and **the user's cell (run-redirect AND same-row AND 3 distinct fingers) is PRESENT: 78 rows / 45,950
+samples; qwerty alone 37 rows / 44,978 samples; the exact R->I->M path 2,029 samples.** => **the 2026-07-05 additivity null DID have access to the cell, so it is genuine IN-SCOPE counter-evidence to the user's feel claim —
+not a general null over-extended. But the +14 ms is fitted on 45,950 real observations, not extrapolation. The two conflict and the child explicitly does NOT adjudicate.** ⚠ **That is the honest state: our own data
+disagrees with itself on this cell.**
+🟢 **AND IT STRENGTHENED MY #1 CORRECTION: `inroll`/`outroll` are swap-invariant BY CONSTRUCTION, not merely empirically** — `classify.py:131` sorts the pair by `abs(column)`, discarding stroke order, then compares rows;
+**0 of 870 ordered pairs differ under swap, so NO CORPUS COULD EVER MOVE IT.** Independence disclosed per claim, including that its per-permutation prices and whole-layout A/B **share the same TimeSurface tables — one
+instrument at two aggregation levels, NOT two confirmations** — and that its field-sweep classifier is positive-controlled to 0.000e+00 against shipped `KmStats`, i.e. **it IS the shipped gauge, not an independent one.**
+=> ⚠ **FRAME: everything MODELLED (g-frame, baked 90 WPM, blend-v1, 1-skip31). NOTHING here measures realized typing FEEL, which is what the user's claim is about.** The +14.29 ms per occurrence is **~1 significant figure**
+(per-seed 11.75 / 14.32 / 16.80, spread 5.05, all three seeds sign-agree).
