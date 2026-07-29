@@ -9708,3 +9708,47 @@ partitions and finger-TIME attribution and is the most transferable idea in the 
 48.5% share of board range made it cheapest to sacrifice); Breakout Local Search (steepest descent + adaptive-magnitude jump on a stagnation counter + tabu scaled to free keys); column-swap as a structural move; and a
 98%-coverage trigram prefilter for an 86x speedup (**approximation — search-only, never reporting**). 🟢 **And direction ordering is CORPUS-ROBUST: identical on blend-v1 and shai, though magnitudes move and graphite's
 net FLIPS SIGN.**
+
+### CYANO-1 — 🔴 A CONSTANT I REPEATED IN EVERY BRIEF THIS SESSION IS WRONG (max feature diff under swap is 1.0, not 0.0 — 8 of 20 features ARE order-sensitive); and 🔴 OUR SHIPPED `inroll`/`outroll` MOVE BY EXACTLY 0.00e+00 UNDER CORPUS REVERSAL — we ship the word without the thing (2026-07-28)
+User ask: audit https://cyanophage.github.io/index.html. Child `cyano`, worktree left CLEAN at a6b3833, nothing copied in, PREREGISTRATIONS.md untouched. 🟢 **METHOD: it ran THEIR real `keyboard_svg.js` under Node** (d3/DOM
+stubbed, `vm.runInThisContext`), calling their own `importLayout`/`measureWords` and reading their own `m_*` accumulators — **no metric of theirs reimplemented.** Control PASSED first: it reproduces their published qwerty
+Effort 1258.15 / SFB 4.39% / LSB 4.55% / Scissors 1.46%, colemak 634.08/0.91%, engram 457.11, dvorak 0.8%/0.08%, and 34/35 `table.html` values.
+🔴 **THE CORRECTION TO ME, AND I VERIFIED IT MYSELF — I HAVE BEEN REPEATING A WRONG CONSTANT IN EVERY BRIEF THIS SESSION.** I wrote, repeatedly, that *"the served bigram frame has NO direction channel — max non-landing
+feature diff under swap is EXACTLY 0.0."* **Measured directly over all 870 ordered pairs: MAX |feature diff| under swap = 1.0, and 8 of 20 features MOVE** — `bottom`, `home`, `top`, `pinky`, `ring`, `middle`, `index`,
+`lateral`, i.e. **the second-key row and finger one-hots.** => **the TRUE, NARROWER claim: the DIRECTION features are swap-invariant, so there is no direction CHANNEL — but the frame is NOT order-blind overall.** Every
+brief I wrote this session (yuo, travel, cyano, keycraft, kcscore, kaggle) carries the wrong form; **this entry is the correction of record.** ⚠ **And it is the SIXTH instance of the campaign's signature failure — a wrong
+constant attached to a TRUE conclusion, which survived because the conclusion (no direction channel) is right.** It went through my own registration, six agent briefs, and two prior entries unchallenged.
+🔴 **THE SHARPEST FINDING, WHICH I REPRODUCED: OUR SHIPPED `inroll`/`outroll` CANNOT DETECT DIRECTION.** Reversing the entire corpus (every ngram reversed, layout fixed) and re-scoring `oxey.pattern_shares`: `inroll`
+4.232680 -> 4.232680, `outroll` 3.127871 -> 3.127871, and `onehand`/`redirect`/`bad_redirect`/`alternate` likewise — **every delta EXACTLY 0.00e+00.** Root cause the child names: **`is_inwards` compares ROWS, not stroke
+order.** => **we ship two weight terms NAMED for direction (`inroll` -2.0, `outroll` -1.0 in `DEFAULT_OXEY_WEIGHTS`) that are provably incapable of distinguishing an inward roll from an outward one.** This is
+independently corroborated by keycraft's audit (all 11 `kmstats` gauges move 0.00e+00 under the same test) — **so the blind spot is now established by three methods and confirmed to extend into the shipped WEIGHTS, not
+just the gauges.** It also retro-explains PENALTYAUDIT-1's *"collapse to ONE roll term"* recommendation: you cannot price a distinction your code cannot compute.
+🟢 **THE CROSS-CHECK: THREE EXACT AGREEMENTS, and their board is IDENTICAL to ours (0/30 chars differ on hand+finger-kind), so it is apples-to-apples.** `sfb` **96/96 predicates zero-either-side, reproduced BIT-FOR-BIT**
+(qwerty 4.3845681%, diff 0.000000000pp); `scissor` **24/24, diff 0.000000pp**; `redirect` **2808/2808**. ⚠ **ONE REAL DISAGREEMENT: LSB — ours (24) is a strict SUBSET of theirs (36 index / 72 with ring)**, root cause
+found: **theirs is HARDCODED COLUMN PAIRS anchored on the inner-index stretch column (cols 5/6), ours is geometric.** A different concept, not a bug either side. ⚠ **AND THE DENOMINATOR TRAP AGAIN — caught before
+publishing:** the large raw gaps (`sfb` -2.84, `sfs` -6.10pp) are **ENTIRELY corpus+denominator, NOT convention**, proven by controlled reruns. Reproducing their `sfb` to the last digit required emulating **three**
+conventions: denominator = `sum count*(len+1)` (= exactly 1e8), their 32-slot board with `-` and `'` on the PINKY, and **a genuine quirk where `prevcol` is recomputed from the RAW `word[i-1]` while `prevfinger` persists**
+(worth -0.0002pp).
+🔴 **AND IT LANDED THE kmrun BLIND SPOT DIRECTLY, IN A THIRD TOOL: THEIR PUBLISHED NUMBERS DISAGREE WITH THEIR OWN CURRENT CODE — AND THE PUBLISHED CONVENTION IS OURS.** `index.html` publishes qwerty redirect **11.92%**;
+their current JS computes **6.66%**. The child patched their source: **the redirect branches carry `&& finger != ppfinger` (4 occurrences); removing it reproduces the published numbers to 2dp** (11.922 / 1.426 / 19.095 vs
+11.92 / 1.43 / 19.10). **Our `redir` == their PUBLISHED family EXACTLY 2808/2808, vs only 1512/2808 against their current code.** Their `table.html` is stale too (Jun 8 vs JS Jun 12). => **WHICH ARTIFACT YOU CALL "THE
+REFERENCE" FLIPS THE VERDICT** — the shared-convention hazard the audit warned about, reproduced in a third independent tool. **A "matches the reference" claim must name the reference's SHA and date.**
+🟢 **RANKED TAKES.** **#1 = the inward/outward ROLL SPLIT**, and the evidence is the strongest of any candidate: **R2 = 0.0797** regressed on all 11 `kmstats` gauges (n=220 random layouts on OUR blend-v1) — **the least
+explained thing they have.** Under corpus reversal `cy_roll_asym` moves **mean 8.75pp / max 24.77**, `rollin`/`rollout` 4.37pp, **while all 11 of our gauges move by EXACTLY 0.00000.** **#2 = weak redirect (no-index) as a
+PARTITION of `redir`, not a new gauge** (R2 = 0.41). **#3 (weak) = pinky-specific off-home** — the `travel` sibling has this in flight, so the value is **their 6-cell hardcoded predicate + 5 published values as a free
+cross-check** (⚠ our `comfort` `off_home` is ALL-finger, not pinky). **ALREADY HAVE:** `cy_alt` R2=0.9591, `cy_redirect` R2=0.9069, rowskips, pinky+wide scissors, finger/hand/col/row usage, finger distance. **SKIP:** their
+`Effort`/`Total Word Effort` (**R2 0.96/0.99 vs ours AND hand-authored — 1332 entries but only 190 DISTINCT VALUES, round numbers**); their LSB definition; their corpus (word-level, **NO stated provenance**, and
+USER-GATED regardless — untouched).
+🟢 **THE METHOD FINDING THAT SHOULD SHAPE ANY DIRECTION WORK — and it argues against the cheap fix.** `bigram_effort.json` is an **ORDERED position-pair cost table**: of the 1296 entries having a reverse, **1212 are
+ASYMMETRIC** (84 symmetric, 36 no-reverse, 1332 total), max diff 5.0. The **antisymmetric part is 8.95% of variance and SURVIVES restriction to SAME-ROW pairs** (270 asym vs 42 sym), so it is **not row-travel**. ⚠ **BUT
+IT IS NOT REDUCIBLE TO A FLAG: OLS of the antisym component on `row_delta + inward_flag + interaction` gives R2 = 0.0376, and a single signed inward/outward indicator gives R2 = 0.0186.** => **one new inward/outward
+FEATURE would capture only ~2-4% of what the ordered table encodes. If direction ever enters the MODEL, copy the ORDERED-TABLE SHAPE, not one more binary.** That is a direct constraint on the user's "we need a directional
+feature" ask, and it is stronger evidence than DIRECTION-1's bigram null.
+🔴 **LICENCE: NO LICENCE FILE** (checked `ls -a` for licen*/copying*, the GitHub sidebar, all pages) => **default all-rights-reserved. NOTHING VENDORABLE, code or data.** Every take must be **reimplemented from the
+concept** — and the concepts taken (inward/outward split, no-index redirect, pinky off-home) are **community-standard, already in the oxeylyzer/genkey/keymeow lineages we port.** Recommendation for the human, not an
+action taken. (Contrast keycraft: BSD-3-Clause, vendoring permitted with attribution.)
+🟢 **IT KILLED TWO OF ITS OWN, and the second is a methodological gem: WRONG INSTRUMENT.** It first tested direction with a **LEFT-RIGHT MIRROR**, found their roll metrics tie mirrors exactly (0.0000), and **nearly
+reported "their roll split carries no direction"** — but **the mirror maps the finger-index ordering onto itself and CANNOT move a direction metric BY CONSTRUCTION.** Corpus reversal is the correct instrument. 🟢 **The
+mirror test separately found something TRUE and kept: our `lsb`/`lsb-dist`/`sfb-dist`/`sfs-dist` DO separate mirror pairs by up to 7.94pp, so our frame is not mirror-invariant either.**
+🟠 DID NOT DETERMINE, stated rather than guessed: provenance of their frequency data; provenance of their effort grid (**no statement exists anywhere**); whether cols 5&6 is redundant at high n; whether
+`optimiser.js`/`magic.html` add anything (not audited).
