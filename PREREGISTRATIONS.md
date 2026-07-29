@@ -9777,3 +9777,25 @@ family fitted on log-ratios.
 defects are **latent**, not retroactive — but they are three independent defects in one code path that nobody had audited, which is itself the pattern.
 => STATUS: not yet a verdict. It has still to finish the blast-radius grep, survey competition practice, and **PRE-REGISTER before running anything**. Registering the interim because **the constant correction affects four
 other live agents** and must not wait for its terminal callback.
+
+### KAGGLE-1 INTERIM ADDENDUM — 🔴 AN EIGHTH WRONG CONSTANT, THIS TIME INSIDE MY OWN CORRECTION OF THE SEVENTH: COMMUNITY has SEVEN participants, not nine (9 counts LABEL VARIANTS, and three of them are the same person); and my row counts were off by one because I assumed a header that does not exist (2026-07-29)
+`normgauge` audited both of my mid-turn corrections per the standing instruction and found that **correction #2 carried its own wrong constant.** I verified every claim.
+🔴 **"12 labels / 9 distinct participants" IS WRONG — COMMUNITY HAS SEVEN PARTICIPANTS.** Confirmed two independent ways: (a) distinct PIDs in `bistrokes_community.tsv` = **7** -> `200001..200007`; (b) `ingest_report.json`'s
+registered `pids` map has exactly **7** entries. 🟢 **THE MECHANISM, which is the interesting part: 9 is what a naive `label.rsplit('#',1)[1]` returns over the 12 labels, because THREE OF THOSE STRINGS ARE THE SAME PERSON —
+`grzegorzkulesza`, `grzegorzkulesza+pseudo`, `grzegorzkulesza+rareboost`.** The `+pseudo`/`+rareboost` suffixes are **CORPUS TAGS appended after the submitter name**, and `data/community/README.md` says so verbatim. I
+reproduced the failing extraction: the 9 suffixes are `alite, andrewcastro, ddn, grzegorzkulesza, grzegorzkulesza+pseudo, grzegorzkulesza+rareboost, octahedron, richarddavison, vg`. => **9 counts label-variants; 7 counts
+humans.** A parse of a composite identifier is not a count of the entity it names.
+⚠ **AND THE DIRECTION IS THE DANGEROUS ONE AGAIN: 7 < 9, so every "too few independent units" argument gets STRONGER.** Registered so no sibling brief lets 9 weaken such a claim.
+🟢 **THE CHILD THEN MADE THE SHARPEST POINT OF THE EXCHANGE, and it generalizes past this incident: THE SCOPE, NOT THE COUNT, MUST TRAVEL WITH THE NUMBER.** Its own prereg said n=7 while the **4-label `rowStagger` TRAINING
+subset the COMMUNITY surface was actually fitted on carries only FOUR pids.** **Both numbers are right for their own scope — 7 = the whole file, 4 = the fitted subset** — and a bare "n=7" or "n=9" is unusable without the
+scope attached. That is the same failure as the certificate entries that said "GL certificate" where the correct form was "bigram-component certificate", and the `bad_scissor` docstring that stated a share without naming a
+corpus.
+🔴 **A RETYPED CONSTANT, MINE, EXACTLY THE CLASS WE AGREED TO STOP:** I gave `bistrokes31_v1` rows=2201 and `tristrokes31_cond_v1` rows=16643 [sic — 16642]; the true counts are **2,202 and 16,643**. Cause verified: **the
+first line of each TSV is a DATA ROW** (`qwerty` + a position tuple), so my `wc -l` minus one subtracted a header that does not exist. **Immaterial to every conclusion, and precisely the class the campaign's own
+"GENERATE OR ASSERT, NEVER RETYPE" rule exists to prevent** — I derived it by hand instead of asserting it in code.
+🟢 **WHAT SURVIVES AND STRENGTHENS: the AALTO fold count is 4 in BOTH tables, confirmed.** So the **55,404 PIDs on the AALTO side are NOT 55,404 independent units for layout-level generalization** — which makes that arm's
+caveat (that its AALTO-side interval is a **LOWER bound** on uncertainty) **more** warranted, not less. 🟢 **AND NOTHING IN ITS ANCHORS, WEIGHTS OR BLEND CHANGES: its participant counts were emitted IN-CODE from the stroke
+tables, never read from my brief** — which is exactly why the generate-don't-retype rule matters, and the reason a wrong brief constant did not corrupt its results.
+=> **RUNNING TALLY: EIGHT wrong constants attached to true conclusions. THREE are mine and TWO of those were committed today — the second one INSIDE the correction of the first.** ⚠ **That is the finding: the correction
+path is not privileged. A fix issued under time pressure to five agents at once is exactly as susceptible as the original claim, and it inherits the same immunity — because it, too, pointed the right way.** The standing
+instruction (agents must re-derive my verifications; it supersedes any "do not rediscover" line) has now caught **three** of my errors in one session, two of them in as many hours.
