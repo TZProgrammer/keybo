@@ -255,19 +255,19 @@ clone**, not in my worktree, so destroying `/tmp/normgauge` does not lose anythi
 | | |
 |---|---|
 | **Branch** | `normgauge` |
-| **HEAD SHA** | `f2d76f8b43ef5d53426dd32610279cf037a24425` |
+| **HEAD SHA** | resolve it: `git rev-parse normgauge`. ⚠ **Do not trust a SHA written *inside* the artifact it points at** — every commit that edits this file invalidates it. As of the last edit: `bdef2e3a3dd67c5d2def62e077becf393faf3e55` (commit 16). The branch NAME is the durable handle; the SHA is a convenience. |
 | **Base SHA** (worktree's stated base, ledger commit) | `dd04219f2980c72cc866361e9974ddc3638a046f` |
 | **Parent of my first commit** (base + one local ledger commit) | `37b2dd54c25deb66616300e653dc80911bfbc715` |
 | **Where the ref lives** | `/local/home/zegertho/repos/keybo/.git` (`refs/heads/normgauge`) |
 | **Worktree (disposable)** | `/tmp/normgauge` → gitdir `…/.git/worktrees/normgauge` |
-| **My commits** | 15, all prefixed `NORMGAUGE-1` |
+| **My commits** | 16 as of this edit, all prefixed `NORMGAUGE-1`; count with `git rev-list --count 37b2dd5..normgauge` |
 | **Files on branch** | 491 total; 117 under `drivers-normgauge/` |
 
 **VERIFIED recoverable without my worktree** — run from `/local/home/zegertho/repos/keybo`:
 
 ```bash
-git rev-parse normgauge                       # -> f2d76f8b43ef5d53426dd32610279cf037a24425
-git log --oneline 37b2dd5..normgauge          # -> my 15 commits
+git rev-parse normgauge                       # -> bdef2e3a3dd67c5d2def62e077becf393faf3e55 (or later, if this file was re-edited)
+git log --oneline 37b2dd5..normgauge          # -> my commits, oldest last
 git show normgauge:src/keybo/scoring/model_norm.py     # the shipped gauge
 git show normgauge:drivers-normgauge/anchors.json      # the anchors of record
 git show normgauge:drivers-normgauge/report.md         # this report
@@ -279,7 +279,7 @@ git diff --stat 37b2dd5..normgauge -- src tests        # 1213 insertions, 2 dele
 unaffected either way** — I confirmed `git show normgauge:…` reads my content from the shared clone
 with the worktree still attached, and the ref is a normal `refs/heads/` entry.
 
-## 10.1 The 15 commits, oldest first (one line each)
+## 10.1 The commits, oldest first (one line each)
 
 | # | SHA | what it is |
 |---|---|---|
@@ -297,7 +297,8 @@ with the worktree still attached, and the ref is a normal `refs/heads/` entry.
 | 12 | `12f4a45d28bd9f15a1b35304ba0fb6bbc681c6c4` | rc **sentinels** for all 27 search cells + per-cell support maps |
 | 13 | `5a90247be43ff85073818f70bacb98e90a543da7` | **6th self-kill** — P10 is unscoreable (cross-scale comparison) |
 | 14 | `477bd64eb3ff3cd0a66b0c7082ea37df52e54222` | run logs (132 KB, all 33 runs) + row-count maps |
-| 15 | `f2d76f8b43ef5d53426dd32610279cf037a24425` | **state flush** — every state file mirrored onto the branch (report/memory/summary/events/index/reflection-proposal) — **HEAD** |
+| 15 | `f2d76f8b43ef5d53426dd32610279cf037a24425` | **state flush** — every state file mirrored onto the branch (report/memory/summary/events/index/reflection-proposal) |
+| 16+ | `bdef2e3a3dd67c5d2def62e077becf393faf3e55` and any later | recovery-block SHA corrections — **markdown only**, no `src/` or `tests/` change |
 
 ## 10.2 Every durable artifact, by path on the branch
 
@@ -332,13 +333,14 @@ keyed by `(path, mtime, size, labels)` and fully regenerable from
 
 ## 10.3 The one-command re-check
 
-**RUN AND VERIFIED — 36 passed** from a fresh detached checkout, not asserted. (Verified at
-`477bd64`; HEAD `f2d76f8` adds only state-file snapshots under `drivers-normgauge/`, no `src/`
-or `tests/` change — `git diff --stat 477bd64..HEAD -- src tests` is empty, so the result holds.)
+**RUN AND VERIFIED — 36 passed** from a fresh detached checkout, not asserted. Verified at `477bd64`;
+every commit after it changes **markdown only**. Confirm before trusting the result:
+`git diff --stat 477bd64..normgauge -- src tests` — expect **empty output**, which means no shipped
+code or test moved after the run that validated it.
 
 ```bash
 cd /local/home/zegertho/repos/keybo
-git worktree add --detach /tmp/ng-recheck f2d76f8      # --detach: see the note below
+git worktree add --detach /tmp/ng-recheck normgauge    # --detach: see the note below
 cd /tmp/ng-recheck && PYTHONPATH=/tmp/ng-recheck/src \
   /local/home/zegertho/repos/keybo/.venv/bin/python -m pytest \
   tests/scoring/test_model_norm.py tests/cli/test_optimize_model_weight.py -q -m "" -p no:randomly
