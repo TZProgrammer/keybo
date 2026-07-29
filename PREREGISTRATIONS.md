@@ -9604,3 +9604,55 @@ nobody had applied. Applied now, computed per entry:
  => **all six now carry their excess-over-floor inline**, so no reader takes a bare "within 2.54% of optimal" as a measure of search quality. 🔴 **THE ONE THAT MATTERS: `:287`'s 2.54% is only 0.20 pp above the floor —
  it is INDISTINGUISHABLE from what the bound certifies for a layout found by searching the certified objective directly.** Every certificate remains mathematically TRUE (`OPT >= lb` makes the quoted gap an upper
  bound); what changes is that **none of them is evidence the search did well**, and the tightest-looking one is the least informative.
+
+### BSAUDIT-1 — 🟢 THE GAUGE THE USER CAUGHT IS FINALLY AUDITED (round 4, after being skipped in all three): the PREDICATE IS SOUND (108 of 900 pairs, verified twice, zero symmetry violations) but the module's SELF-DESCRIPTION has four defects — including a docstring citing a test THAT DOES NOT EXIST, and the user's own artifact still shipped and still UNDISCLOSED (2026-07-28)
+`bad_scissor` is **the gauge the USER caught** — they said *"I believe our bad scissors, or something, is wrong"* and were right. The 159-agent 3-round audit skipped it every round; it sat at the top of that audit's own
+unrun worklist. Child `bsaudit`, branch `badscissor-audit` @ **9a0b414**, 2 commits, **`agent-artifacts/` ONLY — `src/`, `tests/`, `data/` and PREREGISTRATIONS.md untouched** (verified by `git status` + `diff --stat`).
+Full suite after all mutation work: **rc=0, 0 failures, 3 skips.** Nothing pushed, no layout recommended.
+🟢 **THE PREDICATE IS SOUND, AND THIS IS THE STRONGEST RESULT IN THE AUDIT — verified TWICE by construction.** Exactly **108 of 900 ordered pairs**, `|dy|` support **{1,2}**, 72/36 split, 36 adjacent / 72 non-adjacent,
+12 middle-pinky, **ZERO symmetry violations over all 900** for predicate AND finger AND cell, index never charged. My `is_scissor` reference (24 pairs, support {2}) **reproduces exactly.** ⚠ **And it noticed its own
+census imports the predicate it audits, so it re-implemented the docstring's stated rule from its own words using only geometry primitives with ZERO calls into `bad_scissor.py`: independent support 108,
+disagreements 0/900, positive-controlled (fires on 108, not vacuously False).** That is the independence discipline this campaign has been trying to instill, applied unprompted.
+🔴 **FOUR DEFECTS, ALL IN WHAT THE MODULE SAYS ABOUT ITSELF — the disclosure matches the behaviour on 9 of 9 docstring-table rows and 7 of 7 prose claims, so this is a documentation-integrity failure, not a scoring
+one.**
+ **(D1) THE DOCSTRING CITES A TEST THAT DOES NOT EXIST, AND STILL ASSERTS THE REFUTED DIRECTION. I verified both halves.** `bad_scissor.py:76` cites
+ `test_the_space_including_denominator_would_inflate_every_share_by_about_1_497x`; **`grep` over `src/` and `tests/` finds that name in NO file** — the real test is `..._MOVES_...`, **renamed precisely because the
+ direction was wrong** — and **line 74 still says "inflates"**. Measured on 15/15 registry layouts: the oxey denominator **DEFLATES** (1.496137..1.499860; space mass 33.8462%). ⚠ *Correction to the child's own
+ report: it said the cited name "occurs exactly ONCE in the whole repo"; its grep was case-sensitive and the docstring uses the lowercase form, so the count in `bad_scissor.py` is 1 at line 76 — the substance
+ (the test does not exist) is unaffected.* => **production asserts a refuted claim to a reader and cites a nonexistent test as its proof.**
+ **(D2) `by_cell`'s "the dy2 subtotal is under a tenth of the priced mass" IS FALSE ON THE DEFAULT CORPUS — I reproduced this independently.** Summing the `dy2`-suffixed `by_cell` keys over my own 10-layout run on
+ **blend-v1 (the CLI default)**: **3 rows exceed a tenth — `qwerty30m` at 12.908%** (matching the child's figure exactly), **graphite 11.088%, classic qwerty 12.256%** — the child measures 4/15 on blend-v1 and 1/15
+ on iWeb (`bad_scissor.py:244`). 🟢 **AND ITS EXTERNAL ANCHOR IS DECISIVE: its blend-v1 dy1 percentages reproduce the campaign's OWN registered 87.1-99.4% range EXACTLY, all four named layouts to the digit** — so
+ `100 − 87.1 = 12.9` means **the docstring is contradicted by a number this ledger already published.** ⚠ **SIDE BENEFIT WORTH REGISTERING: that pins the 87.1-99.4 range's frame as BLEND-V1, not iWeb** (iWeb gives
+ 99.9/89.9/91.7/92.5) — a frame the original entry never named.
+ **(D3) THE "96.6% OF FLAGGED MASS HAS BOTTOM KEY `c` OR `x`" CONSTANT IS PUBLISHED UNSCOPED IN TWO PLACES AND REPRODUCES IN NONE OF 24 FRAMES.** I confirmed it appears in **both** `bad_scissor.py:32` **and
+ `cli/analyze.py:659` — the user-facing warning** — with no frame named. It reproduces in **none of 24 frames measured** (6 readings x 2 corpora x 2 qwerty variants); qwerty measures **7.559% iWeb / 10.019%
+ blend-v1**, a ~10x mismatch. 🟢 **The child states its own limit rather than over-claiming: the Aalto raw frame is NOT in this repo, so it cannot rule out the constant being exact there — what it asserts is that
+ the number is published unscoped and unverifiable against anything shipped.** => **this is the registered "wrong constant attached to a TRUE conclusion" pattern, fifth instance: the conclusion is directionally
+ sound (dvorak 0.000%, qwerty highest), the constant is not.**
+ **(D4) A REAL TEST GAP WITH A USER-VISIBLE CONSEQUENCE, reproduced end-to-end through the CLI.** `_partition` does `charged.get(key, 0.0) + freq`, so **an unknown classifier key is APPENDED, not rejected** — and
+ **5 of 8 `FINGER_ORDER` labels are unpinned** (only a 2-of-8 spot check exists: `set(...) >= {L-pinky, R-index}`). Consequence, reproduced: **a drifted `R-pinky` label prints 0.0000 while the real 0.4658 sits
+ unprinted; the printed row sums to 3.65100 against a share of 4.11684, so 0.46584 pp VANISHES and the table silently stops being a partition — while every exact-partition test still passes, because they sum
+ `.values()` and never the printed columns.** ⚠ **A test that sums the source dict cannot catch a printer that drops a column.**
+🟢 **CELL-KEYING IS *NOT* A DEFECT — the trap-38 suspicion is cleanly refuted:** 12 keys, 12 distinct `(fingerpair, dy)` classes, **zero collisions**, `endswith("dy2")` parsing sound. It is lossy **by design**
+(hand/adjacency/rowpair unrecoverable; index-middle dy1 merges 8 full classes), documented and defensible. ⚠ **But one consequence is worth registering: `by_cell` CANNOT EXPRESS the 2-row / non-adjacent /
+weak-on-top class that LMSCISSOR-1 found moves 1.48x the lsb-vs-+lm penalty IN THE OPPOSITE DIRECTION** — the gauge's own reporting cannot show the cell that explains the artifact.
+🔴 **Q4 — THE USER'S ORIGINAL ARTIFACT IS STILL SHIPPED AND STILL UNDISCLOSED, AND IT IS NOW KNOWN TO BE CORPUS-ROBUST.** Through the shipped `analyze --json --corpus iweb` (in-process figures match at **0.000e+00**):
+keybo-lsb **3.71019** vs +lm **4.11684**, gap **+0.40664**, ratio **1.10960**, qwerty anchor 12.49998 = 3.3691x. **dy2 mass EXACTLY EQUAL (0.30942 both, delta +0.000000000), so 100% of the gap is dy1; exactly ONE
+finger moves (R-pinky 0.05919 -> 0.46584); 16 bigrams flip flag status, all dy=1, all R-pinky, `ld` leading at 0.259 pp.** => **that reproduces LMSCISSOR-1's signature on a DIFFERENT corpus** (it was +0.3628 on
+blend-v1), **so the boundary artifact is corpus-robust — and nothing in the module, its docstrings, or the CLI warning tells a reader that this pair is ranked on it.**
+🟢 **FIVE SELF-KILLS, AND THE FIRST WOULD HAVE BEEN A FABRICATED DEFECT.** (1) Its census first printed two disclosure FAILs — **its own backslash-escaping bug** (the docstring is non-raw, so `\\` is ONE backslash
+and it matched four); both rows actually match. (2) **11 of its 16 mutation survivors killed as EQUIVALENT** — *"reporting '16 survived' would have libelled the suite"* — and the 7 a/b-swap survivors are
+**unkillable PRECISELY BECAUSE the predicate is provably symmetric, i.e. that cluster is evidence FOR a documented property, not against the tests.** (3) A K31 candidate **downgraded from defect to latent note**:
+`_check_geometry` gates `rows <= {1,2,3}` and `ROW_STAGGERED_31` is K30 + slot (6,2) so its rows are still {1,2,3} and it is ACCEPTED, scoring 116 pairs vs the spec's 108 — **but `analyze.py` references
+`ROW_STAGGERED_31` zero times (unreachable) and `scissor_severity`, the module the docstring claims parity with, accepts it too.** Consistent house style, not a `bad_scissor` defect. (4) A `_kind` thumb `IndexError`
+kept as latent-only: no public path reaches it because `same_hand` short-circuits on `hand(0)==0` first — **protected by guard ORDER, not by design.** (5) It corpus-checked D2 rather than asserting it, **which is what
+turned "fails 1/15" into "fails 4/15 on the DEFAULT corpus"** and led to the ledger cross-check that clinches it.
+🟢 MUTATION SWEEP RUN **BEFORE** READING THE MODULE, as the plan ordered: **94/110 CAUGHT**, positive-controlled via `assert_harness_detects_a_fatal_mutant` on the **EXIT CODE** — i.e. it used the `testkit.py` that
+landed on main hours earlier, for exactly the failure it was written for.
+⚠ COVERAGE IT COULD NOT CLOSE, stated rather than papered over: **the Aalto raw keystroke frame is absent from this repo**, so the +0.41 ms effect, the −0.0179 weak-on-top number and possibly the 96.6% constant are
+**unverifiable here — and it did NOT treat "cannot reproduce" as "wrong".** `badscissor-spec.md` is also absent, so `SPEC_SHARES`/`BY_FINGER`/`BY_CELL` provenance is uninspectable; it confirmed they reproduce on the
+fixture's corpus (`data/corpus` == iweb), making them a genuine corpus-pinned control, but could not audit their derivation.
+=> **SEVEN FIXES TABLED, NONE APPLIED** (they are `src/` doc + test changes: delete the nonexistent-test citation and the refuted "inflates", scope or drop the 96.6% constant in BOTH files, correct the "under a
+tenth" claim, reject unknown classifier keys in `_partition`, pin all 8 `FINGER_ORDER` labels, and disclose the dy1 boundary artifact where the pair is reported). **The user's artifact being undisclosed is the one I
+would fix first** — it is the defect they personally caught, and a reader still cannot see it.
