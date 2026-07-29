@@ -114,8 +114,17 @@ def run(args: argparse.Namespace) -> int:
         for params, score in leaderboard[:5]:
             print(f"  rho/ceiling {score:+.4f}  {params}")
     else:
-        X, y = build_training_matrix(rows, ngram=args.ngram, target_wpm=args.target_wpm)
-        best = tune_hyperparameters(X, y, n_iter=args.n_iter, cv=args.cv, seed=args.seed)
+        # Group by LAYOUT, not by row. An ungrouped split puts a layout on both sides of every
+        # fold (4/4 at cv=4, 5/5 at the cv=5 default) and reports a CV MAE optimistic by a
+        # measured +0.0349. `grouped_cv` clamps n_splits to the group count, because
+        # GroupKFold(5) with 4 layouts RAISES — the naive fix crashes on this very line.
+        X, y, layouts = build_training_matrix(
+            rows, ngram=args.ngram, target_wpm=args.target_wpm, with_layouts=True
+        )
+        print(f"  scoring on {len(set(layouts.tolist()))} layout groups (grouped CV)")
+        best = tune_hyperparameters(
+            X, y, n_iter=args.n_iter, cv=args.cv, seed=args.seed, groups=layouts
+        )
     with open(args.output, "w") as f:
         json.dump(best, f, indent=2)
     print(f"Best hyperparameters -> {args.output}: {best}")

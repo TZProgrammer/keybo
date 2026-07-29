@@ -10,14 +10,18 @@ from __future__ import annotations
 import math
 import warnings
 from collections import defaultdict
+from typing import TYPE_CHECKING
 
 import numpy as np
 from scipy.stats import randint, uniform
 from sklearn.metrics import make_scorer, mean_absolute_error
-from sklearn.model_selection import RandomizedSearchCV
+from sklearn.model_selection import GroupKFold, RandomizedSearchCV
 from xgboost import XGBRegressor
 
 from keybo.verdicts import MarginTooSmall, require_margin
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
 
 _PARAM_DISTRIBUTIONS = {
     "max_depth": randint(3, 8),
@@ -39,26 +43,143 @@ def tune_hyperparameters(
     cv: int = 5,
     seed: int = 42,
     device: str = "cpu",
+    groups: Sequence[str] | np.ndarray | None = None,
 ) -> dict:
-    """Randomized search for XGBoost params minimizing cross-validated MAE."""
+    """Randomized search for XGBoost params minimizing cross-validated MAE.
+
+    Pass ``groups`` (one label per row, normally the layout) to score candidates on splits
+    that hold a whole layout out. Without it the split is ungrouped and the reported MAE is
+    optimistic by a measured **+0.0349** (positive on 5/5 seeds) — so the ungrouped path warns
+    rather than returning a clean-looking number.
+
+    ⚠ Prefer :func:`tune_lolo`. This objective's winners have never been shipped, and its
+    believed CV MAE is not comparable across splitters: ``KFold(shuffle=True)`` reports the
+    LOWEST MAE of the three options while being the MOST optimistic (+0.0635, 1.76x the
+    unshuffled default), so a splitter chosen by reading this number is chosen backwards.
+    """
     base = XGBRegressor(
         objective="reg:squarederror",
         verbosity=0,
         device=device,
         random_state=seed,
     )
+    if groups is None:
+        warnings.warn(
+            "tune_hyperparameters is running UNGROUPED: every fold trains and tests on the "
+            "same layouts, so the reported CV MAE is optimistic (measured +0.0349, 5/5 seeds) "
+            "and must not be compared against a grouped or held-out number. Pass "
+            "groups=<one layout label per row> to score by transfer.",
+            UnevaluatedObjectiveWarning,
+            stacklevel=2,
+        )
+        splitter: int | GroupKFold = cv
+    else:
+        groups = np.asarray(groups)
+        splitter = grouped_cv(cv, groups)
     search = RandomizedSearchCV(
         estimator=base,
         param_distributions=_PARAM_DISTRIBUTIONS,
         n_iter=n_iter,
         scoring=make_scorer(mean_absolute_error, greater_is_better=False),
-        cv=cv,
+        cv=splitter,
         refit=True,
         random_state=seed,
         n_jobs=-1,
     )
-    search.fit(X, y)
+    search.fit(X, y, groups=groups) if groups is not None else search.fit(X, y)
     return dict(search.best_params_)
+
+
+def tau_resolvable_step(n_groups: int | None) -> float:
+    """Smallest Kendall-tau difference that ``n_groups`` ranked items can actually express.
+
+    Kendall tau is ``(concordant - discordant) / total_pairs``, so flipping ONE pair moves it
+    by **two** pair-units, i.e. ``4 / (n * (n - 1))`` — not ``2 / (n * (n - 1))``, which is the
+    normalized-concordance step and understates the real spacing by half. At n=4 that gives
+    **0.3333**, matching the seven achievable values ``{-1, -2/3, -1/3, 0, 1/3, 2/3, 1}``
+    enumerated in ``test_kendall_tau_over_four_layouts_takes_only_seven_values``. A "tau edge"
+    narrower than one step is not a measurement, it is the same ranking.
+
+    Returns ``0.0`` when ``n_groups`` is unknown or too small to rank, which makes the gate
+    fall back to its historical exact-max behaviour rather than silently widening.
+    """
+    if n_groups is None or n_groups < 2:
+        return 0.0
+    return 4.0 / (n_groups * (n_groups - 1))
+
+
+def apply_tau_gate(
+    results: list[tuple[dict, float, float]],
+    *,
+    n_groups: int | None = None,
+) -> tuple[list[tuple[dict, float]], bool]:
+    """Gate candidates on held-out ranking quality, and REPORT when the gate did nothing.
+
+    The gate keeps a candidate's rho score if its tau is within one *resolvable step* of the
+    best tau observed, and sets it to ``-inf`` otherwise. Returns
+    ``(gated, tau_was_saturated)``.
+
+    Two failure modes motivated extracting this (TAUGATE-1, ledger ``3620f06``); at 4 layouts
+    the old exact-max form had no regime in between:
+
+    * **saturated** — every candidate at tau 1.0, which is the case that has actually run:
+      the gate eliminates *nobody* while being described as a ranking guard. It now warns, so
+      a leaderboard is never read as tau-filtered when it was not.
+    * **tripwire** — one candidate at 1.0 and the rest one inversion lower (0.667 at n=4):
+      the old form set the two BEST-rho candidates to ``-inf`` and let the worst rho win. One
+      inversion is the finest distinction this frame can draw, so it is treated as a tie.
+
+    A ranking collapse WIDER than one step still gates, so the guard is narrowed, not removed.
+
+    NOTE the gate deliberately reuses ``-inf``, so a gated-out candidate and an unevaluable
+    objective look identical here — which is why ``tune_lolo``'s ``n_fracs_finite`` check runs
+    BEFORE this point rather than trying to distinguish them from the leaderboard.
+    """
+    taus = [t for _p, _f, t in results]
+    if not taus:
+        return [], False
+    saturated = len(set(taus)) <= 1 and len(taus) > 1
+    if saturated:
+        warnings.warn(
+            f"the tau gate GATED NOTHING: all {len(taus)} candidates share tau_heldout="
+            f"{taus[0]!r}, so every candidate passed and the champion was decided by rho "
+            f"alone. A saturated guard reports a pass without checking anything — do not read "
+            f"this leaderboard as ranking-filtered.",
+            UnevaluatedObjectiveWarning,
+            stacklevel=2,
+        )
+    best_tau = max(taus)
+    # A gap of EXACTLY one step is one discordant pair — the finest distinction the frame can
+    # draw — so it must be inside the tolerance, not on its edge. Hence +1e-9, not -1e-9.
+    tolerance = tau_resolvable_step(n_groups) + 1e-9
+    return [
+        (p, f if t >= best_tau - tolerance else float("-inf")) for p, f, t in results
+    ], saturated
+
+
+def grouped_cv(cv: int, groups: Sequence[str] | np.ndarray) -> GroupKFold:
+    """``GroupKFold`` with ``n_splits`` CLAMPED to the number of distinct groups.
+
+    The clamp is the whole point. ``GroupKFold(cv)`` raises ``ValueError: Cannot have number
+    of splits n_splits=5 greater than the number of groups: 4`` — and 5 is the shipped default
+    (``cli/tune.py``) while the training frame has 4 layouts, so the obvious "just pass
+    GroupKFold" fix converts a silent-optimism bug into a hard crash on the default
+    invocation. Clamping is a ceiling, not a rewrite: a ``cv`` below the group count is
+    respected.
+
+    ⚠ At ``n_splits == n_groups`` this IS leave-one-group-out, so its zero optimism and zero
+    regret-vs-oracle are **definitions, not measurements** (KAGGLE-1 FINAL). Do not quote them
+    as evidence that grouping improved anything; the evidence is the ungrouped path's
+    optimism, which is measured against an independent honest estimate.
+    """
+    n_groups = len(set(np.asarray(groups).tolist()))
+    if n_groups < 2:
+        raise ValueError(
+            f"grouped cross-validation needs at least 2 groups, got {n_groups}: a single group "
+            f"cannot be held out from itself, and a 1-fold split would silently train and test "
+            f"on the same layout — the defect this function exists to prevent"
+        )
+    return GroupKFold(n_splits=min(cv, n_groups))
 
 
 #: Smallest RELATIVE margin a lolo selection must clear to be reported as a winner.
@@ -195,12 +316,7 @@ def tune_lolo(
             raise ObjectiveNotEvaluated(message)
         warnings.warn(message, UnevaluatedObjectiveWarning, stacklevel=2)
 
-    best_tau = max(r[2] for r in results)
-    # tau gate: only candidates achieving the best observed ranking quality compete on rho.
-    # NOTE the gate deliberately reuses -inf, so a gated-out candidate and an unevaluable
-    # objective look identical HERE — which is why the n_fracs_finite check above must run
-    # BEFORE this point rather than trying to distinguish them from the leaderboard.
-    gated = [(p, f if t >= best_tau - 1e-9 else float("-inf")) for p, f, t in results]
+    gated, _saturated = apply_tau_gate(results, n_groups=len(report["folds"]) or None)
     leaderboard = sorted(gated, key=lambda pf: -pf[1])
 
     # Minimum-margin gate. The score is a mean over folds of rho/ceiling, so a change in how

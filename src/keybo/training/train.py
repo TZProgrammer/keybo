@@ -105,17 +105,31 @@ def build_training_matrix(
     target_wpm: float,
     geometry: Geometry = ROW_STAGGERED_30,
     progress: bool = False,
-) -> tuple[np.ndarray, np.ndarray]:
+    target_space: str = "MS",
+    with_layouts: bool = False,
+) -> tuple[np.ndarray, ...]:
     """Turn stroke rows into (X, y) using the shared feature pipeline.
 
     ``target_wpm`` is unused for the matrix itself (WPM is taken per-sample) but kept in the
     signature so callers pass their intended scoring WPM explicitly; it is recorded in model
     metadata by the ``train_*`` helpers. ``progress`` shows a tqdm bar over the stroke rows
     (feature building is the visible-latency stage on a real-sized table).
+
+    ``target_space`` was previously accepted only by the private ``_build_matrix_full``, so a
+    caller of THIS function could not ask for anything but ``"MS"`` — while every shipped k31
+    model is ``"LOGRAT"`` (verified: all six ``data/models/k31/*.meta.json.gz``). The default
+    stays ``"MS"`` so existing callers are unaffected, but it is now a *choice* rather than a
+    hardwired mismatch (KAGGLE-1 FINAL, ledger ``cf6ee07``).
+
+    ``with_layouts=True`` additionally returns the per-example layout label, which is exactly
+    what a grouped cross-validation needs for its ``groups`` argument. The labels were always
+    computed here and simply discarded.
     """
-    X, y, _ngrams, _layouts, _n = _build_matrix_full(
-        rows, ngram=ngram, geometry=geometry, progress=progress
+    X, y, _ngrams, layouts, _n = _build_matrix_full(
+        rows, ngram=ngram, geometry=geometry, progress=progress, target_space=target_space
     )
+    if with_layouts:
+        return X, y, layouts
     return X, y
 
 
