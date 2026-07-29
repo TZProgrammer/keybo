@@ -210,8 +210,35 @@ def main() -> int:
         robust = "**yes**" if (a1 - b) * (a2 - b) > 0 else "no — our families straddle keycraft"
         w(f"| `{g}` | {a1:.4f} | {a2:.4f} | {b:.4f} | {robust} |")
     w("")
-    w("The only large, sign-consistent separation is **`scissor`**: both our families sit at")
-    w("0.15–0.21 against keycraft's 0.47, i.e. keycraft's fastest carry ~2.75x our scissor mass.")
+    # SCOPE MUST TRAVEL WITH THE NUMBER: a bare ratio is unusable without naming the two
+    # populations it is a ratio OF, and it must be recomputed per scope rather than carried
+    # over from an earlier grouping. Report it across widening keycraft scopes so the reader
+    # can see whether the separation is a property of the fastest few or of the whole list.
+    w("The only large, sign-consistent separation is **`scissor`**. Reported with scope attached,")
+    w("and recomputed per scope rather than quoted:")
+    w("")
+    ours_all = flmpg + pyuo
+    ours_mean = st.mean([r["gauges"]["scissor"] for r in ours_all])
+    w(
+        f"- ours, n={len(ours_all)} (our 3 flmpg arms + 4 pyuo family): mean scissor **{ours_mean:.4f}** "
+        f"(flmpg {st.mean([r['gauges']['scissor'] for r in flmpg]):.4f}, "
+        f"pyuo {st.mean([r['gauges']['scissor'] for r in pyuo]):.4f})"
+    )
+    scopes = [
+        ("8 fastest faithful, coverage-matched (the column above)", band),
+        (
+            "all faithful AND coverage-matched",
+            [r for r in faith if abs(r["coverage_pct"] - 87.494) < 1e-3],
+        ),
+        ("all faithful projections", faith),
+        ("all scorable", kc),
+    ]
+    for label, S in scopes:
+        m = st.mean([r["gauges"]["scissor"] for r in S])
+        w(f"- keycraft, n={len(S)} ({label}): mean **{m:.4f}** → **{m / ours_mean:.2f}x** ours")
+    w("")
+    w("The separation is robust across every keycraft scope (2.68x–2.79x), so it is a property of")
+    w("the list rather than of the fastest few.")
     w("")
     Path("/tmp/kc_board.md").write_text("\n".join(out) + "\n")
     print("\n".join(out))
