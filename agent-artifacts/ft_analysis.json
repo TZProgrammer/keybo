@@ -1,0 +1,562 @@
+{
+ "generated_by": "agent-artifacts/ft_analysis.py",
+ "field": [
+  "BALL-1",
+  "archive-1843",
+  "archive-1846",
+  "arm-B",
+  "armH-hdln",
+  "colemak",
+  "dvorak",
+  "flagship-c3",
+  "graphite",
+  "keybo-c30m",
+  "keybo-lsb",
+  "keybo-lsb+lm",
+  "lsb-sib",
+  "p13stab-win",
+  "p16-balance",
+  "qwerty",
+  "qwerty30m",
+  "semimak"
+ ],
+ "correlations": {
+  "travel_total": {
+   "on_gauge_frame": {
+    "r2": 0.9994028446830382,
+    "adjusted_r2": 0.9949241798058246,
+    "n": 18,
+    "k": 15,
+    "dof_warning": true
+   },
+   "closest_single_gauges": [
+    [
+     "sfb-dist",
+     0.9701599734011452
+    ],
+    [
+     "comfort",
+     0.9675171573130725
+    ],
+    [
+     "sfb",
+     0.9626862543153731
+    ],
+    [
+     "oxey-style",
+     0.9306703193751981
+    ],
+    [
+     "scissor",
+     0.9092989773104555
+    ]
+   ],
+   "abs_r_with_ms_per_char": 0.8181337753670708
+  },
+  "travel_max_share": {
+   "on_gauge_frame": {
+    "r2": 0.9952364710918269,
+    "adjusted_r2": 0.9595100042805286,
+    "n": 18,
+    "k": 15,
+    "dof_warning": true
+   },
+   "closest_single_gauges": [
+    [
+     "alt",
+     0.6161357167602957
+    ],
+    [
+     "redir",
+     0.5711452399535846
+    ],
+    [
+     "sfs",
+     0.5058080207510155
+    ],
+    [
+     "oxey-style",
+     0.48023945728775486
+    ],
+    [
+     "sfs-dist",
+     0.47648349233266113
+    ]
+   ],
+   "abs_r_with_ms_per_char": 0.27259797608611314
+  },
+  "travel_pinky_share": {
+   "on_gauge_frame": {
+    "r2": 0.9744899845335115,
+    "adjusted_r2": 0.7831648685348481,
+    "n": 18,
+    "k": 15,
+    "dof_warning": true
+   },
+   "closest_single_gauges": [
+    [
+     "lsb",
+     0.6836724144268195
+    ],
+    [
+     "lsb-dist",
+     0.6772210324514267
+    ],
+    [
+     "oxey-style",
+     0.6372330541461202
+    ],
+    [
+     "alt",
+     0.6317009055897475
+    ],
+    [
+     "sfs-dist",
+     0.6295703960710729
+    ]
+   ],
+   "abs_r_with_ms_per_char": 0.6791824441685302
+  },
+  "travel_gini": {
+   "on_gauge_frame": {
+    "r2": 0.9945084330808267,
+    "adjusted_r2": 0.953321681187027,
+    "n": 18,
+    "k": 15,
+    "dof_warning": true
+   },
+   "closest_single_gauges": [
+    [
+     "sfs",
+     0.7832489815849927
+    ],
+    [
+     "sfs-dist",
+     0.7787492213301406
+    ],
+    [
+     "oxey-style",
+     0.7654645220530085
+    ],
+    [
+     "redir",
+     0.7352486848222709
+    ],
+    [
+     "alt",
+     0.7303123612924971
+    ]
+   ],
+   "abs_r_with_ms_per_char": 0.6109794339018367
+  },
+  "pinky_off_home": {
+   "on_gauge_frame": {
+    "r2": 0.9666798410691562,
+    "adjusted_r2": 0.7167786490878274,
+    "n": 18,
+    "k": 15,
+    "dof_warning": true
+   },
+   "closest_single_gauges": [
+    [
+     "alt",
+     0.6054890111110847
+    ],
+    [
+     "redir",
+     0.552738485541717
+    ],
+    [
+     "lsb",
+     0.523312143555932
+    ],
+    [
+     "lsb-dist",
+     0.508737531113661
+    ],
+    [
+     "imbalance",
+     0.4735794883427978
+    ]
+   ],
+   "abs_r_with_ms_per_char": 0.5257703572004079
+  },
+  "pinky_usage_total": {
+   "on_gauge_frame": {
+    "r2": 0.9919331610523896,
+    "adjusted_r2": 0.9314318689453116,
+    "n": 18,
+    "k": 15,
+    "dof_warning": true
+   },
+   "closest_single_gauges": [
+    [
+     "sfb",
+     0.5607250005708018
+    ],
+    [
+     "sfb-dist",
+     0.5562161901297653
+    ],
+    [
+     "lsb-dist",
+     0.5535863118373816
+    ],
+    [
+     "lsb",
+     0.5474788478060795
+    ],
+    [
+     "sfs",
+     0.5376745026722183
+    ]
+   ],
+   "abs_r_with_ms_per_char": 0.36866942087644483
+  },
+  "pinky_off_fraction": {
+   "on_gauge_frame": {
+    "r2": 0.962588228681397,
+    "adjusted_r2": 0.6819999437918749,
+    "n": 18,
+    "k": 15,
+    "dof_warning": true
+   },
+   "closest_single_gauges": [
+    [
+     "alt",
+     0.4984802201185678
+    ],
+    [
+     "redir",
+     0.48609098936166606
+    ],
+    [
+     "imbalance",
+     0.3850085114285563
+    ],
+    [
+     "lsb",
+     0.327577140146947
+    ],
+    [
+     "scissor",
+     0.3128308166715584
+    ]
+   ],
+   "abs_r_with_ms_per_char": 0.4161102688694625
+  },
+  "cross": {
+   "travel_total_vs_pinky_off_home": -0.2075053593967804,
+   "travel_pinky_share_vs_pinky_off_home": 0.9351198696306862,
+   "pinky_total_vs_pinky_off_home": 0.299977211843234
+  }
+ },
+ "tie_breaking": {
+  "invariants": [
+   "alt",
+   "imbalance",
+   "sfr"
+  ],
+  "why": "alt/imbalance depend only on the HAND PARTITION and sfr only on within-finger key identity, so a within-hand permutation cannot move them. A metric that separates such a pair is measuring something the frame cannot express.",
+  "pairs": [
+   {
+    "pair": [
+     "BALL-1",
+     "arm-B"
+    ],
+    "tied_on": {
+     "alt": 37.13733008655502,
+     "imbalance": 4.8753996439391,
+     "sfr": 2.6595771026964927
+    },
+    "travel_total_gap": -5524272.756737292,
+    "travel_total_gap_pct": -2.0112499792627796,
+    "travel_max_share_gap": 0.5387709043338695,
+    "travel_pinky_share_gap": 0.1858510690756674,
+    "pinky_off_home_gap": 0.0,
+    "ms_per_char_gap": -0.0658471581610911
+   },
+   {
+    "pair": [
+     "BALL-1",
+     "armH-hdln"
+    ],
+    "tied_on": {
+     "alt": 37.13733008655502,
+     "imbalance": 4.8753996439391,
+     "sfr": 2.6595771026964927
+    },
+    "travel_total_gap": 1584667.6596061587,
+    "travel_total_gap_pct": 0.5769379858433464,
+    "travel_max_share_gap": -0.3591357831779476,
+    "travel_pinky_share_gap": 1.0897027266735808,
+    "pinky_off_home_gap": 0.71179013728554,
+    "ms_per_char_gap": 0.07320078140554642
+   },
+   {
+    "pair": [
+     "archive-1843",
+     "flagship-c3"
+    ],
+    "tied_on": {
+     "alt": 45.156072890944024,
+     "imbalance": 2.077878600654005,
+     "sfr": 2.6595771026964927
+    },
+    "travel_total_gap": -5886954.073618144,
+    "travel_total_gap_pct": -2.174165446069902,
+    "travel_max_share_gap": -0.5245665321896809,
+    "travel_pinky_share_gap": 1.8268174483809414,
+    "pinky_off_home_gap": 0.6105488444706655,
+    "ms_per_char_gap": 0.13248868004919245
+   },
+   {
+    "pair": [
+     "archive-1843",
+     "keybo-lsb"
+    ],
+    "tied_on": {
+     "alt": 45.156072890944024,
+     "imbalance": 2.077878600654005,
+     "sfr": 2.6595771026964927
+    },
+    "travel_total_gap": 11047247.419089139,
+    "travel_total_gap_pct": 4.079961099137066,
+    "travel_max_share_gap": 1.7530669571845685,
+    "travel_pinky_share_gap": 5.697672844971887,
+    "pinky_off_home_gap": 2.9087267618106587,
+    "ms_per_char_gap": -0.21288053350789937
+   },
+   {
+    "pair": [
+     "archive-1843",
+     "keybo-lsb+lm"
+    ],
+    "tied_on": {
+     "alt": 45.156072890944024,
+     "imbalance": 2.077878600654005,
+     "sfr": 2.6595771026964927
+    },
+    "travel_total_gap": -1797281.5809108615,
+    "travel_total_gap_pct": -0.6637706802548001,
+    "travel_max_share_gap": 2.8896314535385024,
+    "travel_pinky_share_gap": 1.653001357710389,
+    "pinky_off_home_gap": 0.6105488444706655,
+    "ms_per_char_gap": -0.15895249398622013
+   },
+   {
+    "pair": [
+     "arm-B",
+     "armH-hdln"
+    ],
+    "tied_on": {
+     "alt": 37.13733008655502,
+     "imbalance": 4.8753996439391,
+     "sfr": 2.6595771026964927
+    },
+    "travel_total_gap": 7108940.416343451,
+    "travel_total_gap_pct": 2.641311338861238,
+    "travel_max_share_gap": -0.8979066875118171,
+    "travel_pinky_share_gap": 0.9038516575979134,
+    "pinky_off_home_gap": 0.71179013728554,
+    "ms_per_char_gap": 0.13904793956663752
+   },
+   {
+    "pair": [
+     "flagship-c3",
+     "keybo-lsb"
+    ],
+    "tied_on": {
+     "alt": 45.156072890944024,
+     "imbalance": 2.077878600654005,
+     "sfr": 2.6595771026964927
+    },
+    "travel_total_gap": 16934201.492707282,
+    "travel_total_gap_pct": 6.393123630097068,
+    "travel_max_share_gap": 2.2776334893742494,
+    "travel_pinky_share_gap": 3.8708553965909456,
+    "pinky_off_home_gap": 2.298177917339993,
+    "ms_per_char_gap": -0.3453692135570918
+   },
+   {
+    "pair": [
+     "flagship-c3",
+     "keybo-lsb+lm"
+    ],
+    "tied_on": {
+     "alt": 45.156072890944024,
+     "imbalance": 2.077878600654005,
+     "sfr": 2.6595771026964927
+    },
+    "travel_total_gap": 4089672.4927072823,
+    "travel_total_gap_pct": 1.5439630775472108,
+    "travel_max_share_gap": 3.4141979857281832,
+    "travel_pinky_share_gap": -0.17381609067055237,
+    "pinky_off_home_gap": 0.0,
+    "ms_per_char_gap": -0.2914411740354126
+   },
+   {
+    "pair": [
+     "keybo-lsb",
+     "keybo-lsb+lm"
+    ],
+    "tied_on": {
+     "alt": 45.156072890944024,
+     "imbalance": 2.077878600654005,
+     "sfr": 2.6595771026964927
+    },
+    "travel_total_gap": -12844529.0,
+    "travel_total_gap_pct": -4.557776280175029,
+    "travel_max_share_gap": 1.1365644963539339,
+    "travel_pinky_share_gap": -4.044671487261498,
+    "pinky_off_home_gap": -2.298177917339993,
+    "ms_per_char_gap": 0.05392803952167924
+   }
+  ]
+ },
+ "cost_claim_C2": {
+  "n_pool": 160,
+  "marginal_abs_r": {
+   "pinky_usage_total": 0.15859050741753594,
+   "pinky_off_home": 0.2959113438259412,
+   "pinky_off_fraction": 0.27513403674118614,
+   "frequency_control_sfb": 0.7392748161010737
+  },
+  "r2": {
+   "sfb_alone_CONTROL": 0.5465272537212761,
+   "pinky_total_alone": 0.025150949042951676,
+   "pinky_off_home_alone": 0.08756352340487439,
+   "sfb_plus_pinky_total": 0.6151814556649283,
+   "sfb_plus_pinky_off_home": 0.6110838731711357,
+   "sfb_plus_both": 0.6228621292673604
+  },
+  "increment_over_control": {
+   "pinky_total": 0.06865420194365224,
+   "pinky_off_home": 0.06455661944985958
+  },
+  "reading": "C2 is supported only if pinky_off_home adds materially MORE over the frequency control than pinky_total does. If both increments are small, the claim is UNSUPPORTED on this evidence \u2014 which is a complete answer."
+ },
+ "generalization_beyond_pinky": {
+  "per_finger": {
+   "pinky": {
+    "off_home_abs_r_with_ms": 0.2959113438259412,
+    "usage_abs_r_with_ms": 0.15859050741753594
+   },
+   "ring": {
+    "off_home_abs_r_with_ms": 0.3193011932465957,
+    "usage_abs_r_with_ms": 0.11007209585657797
+   },
+   "middle": {
+    "off_home_abs_r_with_ms": 0.27823226124173334,
+    "usage_abs_r_with_ms": 0.26899277586720194
+   },
+   "index": {
+    "off_home_abs_r_with_ms": 0.39804909799055166,
+    "usage_abs_r_with_ms": 0.16821388237786186
+   }
+  },
+  "reading": "If ring behaves like pinky, the user has found the pinky INSTANCE of a broader off-home-weak-finger axis, which is the bigger finding. If the pinky separates, it is genuinely special."
+ },
+ "movability_probe": {
+  "seed": "graphite",
+  "seed_travel_total": 243996242.39914978,
+  "final_travel_total": 219188133.87087685,
+  "reduction_pct": 10.16741417176815,
+  "accepted_swaps": 12,
+  "history": [
+   {
+    "swap": [
+     "o",
+     "h"
+    ],
+    "travel_total": 234296135.70871025
+   },
+   {
+    "swap": [
+     "o",
+     "a"
+    ],
+    "travel_total": 229292570.84576538
+   },
+   {
+    "swap": [
+     "h",
+     "x"
+    ],
+    "travel_total": 226845642.84576538
+   },
+   {
+    "swap": [
+     "q",
+     "v"
+    ],
+    "travel_total": 224519555.25173223
+   },
+   {
+    "swap": [
+     "g",
+     "p"
+    ],
+    "travel_total": 222724878.98394614
+   },
+   {
+    "swap": [
+     "j",
+     "k"
+    ],
+    "travel_total": 221581792.52462292
+   },
+   {
+    "swap": [
+     "u",
+     ","
+    ],
+    "travel_total": 220513827.52462292
+   },
+   {
+    "swap": [
+     "g",
+     "k"
+    ],
+    "travel_total": 220119678.35438225
+   },
+   {
+    "swap": [
+     "n",
+     "s"
+    ],
+    "travel_total": 219820295.20519105
+   },
+   {
+    "swap": [
+     "d",
+     "w"
+    ],
+    "travel_total": 219303618.87087685
+   },
+   {
+    "swap": [
+     "m",
+     "v"
+    ],
+    "travel_total": 219234653.87087685
+   },
+   {
+    "swap": [
+     "b",
+     "v"
+    ],
+    "travel_total": 219188133.87087685
+   }
+  ],
+  "final_layout": "vlwdz'fx,gsrtnpyaoeihmbcqjku.-",
+  "converged": false
+ },
+ "movability_time_check": {
+  "seed_ms_per_char": 258.1695631301549,
+  "final_ms_per_char": 260.85076811780067,
+  "delta_ms_per_char": 2.681204987645742,
+  "travel_reduction_pct": 10.16741417176815,
+  "time_got_worse": true
+ }
+}

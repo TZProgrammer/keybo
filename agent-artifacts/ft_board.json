@@ -1,0 +1,2665 @@
+{
+ "generated_by": "agent-artifacts/ft_board.py",
+ "prereg": "docs/finger-travel-preregistration.md",
+ "corpus": {
+  "corpus": "blend-v1",
+  "path": "/tmp/travel/data/corpus/blend-v1",
+  "sha256": {
+   "bigrams.txt": "13abca624f3ecff211b11df797f0cb9119cbf1924bc2f56ab2a8daf0c590bc24",
+   "trigrams.txt": "19806532ee3567f5afe4311e51f346b6c36375030f473fe3f68a6a3dc21beb61",
+   "1-skip.txt": "df5f2f1aa48f954f5a809d65ad111f8aa4bfcdbc0da1d528776bbc31d5ebe3c8",
+   "1-skip31.txt": "df5f2f1aa48f954f5a809d65ad111f8aa4bfcdbc0da1d528776bbc31d5ebe3c8"
+  },
+  "declared_total": 1000000000,
+  "skipgram_table": "1-skip31.txt"
+ },
+ "note": "travel/off_home computed by keybo.analysis.finger_travel; gauges and time come from the SHIPPED `keybo analyze --json` path, not a reimplementation",
+ "rows": {
+  "BALL-1": {
+   "layout": "flmpg-yuo,sntcdireahkxbwv'.jzq",
+   "travel": {
+    "shares": {
+     "L-pinky": 5.957058882648325,
+     "L-ring": 10.651505793734103,
+     "L-middle": 6.960785083045784,
+     "L-index": 23.421483583360136,
+     "R-index": 26.24909285645803,
+     "R-middle": 7.666109896628473,
+     "R-ring": 15.996298542392005,
+     "R-pinky": 3.097665361733148
+    },
+    "total": 274668629.64305437,
+    "model": "lag1-resolved-path: same-finger bigrams charge the OBSERVED dist(k1,k2); different-finger bigrams charge the MODELLED dist(home, k2) because the corpus cannot say where that finger last was",
+    "denominator": "own total travel of the 8 fingers (space-EXCLUDED bigram mass)",
+    "dispersion": {
+     "max_share": 26.24909285645803,
+     "pinky_share": 9.054724244381473,
+     "lr_ratio": 0.886466177569978,
+     "gini": 0.3493425653022219
+    },
+    "observed_fraction_pct": 6.520145171160642
+   },
+   "travel_static_shares": {
+    "L-pinky": 6.086967756501902,
+    "L-ring": 11.507576638050987,
+    "L-middle": 8.274760588320907,
+    "L-index": 23.591870795127353,
+    "R-index": 24.780482228059633,
+    "R-middle": 7.232348591810722,
+    "R-ring": 16.806632764390663,
+    "R-pinky": 1.719360637737821
+   },
+   "travel_static_total": 563912351.3236122,
+   "travel_slowness_weighted_shares": {
+    "L-pinky": 7.780279140808571,
+    "L-ring": 11.77127827874888,
+    "L-middle": 6.357486892774878,
+    "L-index": 21.391520225675478,
+    "R-index": 23.97405778101438,
+    "R-middle": 7.001680500823865,
+    "R-ring": 17.677958893212047,
+    "R-pinky": 4.045738286941898
+   },
+   "travel_lag2_shares": {
+    "L-pinky": 4.976558987345777,
+    "L-ring": 11.845331123992024,
+    "L-middle": 8.098458206302595,
+    "L-index": 23.56003638276229,
+    "R-index": 26.484820510237967,
+    "R-middle": 8.590111493852486,
+    "R-ring": 14.441137030363699,
+    "R-pinky": 2.003546265143155
+   },
+   "off_home": {
+    "usage": {
+     "L-pinky": 8.774178445387065,
+     "L-ring": 12.243446223325078,
+     "L-middle": 11.931000607363005,
+     "L-index": 13.021864597173979,
+     "R-index": 17.772056998006043,
+     "R-middle": 16.056614297185277,
+     "R-ring": 15.532076342325366,
+     "R-pinky": 4.668762489234184
+    },
+    "on_home": {
+     "L-pinky": 5.97696036819361,
+     "L-ring": 6.955230040109415,
+     "L-middle": 8.128399570520802,
+     "L-index": 6.61141042103344,
+     "R-index": 14.454974192642231,
+     "R-middle": 12.733045480845144,
+     "R-ring": 7.808720664107938,
+     "R-pinky": 3.8786438538992383
+    },
+    "off_home": {
+     "L-pinky": 2.7972180771934547,
+     "L-ring": 5.288216183215664,
+     "L-middle": 3.802601036842203,
+     "L-index": 6.410454176140539,
+     "R-index": 3.317082805363815,
+     "R-middle": 3.3235688163401327,
+     "R-ring": 7.7233556782174295,
+     "R-pinky": 0.7901186353349459
+    },
+    "off_fraction": {
+     "L-pinky": 31.880113843183388,
+     "L-ring": 43.19221963127543,
+     "L-middle": 31.871602072465702,
+     "L-index": 49.228389132012204,
+     "R-index": 18.66459693290416,
+     "R-middle": 20.699063668252617,
+     "R-ring": 49.725197764905765,
+     "R-pinky": 16.923513182709556
+    },
+    "off_fraction_note": "per-finger ratio, NOT a partition \u2014 do not sum",
+    "home_row": 2,
+    "denominator": "layout-restricted, space-EXCLUDED letter mass (each character of each bigram)",
+    "pinky": {
+     "usage": 13.442940934621248,
+     "on_home": 9.855604222092849,
+     "off_home": 3.5873367125284004,
+     "off_fraction": 26.685654054236704,
+     "off_home_keys": [
+      "f(r3)",
+      ",(r3)",
+      "k(r1)",
+      "q(r1)"
+     ]
+    },
+    "total_off_home": 33.452615408648185
+   },
+   "gauges": {
+    "sfr": 2.6595771026964927,
+    "sfb": 2.539124615505356,
+    "sfs": 6.799508454836403,
+    "sfb-dist": 3.026143356194047,
+    "sfs-dist": 7.88495277409988,
+    "lsb": 0.6256489423443929,
+    "lsb-dist": 1.2946289298366132,
+    "alt": 37.13733008655502,
+    "roll": 45.442097658599806,
+    "sr-roll": 17.813072191285166,
+    "redir": 4.420586814037255,
+    "scissor": 0.25671106120493087,
+    "imbalance": 4.8753996439391,
+    "oxey-style": 6.890308386129464,
+    "comfort": 3.38242107
+   },
+   "time": {
+    "ms_per_char": 253.96642626168907,
+    "saved_vs_ref_pct": 1.373488029974238,
+    "coverage_pct": 88.7147352
+   },
+   "bad_scissor_share": 4.65927334377659,
+   "scissor_by_finger": {
+    "LP": 0.011967579795315516,
+    "LR": 0.10038795907012324,
+    "LM": 0.09606379370772876,
+    "LI": 0.007643414432921037,
+    "RI": 0.0044153622407517015,
+    "RM": 0.019580741154612353,
+    "RR": 0.01590879485866947,
+    "RP": 0.0007434159448088178
+   }
+  },
+  "archive-1843": {
+   "layout": "pyou,vgdnmheai.cstlrjz'k-fwbxq",
+   "travel": {
+    "shares": {
+     "L-pinky": 4.398968938368398,
+     "L-ring": 4.77479780649859,
+     "L-middle": 16.621696523100375,
+     "L-index": 18.551357966282495,
+     "R-index": 22.047189190722875,
+     "R-middle": 10.314322818773272,
+     "R-ring": 18.085849013341413,
+     "R-pinky": 5.205817742912588
+    },
+    "total": 270768449.76354533,
+    "model": "lag1-resolved-path: same-finger bigrams charge the OBSERVED dist(k1,k2); different-finger bigrams charge the MODELLED dist(home, k2) because the corpus cannot say where that finger last was",
+    "denominator": "own total travel of the 8 fingers (space-EXCLUDED bigram mass)",
+    "dispersion": {
+     "max_share": 22.047189190722875,
+     "pinky_share": 9.604786681280986,
+     "lr_ratio": 0.796842556305905,
+     "gini": 0.2967097626012681
+    },
+    "observed_fraction_pct": 4.519370992025639
+   },
+   "travel_static_shares": {
+    "L-pinky": 5.529544686971729,
+    "L-ring": 3.4376447517000233,
+    "L-middle": 18.060718724264987,
+    "L-index": 15.192114892803215,
+    "R-index": 24.718999495084926,
+    "R-middle": 10.177698957450753,
+    "R-ring": 16.856309202017645,
+    "R-pinky": 6.026969289706715
+   },
+   "travel_static_total": 540770799.2749039,
+   "travel_slowness_weighted_shares": {
+    "L-pinky": 5.7747908968666,
+    "L-ring": 5.303831109766862,
+    "L-middle": 15.258951024501473,
+    "L-index": 17.03040735054277,
+    "R-index": 20.23962954814002,
+    "R-middle": 9.468693314417633,
+    "R-ring": 20.089706942763463,
+    "R-pinky": 6.83398981300118
+   },
+   "travel_lag2_shares": {
+    "L-pinky": 4.74958366558951,
+    "L-ring": 4.127217024267836,
+    "L-middle": 15.543779635835484,
+    "L-index": 18.13525068243483,
+    "R-index": 23.287644824204996,
+    "R-middle": 10.427298888153336,
+    "R-ring": 17.7486980543569,
+    "R-pinky": 5.980527225157109
+   },
+   "off_home": {
+    "usage": {
+     "L-pinky": 6.315423859599001,
+     "L-ring": 14.247959361074386,
+     "L-middle": 15.767784342451849,
+     "L-index": 13.788123503447558,
+     "R-index": 15.549201347547156,
+     "R-middle": 12.613545224914555,
+     "R-ring": 12.243446223325078,
+     "R-pinky": 9.474516137640418
+    },
+    "on_home": {
+     "L-pinky": 3.8786438538992383,
+     "L-ring": 12.733045480845144,
+     "L-middle": 7.808720664107938,
+     "L-index": 8.542512599730903,
+     "R-index": 9.38885794438359,
+     "R-middle": 8.128399570520802,
+     "R-ring": 4.815146144631905,
+     "R-pinky": 6.818529236091952
+    },
+    "off_home": {
+     "L-pinky": 2.436780005699762,
+     "L-ring": 1.5149138802292437,
+     "L-middle": 7.959063678343911,
+     "L-index": 5.2456109037166545,
+     "R-index": 6.160343403163566,
+     "R-middle": 4.485145654393752,
+     "R-ring": 7.428300078693174,
+     "R-pinky": 2.655986901548465
+    },
+    "off_fraction": {
+     "L-pinky": 38.58458370923161,
+     "L-ring": 10.632497200743064,
+     "L-middle": 50.47674109110943,
+     "L-index": 38.044414835746515,
+     "R-index": 39.61839110235294,
+     "R-middle": 35.558168416715965,
+     "R-ring": 60.671643777398764,
+     "R-pinky": 28.032955593338887
+    },
+    "off_fraction_note": "per-finger ratio, NOT a partition \u2014 do not sum",
+    "home_row": 2,
+    "denominator": "layout-restricted, space-EXCLUDED letter mass (each character of each bigram)",
+    "pinky": {
+     "usage": 15.789939997239419,
+     "on_home": 10.69717308999119,
+     "off_home": 5.092766907248228,
+     "off_fraction": 32.25323787258599,
+     "off_home_keys": [
+      "p(r3)",
+      "m(r3)",
+      "j(r1)",
+      "q(r1)"
+     ]
+    },
+    "total_off_home": 37.88614450578853
+   },
+   "gauges": {
+    "sfr": 2.6595771026964927,
+    "sfb": 1.8052559146408456,
+    "sfs": 7.059760125503526,
+    "sfb-dist": 2.0623744850063015,
+    "sfs-dist": 8.287426833260355,
+    "lsb": 0.8247999816845631,
+    "lsb-dist": 1.7414537309559228,
+    "alt": 45.156072890944024,
+    "roll": 41.4104277043283,
+    "sr-roll": 13.005889169650748,
+    "redir": 2.3466558017393693,
+    "scissor": 0.12025689767835637,
+    "imbalance": 2.077878600654005,
+    "oxey-style": -6.7240770158748635,
+    "comfort": 3.590696318
+   },
+   "time": {
+    "ms_per_char": 254.8436301260482,
+    "saved_vs_ref_pct": 1.032830571026412,
+    "coverage_pct": 88.7147352
+   },
+   "bad_scissor_share": 3.252822963933129,
+   "scissor_by_finger": {
+    "LP": 0.0002826720278774863,
+    "LR": 0.010553180219402117,
+    "LM": 0.046291360391132394,
+    "LI": 0.03602085219960776,
+    "RI": 0.006409767398154767,
+    "RM": 0.01137417095335943,
+    "RR": 0.007144649022013539,
+    "RP": 0.0021802454668088758
+   }
+  },
+  "archive-1846": {
+   "layout": "pyou,vgdnmheai.cstrlkq'z-fbwjx",
+   "travel": {
+    "shares": {
+     "L-pinky": 6.001884212101456,
+     "L-ring": 4.491330400904511,
+     "L-middle": 16.723182573413403,
+     "L-index": 16.882819131355888,
+     "R-index": 22.493935077489464,
+     "R-middle": 10.090771168696383,
+     "R-ring": 17.187155357175925,
+     "R-pinky": 6.128922078862959
+    },
+    "total": 269125268.48538536,
+    "model": "lag1-resolved-path: same-finger bigrams charge the OBSERVED dist(k1,k2); different-finger bigrams charge the MODELLED dist(home, k2) because the corpus cannot say where that finger last was",
+    "denominator": "own total travel of the 8 fingers (space-EXCLUDED bigram mass)",
+    "dispersion": {
+     "max_share": 22.493935077489464,
+     "pinky_share": 12.130806290964415,
+     "lr_ratio": 0.7888836866485268,
+     "gini": 0.2760483637795786
+    },
+    "observed_fraction_pct": 4.1811777878781875
+   },
+   "travel_static_shares": {
+    "L-pinky": 6.915003001297484,
+    "L-ring": 3.4081335428451838,
+    "L-middle": 18.060718724264987,
+    "L-index": 13.841603361893538,
+    "R-index": 25.055790794179117,
+    "R-middle": 9.84090765835656,
+    "R-ring": 16.092843791988876,
+    "R-pinky": 6.784999125174244
+   },
+   "travel_static_total": 540770799.2749039,
+   "travel_slowness_weighted_shares": {
+    "L-pinky": 7.818888424628421,
+    "L-ring": 4.950872483217445,
+    "L-middle": 15.234924162179027,
+    "L-index": 15.380354067227813,
+    "R-index": 20.49211587029769,
+    "R-middle": 9.19275579382815,
+    "R-ring": 18.945703594972432,
+    "R-pinky": 7.9843856036490095
+   },
+   "travel_lag2_shares": {
+    "L-pinky": 6.456998978748011,
+    "L-ring": 3.8925323247411026,
+    "L-middle": 15.60443843341604,
+    "L-index": 16.292758122294284,
+    "R-index": 24.07571565483111,
+    "R-middle": 9.964907887304875,
+    "R-ring": 16.849387837780668,
+    "R-pinky": 6.863260760883911
+   },
+   "off_home": {
+    "usage": {
+     "L-pinky": 6.925972704069666,
+     "L-ring": 14.234954253465629,
+     "L-middle": 15.767784342451849,
+     "L-index": 13.192975135492159,
+     "R-index": 15.697619770796363,
+     "R-middle": 12.465126801665347,
+     "R-ring": 13.910382581551412,
+     "R-pinky": 7.805184410507576
+    },
+    "on_home": {
+     "L-pinky": 3.8786438538992383,
+     "L-ring": 12.733045480845144,
+     "L-middle": 7.808720664107938,
+     "L-index": 8.542512599730903,
+     "R-index": 9.38885794438359,
+     "R-middle": 8.128399570520802,
+     "R-ring": 6.818529236091952,
+     "R-pinky": 4.815146144631905
+    },
+    "off_home": {
+     "L-pinky": 3.047328850170428,
+     "L-ring": 1.5019087726204858,
+     "L-middle": 7.959063678343911,
+     "L-index": 4.650462535761255,
+     "R-index": 6.308761826412773,
+     "R-middle": 4.336727231144544,
+     "R-ring": 7.09185334545946,
+     "R-pinky": 2.990038265875671
+    },
+    "off_fraction": {
+     "L-pinky": 43.99856858199619,
+     "L-ring": 10.550850714921213,
+     "L-middle": 50.47674109110943,
+     "L-index": 35.24953612055581,
+     "R-index": 40.1892893223819,
+     "R-middle": 34.790879388127486,
+     "R-ring": 50.98244641283268,
+     "R-pinky": 38.308361578880714
+    },
+    "off_fraction_note": "per-finger ratio, NOT a partition \u2014 do not sum",
+    "home_row": 2,
+    "denominator": "layout-restricted, space-EXCLUDED letter mass (each character of each bigram)",
+    "pinky": {
+     "usage": 14.731157114577243,
+     "on_home": 8.693789998531143,
+     "off_home": 6.037367116046099,
+     "off_fraction": 40.983658439647016,
+     "off_home_keys": [
+      "p(r3)",
+      "m(r3)",
+      "k(r1)",
+      "x(r1)"
+     ]
+    },
+    "total_off_home": 37.88614450578853
+   },
+   "gauges": {
+    "sfr": 2.6595771026964927,
+    "sfb": 1.6938917149209416,
+    "sfs": 6.951391307601413,
+    "sfb-dist": 1.919678109051214,
+    "sfs-dist": 8.284662180156506,
+    "lsb": 0.8083551067238387,
+    "lsb-dist": 1.702398966115948,
+    "alt": 45.14723121046257,
+    "roll": 41.51365434535355,
+    "sr-roll": 13.009991514187098,
+    "redir": 2.631199607178357,
+    "scissor": 0.11041091724691095,
+    "imbalance": 2.053552696182213,
+    "oxey-style": -7.540874276635989,
+    "comfort": 3.563255538
+   },
+   "time": {
+    "ms_per_char": 254.79607073512582,
+    "saved_vs_ref_pct": 1.0513000077434487,
+    "coverage_pct": 88.7147352
+   },
+   "bad_scissor_share": 3.751081210312482,
+   "scissor_by_finger": {
+    "LP": 0.00456367342085154,
+    "LR": 0.0103844085518964,
+    "LM": 0.017158197562881977,
+    "LI": 0.011337462431837118,
+    "RI": 0.004693985936896474,
+    "RM": 0.03293060740790744,
+    "RR": 0.028789601702825487,
+    "RP": 0.0005529802318145213
+   }
+  },
+  "arm-B": {
+   "layout": "flmpg-yuo,sntdcireahkxbwv'.jzq",
+   "travel": {
+    "shares": {
+     "L-pinky": 6.0793293938208635,
+     "L-ring": 10.870131307400023,
+     "L-middle": 7.103657390846075,
+     "L-index": 21.849685397115838,
+     "R-index": 26.7878637607919,
+     "R-middle": 7.823459218538971,
+     "R-ring": 16.324627611850065,
+     "R-pinky": 3.161245919636278
+    },
+    "total": 269144356.8863171,
+    "model": "lag1-resolved-path: same-finger bigrams charge the OBSERVED dist(k1,k2); different-finger bigrams charge the MODELLED dist(home, k2) because the corpus cannot say where that finger last was",
+    "denominator": "own total travel of the 8 fingers (space-EXCLUDED bigram mass)",
+    "dispersion": {
+     "max_share": 26.7878637607919,
+     "pinky_share": 9.240575313457141,
+     "lr_ratio": 0.8485246269648027,
+     "gini": 0.34368460957054653
+    },
+    "observed_fraction_pct": 6.680391089612144
+   },
+   "travel_static_shares": {
+    "L-pinky": 6.058965280716159,
+    "L-ring": 11.454637202678523,
+    "L-middle": 8.236693394230754,
+    "L-index": 23.94337861864225,
+    "R-index": 24.66648214110188,
+    "R-middle": 7.199076908040112,
+    "R-ring": 16.729315560513246,
+    "R-pinky": 1.7114508940770656
+   },
+   "travel_static_total": 566518562.3236122,
+   "travel_slowness_weighted_shares": {
+    "L-pinky": 7.925872095822377,
+    "L-ring": 11.99155510402417,
+    "L-middle": 6.476455028291471,
+    "L-index": 19.920513767892082,
+    "R-index": 24.422686146763073,
+    "R-middle": 7.132703480299066,
+    "R-ring": 18.008767881847877,
+    "R-pinky": 4.121446495059884
+   },
+   "travel_lag2_shares": {
+    "L-pinky": 4.977427507920401,
+    "L-ring": 11.847398398552736,
+    "L-middle": 8.099871567943197,
+    "L-index": 23.546695903669427,
+    "R-index": 26.48944270231624,
+    "R-middle": 8.591610659960976,
+    "R-ring": 14.443657330969744,
+    "R-pinky": 2.0038959286672715
+   },
+   "off_home": {
+    "usage": {
+     "L-pinky": 8.774178445387065,
+     "L-ring": 12.243446223325078,
+     "L-middle": 11.931000607363005,
+     "L-index": 13.021864597173979,
+     "R-index": 17.772056998006043,
+     "R-middle": 16.056614297185277,
+     "R-ring": 15.532076342325366,
+     "R-pinky": 4.668762489234184
+    },
+    "on_home": {
+     "L-pinky": 5.97696036819361,
+     "L-ring": 6.955230040109415,
+     "L-middle": 8.128399570520802,
+     "L-index": 6.61141042103344,
+     "R-index": 14.454974192642231,
+     "R-middle": 12.733045480845144,
+     "R-ring": 7.808720664107938,
+     "R-pinky": 3.8786438538992383
+    },
+    "off_home": {
+     "L-pinky": 2.7972180771934547,
+     "L-ring": 5.288216183215664,
+     "L-middle": 3.802601036842203,
+     "L-index": 6.410454176140539,
+     "R-index": 3.317082805363815,
+     "R-middle": 3.3235688163401327,
+     "R-ring": 7.7233556782174295,
+     "R-pinky": 0.7901186353349459
+    },
+    "off_fraction": {
+     "L-pinky": 31.880113843183388,
+     "L-ring": 43.19221963127543,
+     "L-middle": 31.871602072465702,
+     "L-index": 49.228389132012204,
+     "R-index": 18.66459693290416,
+     "R-middle": 20.699063668252617,
+     "R-ring": 49.725197764905765,
+     "R-pinky": 16.923513182709556
+    },
+    "off_fraction_note": "per-finger ratio, NOT a partition \u2014 do not sum",
+    "home_row": 2,
+    "denominator": "layout-restricted, space-EXCLUDED letter mass (each character of each bigram)",
+    "pinky": {
+     "usage": 13.442940934621248,
+     "on_home": 9.855604222092849,
+     "off_home": 3.5873367125284004,
+     "off_fraction": 26.685654054236704,
+     "off_home_keys": [
+      "f(r3)",
+      ",(r3)",
+      "k(r1)",
+      "q(r1)"
+     ]
+    },
+    "total_off_home": 33.452615408648185
+   },
+   "gauges": {
+    "sfr": 2.6595771026964927,
+    "sfb": 2.539124615505356,
+    "sfs": 6.799508454836403,
+    "sfb-dist": 3.0423296718509327,
+    "sfs-dist": 8.005623911481186,
+    "lsb": 1.1410913569660872,
+    "lsb-dist": 2.322675604674633,
+    "alt": 37.13733008655502,
+    "roll": 45.442097658599806,
+    "sr-roll": 17.813072191285166,
+    "redir": 4.420586814037255,
+    "scissor": 0.25671106120493087,
+    "imbalance": 4.8753996439391,
+    "oxey-style": 7.928391346911058,
+    "comfort": 3.4140465
+   },
+   "time": {
+    "ms_per_char": 253.90057910352797,
+    "saved_vs_ref_pct": 1.399059423910686,
+    "coverage_pct": 88.7147352
+   },
+   "bad_scissor_share": 4.65927334377659,
+   "scissor_by_finger": {
+    "LP": 0.011967579795315516,
+    "LR": 0.10038795907012324,
+    "LM": 0.09606379370772876,
+    "LI": 0.007643414432921037,
+    "RI": 0.0044153622407517015,
+    "RM": 0.019580741154612353,
+    "RR": 0.01590879485866947,
+    "RP": 0.0007434159448088178
+   }
+  },
+  "armH-hdln": {
+   "layout": "flmpg-,uoysntcdireahkxvwb.'jzq",
+   "travel": {
+    "shares": {
+     "L-pinky": 5.922887494831874,
+     "L-ring": 10.590405720278888,
+     "L-middle": 7.165622344884626,
+     "L-index": 22.682913771280237,
+     "R-index": 25.889957073280083,
+     "R-middle": 7.622134905029136,
+     "R-ring": 15.904539214191981,
+     "R-pinky": 4.22153947622318
+    },
+    "total": 276253297.3026605,
+    "model": "lag1-resolved-path: same-finger bigrams charge the OBSERVED dist(k1,k2); different-finger bigrams charge the MODELLED dist(home, k2) because the corpus cannot say where that finger last was",
+    "denominator": "own total travel of the 8 fingers (space-EXCLUDED bigram mass)",
+    "dispersion": {
+     "max_share": 25.889957073280083,
+     "pinky_share": 10.144426971055054,
+     "lr_ratio": 0.8643439691038628,
+     "gini": 0.33083009498101495
+    },
+    "observed_fraction_pct": 5.670183417745726
+   },
+   "travel_static_shares": {
+    "L-pinky": 6.050710684036684,
+    "L-ring": 11.43903166512597,
+    "L-middle": 7.908664901775049,
+    "L-index": 23.8993783947462,
+    "R-index": 23.557616605222577,
+    "R-middle": 7.189269049175245,
+    "R-ring": 16.706523920971225,
+    "R-pinky": 3.2488047789470578
+   },
+   "travel_static_total": 567291427.2790885,
+   "travel_slowness_weighted_shares": {
+    "L-pinky": 7.704934118346483,
+    "L-ring": 11.657284010642497,
+    "L-middle": 6.518584870618582,
+    "L-index": 20.634704344496676,
+    "R-index": 23.552159792418617,
+    "R-middle": 6.933875507576268,
+    "R-ring": 17.506763723246138,
+    "R-pinky": 5.491693632654728
+   },
+   "travel_lag2_shares": {
+    "L-pinky": 4.981712282040348,
+    "L-ring": 11.857597125900554,
+    "L-middle": 8.237671168931016,
+    "L-index": 22.92860005663839,
+    "R-index": 25.594112198289537,
+    "R-middle": 8.599006671443991,
+    "R-ring": 14.456091024686156,
+    "R-pinky": 3.345209472070006
+   },
+   "off_home": {
+    "usage": {
+     "L-pinky": 8.774178445387065,
+     "L-ring": 12.243446223325078,
+     "L-middle": 11.78454206103431,
+     "L-index": 13.168323143502676,
+     "R-index": 17.060266860720503,
+     "R-middle": 16.056614297185277,
+     "R-ring": 15.532076342325366,
+     "R-pinky": 5.380552626519724
+    },
+    "on_home": {
+     "L-pinky": 5.97696036819361,
+     "L-ring": 6.955230040109415,
+     "L-middle": 8.128399570520802,
+     "L-index": 6.61141042103344,
+     "R-index": 14.454974192642231,
+     "R-middle": 12.733045480845144,
+     "R-ring": 7.808720664107938,
+     "R-pinky": 3.8786438538992383
+    },
+    "off_home": {
+     "L-pinky": 2.7972180771934547,
+     "L-ring": 5.288216183215664,
+     "L-middle": 3.656142490513507,
+     "L-index": 6.556912722469235,
+     "R-index": 2.6052926680782744,
+     "R-middle": 3.3235688163401327,
+     "R-ring": 7.7233556782174295,
+     "R-pinky": 1.5019087726204858
+    },
+    "off_fraction": {
+     "L-pinky": 31.880113843183388,
+     "L-ring": 43.19221963127543,
+     "L-middle": 31.024900853827607,
+     "L-index": 49.79307274749293,
+     "R-index": 15.271113220841176,
+     "R-middle": 20.699063668252617,
+     "R-ring": 49.725197764905765,
+     "R-pinky": 27.913652683515487
+    },
+    "off_fraction_note": "per-finger ratio, NOT a partition \u2014 do not sum",
+    "home_row": 2,
+    "denominator": "layout-restricted, space-EXCLUDED letter mass (each character of each bigram)",
+    "pinky": {
+     "usage": 14.154731071906788,
+     "on_home": 9.855604222092849,
+     "off_home": 4.29912684981394,
+     "off_fraction": 30.372366864295383,
+     "off_home_keys": [
+      "f(r3)",
+      "y(r3)",
+      "k(r1)",
+      "q(r1)"
+     ]
+    },
+    "total_off_home": 33.452615408648185
+   },
+   "gauges": {
+    "sfr": 2.6595771026964927,
+    "sfb": 2.25157978588779,
+    "sfs": 6.798461329194223,
+    "sfb-dist": 2.6259362911160804,
+    "sfs-dist": 7.992464940876671,
+    "lsb": 0.7451161941106238,
+    "lsb-dist": 1.6076289342681354,
+    "alt": 37.13733008655502,
+    "roll": 45.90627047279364,
+    "sr-roll": 17.828765168138528,
+    "redir": 4.3589437684147185,
+    "scissor": 0.10520651326857904,
+    "imbalance": 4.8753996439391,
+    "oxey-style": 3.5927195246405175,
+    "comfort": 3.32498878
+   },
+   "time": {
+    "ms_per_char": 254.0396270430946,
+    "saved_vs_ref_pct": 1.3450608955306151,
+    "coverage_pct": 88.7147352
+   },
+   "bad_scissor_share": 4.345016002920678,
+   "scissor_by_finger": {
+    "LP": 0.011967579795315516,
+    "LR": 0.02045665790288919,
+    "LM": 0.015008150462511725,
+    "LI": 0.006519072354938049,
+    "RI": 0.007552764626419586,
+    "RM": 0.022718143540280237,
+    "RR": 0.01807476175004269,
+    "RP": 0.0029093828361820397
+   }
+  },
+  "colemak": {
+   "layout": "qwfpgjluy;arstdhneiozxcvbkm,./",
+   "travel": {
+    "shares": {
+     "L-pinky": 0.7420314485969824,
+     "L-ring": 3.338843273624855,
+     "L-middle": 12.660800882077453,
+     "L-index": 29.378610782100377,
+     "R-index": 31.79131658638889,
+     "R-middle": 12.315906397806636,
+     "R-ring": 9.121062724226139,
+     "R-pinky": 0.651427905178673
+    },
+    "total": 220791585.4641666,
+    "model": "lag1-resolved-path: same-finger bigrams charge the OBSERVED dist(k1,k2); different-finger bigrams charge the MODELLED dist(home, k2) because the corpus cannot say where that finger last was",
+    "denominator": "own total travel of the 8 fingers (space-EXCLUDED bigram mass)",
+    "dispersion": {
+     "max_share": 31.79131658638889,
+     "pinky_share": 1.3934593537756554,
+     "lr_ratio": 0.8559861085593813,
+     "gini": 0.49040354241865847
+    },
+    "observed_fraction_pct": 5.357690170755592
+   },
+   "travel_static_shares": {
+    "L-pinky": 0.7734840936578197,
+    "L-ring": 4.318986713555196,
+    "L-middle": 14.68245034838511,
+    "L-index": 29.71108154238746,
+    "R-index": 33.61877989114833,
+    "R-middle": 10.302831858800449,
+    "R-ring": 6.107702782216294,
+    "R-pinky": 0.48468276984933367
+   },
+   "travel_static_total": 451218845.8194697,
+   "travel_slowness_weighted_shares": {
+    "L-pinky": 1.0280454181556768,
+    "L-ring": 3.9141309975349006,
+    "L-middle": 12.26634375172046,
+    "L-index": 28.463297239859372,
+    "R-index": 30.800833312247075,
+    "R-middle": 11.93219472421881,
+    "R-ring": 10.692635566746565,
+    "R-pinky": 0.9025189895171364
+   },
+   "travel_lag2_shares": {
+    "L-pinky": 0.88900842061,
+    "L-ring": 3.3253884069331887,
+    "L-middle": 12.907390372422709,
+    "L-index": 30.204867601939956,
+    "R-index": 33.20752419927097,
+    "R-middle": 11.882889197340326,
+    "R-ring": 6.993045905520979,
+    "R-pinky": 0.589885895961869
+   },
+   "off_home": {
+    "usage": {
+     "L-pinky": 8.21130152548595,
+     "L-ring": 8.49454245443579,
+     "L-middle": 11.47383465008288,
+     "L-index": 17.989253635273073,
+     "R-index": 19.21330449040855,
+     "R-middle": 16.733874745523963,
+     "R-ring": 10.033926822413001,
+     "R-pinky": 7.849961676376793
+    },
+    "on_home": {
+     "L-pinky": 7.921985898969111,
+     "L-ring": 6.87905952828926,
+     "L-middle": 5.981979864476076,
+     "L-index": 11.389616351443516,
+     "R-index": 10.936805306096335,
+     "R-middle": 12.88018172382212,
+     "R-ring": 7.749388754333116,
+     "R-pinky": 7.668669907909074
+    },
+    "off_home": {
+     "L-pinky": 0.28931562651684034,
+     "L-ring": 1.6154829261465293,
+     "L-middle": 5.491854785606804,
+     "L-index": 6.599637283829557,
+     "R-index": 8.276499184312215,
+     "R-middle": 3.853693021701843,
+     "R-ring": 2.2845380680798844,
+     "R-pinky": 0.18129176846771974
+    },
+    "off_fraction": {
+     "L-pinky": 3.5233832982368583,
+     "L-ring": 19.017892191508626,
+     "L-middle": 47.86416183509437,
+     "L-index": 36.68655419304935,
+     "R-index": 43.07691677110471,
+     "R-middle": 23.029292858383815,
+     "R-ring": 22.768135631374765,
+     "R-pinky": 2.3094605546073987
+    },
+    "off_fraction_note": "per-finger ratio, NOT a partition \u2014 do not sum",
+    "home_row": 2,
+    "denominator": "layout-restricted, space-EXCLUDED letter mass (each character of each bigram)",
+    "pinky": {
+     "usage": 16.061263201862744,
+     "on_home": 15.590655806878186,
+     "off_home": 0.47060739498456006,
+     "off_fraction": 2.930077099601856,
+     "off_home_keys": [
+      "q(r3)",
+      ";(r3)",
+      "z(r1)",
+      "/(r1)"
+     ]
+    },
+    "total_off_home": 28.592312664661392
+   },
+   "gauges": {
+    "sfr": 2.664409719628846,
+    "sfb": 1.6928389328685944,
+    "sfs": 8.920443251990854,
+    "sfb-dist": 2.026232593006893,
+    "sfs-dist": 10.984748322805057,
+    "lsb": 2.5640983342839565,
+    "lsb-dist": 5.202628064988363,
+    "alt": 32.031692329544256,
+    "roll": 45.58137703405669,
+    "sr-roll": 16.96243754210151,
+    "redir": 10.689677236987732,
+    "scissor": 0.29154323860861386,
+    "imbalance": 3.9899295181100713,
+    "oxey-style": 14.253940349662585,
+    "comfort": 3.499188527
+   },
+   "time": {
+    "ms_per_char": 258.2352887819392,
+    "saved_vs_ref_pct": 2.0775389640990953,
+    "coverage_pct": 86.6253743
+   },
+   "bad_scissor_share": 9.355455530363846,
+   "scissor_by_finger": {
+    "LP": 0.0007994257940522164,
+    "LR": 0.003919747225572184,
+    "LM": 0.0074064350324861365,
+    "LI": 0.0042861136009661694,
+    "RI": 0.10381161876319143,
+    "RM": 0.1352470339827777,
+    "RR": 0.03375413971457716,
+    "RP": 0.002318724494990868
+   }
+  },
+  "dvorak": {
+   "layout": "',.pyfgcrlaoeuidhtns;qjkxbmwvz",
+   "travel": {
+    "shares": {
+     "L-pinky": 1.0984255570287496,
+     "L-ring": 3.100528638409169,
+     "L-middle": 3.5615266447411407,
+     "L-index": 28.95635329818068,
+     "R-index": 26.012228396094542,
+     "R-middle": 8.731577642000143,
+     "R-ring": 18.18680574196907,
+     "R-pinky": 10.352554081576512
+    },
+    "total": 272910073.95247084,
+    "model": "lag1-resolved-path: same-finger bigrams charge the OBSERVED dist(k1,k2); different-finger bigrams charge the MODELLED dist(home, k2) because the corpus cannot say where that finger last was",
+    "denominator": "own total travel of the 8 fingers (space-EXCLUDED bigram mass)",
+    "dispersion": {
+     "max_share": 28.95635329818068,
+     "pinky_share": 11.450979638605261,
+     "lr_ratio": 0.5801990725090449,
+     "gini": 0.4438260083846881
+    },
+    "observed_fraction_pct": 8.114273486172202
+   },
+   "travel_static_shares": {
+    "L-pinky": 1.0093934198484489,
+    "L-ring": 1.745100035466428,
+    "L-middle": 2.3162705342679657,
+    "L-index": 29.3783829048074,
+    "R-index": 26.97330228952475,
+    "R-middle": 10.017825836319272,
+    "R-ring": 17.590389831017372,
+    "R-pinky": 10.969335148748359
+   },
+   "travel_static_total": 551731752.0096531,
+   "travel_slowness_weighted_shares": {
+    "L-pinky": 1.4358600949658893,
+    "L-ring": 3.429466593815116,
+    "L-middle": 3.2556795914725085,
+    "L-index": 26.469718713337446,
+    "R-index": 23.778421324724338,
+    "R-middle": 7.981751076435837,
+    "R-ring": 20.116260810378915,
+    "R-pinky": 13.532841794869942
+   },
+   "travel_lag2_shares": {
+    "L-pinky": 0.9649563830683185,
+    "L-ring": 1.9842611069838316,
+    "L-middle": 3.0011909229844242,
+    "L-index": 29.220807978284732,
+    "R-index": 23.873045797597626,
+    "R-middle": 10.131186641139848,
+    "R-ring": 19.254033176824873,
+    "R-pinky": 11.57051799311634
+   },
+   "off_home": {
+    "usage": {
+     "L-pinky": 8.341434890376183,
+     "L-ring": 8.415789114003731,
+     "L-middle": 13.880364019721776,
+     "L-index": 15.819596186648438,
+     "R-index": 14.803389149338473,
+     "R-middle": 12.734791987456068,
+     "R-ring": 15.003172914495847,
+     "R-pinky": 11.001461737959485
+    },
+    "on_home": {
+     "L-pinky": 7.882293655763492,
+     "L-ring": 7.62199814107763,
+     "L-middle": 12.82676559923627,
+     "L-index": 10.929195650172966,
+     "R-index": 7.112966470444665,
+     "R-middle": 8.177998935136463,
+     "R-ring": 7.001859308206994,
+     "R-pinky": 6.011857106067906
+    },
+    "off_home": {
+     "L-pinky": 0.4591412346126904,
+     "L-ring": 0.7937909729261019,
+     "L-middle": 1.053598420485507,
+     "L-index": 4.890400536475471,
+     "R-index": 7.690422678893808,
+     "R-middle": 4.556793052319605,
+     "R-ring": 8.001313606288853,
+     "R-pinky": 4.989604631891578
+    },
+    "off_fraction": {
+     "L-pinky": 5.504343564947302,
+     "L-ring": 9.432163308432328,
+     "L-middle": 7.590567646414115,
+     "L-index": 30.913561122393972,
+     "R-index": 51.95041892982645,
+     "R-middle": 35.7822338740052,
+     "R-ring": 53.33080976863301,
+     "R-pinky": 45.35401522758951
+    },
+    "off_fraction_note": "per-finger ratio, NOT a partition \u2014 do not sum",
+    "home_row": 2,
+    "denominator": "layout-restricted, space-EXCLUDED letter mass (each character of each bigram)",
+    "pinky": {
+     "usage": 19.342896628335666,
+     "on_home": 13.894150761831398,
+     "off_home": 5.448745866504268,
+     "off_fraction": 28.169234273435183,
+     "off_home_keys": [
+      "'(r3)",
+      "l(r3)",
+      ";(r1)",
+      "z(r1)"
+     ]
+    },
+    "total_off_home": 32.435065133893616
+   },
+   "gauges": {
+    "sfr": 2.6506231461343184,
+    "sfb": 3.179708192381828,
+    "sfs": 7.445906443989586,
+    "sfb-dist": 3.8013491445071845,
+    "sfs-dist": 9.441313963487193,
+    "lsb": 1.030534115897086,
+    "lsb-dist": 2.2913818735899087,
+    "alt": 45.82909844214439,
+    "roll": 37.523585631441065,
+    "sr-roll": 14.915108061287047,
+    "redir": 3.465846035477644,
+    "scissor": 0.08751515898052772,
+    "imbalance": 8.685033545449961,
+    "oxey-style": 19.566783440796808,
+    "comfort": 3.491100248
+   },
+   "time": {
+    "ms_per_char": 255.02401350671138,
+    "saved_vs_ref_pct": 2.325001128989137,
+    "coverage_pct": 87.4944958
+   },
+   "bad_scissor_share": 5.824726646051481,
+   "scissor_by_finger": {
+    "LP": 0.0007491209298762356,
+    "LR": 0.0022201802911038077,
+    "LM": 0.01083614833980498,
+    "LI": 0.009365088978577407,
+    "RI": 0.004101187089434534,
+    "RM": 0.0244092759365713,
+    "RR": 0.028071123131148117,
+    "RP": 0.007763034284011348
+   }
+  },
+  "flagship-c3": {
+   "layout": "pyou'vgdnmheai.cstrlkjz,-wfbxq",
+   "travel": {
+    "shares": {
+     "L-pinky": 6.098042808890045,
+     "L-ring": 4.687253055431965,
+     "L-middle": 16.587347442130444,
+     "L-index": 16.910104937167425,
+     "R-index": 21.522622658533194,
+     "R-middle": 10.543557196117884,
+     "R-ring": 18.317510580957162,
+     "R-pinky": 5.333561320771883
+    },
+    "total": 264881495.6899272,
+    "model": "lag1-resolved-path: same-finger bigrams charge the OBSERVED dist(k1,k2); different-finger bigrams charge the MODELLED dist(home, k2) because the corpus cannot say where that finger last was",
+    "denominator": "own total travel of the 8 fingers (space-EXCLUDED bigram mass)",
+    "dispersion": {
+     "max_share": 21.522622658533194,
+     "pinky_share": 11.431604129661928,
+     "lr_ratio": 0.7947762469915632,
+     "gini": 0.27655913769184964
+    },
+    "observed_fraction_pct": 4.372068591310812
+   },
+   "travel_static_shares": {
+    "L-pinky": 6.9923064536825965,
+    "L-ring": 3.440737040764867,
+    "L-middle": 17.721772873270822,
+    "L-index": 14.286872117203616,
+    "R-index": 24.127742368608274,
+    "R-middle": 10.291476386990505,
+    "R-ring": 17.044747427647106,
+    "R-pinky": 6.094345331832215
+   },
+   "travel_static_total": 534792307.05493116,
+   "travel_slowness_weighted_shares": {
+    "L-pinky": 7.945760506669652,
+    "L-ring": 5.167883749161442,
+    "L-middle": 15.114225800602794,
+    "L-index": 15.408319215830572,
+    "R-index": 19.61119942878945,
+    "R-middle": 9.607184316820979,
+    "R-ring": 20.19578719922503,
+    "R-pinky": 6.949639782900087
+   },
+   "travel_lag2_shares": {
+    "L-pinky": 6.521488212992923,
+    "L-ring": 4.0118651326189045,
+    "L-middle": 15.360809971367576,
+    "L-index": 16.54084139540557,
+    "R-index": 23.171980313850483,
+    "R-middle": 10.572539872905432,
+    "R-ring": 17.719640836701913,
+    "R-pinky": 6.100834264157193
+   },
+   "off_home": {
+    "usage": {
+     "L-pinky": 6.925972704069666,
+     "L-ring": 14.23255888455912,
+     "L-middle": 15.532076342325366,
+     "L-index": 13.428683135618641,
+     "R-index": 15.549201347547156,
+     "R-middle": 12.613545224914555,
+     "R-ring": 14.246829314785126,
+     "R-pinky": 7.471133046180371
+    },
+    "on_home": {
+     "L-pinky": 3.8786438538992383,
+     "L-ring": 12.733045480845144,
+     "L-middle": 7.808720664107938,
+     "L-index": 8.542512599730903,
+     "R-index": 9.38885794438359,
+     "R-middle": 8.128399570520802,
+     "R-ring": 6.818529236091952,
+     "R-pinky": 4.815146144631905
+    },
+    "off_home": {
+     "L-pinky": 3.047328850170428,
+     "L-ring": 1.4995134037139777,
+     "L-middle": 7.7233556782174295,
+     "L-index": 4.886170535887737,
+     "R-index": 6.160343403163566,
+     "R-middle": 4.485145654393752,
+     "R-ring": 7.428300078693174,
+     "R-pinky": 2.655986901548465
+    },
+    "off_fraction": {
+     "L-pinky": 43.99856858199619,
+     "L-ring": 10.53579623928904,
+     "L-middle": 49.725197764905765,
+     "L-index": 36.38607364952645,
+     "R-index": 39.61839110235294,
+     "R-middle": 35.558168416715965,
+     "R-ring": 52.14002298030064,
+     "R-pinky": 35.5499880022394
+    },
+    "off_fraction_note": "per-finger ratio, NOT a partition \u2014 do not sum",
+    "home_row": 2,
+    "denominator": "layout-restricted, space-EXCLUDED letter mass (each character of each bigram)",
+    "pinky": {
+     "usage": 14.397105750250038,
+     "on_home": 8.693789998531143,
+     "off_home": 5.703315751718893,
+     "off_fraction": 39.61432145221162,
+     "off_home_keys": [
+      "p(r3)",
+      "m(r3)",
+      "k(r1)",
+      "q(r1)"
+     ]
+    },
+    "total_off_home": 37.88614450578853
+   },
+   "gauges": {
+    "sfr": 2.6595771026964927,
+    "sfb": 1.6538458472490638,
+    "sfs": 6.771728107316596,
+    "sfb-dist": 1.928972591879256,
+    "sfs-dist": 8.131026071225804,
+    "lsb": 0.7966817375198627,
+    "lsb-dist": 1.6852172426265222,
+    "alt": 45.156072890944024,
+    "roll": 41.76079973449445,
+    "sr-roll": 12.953200819114445,
+    "redir": 2.493932453490948,
+    "scissor": 0.08889392467316412,
+    "imbalance": 2.077878600654005,
+    "oxey-style": -8.96889478030558,
+    "comfort": 3.605551773
+   },
+   "time": {
+    "ms_per_char": 254.9761188060974,
+    "saved_vs_ref_pct": 0.9813792962216797,
+    "coverage_pct": 88.7147352
+   },
+   "bad_scissor_share": 3.51351038995623,
+   "scissor_by_finger": {
+    "LP": 0.004560664525644793,
+    "LR": 0.021545330895875833,
+    "LM": 0.02526383300674493,
+    "LI": 0.00827916663651389,
+    "RI": 0.007477815782178798,
+    "RM": 0.01244221933738346,
+    "RR": 0.007144649022013539,
+    "RP": 0.0021802454668088758
+   }
+  },
+  "graphite": {
+   "layout": "bldwz'foujnrtsgyhaeixqmcvkp,.-",
+   "travel": {
+    "shares": {
+     "L-pinky": 3.312869050981814,
+     "L-ring": 11.046534051089107,
+     "L-middle": 14.89352321276839,
+     "L-index": 18.56011602464817,
+     "R-index": 17.850757981278466,
+     "R-middle": 20.81658246068833,
+     "R-ring": 11.685399627326126,
+     "R-pinky": 1.8342175912195913
+    },
+    "total": 243996242.39914978,
+    "model": "lag1-resolved-path: same-finger bigrams charge the OBSERVED dist(k1,k2); different-finger bigrams charge the MODELLED dist(home, k2) because the corpus cannot say where that finger last was",
+    "denominator": "own total travel of the 8 fingers (space-EXCLUDED bigram mass)",
+    "dispersion": {
+     "max_share": 20.81658246068833,
+     "pinky_share": 5.147086642201405,
+     "lr_ratio": 0.9161875779485308,
+     "gini": 0.2909169804132791
+    },
+    "observed_fraction_pct": 4.282958045563141
+   },
+   "travel_static_shares": {
+    "L-pinky": 4.282317519097321,
+    "L-ring": 12.063042269437778,
+    "L-middle": 13.919228634198287,
+    "L-index": 19.988459752216457,
+    "R-index": 17.81903172045889,
+    "R-middle": 20.02104223008274,
+    "R-ring": 9.966198641571236,
+    "R-pinky": 1.9406792329372828
+   },
+   "travel_static_total": 503964428.2273861,
+   "travel_slowness_weighted_shares": {
+    "L-pinky": 4.428019114024972,
+    "L-ring": 12.493398293867468,
+    "L-middle": 13.920877966327787,
+    "L-index": 17.34801809678624,
+    "R-index": 16.68498580985786,
+    "R-middle": 19.45712239954113,
+    "R-ring": 13.215941859410844,
+    "R-pinky": 2.451636460183701
+   },
+   "travel_lag2_shares": {
+    "L-pinky": 3.42420236739906,
+    "L-ring": 12.277331898284663,
+    "L-middle": 15.147825399586246,
+    "L-index": 20.929610182934606,
+    "R-index": 15.906626182523013,
+    "R-middle": 17.933134047357704,
+    "R-ring": 12.106784464684031,
+    "R-pinky": 2.2744854572306736
+   },
+   "off_home": {
+    "usage": {
+     "L-pinky": 8.713932888243464,
+     "L-ring": 11.77269405498041,
+     "L-middle": 13.844880642656175,
+     "L-index": 13.651179202039723,
+     "R-index": 10.726640511798136,
+     "R-middle": 16.03115252153845,
+     "R-ring": 16.82605863501586,
+     "R-pinky": 8.433461543727788
+    },
+    "on_home": {
+     "L-pinky": 6.955230040109415,
+     "L-ring": 6.818529236091952,
+     "L-middle": 8.128399570520802,
+     "L-index": 7.810869194461754,
+     "R-index": 5.241533952263171,
+     "R-middle": 7.808720664107938,
+     "R-ring": 12.733045480845144,
+     "R-pinky": 7.636444956550278
+    },
+    "off_home": {
+     "L-pinky": 1.7587028481340496,
+     "L-ring": 4.954164818888458,
+     "L-middle": 5.716481072135373,
+     "L-index": 5.840310007577968,
+     "R-index": 5.485106559534964,
+     "R-middle": 8.22243185743051,
+     "R-ring": 4.0930131541707135,
+     "R-pinky": 0.7970165871775086
+    },
+    "off_fraction": {
+     "L-pinky": 20.18265312218356,
+     "L-ring": 42.08182762375117,
+     "L-middle": 41.28949334906402,
+     "L-index": 42.78245799238592,
+     "R-index": 51.13536296384637,
+     "R-middle": 51.29033515452721,
+     "R-ring": 24.325442119005523,
+     "R-pinky": 9.450645894867135
+    },
+    "off_fraction_note": "per-finger ratio, NOT a partition \u2014 do not sum",
+    "home_row": 2,
+    "denominator": "layout-restricted, space-EXCLUDED letter mass (each character of each bigram)",
+    "pinky": {
+     "usage": 17.14739443197125,
+     "on_home": 14.591674996659693,
+     "off_home": 2.555719435311558,
+     "off_fraction": 14.904418542717075,
+     "off_home_keys": [
+      "b(r3)",
+      "j(r3)",
+      "x(r1)",
+      "-(r1)"
+     ]
+    },
+    "total_off_home": 36.86722690504955
+   },
+   "gauges": {
+    "sfr": 2.6595771026964927,
+    "sfb": 1.52566973366407,
+    "sfs": 6.877768232942885,
+    "sfb-dist": 1.85484090763163,
+    "sfs-dist": 8.22520608200641,
+    "lsb": 0.5593501769822644,
+    "lsb-dist": 1.2424128784224684,
+    "alt": 44.07633884838469,
+    "roll": 42.46568616536896,
+    "sr-roll": 14.341745342846863,
+    "redir": 3.213103459515324,
+    "scissor": 0.5173238388852289,
+    "imbalance": 2.49586541227071,
+    "oxey-style": -7.579990732118606,
+    "comfort": 3.98099314
+   },
+   "time": {
+    "ms_per_char": 258.1695631301549,
+    "saved_vs_ref_pct": -0.25877783591724646,
+    "coverage_pct": 88.7147352
+   },
+   "bad_scissor_share": 5.417253501760989,
+   "scissor_by_finger": {
+    "LP": 0.0011864347336131306,
+    "LR": 0.011114858893723416,
+    "LM": 0.01881828710922266,
+    "LI": 0.008889862949112376,
+    "RI": 0.21674013137790565,
+    "RM": 0.22878900605098892,
+    "RR": 0.02191706622187303,
+    "RP": 0.009868191548789769
+   }
+  },
+  "keybo-c30m": {
+   "layout": "fyu,.vgdnlhieaocstrmkj'q-bwpxz",
+   "travel": {
+    "shares": {
+     "L-pinky": 5.647950995062061,
+     "L-ring": 4.225128246738262,
+     "L-middle": 7.853641179514908,
+     "L-index": 24.528398806050525,
+     "R-index": 18.360133387680552,
+     "R-middle": 12.409976916940215,
+     "R-ring": 17.27436942556131,
+     "R-pinky": 9.70040104245217
+    },
+    "total": 280876799.6370635,
+    "model": "lag1-resolved-path: same-finger bigrams charge the OBSERVED dist(k1,k2); different-finger bigrams charge the MODELLED dist(home, k2) because the corpus cannot say where that finger last was",
+    "denominator": "own total travel of the 8 fingers (space-EXCLUDED bigram mass)",
+    "dispersion": {
+     "max_share": 24.528398806050525,
+     "pinky_share": 15.34835203751423,
+     "lr_ratio": 0.7317552424039429,
+     "gini": 0.295819458113632
+    },
+    "observed_fraction_pct": 4.002667280725431
+   },
+   "travel_static_shares": {
+    "L-pinky": 6.060418722378048,
+    "L-ring": 3.2488275334767627,
+    "L-middle": 7.744852419437867,
+    "L-index": 22.91548156314158,
+    "R-index": 21.259027693512856,
+    "R-middle": 11.915517259927958,
+    "R-ring": 16.09406475648233,
+    "R-pinky": 10.761810051642605
+   },
+   "travel_static_total": 566382696.8465827,
+   "travel_slowness_weighted_shares": {
+    "L-pinky": 7.2686790755359985,
+    "L-ring": 4.601016632255071,
+    "L-middle": 7.0680496613018455,
+    "L-index": 22.074848711650755,
+    "R-index": 16.523588435735956,
+    "R-middle": 11.168619897396537,
+    "R-ring": 18.811183092509257,
+    "R-pinky": 12.484014493614584
+   },
+   "travel_lag2_shares": {
+    "L-pinky": 4.69307775972187,
+    "L-ring": 3.4851120523903805,
+    "L-middle": 8.887931298138778,
+    "L-index": 21.869894347773673,
+    "R-index": 21.17007195638482,
+    "R-middle": 12.392772342366746,
+    "R-ring": 16.571559667982473,
+    "R-pinky": 10.92958057524126
+   },
+   "off_home": {
+    "usage": {
+     "L-pinky": 6.675861931092693,
+     "L-ring": 9.135958360264256,
+     "L-middle": 16.307722773827024,
+     "L-index": 17.73663212080309,
+     "R-index": 14.784788229724702,
+     "R-middle": 13.62806911571398,
+     "R-ring": 14.246829314785126,
+     "R-pinky": 7.484138153789128
+    },
+    "on_home": {
+     "L-pinky": 3.8786438538992383,
+     "L-ring": 7.636444956550278,
+     "L-middle": 12.733045480845144,
+     "L-index": 15.380052560460056,
+     "R-index": 9.38885794438359,
+     "R-middle": 8.128399570520802,
+     "R-ring": 6.818529236091952,
+     "R-pinky": 2.5169682272919123
+    },
+    "off_home": {
+     "L-pinky": 2.7972180771934547,
+     "L-ring": 1.4995134037139777,
+     "L-middle": 3.5746772929818804,
+     "L-index": 2.356579560343035,
+     "R-index": 5.395930285341113,
+     "R-middle": 5.4996695451931785,
+     "R-ring": 7.428300078693174,
+     "R-pinky": 4.967169926497216
+    },
+    "off_fraction": {
+     "L-pinky": 41.90047826132334,
+     "L-ring": 16.413312589469864,
+     "L-middle": 21.920149996166455,
+     "L-index": 13.286510901802098,
+     "R-index": 36.49650033196037,
+     "R-middle": 40.35545680386761,
+     "R-ring": 52.14002298030064,
+     "R-pinky": 66.36929763225173
+    },
+    "off_fraction_note": "per-finger ratio, NOT a partition \u2014 do not sum",
+    "home_row": 2,
+    "denominator": "layout-restricted, space-EXCLUDED letter mass (each character of each bigram)",
+    "pinky": {
+     "usage": 14.16000008488182,
+     "on_home": 6.3956120811911505,
+     "off_home": 7.764388003690671,
+     "off_fraction": 54.83324828493794,
+     "off_home_keys": [
+      "f(r3)",
+      "l(r3)",
+      "k(r1)",
+      "z(r1)"
+     ]
+    },
+    "total_off_home": 33.51905816995703
+   },
+   "gauges": {
+    "sfr": 2.6595771026964927,
+    "sfb": 1.6798744796052087,
+    "sfs": 7.702544215020873,
+    "sfb-dist": 1.9091295502651948,
+    "sfs-dist": 9.043962588119559,
+    "lsb": 1.7374971428376407,
+    "lsb-dist": 3.772082004568699,
+    "alt": 44.81964917466997,
+    "roll": 41.686247980918104,
+    "sr-roll": 14.0806396534164,
+    "redir": 3.2800566932627846,
+    "scissor": 0.22799930782718178,
+    "imbalance": 1.845580621965984,
+    "oxey-style": -3.793818540092256,
+    "comfort": 3.447216105
+   },
+   "time": {
+    "ms_per_char": 254.59041393090965,
+    "saved_vs_ref_pct": 1.1311657347267603,
+    "coverage_pct": 88.7147352
+   },
+   "bad_scissor_share": 2.982497344016358,
+   "scissor_by_finger": {
+    "LP": 0.004486536289187663,
+    "LR": 0.026714339325139294,
+    "LM": 0.09121788591648435,
+    "LI": 0.06899008288053272,
+    "RI": 0.007002027389213732,
+    "RM": 0.01643578917733481,
+    "RR": 0.011293204318705148,
+    "RP": 0.0018594425305840684
+   }
+  },
+  "keybo-lsb": {
+   "layout": "pyuo,vgdnlhiea.cstrmkj-z'fwbxq",
+   "travel": {
+    "shares": {
+     "L-pinky": 5.731613661510167,
+     "L-ring": 4.2110518039416265,
+     "L-middle": 8.376481947597709,
+     "L-index": 23.800256147907444,
+     "R-index": 21.182933734691478,
+     "R-middle": 9.909998725834255,
+     "R-ring": 17.216818113774604,
+     "R-pinky": 9.570845864742706
+    },
+    "total": 281815697.1826345,
+    "model": "lag1-resolved-path: same-finger bigrams charge the OBSERVED dist(k1,k2); different-finger bigrams charge the MODELLED dist(home, k2) because the corpus cannot say where that finger last was",
+    "denominator": "own total travel of the 8 fingers (space-EXCLUDED bigram mass)",
+    "dispersion": {
+     "max_share": 23.800256147907444,
+     "pinky_share": 15.302459526252873,
+     "lr_ratio": 0.7276947051731749,
+     "gini": 0.3015514901666119
+    },
+    "observed_fraction_pct": 3.9814433243481946
+   },
+   "travel_static_shares": {
+    "L-pinky": 6.588305732578473,
+    "L-ring": 3.2419385105793683,
+    "L-middle": 8.317922177146652,
+    "L-index": 21.83300838686359,
+    "R-index": 23.551157685183234,
+    "R-middle": 9.696856584624651,
+    "R-ring": 16.059937866249747,
+    "R-pinky": 10.710873056774291
+   },
+   "travel_static_total": 567586243.2292581,
+   "travel_slowness_weighted_shares": {
+    "L-pinky": 7.3786587650029665,
+    "L-ring": 4.5871235131275085,
+    "L-middle": 7.5409513084389115,
+    "L-index": 21.42624718378531,
+    "R-index": 19.06999535873269,
+    "R-middle": 8.921504078408457,
+    "R-ring": 18.754381296618654,
+    "R-pinky": 12.321138495885501
+   },
+   "travel_lag2_shares": {
+    "L-pinky": 6.138335131591723,
+    "L-ring": 3.507616932796076,
+    "L-middle": 9.929605358569601,
+    "L-index": 20.74631168205489,
+    "R-index": 22.224753876238,
+    "R-middle": 9.951377785627553,
+    "R-ring": 16.67856941769999,
+    "R-pinky": 10.823429815422166
+   },
+   "off_home": {
+    "usage": {
+     "L-pinky": 6.925972704069666,
+     "L-ring": 9.135958360264256,
+     "L-middle": 16.580384273662695,
+     "L-index": 17.47697572857618,
+     "R-index": 15.549201347547156,
+     "R-middle": 12.613545224914555,
+     "R-ring": 14.246829314785126,
+     "R-pinky": 7.471133046180371
+    },
+    "on_home": {
+     "L-pinky": 3.8786438538992383,
+     "L-ring": 7.636444956550278,
+     "L-middle": 12.733045480845144,
+     "L-index": 8.714788307288563,
+     "R-index": 9.38885794438359,
+     "R-middle": 8.128399570520802,
+     "R-ring": 6.818529236091952,
+     "R-pinky": 2.5169682272919123
+    },
+    "off_home": {
+     "L-pinky": 3.047328850170428,
+     "L-ring": 1.4995134037139777,
+     "L-middle": 3.8473387928175513,
+     "L-index": 8.762187421287615,
+     "R-index": 6.160343403163566,
+     "R-middle": 4.485145654393752,
+     "R-ring": 7.428300078693174,
+     "R-pinky": 4.954164818888458
+    },
+    "off_fraction": {
+     "L-pinky": 43.99856858199619,
+     "L-ring": 16.413312589469864,
+     "L-middle": 23.20415938084681,
+     "L-index": 50.135604451065156,
+     "R-index": 39.61839110235294,
+     "R-middle": 35.558168416715965,
+     "R-ring": 52.14002298030064,
+     "R-pinky": 66.31075619007056
+    },
+    "off_fraction_note": "per-finger ratio, NOT a partition \u2014 do not sum",
+    "home_row": 2,
+    "denominator": "layout-restricted, space-EXCLUDED letter mass (each character of each bigram)",
+    "pinky": {
+     "usage": 14.397105750250038,
+     "on_home": 6.3956120811911505,
+     "off_home": 8.001493669058886,
+     "off_fraction": 55.57709867429377,
+     "off_home_keys": [
+      "p(r3)",
+      "l(r3)",
+      "k(r1)",
+      "q(r1)"
+     ]
+    },
+    "total_off_home": 40.18432242312852
+   },
+   "gauges": {
+    "sfr": 2.6595771026964927,
+    "sfb": 1.6231451290880634,
+    "sfs": 7.648785919530305,
+    "sfb-dist": 1.9031223416978642,
+    "sfs-dist": 8.990578227895021,
+    "lsb": 0.9219164873805757,
+    "lsb-dist": 1.896001842444029,
+    "alt": 45.156072890944024,
+    "roll": 41.62490994630278,
+    "sr-roll": 12.692077364130578,
+    "redir": 3.3584021416404592,
+    "scissor": 0.1428912298103323,
+    "imbalance": 2.077878600654005,
+    "oxey-style": -4.188010184053641,
+    "comfort": 3.710857346
+   },
+   "time": {
+    "ms_per_char": 254.6307495925403,
+    "saved_vs_ref_pct": 1.115501594890674,
+    "coverage_pct": 88.7147352
+   },
+   "bad_scissor_share": 3.8141612139861962,
+   "scissor_by_finger": {
+    "LP": 0.004560664525644793,
+    "LR": 0.031684596549200715,
+    "LM": 0.05345023328139601,
+    "LI": 0.026326301257840082,
+    "RI": 0.006409767398154767,
+    "RM": 0.01137417095335943,
+    "RR": 0.007024949699970586,
+    "RP": 0.0020605461447659227
+   }
+  },
+  "keybo-lsb+lm": {
+   "layout": "pyuo,vgdnmhiea.cstrlkj-z'fwbxq",
+   "travel": {
+    "shares": {
+     "L-pinky": 6.005322841529323,
+     "L-ring": 4.412147621689288,
+     "L-middle": 8.776494952786573,
+     "L-index": 24.936820644261378,
+     "R-index": 22.194509839664835,
+     "R-middle": 10.383243746421407,
+     "R-ring": 18.038995156185134,
+     "R-pinky": 5.252465197462052
+    },
+    "total": 268971168.1826345,
+    "model": "lag1-resolved-path: same-finger bigrams charge the OBSERVED dist(k1,k2); different-finger bigrams charge the MODELLED dist(home, k2) because the corpus cannot say where that finger last was",
+    "denominator": "own total travel of the 8 fingers (space-EXCLUDED bigram mass)",
+    "dispersion": {
+     "max_share": 24.936820644261378,
+     "pinky_share": 11.257788038991375,
+     "lr_ratio": 0.789894522372747,
+     "gini": 0.3326133751332761
+    },
+    "observed_fraction_pct": 4.171006259981601
+   },
+   "travel_static_shares": {
+    "L-pinky": 6.932770570339551,
+    "L-ring": 3.41144093933825,
+    "L-middle": 8.752818769618345,
+    "L-index": 22.974531564002767,
+    "R-index": 24.78251306551972,
+    "R-middle": 10.203849773131086,
+    "R-ring": 16.89962019370992,
+    "R-pinky": 6.042455124340363
+   },
+   "travel_static_total": 539384891.2292581,
+   "travel_slowness_weighted_shares": {
+    "L-pinky": 7.838588386320734,
+    "L-ring": 4.873050000246975,
+    "L-middle": 8.01099701594828,
+    "L-index": 22.761796918140764,
+    "R-index": 20.2586742261542,
+    "R-middle": 9.47760297429847,
+    "R-ring": 19.923387177296398,
+    "R-pinky": 6.8559033015941875
+   },
+   "travel_lag2_shares": {
+    "L-pinky": 6.466921631626011,
+    "L-ring": 3.6953804788880276,
+    "L-middle": 10.461139431172125,
+    "L-index": 21.856866547191295,
+    "R-index": 23.414450094147636,
+    "R-middle": 10.484077341288733,
+    "R-ring": 17.571377098130405,
+    "R-pinky": 6.049787377555768
+   },
+   "off_home": {
+    "usage": {
+     "L-pinky": 6.925972704069666,
+     "L-ring": 9.135958360264256,
+     "L-middle": 16.580384273662695,
+     "L-index": 17.47697572857618,
+     "R-index": 15.549201347547156,
+     "R-middle": 12.613545224914555,
+     "R-ring": 14.246829314785126,
+     "R-pinky": 7.471133046180371
+    },
+    "on_home": {
+     "L-pinky": 3.8786438538992383,
+     "L-ring": 7.636444956550278,
+     "L-middle": 12.733045480845144,
+     "L-index": 8.714788307288563,
+     "R-index": 9.38885794438359,
+     "R-middle": 8.128399570520802,
+     "R-ring": 6.818529236091952,
+     "R-pinky": 4.815146144631905
+    },
+    "off_home": {
+     "L-pinky": 3.047328850170428,
+     "L-ring": 1.4995134037139777,
+     "L-middle": 3.8473387928175513,
+     "L-index": 8.762187421287615,
+     "R-index": 6.160343403163566,
+     "R-middle": 4.485145654393752,
+     "R-ring": 7.428300078693174,
+     "R-pinky": 2.655986901548465
+    },
+    "off_fraction": {
+     "L-pinky": 43.99856858199619,
+     "L-ring": 16.413312589469864,
+     "L-middle": 23.20415938084681,
+     "L-index": 50.135604451065156,
+     "R-index": 39.61839110235294,
+     "R-middle": 35.558168416715965,
+     "R-ring": 52.14002298030064,
+     "R-pinky": 35.5499880022394
+    },
+    "off_fraction_note": "per-finger ratio, NOT a partition \u2014 do not sum",
+    "home_row": 2,
+    "denominator": "layout-restricted, space-EXCLUDED letter mass (each character of each bigram)",
+    "pinky": {
+     "usage": 14.397105750250038,
+     "on_home": 8.693789998531143,
+     "off_home": 5.703315751718893,
+     "off_fraction": 39.61432145221162,
+     "off_home_keys": [
+      "p(r3)",
+      "m(r3)",
+      "k(r1)",
+      "q(r1)"
+     ]
+    },
+    "total_off_home": 37.88614450578853
+   },
+   "gauges": {
+    "sfr": 2.6595771026964927,
+    "sfb": 1.6231451290880634,
+    "sfs": 7.648785919530305,
+    "sfb-dist": 1.902868828399939,
+    "sfs-dist": 8.986972324864816,
+    "lsb": 0.9219164873805757,
+    "lsb-dist": 1.896001842444029,
+    "alt": 45.156072890944024,
+    "roll": 41.62490994630278,
+    "sr-roll": 12.985648853254718,
+    "redir": 3.3584021416404592,
+    "scissor": 0.1431306284544182,
+    "imbalance": 2.077878600654005,
+    "oxey-style": -3.7968478988004892,
+    "comfort": 3.595268038
+   },
+   "time": {
+    "ms_per_char": 254.68467763206198,
+    "saved_vs_ref_pct": 1.0945589273353806,
+    "coverage_pct": 88.7147352
+   },
+   "bad_scissor_share": 4.176917237210742,
+   "scissor_by_finger": {
+    "LP": 0.004560664525644793,
+    "LR": 0.031684596549200715,
+    "LM": 0.05345023328139601,
+    "LI": 0.026326301257840082,
+    "RI": 0.006409767398154767,
+    "RM": 0.01137417095335943,
+    "RR": 0.007144649022013539,
+    "RP": 0.0021802454668088758
+   }
+  },
+  "lsb-sib": {
+   "layout": "fyou,vgdnlheaikcstrmzj'.-pwbxq",
+   "travel": {
+    "shares": {
+     "L-pinky": 4.197769065245197,
+     "L-ring": 4.392355359165396,
+     "L-middle": 15.922118630185377,
+     "L-index": 17.67860575012332,
+     "R-index": 21.22179465938694,
+     "R-middle": 9.88021116149603,
+     "R-ring": 17.165067645237546,
+     "R-pinky": 9.5420777291602
+    },
+    "total": 282665335.2191234,
+    "model": "lag1-resolved-path: same-finger bigrams charge the OBSERVED dist(k1,k2); different-finger bigrams charge the MODELLED dist(home, k2) because the corpus cannot say where that finger last was",
+    "denominator": "own total travel of the 8 fingers (space-EXCLUDED bigram mass)",
+    "dispersion": {
+     "max_share": 21.22179465938694,
+     "pinky_share": 13.739846794405397,
+     "lr_ratio": 0.7298299305969324,
+     "gini": 0.268137885413379
+    },
+    "observed_fraction_pct": 4.639811266999993
+   },
+   "travel_static_shares": {
+    "L-pinky": 4.73867637416104,
+    "L-ring": 3.226831879621059,
+    "L-middle": 17.12726298118037,
+    "L-index": 14.406920952695183,
+    "R-index": 24.202570608168156,
+    "R-middle": 9.65167163327485,
+    "R-ring": 15.98510253122809,
+    "R-pinky": 10.660963039671262
+   },
+   "travel_static_total": 570243436.4867154,
+   "travel_slowness_weighted_shares": {
+    "L-pinky": 5.435594942892444,
+    "L-ring": 4.8125510016315,
+    "L-middle": 14.417612904457924,
+    "L-index": 16.00812682758127,
+    "R-index": 19.21651431216419,
+    "R-middle": 8.946614659100543,
+    "R-ring": 18.807167620621872,
+    "R-pinky": 12.355817731550268
+   },
+   "travel_lag2_shares": {
+    "L-pinky": 3.2139777086088013,
+    "L-ring": 3.744700083696366,
+    "L-middle": 14.71075137420841,
+    "L-index": 17.102667947980216,
+    "R-index": 24.086541715287627,
+    "R-middle": 9.868475045447887,
+    "R-ring": 16.539623923237794,
+    "R-pinky": 10.73326220153289
+   },
+   "off_home": {
+    "usage": {
+     "L-pinky": 6.0807135631372935,
+     "L-ring": 14.23255888455912,
+     "L-middle": 15.767784342451849,
+     "L-index": 13.788123503447558,
+     "R-index": 15.799312120524128,
+     "R-middle": 12.613545224914555,
+     "R-ring": 14.246829314785126,
+     "R-pinky": 7.471133046180371
+    },
+    "on_home": {
+     "L-pinky": 3.8786438538992383,
+     "L-ring": 12.733045480845144,
+     "L-middle": 7.808720664107938,
+     "L-index": 8.38361710637099,
+     "R-index": 9.38885794438359,
+     "R-middle": 8.128399570520802,
+     "R-ring": 6.818529236091952,
+     "R-pinky": 2.5169682272919123
+    },
+    "off_home": {
+     "L-pinky": 2.202069709238055,
+     "L-ring": 1.4995134037139777,
+     "L-middle": 7.959063678343911,
+     "L-index": 5.404506397076569,
+     "R-index": 6.410454176140539,
+     "R-middle": 4.485145654393752,
+     "R-ring": 7.428300078693174,
+     "R-pinky": 4.954164818888458
+    },
+    "off_fraction": {
+     "L-pinky": 36.214001636050014,
+     "L-ring": 10.53579623928904,
+     "L-middle": 50.47674109110943,
+     "L-index": 39.19682323504889,
+     "R-index": 40.57426125415312,
+     "R-middle": 35.558168416715965,
+     "R-ring": 52.14002298030064,
+     "R-pinky": 66.31075619007056
+    },
+    "off_fraction_note": "per-finger ratio, NOT a partition \u2014 do not sum",
+    "home_row": 2,
+    "denominator": "layout-restricted, space-EXCLUDED letter mass (each character of each bigram)",
+    "pinky": {
+     "usage": 13.551846609317664,
+     "on_home": 6.3956120811911505,
+     "off_home": 7.156234528126513,
+     "off_fraction": 52.806342444919615,
+     "off_home_keys": [
+      "f(r3)",
+      "l(r3)",
+      "z(r1)",
+      "q(r1)"
+     ]
+    },
+    "total_off_home": 40.343217916488435
+   },
+   "gauges": {
+    "sfr": 2.6595771026964927,
+    "sfb": 1.9116805725869495,
+    "sfs": 6.873709773154185,
+    "sfb-dist": 2.1347800154784298,
+    "sfs-dist": 8.132214478196763,
+    "lsb": 0.9831212025846509,
+    "lsb-dist": 2.0721717561747455,
+    "alt": 44.548633945168575,
+    "roll": 41.92326871696193,
+    "sr-roll": 12.727506158471895,
+    "redir": 2.3968148083653085,
+    "scissor": 0.1066954240312486,
+    "imbalance": 1.884207263632379,
+    "oxey-style": -7.425685371415334,
+    "comfort": 3.809628746
+   },
+   "time": {
+    "ms_per_char": 254.70576136679838,
+    "saved_vs_ref_pct": 1.0863711709970243,
+    "coverage_pct": 88.7147352
+   },
+   "bad_scissor_share": 2.7832757328086966,
+   "scissor_by_finger": {
+    "LP": 0.0028946118960761907,
+    "LR": 0.02279063056117005,
+    "LM": 0.03701838302142276,
+    "LI": 0.017122364356328898,
+    "RI": 0.006409767398154767,
+    "RM": 0.01137417095335943,
+    "RR": 0.007024949699970586,
+    "RP": 0.0020605461447659227
+   }
+  },
+  "p13stab-win": {
+   "layout": "rcgkmq.ouylsthd,naeixwbfvpjz;/",
+   "travel": {
+    "shares": {
+     "L-pinky": 17.44405215663357,
+     "L-ring": 8.339925634817313,
+     "L-middle": 6.6432967969269034,
+     "L-index": 25.30912332765911,
+     "R-index": 12.834580849536891,
+     "R-middle": 16.922190435698504,
+     "R-ring": 7.898767775133202,
+     "R-pinky": 4.608063023594508
+    },
+    "total": 258368059.18320403,
+    "model": "lag1-resolved-path: same-finger bigrams charge the OBSERVED dist(k1,k2); different-finger bigrams charge the MODELLED dist(home, k2) because the corpus cannot say where that finger last was",
+    "denominator": "own total travel of the 8 fingers (space-EXCLUDED bigram mass)",
+    "dispersion": {
+     "max_share": 25.30912332765911,
+     "pinky_share": 22.05211518022808,
+     "lr_ratio": 1.3661021557352047,
+     "gini": 0.2880951526542513
+    },
+    "observed_fraction_pct": 3.384742645688079
+   },
+   "travel_static_shares": {
+    "L-pinky": 16.703076177511814,
+    "L-ring": 10.405297450943515,
+    "L-middle": 7.126163233626487,
+    "L-index": 25.46544921273044,
+    "R-index": 11.68933584726622,
+    "R-middle": 17.761042683582186,
+    "R-ring": 7.46306851941207,
+    "R-pinky": 3.3865668749272735
+   },
+   "travel_static_total": 531220219.8985466,
+   "travel_slowness_weighted_shares": {
+    "L-pinky": 22.096230324049806,
+    "L-ring": 8.93886385427862,
+    "L-middle": 5.884620084469991,
+    "L-index": 22.418774895495535,
+    "R-index": 11.368848111358847,
+    "R-middle": 14.989645164913002,
+    "R-ring": 8.466023901186208,
+    "R-pinky": 5.836993664247989
+   },
+   "travel_lag2_shares": {
+    "L-pinky": 17.64642090880248,
+    "L-ring": 10.000493947292778,
+    "L-middle": 7.7264037319635515,
+    "L-index": 24.65624141156472,
+    "R-index": 11.936060617325447,
+    "R-middle": 15.43213520091817,
+    "R-ring": 8.854202256802777,
+    "R-pinky": 3.7480419253300665
+   },
+   "off_home": {
+    "usage": {
+     "L-pinky": 12.212004284128628,
+     "L-ring": 10.564056737099978,
+     "L-middle": 11.313969327473341,
+     "L-index": 13.620994080516796,
+     "R-index": 11.138420755698313,
+     "R-middle": 15.743238803829454,
+     "R-ring": 16.166618639520742,
+     "R-pinky": 9.240697371732745
+    },
+    "on_home": {
+     "L-pinky": 4.8566375187400785,
+     "L-ring": 5.981979864476076,
+     "L-middle": 8.17589202624426,
+     "L-index": 7.143921929397095,
+     "R-index": 7.632436174310471,
+     "R-middle": 7.921985898969111,
+     "R-ring": 12.88018172382212,
+     "R-pinky": 7.749388754333116
+    },
+    "off_home": {
+     "L-pinky": 7.35536676538855,
+     "L-ring": 4.582076872623902,
+     "L-middle": 3.138077301229083,
+     "L-index": 6.477072151119701,
+     "R-index": 3.5059845813878416,
+     "R-middle": 7.821252904860343,
+     "R-ring": 3.286436915698623,
+     "R-pinky": 1.4913086173996295
+    },
+    "off_fraction": {
+     "L-pinky": 60.23062712930732,
+     "L-ring": 43.3742168056716,
+     "L-middle": 27.736307306481667,
+     "L-index": 47.55212514470129,
+     "R-index": 31.47649615942379,
+     "R-middle": 49.68007537913906,
+     "R-ring": 20.32853615823308,
+     "R-pinky": 16.13848562946706
+    },
+    "off_fraction_note": "per-finger ratio, NOT a partition \u2014 do not sum",
+    "home_row": 2,
+    "denominator": "layout-restricted, space-EXCLUDED letter mass (each character of each bigram)",
+    "pinky": {
+     "usage": 21.452701655861375,
+     "on_home": 12.606026273073194,
+     "off_home": 8.84667538278818,
+     "off_fraction": 41.238047891143175,
+     "off_home_keys": [
+      "r(r3)",
+      "y(r3)",
+      "x(r1)",
+      "/(r1)"
+     ]
+    },
+    "total_off_home": 37.657576109707676
+   },
+   "gauges": {
+    "sfr": 2.664409719628846,
+    "sfb": 1.2736497357617225,
+    "sfs": 6.477232380497735,
+    "sfb-dist": 1.479175064722519,
+    "sfs-dist": 7.386379069442207,
+    "lsb": 0.10986961910624148,
+    "lsb-dist": 0.23359512922010187,
+    "alt": 40.94876852642252,
+    "roll": 43.6407149381433,
+    "sr-roll": 13.763394257178176,
+    "redir": 5.231546661833636,
+    "scissor": 0.1282054065567278,
+    "imbalance": 1.770826911166303,
+    "oxey-style": -14.486602777912905,
+    "comfort": 3.431592789
+   },
+   "time": {
+    "ms_per_char": 254.32067750412065,
+    "saved_vs_ref_pct": 3.561954096248496,
+    "coverage_pct": 86.6253743
+   },
+   "bad_scissor_share": 2.8000324554194327,
+   "scissor_by_finger": {
+    "LP": 0.03786483613747518,
+    "LR": 0.04217611272304522,
+    "LM": 0.006533190394219906,
+    "LI": 0.0022219138086498652,
+    "RI": 0.0150062687563746,
+    "RM": 0.016282343829582463,
+    "RR": 0.004698407990294214,
+    "RP": 0.0034223329170863515
+   }
+  },
+  "p16-balance": {
+   "layout": "frlwg'uyoksntdc.ieahvxmpb,-jqz",
+   "travel": {
+    "shares": {
+     "L-pinky": 6.53730160300039,
+     "L-ring": 17.127810962269752,
+     "L-middle": 15.161949865471117,
+     "L-index": 21.176146654273523,
+     "R-index": 17.13028564932316,
+     "R-middle": 4.604698255456737,
+     "R-ring": 16.114088076591997,
+     "R-pinky": 2.147718933613322
+    },
+    "total": 269630392.94240355,
+    "model": "lag1-resolved-path: same-finger bigrams charge the OBSERVED dist(k1,k2); different-finger bigrams charge the MODELLED dist(home, k2) because the corpus cannot say where that finger last was",
+    "denominator": "own total travel of the 8 fingers (space-EXCLUDED bigram mass)",
+    "dispersion": {
+     "max_share": 21.176146654273523,
+     "pinky_share": 8.685020536613713,
+     "lr_ratio": 1.5002005839056942,
+     "gini": 0.2856882466286031
+    },
+    "observed_fraction_pct": 3.857584425547962
+   },
+   "travel_static_shares": {
+    "L-pinky": 7.023863651560786,
+    "L-ring": 16.05884700535441,
+    "L-middle": 16.148076504070016,
+    "L-index": 24.80088872142155,
+    "R-index": 13.704367983528869,
+    "R-middle": 3.302493105504892,
+    "R-ring": 16.981095025488564,
+    "R-pinky": 1.9803680030709239
+   },
+   "travel_static_total": 557178967.8933136,
+   "travel_slowness_weighted_shares": {
+    "L-pinky": 8.4435813535682,
+    "L-ring": 18.718858619245193,
+    "L-middle": 13.694531806771431,
+    "L-index": 19.126656958695484,
+    "R-index": 15.47236626985423,
+    "R-middle": 4.159042028198779,
+    "R-ring": 17.6109683337968,
+    "R-pinky": 2.7739946298698777
+   },
+   "travel_lag2_shares": {
+    "L-pinky": 5.785280067109843,
+    "L-ring": 17.303747170258795,
+    "L-middle": 17.419837066496353,
+    "L-index": 23.096464464157837,
+    "R-index": 15.777291719324404,
+    "R-middle": 3.8351216300599376,
+    "R-ring": 14.510558355945147,
+    "R-pinky": 2.271699526647683
+   },
+   "off_home": {
+    "usage": {
+     "L-pinky": 9.166180558787948,
+     "L-ring": 14.246829314785126,
+     "L-middle": 15.460513942444619,
+     "L-index": 13.168323143502676,
+     "R-index": 13.428683135618641,
+     "R-middle": 14.23255888455912,
+     "R-ring": 15.519071234716609,
+     "R-pinky": 4.77783978558526
+    },
+    "on_home": {
+     "L-pinky": 5.97696036819361,
+     "L-ring": 6.955230040109415,
+     "L-middle": 8.128399570520802,
+     "L-index": 6.61141042103344,
+     "R-index": 8.542512599730903,
+     "R-middle": 12.733045480845144,
+     "R-ring": 7.808720664107938,
+     "R-pinky": 3.8786438538992383
+    },
+    "off_home": {
+     "L-pinky": 3.189220190594339,
+     "L-ring": 7.29159927467571,
+     "L-middle": 7.332114371923818,
+     "L-index": 6.556912722469235,
+     "R-index": 4.886170535887737,
+     "R-middle": 1.4995134037139777,
+     "R-ring": 7.7103505706086715,
+     "R-pinky": 0.8991959316860215
+    },
+    "off_fraction": {
+     "L-pinky": 34.79333807729457,
+     "L-ring": 51.1805055957862,
+     "L-middle": 47.42477772226285,
+     "L-index": 49.79307274749293,
+     "R-index": 36.38607364952645,
+     "R-middle": 10.53579623928904,
+     "R-ring": 49.68306707272788,
+     "R-pinky": 18.820135710680276
+    },
+    "off_fraction_note": "per-finger ratio, NOT a partition \u2014 do not sum",
+    "home_row": 2,
+    "denominator": "layout-restricted, space-EXCLUDED letter mass (each character of each bigram)",
+    "pinky": {
+     "usage": 13.944020344373207,
+     "on_home": 9.855604222092849,
+     "off_home": 4.0884161222803606,
+     "off_fraction": 29.320210536914114,
+     "off_home_keys": [
+      "f(r3)",
+      "k(r3)",
+      "v(r1)",
+      "z(r1)"
+     ]
+    },
+    "total_off_home": 39.36507700155951
+   },
+   "gauges": {
+    "sfr": 2.6595771026964927,
+    "sfb": 1.4930772656971338,
+    "sfs": 6.60161676430781,
+    "sfb-dist": 1.7660368844887213,
+    "sfs-dist": 8.073746306802768,
+    "lsb": 1.4806207606425916,
+    "lsb-dist": 3.236404981254474,
+    "alt": 45.892834363350865,
+    "roll": 41.48248136424484,
+    "sr-roll": 14.120096947523898,
+    "redir": 3.2385704873395667,
+    "scissor": 0.48185859286234345,
+    "imbalance": 6.419324634890699,
+    "oxey-style": 1.449402399432833,
+    "comfort": 3.825878624
+   },
+   "time": {
+    "ms_per_char": 254.75202229142258,
+    "saved_vs_ref_pct": 1.0684059867663782,
+    "coverage_pct": 88.7147352
+   },
+   "bad_scissor_share": 4.373486617472251,
+   "scissor_by_finger": {
+    "LP": 0.025609035347737178,
+    "LR": 0.08448009423360858,
+    "LM": 0.16900078119891546,
+    "LI": 0.11012972231304405,
+    "RI": 0.027123932023555924,
+    "RM": 0.041426195670564804,
+    "RR": 0.01919554786096316,
+    "RP": 0.004893284213954279
+   }
+  },
+  "qwerty": {
+   "layout": "qwertyuiopasdfghjkl;zxcvbnm,./",
+   "travel": {
+    "shares": {
+     "L-pinky": 0.3203577738296445,
+     "L-ring": 1.4442093622572438,
+     "L-middle": 22.825160193432623,
+     "L-index": 26.027745016509325,
+     "R-index": 27.164310914961423,
+     "R-middle": 9.630292261464353,
+     "R-ring": 10.339548651103396,
+     "R-pinky": 2.248375826441991
+    },
+    "total": 511410408.5612781,
+    "model": "lag1-resolved-path: same-finger bigrams charge the OBSERVED dist(k1,k2); different-finger bigrams charge the MODELLED dist(home, k2) because the corpus cannot say where that finger last was",
+    "denominator": "own total travel of the 8 fingers (space-EXCLUDED bigram mass)",
+    "dispersion": {
+     "max_share": 27.164310914961423,
+     "pinky_share": 2.5687336002716354,
+     "lr_ratio": 1.0250077254188175,
+     "gini": 0.4665811996872422
+    },
+    "observed_fraction_pct": 11.656661989104647
+   },
+   "travel_static_shares": {
+    "L-pinky": 0.35103804970933966,
+    "L-ring": 1.960129090020672,
+    "L-middle": 19.80543967860511,
+    "L-index": 28.21969777178612,
+    "R-index": 26.12740237468182,
+    "R-middle": 10.161981074318257,
+    "R-ring": 10.416056206562269,
+    "R-pinky": 2.958255754316412
+   },
+   "travel_static_total": 994224416.0967212,
+   "travel_slowness_weighted_shares": {
+    "L-pinky": 0.4422817143438997,
+    "L-ring": 1.6871092482545642,
+    "L-middle": 22.036443991465823,
+    "L-index": 25.128364507403933,
+    "R-index": 26.225656730179043,
+    "R-middle": 9.297520553755687,
+    "R-ring": 12.078545263541516,
+    "R-pinky": 3.1040779910555347
+   },
+   "travel_lag2_shares": {
+    "L-pinky": 0.4071401068647118,
+    "L-ring": 1.4828257682174195,
+    "L-middle": 22.636890857861744,
+    "L-index": 27.722627425739606,
+    "R-index": 25.68835274728773,
+    "R-middle": 10.126237251402282,
+    "R-ring": 9.528911034095648,
+    "R-pinky": 2.4070148085308607
+   },
+   "off_home": {
+    "usage": {
+     "L-pinky": 8.21130152548595,
+     "L-ring": 7.597462790622606,
+     "L-middle": 19.53680723259804,
+     "L-index": 21.388151165658705,
+     "R-index": 18.202257329464437,
+     "R-middle": 9.126080633579658,
+     "R-ring": 13.441256279388373,
+     "R-pinky": 2.496683043202232
+    },
+    "on_home": {
+     "L-pinky": 7.921985898969111,
+     "L-ring": 5.981979864476076,
+     "L-middle": 3.2137243251992573,
+     "L-index": 3.902395548501148,
+     "R-index": 4.068109428546375,
+     "R-middle": 0.7508634068345682,
+     "R-ring": 4.8566375187400785,
+     "R-pinky": 0.05857236640875363
+    },
+    "off_home": {
+     "L-pinky": 0.28931562651684034,
+     "L-ring": 1.6154829261465293,
+     "L-middle": 16.32308290739878,
+     "L-index": 17.485755617157558,
+     "R-index": 14.13414790091806,
+     "R-middle": 8.37521722674509,
+     "R-ring": 8.584618760648295,
+     "R-pinky": 2.438110676793478
+    },
+    "off_fraction": {
+     "L-pinky": 3.5233832982368583,
+     "L-ring": 21.26345295353716,
+     "L-middle": 83.55041186137613,
+     "L-index": 81.75440449117959,
+     "R-index": 77.65052237800622,
+     "R-middle": 91.77233429133042,
+     "R-ring": 63.86768157833925,
+     "R-pinky": 97.65399270170757
+    },
+    "off_fraction_note": "per-finger ratio, NOT a partition \u2014 do not sum",
+    "home_row": 2,
+    "denominator": "layout-restricted, space-EXCLUDED letter mass (each character of each bigram)",
+    "pinky": {
+     "usage": 10.707984568688182,
+     "on_home": 7.980558265377865,
+     "off_home": 2.7274263033103185,
+     "off_fraction": 25.470958477898247,
+     "off_home_keys": [
+      "q(r3)",
+      "p(r3)",
+      "z(r1)",
+      "/(r1)"
+     ]
+    },
+    "total_off_home": 69.24573164232463
+   },
+   "gauges": {
+    "sfr": 2.664409719628846,
+    "sfb": 7.223375535049789,
+    "sfs": 11.55063360507309,
+    "sfb-dist": 10.240465481224662,
+    "sfs-dist": 15.97836527971437,
+    "lsb": 3.2404572719247042,
+    "lsb-dist": 7.078695961606446,
+    "alt": 26.361454300436378,
+    "roll": 37.4825256757688,
+    "sr-roll": 5.123115935430522,
+    "redir": 13.53329390088865,
+    "scissor": 1.5707976437871116,
+    "imbalance": 16.093880727456188,
+    "oxey-style": 89.75261591240624,
+    "comfort": 7.443647945
+   },
+   "time": {
+    "ms_per_char": 263.7140509441071,
+    "saved_vs_ref_pct": 0.0,
+    "coverage_pct": 86.6253743
+   },
+   "bad_scissor_share": 13.30069825076132,
+   "scissor_by_finger": {
+    "LP": 0.0007994257940522164,
+    "LR": 0.12626980520342687,
+    "LM": 0.5526829670476799,
+    "LI": 0.4272125876383053,
+    "RI": 0.19121262927970456,
+    "RM": 0.2068633376594739,
+    "RR": 0.04070379977211911,
+    "RP": 0.025053091392349774
+   }
+  },
+  "qwerty30m": {
+   "layout": "qwertyuiopasdfghjkl'zxcvbnm,.-",
+   "travel": {
+    "shares": {
+     "L-pinky": 0.3276245529249187,
+     "L-ring": 1.4575301718383238,
+     "L-middle": 22.591109570612193,
+     "L-index": 25.973893816634508,
+     "R-index": 26.914542945563106,
+     "R-middle": 9.610719957109508,
+     "R-ring": 10.245293712115604,
+     "R-pinky": 2.87928527320184
+    },
+    "total": 518506316.09692,
+    "model": "lag1-resolved-path: same-finger bigrams charge the OBSERVED dist(k1,k2); different-finger bigrams charge the MODELLED dist(home, k2) because the corpus cannot say where that finger last was",
+    "denominator": "own total travel of the 8 fingers (space-EXCLUDED bigram mass)",
+    "dispersion": {
+     "max_share": 26.914542945563106,
+     "pinky_share": 3.206909826126759,
+     "lr_ratio": 1.0141051048178522,
+     "gini": 0.4605753670246067
+    },
+    "observed_fraction_pct": 11.609296132823877
+   },
+   "travel_static_shares": {
+    "L-pinky": 0.3539672715086496,
+    "L-ring": 1.958435864734112,
+    "L-middle": 19.63555942562679,
+    "L-index": 28.10049358908458,
+    "R-index": 25.961300161272096,
+    "R-middle": 10.079353030095675,
+    "R-ring": 10.310255158239316,
+    "R-pinky": 3.6006354994387832
+   },
+   "travel_static_total": 1008972943.9612125,
+   "travel_slowness_weighted_shares": {
+    "L-pinky": 0.4511928087257095,
+    "L-ring": 1.6984494053880717,
+    "L-middle": 21.756410890299346,
+    "L-index": 25.014207670030455,
+    "R-index": 25.920101596515366,
+    "R-middle": 9.255622070483737,
+    "R-ring": 11.938766928866782,
+    "R-pinky": 3.9652486296905414
+   },
+   "travel_lag2_shares": {
+    "L-pinky": 0.4112005011618916,
+    "L-ring": 1.4934295882674806,
+    "L-middle": 22.3918342370013,
+    "L-index": 27.587386311986204,
+    "R-index": 25.46366010878555,
+    "R-middle": 10.003284412344055,
+    "R-ring": 9.447866536541758,
+    "R-pinky": 3.2013383039117596
+   },
+   "off_home": {
+    "usage": {
+     "L-pinky": 8.0997631202298,
+     "L-ring": 7.587244793078452,
+     "L-middle": 19.344455901878582,
+     "L-index": 21.255690633025527,
+     "R-index": 18.03730103600463,
+     "R-middle": 9.034717067449382,
+     "R-ring": 13.292545684164649,
+     "R-pinky": 3.3482817641689735
+    },
+    "on_home": {
+     "L-pinky": 7.808720664107938,
+     "L-ring": 5.97696036819361,
+     "L-middle": 3.1995128448434613,
+     "L-index": 3.8839547536408876,
+     "R-index": 4.015267159249284,
+     "R-middle": 0.7471721498207107,
+     "R-ring": 4.815146144631905,
+     "R-pinky": 0.3877317819917926
+    },
+    "off_home": {
+     "L-pinky": 0.29104245612186397,
+     "L-ring": 1.610284424884842,
+     "L-middle": 16.14494305703512,
+     "L-index": 17.37173587938464,
+     "R-index": 14.022033876755348,
+     "R-middle": 8.28754491762867,
+     "R-ring": 8.477399539532744,
+     "R-pinky": 2.960549982177181
+    },
+    "off_fraction": {
+     "L-pinky": 3.593221823919299,
+     "L-ring": 21.223572835739287,
+     "L-middle": 83.46031100035876,
+     "L-index": 81.7274591510742,
+     "R-index": 77.7390910578344,
+     "R-middle": 91.72998839650828,
+     "R-ring": 63.77559077815946,
+     "R-pinky": 88.41997748991636
+    },
+    "off_fraction_note": "per-finger ratio, NOT a partition \u2014 do not sum",
+    "home_row": 2,
+    "denominator": "layout-restricted, space-EXCLUDED letter mass (each character of each bigram)",
+    "pinky": {
+     "usage": 11.448044884398774,
+     "on_home": 8.19645244609973,
+     "off_home": 3.2515924382990447,
+     "off_fraction": 28.403037122349744,
+     "off_home_keys": [
+      "q(r3)",
+      "p(r3)",
+      "z(r1)",
+      "-(r1)"
+     ]
+    },
+    "total_off_home": 69.16553413352041
+   },
+   "gauges": {
+    "sfr": 2.6595771026964927,
+    "sfb": 7.154593528477934,
+    "sfs": 11.369224153441149,
+    "sfb-dist": 10.16825880898138,
+    "sfs-dist": 15.746184896599134,
+    "lsb": 3.1855669963128577,
+    "lsb-dist": 6.958789559608355,
+    "alt": 26.458303537682045,
+    "roll": 37.691778239300696,
+    "sr-roll": 5.031342353185906,
+    "redir": 13.422189596580113,
+    "scissor": 1.5831338237041819,
+    "imbalance": 14.928795371517694,
+    "oxey-style": 86.76798614811786,
+    "comfort": 7.581203825
+   },
+   "time": {
+    "ms_per_char": 264.13891657883323,
+    "saved_vs_ref_pct": -2.5769445244257003,
+    "coverage_pct": 88.7147352
+   },
+   "bad_scissor_share": 13.340369614728633,
+   "scissor_by_finger": {
+    "LP": 0.000785595184888853,
+    "LR": 0.12408525181786452,
+    "LM": 0.5431211763657229,
+    "LI": 0.4198215197327473,
+    "RI": 0.18790452093200974,
+    "RM": 0.20328446142770423,
+    "RR": 0.059755619369469444,
+    "RP": 0.04437567887377494
+   }
+  },
+  "semimak": {
+   "layout": "flhvz'wuoysrntkcdeaixjbmqpg,.-",
+   "travel": {
+    "shares": {
+     "L-pinky": 5.82270395467321,
+     "L-ring": 11.115138676036832,
+     "L-middle": 11.417967790192794,
+     "L-index": 11.086947517168204,
+     "R-index": 21.608065707385165,
+     "R-middle": 11.408587235587111,
+     "R-ring": 21.290388232127437,
+     "R-pinky": 6.250200886829249
+    },
+    "total": 242629577.42616144,
+    "model": "lag1-resolved-path: same-finger bigrams charge the OBSERVED dist(k1,k2); different-finger bigrams charge the MODELLED dist(home, k2) because the corpus cannot say where that finger last was",
+    "denominator": "own total travel of the 8 fingers (space-EXCLUDED bigram mass)",
+    "dispersion": {
+     "max_share": 21.608065707385165,
+     "pinky_share": 12.072904841502458,
+     "lr_ratio": 0.651330156312846,
+     "gini": 0.23373122296762336
+    },
+    "observed_fraction_pct": 3.076421827874427
+   },
+   "travel_static_shares": {
+    "L-pinky": 6.010700460562565,
+    "L-ring": 11.796367394600862,
+    "L-middle": 12.302613331409486,
+    "L-index": 11.470335540647838,
+    "R-index": 24.261505219727592,
+    "R-middle": 9.143195159433185,
+    "R-ring": 20.195310086480895,
+    "R-pinky": 4.81997280713758
+   },
+   "travel_static_total": 515108134.2872671,
+   "travel_slowness_weighted_shares": {
+    "L-pinky": 7.43457691232136,
+    "L-ring": 12.008693690652104,
+    "L-middle": 10.194931804087524,
+    "L-index": 9.899368778226235,
+    "R-index": 19.293517056007943,
+    "R-middle": 10.186556047889333,
+    "R-ring": 23.001939812580286,
+    "R-pinky": 7.980415898235227
+   },
+   "travel_lag2_shares": {
+    "L-pinky": 4.600792392712837,
+    "L-ring": 12.512976940645471,
+    "L-middle": 10.332247040911449,
+    "L-index": 12.76196313934989,
+    "R-index": 23.49868405943438,
+    "R-middle": 11.342202946933488,
+    "R-ring": 19.240890816290463,
+    "R-pinky": 5.710242663722021
+   },
+   "off_home": {
+    "usage": {
+     "L-pinky": 8.500076334150112,
+     "L-ring": 11.770298686073902,
+     "L-middle": 12.119506703558944,
+     "L-index": 12.822756666976884,
+     "R-index": 12.270422115944177,
+     "R-middle": 16.571090952913625,
+     "R-ring": 16.28612020364068,
+     "R-pinky": 9.659728336741674
+    },
+    "on_home": {
+     "L-pinky": 5.97696036819361,
+     "L-ring": 6.818529236091952,
+     "L-middle": 6.955230040109415,
+     "L-index": 8.875571720341513,
+     "R-index": 6.61141042103344,
+     "R-middle": 12.733045480845144,
+     "R-ring": 7.808720664107938,
+     "R-pinky": 7.636444956550278
+    },
+    "off_home": {
+     "L-pinky": 2.5231159659565026,
+     "L-ring": 4.95176944998195,
+     "L-middle": 5.164276663449529,
+     "L-index": 3.947184946635371,
+     "R-index": 5.6590116949107365,
+     "R-middle": 3.8380454720684805,
+     "R-ring": 8.477399539532744,
+     "R-pinky": 2.0232833801913963
+    },
+    "off_fraction": {
+     "L-pinky": 29.68345067466713,
+     "L-ring": 42.070040719023254,
+     "L-middle": 42.61127775054589,
+     "L-index": 30.78265500273247,
+     "R-index": 46.119128106908576,
+     "R-middle": 23.16109110120872,
+     "R-ring": 52.05291029129002,
+     "R-pinky": 20.94555156893647
+    },
+    "off_fraction_note": "per-finger ratio, NOT a partition \u2014 do not sum",
+    "home_row": 2,
+    "denominator": "layout-restricted, space-EXCLUDED letter mass (each character of each bigram)",
+    "pinky": {
+     "usage": 18.159804670891788,
+     "on_home": 13.613405324743887,
+     "off_home": 4.546399346147899,
+     "off_fraction": 25.03550797236981,
+     "off_home_keys": [
+      "f(r3)",
+      "y(r3)",
+      "x(r1)",
+      "-(r1)"
+     ]
+    },
+    "total_off_home": 36.584087112726706
+   },
+   "gauges": {
+    "sfr": 2.6595771026964927,
+    "sfb": 1.0666355920099653,
+    "sfs": 6.377568771970209,
+    "sfb-dist": 1.28272007871847,
+    "sfs-dist": 7.372975626259579,
+    "lsb": 1.4177099338706234,
+    "lsb-dist": 2.9121479897863503,
+    "alt": 40.85257134788585,
+    "roll": 42.51968745451457,
+    "sr-roll": 12.246153197966352,
+    "redir": 7.165357965391563,
+    "scissor": 0.4279206997287121,
+    "imbalance": 9.39225651499524,
+    "oxey-style": -0.7226968772540981,
+    "comfort": 3.772047746
+   },
+   "time": {
+    "ms_per_char": 257.3915378008198,
+    "saved_vs_ref_pct": 0.04336416602432937,
+    "coverage_pct": 88.7147352
+   },
+   "bad_scissor_share": 4.263375924063836,
+   "scissor_by_finger": {
+    "LP": 0.0011033345187213362,
+    "LR": 0.08850074413042065,
+    "LM": 0.092536110260153,
+    "LI": 0.00513870064845368,
+    "RI": 0.061099556090359386,
+    "RM": 0.07283791277810636,
+    "RR": 0.05922134899512233,
+    "RP": 0.04748299230737536
+   }
+  }
+ }
+}

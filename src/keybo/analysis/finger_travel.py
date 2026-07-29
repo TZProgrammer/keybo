@@ -57,6 +57,30 @@ failure of that shape (``oxey-style`` at R2=0.9937 on {sfb,lsb,scissor,imbalance
 re-weighted restatement of other legs). A slowness-weighted variant exists as a *separate*
 column, :meth:`FingerTravel.slowness_weighted_shares`, flagged as a preference.
 
+What is INFORMATIVE here and what is REDUNDANT — measured, not hoped
+-------------------------------------------------------------------
+⚠ **The travel TOTAL is close to a restatement of ``sfb-dist``: |r| = 0.970 over the 18-layout
+field** (next: ``comfort`` 0.968, ``sfb`` 0.963). That is expected — the observed branch *is* a
+same-finger distance sum — and it means **the total should not become a 16th gauge.** What is not
+redundant is the per-finger SPLIT and two specific properties:
+
+* **It separates layouts the incumbent frame ties BY CONSTRUCTION.** ``alt``/``imbalance`` depend
+  only on the hand partition and ``sfr`` only on within-finger key identity (verified here: 600
+  within-hand-swap checks, zero movement), so any two boards related by a within-hand permutation
+  tie on all three. Nine such pairs exist in the field and travel separates every one — e.g.
+  ``keybo-lsb`` vs ``keybo-lsb+lm`` by 4.56% of total travel and 4.04 pp of pinky share.
+* **It is direction-sensitive where the frame is blind — but via the MODELLED branch only.** All
+  11 ``kmstats`` gauges move by exactly ``0.00e+00`` under corpus reversal; travel moves ≈2.9% and
+  reorders 10 of 15 layouts. **However**, the observed same-finger branch moves by *exactly zero*
+  (``dist(k1,k2)`` is symmetric per pair), so 100% of that sensitivity comes from which key is the
+  *landing* key — a property of this module's return-model ASSUMPTION, not an observed physical
+  asymmetry. Stated together because the first sentence alone is true, publishable, and
+  misleading.
+
+``OffHomeUsage`` is the more independent of the two: its closest single incumbent is ``alt`` at
+only |r| = 0.605, and it is *exactly* direction-blind (a unigram metric cannot see stroke order
+even in principle). Both facts are pinned by tests.
+
 Trap #9 (the denominator)
 -------------------------
 ``bad_scissor``'s ~1.497x space-denominator trap cannot bite a travel *share* the same way — the

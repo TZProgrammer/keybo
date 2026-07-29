@@ -406,6 +406,96 @@ def test_the_observed_and_modelled_branches_sum_to_the_headline(bigrams, name):
     )
 
 
+def _reversed_corpus(table: dict[str, int]) -> dict[str, int]:
+    """Reverse every n-gram, layout fixed — the CORRECT instrument for testing direction.
+
+    ⚠ A LEFT-RIGHT MIRROR is **not** a valid direction test: it maps the finger-index ordering
+    onto itself and so cannot move a direction metric by construction. (A sibling agent nearly
+    published the opposite conclusion off a mirror test.)
+    """
+    out: dict[str, int] = {}
+    for ngram, freq in table.items():
+        out[ngram[::-1]] = out.get(ngram[::-1], 0) + freq
+    return out
+
+
+def test_the_11_kmstats_gauges_are_EXACTLY_direction_blind(bigrams, corpora):
+    """The control for the test below: the incumbent frame cannot see stroke order at all.
+
+    Independently re-derived here rather than taken on trust — every delta is exactly
+    ``0.00e+00`` over all 11 gauges. This is what makes travel's direction-sensitivity
+    (next test) a statement about the FRAME's blind spot rather than about a corpus quirk.
+    """
+    from keybo.analysis.kmstats import KmStats
+
+    _bigrams, skipgrams, trigrams = corpora
+    layout = ALL_LAYOUTS["graphite"]
+    forward = dict(KmStats(_bigrams, skipgrams, trigrams).stats(layout))
+    backward = dict(
+        KmStats(
+            _reversed_corpus(_bigrams), _reversed_corpus(skipgrams), _reversed_corpus(trigrams)
+        ).stats(layout)
+    )
+    assert len(forward) == 11, "eleven kmstats gauges, or the claim below is mis-scoped"
+    for gauge, value in forward.items():
+        assert backward[gauge] == pytest.approx(value, abs=1e-12), (
+            f"{gauge} moved under corpus reversal — the direction-blindness control is broken"
+        )
+
+
+def test_travel_IS_direction_sensitive_but_ONLY_via_the_MODELLED_branch(bigrams):
+    """Travel moves under corpus reversal where all 11 kmstats gauges cannot — with a caveat.
+
+    Two facts, and the second is what stops the first from being an overclaim:
+
+    1. Travel **does** move (≈+2.9% total, ≈4.2 pp on a per-finger share, and it REORDERS 10 of
+       15 layouts), so it carries a channel the incumbent frame provably cannot express.
+    2. That movement lives **entirely in the MODELLED from-home branch** — the observed
+       same-finger branch moves by **exactly zero**, because ``dist(k1, k2)`` is symmetric per
+       pair. So the direction-sensitivity is a property of the return-model ASSUMPTION (which
+       key is the *landing* key), not an observed physical asymmetry.
+
+    Pinning (2) alongside (1) is deliberate: "travel sees direction where the frame is blind" is
+    true and would survive review on its own, while being a claim about an assumption rather than
+    about the corpus. That is exactly the shape of the wrong-constant-behind-a-true-conclusion
+    failure this campaign has hit six times.
+    """
+    layout = _layout(ALL_LAYOUTS["graphite"])
+    forward, backward = FingerTravel(bigrams), FingerTravel(_reversed_corpus(bigrams))
+
+    observed_forward = sum(forward.per_finger(layout, same_finger_only=True).values())
+    observed_backward = sum(backward.per_finger(layout, same_finger_only=True).values())
+    assert observed_backward == pytest.approx(observed_forward, rel=1e-12), (
+        "the OBSERVED branch must be exactly direction-blind: dist(k1,k2) is symmetric per pair"
+    )
+
+    total_forward, total_backward = forward.total(layout), backward.total(layout)
+    assert abs(total_backward - total_forward) / total_forward > 0.01, (
+        "the total must move by >1% — if it does not, travel adds no direction channel"
+    )
+    shares_forward, shares_backward = forward.shares(layout), backward.shares(layout)
+    assert (
+        max(abs(shares_backward[label] - shares_forward[label]) for label in FINGER_ORDER) > 1.0
+    ), "and a per-finger share must move by >1 pp, or the channel cannot discriminate"
+
+
+def test_off_home_IS_exactly_direction_blind_because_it_is_a_unigram_metric(bigrams):
+    """The honest limit of the second metric: it cannot see stroke order even in principle."""
+    layout = _layout(ALL_LAYOUTS["graphite"])
+    forward = OffHomeUsage(bigrams).report(layout)["pinky"]
+    backward = OffHomeUsage(_reversed_corpus(bigrams)).report(layout)["pinky"]
+    assert backward["off_home"] == pytest.approx(forward["off_home"], abs=1e-12)
+    assert backward["usage"] == pytest.approx(forward["usage"], abs=1e-12)
+
+
+def test_the_gauges_travel_would_be_redundant_with_are_named_in_the_docstring():
+    """Guard the redundancy disclosure: travel_total is |r|≈0.97 with sfb-dist, and it says so."""
+    import keybo.analysis.finger_travel as module
+
+    doc = module.__doc__ or ""
+    assert "sfb-dist" in doc, "the near-collinear incumbent must be named, not left for a reader"
+
+
 def test_the_slowness_weighted_variant_is_a_SEPARATE_column_that_actually_differs(bigrams):
     """Prereg §1.4: shipped beside the headline, never as it — and it must not be a no-op."""
     travel = FingerTravel(bigrams)
