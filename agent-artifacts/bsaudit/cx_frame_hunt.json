@@ -1,0 +1,30 @@
+{
+  "target": 96.6,
+  "results": {
+    "iweb|qwerty|any-dy, lower key in {c,x}": 7.559022175696044,
+    "iweb|qwerty|any-dy, lower key in {c,x,z}": 8.045303221699017,
+    "iweb|qwerty|any-dy, lower key on BOTTOM ROW and in {c,x}": 7.559022175696044,
+    "iweb|qwerty|dy==2 only, lower key in {c,x}": 77.22970544700706,
+    "iweb|qwerty|dy==2 only, lower key in {c,x,z}": 82.09499724878124,
+    "iweb|qwerty|dy==2 only, lower key on BOTTOM ROW": 100.0,
+    "iweb|qwerty30m|any-dy, lower key in {c,x}": 7.4688823008252285,
+    "iweb|qwerty30m|any-dy, lower key in {c,x,z}": 7.949364539572458,
+    "iweb|qwerty30m|any-dy, lower key on BOTTOM ROW and in {c,x}": 7.4688823008252285,
+    "iweb|qwerty30m|dy==2 only, lower key in {c,x}": 73.5872943246555,
+    "iweb|qwerty30m|dy==2 only, lower key in {c,x,z}": 78.22312269820998,
+    "iweb|qwerty30m|dy==2 only, lower key on BOTTOM ROW": 100.0,
+    "blend-v1|qwerty|any-dy, lower key in {c,x}": 10.018740105907034,
+    "blend-v1|qwerty|any-dy, lower key in {c,x,z}": 10.826920650821892,
+    "blend-v1|qwerty|any-dy, lower key on BOTTOM ROW and in {c,x}": 10.018740105907034,
+    "blend-v1|qwerty|dy==2 only, lower key in {c,x}": 80.2346313658505,
+    "blend-v1|qwerty|dy==2 only, lower key in {c,x,z}": 86.53763128092758,
+    "blend-v1|qwerty|dy==2 only, lower key on BOTTOM ROW": 100.0,
+    "blend-v1|qwerty30m|any-dy, lower key in {c,x}": 9.819743257965111,
+    "blend-v1|qwerty30m|any-dy, lower key in {c,x,z}": 10.61187134725122,
+    "blend-v1|qwerty30m|any-dy, lower key on BOTTOM ROW and in {c,x}": 9.819743257965111,
+    "blend-v1|qwerty30m|dy==2 only, lower key in {c,x}": 74.66686327897848,
+    "blend-v1|qwerty30m|dy==2 only, lower key in {c,x,z}": 80.53247548277282,
+    "blend-v1|qwerty30m|dy==2 only, lower key on BOTTOM ROW": 100.0
+  },
+  "matching_frames": []
+}

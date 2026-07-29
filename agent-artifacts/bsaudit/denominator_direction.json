@@ -1,0 +1,132 @@
+{
+  "corpus": "/tmp/bsaudit/data/corpus",
+  "space_touching_pct_of_bigram_mass": 33.846183908443685,
+  "ratio_min": 1.496137152591716,
+  "ratio_max": 1.499859875604074,
+  "n_layouts": 15,
+  "oxey_deflates_on_every_layout": true,
+  "docstring_named_tests": [
+    "test_the_space_including_denominator_would_inflate_every_share_by_about_1_497x"
+  ],
+  "docstring_named_tests_missing": [
+    "test_the_space_including_denominator_would_inflate_every_share_by_about_1_497x"
+  ],
+  "suite_actual_test_names": [
+    "test_ordered_pair_count_and_bad_scissor_support_size",
+    "test_row_span_census_is_72_dy1_and_36_dy2",
+    "test_twelve_middle_pinky_pairs_are_in_support",
+    "test_predicate_is_symmetric_over_every_pair",
+    "test_bad_scissor_is_a_CROSS_CUT_of_narrow_and_wide",
+    "test_every_excluded_narrow_and_wide_pair_is_weak_finger_on_TOP",
+    "test_adjacency_split_is_36_adjacent_and_72_nonadjacent",
+    "test_the_index_finger_is_never_attributed",
+    "test_a_four_row_geometry_is_refused_loudly",
+    "test_sfb_reproduces_kmstats_exactly_through_our_own_denominator",
+    "test_share_matches_the_specification",
+    "test_per_finger_attribution_matches_the_specification",
+    "test_per_finger_attribution_is_an_exact_partition",
+    "test_both_index_fingers_are_structurally_zero",
+    "test_per_cell_decomposition_matches_the_specification",
+    "test_dy2_subtotal_matches_the_specification",
+    "test_per_cell_decomposition_is_an_exact_partition",
+    "test_qwerty_is_the_worst_of_all_ten_layouts",
+    "test_qwerty_is_worse_than_flagship_c3",
+    "test_the_space_including_denominator_moves_every_share_by_about_1_497x",
+    "test_empty_corpus_returns_zeros_not_a_crash",
+    "test_attribution_rule_is_named_in_the_module",
+    "test_the_identification_failure_is_EMPIRICAL_not_structural",
+    "test_the_module_docstring_does_not_overstate_the_identification_limit"
+  ],
+  "per_layout": {
+    "archive-1843": {
+      "share_space_excluded_SHIPPED": 2.951160215462144,
+      "share_space_including_oxey": 1.972519839073532,
+      "correct_over_wrong": 1.496137152591716,
+      "oxey_denominator_DEFLATES": true
+    },
+    "archive-1846": {
+      "share_space_excluded_SHIPPED": 3.640679348561638,
+      "share_space_including_oxey": 2.433386098497048,
+      "correct_over_wrong": 1.496137152591716,
+      "oxey_denominator_DEFLATES": true
+    },
+    "colemak": {
+      "share_space_excluded_SHIPPED": 9.031181420384655,
+      "share_space_including_oxey": 6.021350105620576,
+      "correct_over_wrong": 1.499859875604074,
+      "oxey_denominator_DEFLATES": true
+    },
+    "dvorak": {
+      "share_space_excluded_SHIPPED": 5.8030368239037715,
+      "share_space_including_oxey": 3.876724504645894,
+      "correct_over_wrong": 1.4968917231413714,
+      "oxey_denominator_DEFLATES": true
+    },
+    "flagship-c3": {
+      "share_space_excluded_SHIPPED": 3.4698526703865844,
+      "share_space_including_oxey": 2.319207610328944,
+      "correct_over_wrong": 1.4961371525917162,
+      "oxey_denominator_DEFLATES": true
+    },
+    "graphite": {
+      "share_space_excluded_SHIPPED": 4.6603712114665035,
+      "share_space_including_oxey": 3.1149358221560597,
+      "correct_over_wrong": 1.4961371525917162,
+      "oxey_denominator_DEFLATES": true
+    },
+    "keybo-c30m": {
+      "share_space_excluded_SHIPPED": 2.7641131208936365,
+      "share_space_including_oxey": 1.8474998205247704,
+      "correct_over_wrong": 1.4961371525917162,
+      "oxey_denominator_DEFLATES": true
+    },
+    "keybo-lsb": {
+      "share_space_excluded_SHIPPED": 3.710194629745682,
+      "share_space_including_oxey": 2.479849272721165,
+      "correct_over_wrong": 1.4961371525917162,
+      "oxey_denominator_DEFLATES": true
+    },
+    "keybo-lsb+lm": {
+      "share_space_excluded_SHIPPED": 4.116837973941816,
+      "share_space_including_oxey": 2.751644771878256,
+      "correct_over_wrong": 1.4961371525917162,
+      "oxey_denominator_DEFLATES": true
+    },
+    "lsb-sib": {
+      "share_space_excluded_SHIPPED": 2.498015316566762,
+      "share_space_including_oxey": 1.6696432624773208,
+      "correct_over_wrong": 1.496137152591716,
+      "oxey_denominator_DEFLATES": true
+    },
+    "p13stab-win": {
+      "share_space_excluded_SHIPPED": 2.527235976325786,
+      "share_space_including_oxey": 1.6849813888833667,
+      "correct_over_wrong": 1.499859875604074,
+      "oxey_denominator_DEFLATES": true
+    },
+    "p16-balance": {
+      "share_space_excluded_SHIPPED": 4.341753675662379,
+      "share_space_including_oxey": 2.901975710008459,
+      "correct_over_wrong": 1.496137152591716,
+      "oxey_denominator_DEFLATES": true
+    },
+    "qwerty": {
+      "share_space_excluded_SHIPPED": 12.499980320042596,
+      "share_space_including_oxey": 8.3340987537307,
+      "correct_over_wrong": 1.499859875604074,
+      "oxey_denominator_DEFLATES": true
+    },
+    "qwerty30m": {
+      "share_space_excluded_SHIPPED": 12.525987103813092,
+      "share_space_including_oxey": 8.372218470823132,
+      "correct_over_wrong": 1.4961371525917162,
+      "oxey_denominator_DEFLATES": true
+    },
+    "semimak": {
+      "share_space_excluded_SHIPPED": 3.9201360814961785,
+      "share_space_including_oxey": 2.6201716030548656,
+      "correct_over_wrong": 1.496137152591716,
+      "oxey_denominator_DEFLATES": true
+    }
+  }
+}

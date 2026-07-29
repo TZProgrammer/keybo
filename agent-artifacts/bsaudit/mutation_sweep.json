@@ -1,0 +1,1000 @@
+{
+  "target": "src/keybo/analysis/bad_scissor.py",
+  "tests": "tests/analysis/test_bad_scissor.py",
+  "full_suite": false,
+  "total": 110,
+  "caught": 94,
+  "survived": 16,
+  "results": [
+    {
+      "n": 1,
+      "kind": "const",
+      "line": 116,
+      "before": "'all-to-descending-weaker-finger'",
+      "after": "'all-to-descending-weaker-fingerX'",
+      "rc": 1,
+      "verdict": "CAUGHT"
+    },
+    {
+      "n": 2,
+      "kind": "const",
+      "line": 113,
+      "before": "'pinky'",
+      "after": "'pinkyX'",
+      "rc": 1,
+      "verdict": "CAUGHT"
+    },
+    {
+      "n": 3,
+      "kind": "const",
+      "line": 113,
+      "before": "'ring'",
+      "after": "'ringX'",
+      "rc": 1,
+      "verdict": "CAUGHT"
+    },
+    {
+      "n": 4,
+      "kind": "const",
+      "line": 113,
+      "before": "'middle'",
+      "after": "'middleX'",
+      "rc": 1,
+      "verdict": "CAUGHT"
+    },
+    {
+      "n": 5,
+      "kind": "const",
+      "line": 113,
+      "before": "'index'",
+      "after": "'indexX'",
+      "rc": 1,
+      "verdict": "CAUGHT"
+    },
+    {
+      "n": 6,
+      "kind": "const",
+      "line": 113,
+      "before": "0",
+      "after": "1",
+      "rc": 1,
+      "verdict": "CAUGHT"
+    },
+    {
+      "n": 7,
+      "kind": "const",
+      "line": 113,
+      "before": "1",
+      "after": "2",
+      "rc": 1,
+      "verdict": "CAUGHT"
+    },
+    {
+      "n": 8,
+      "kind": "const",
+      "line": 113,
+      "before": "2",
+      "after": "3",
+      "rc": 1,
+      "verdict": "CAUGHT"
+    },
+    {
+      "n": 9,
+      "kind": "const",
+      "line": 113,
+      "before": "3",
+      "after": "4",
+      "rc": 1,
+      "verdict": "CAUGHT"
+    },
+    {
+      "n": 10,
+      "kind": "const",
+      "line": 120,
+      "before": "'L-pinky'",
+      "after": "'L-pinkyX'",
+      "rc": 1,
+      "verdict": "CAUGHT"
+    },
+    {
+      "n": 11,
+      "kind": "const",
+      "line": 121,
+      "before": "'L-ring'",
+      "after": "'L-ringX'",
+      "rc": 0,
+      "verdict": "SURVIVED"
+    },
+    {
+      "n": 12,
+      "kind": "const",
+      "line": 122,
+      "before": "'L-middle'",
+      "after": "'L-middleX'",
+      "rc": 0,
+      "verdict": "SURVIVED"
+    },
+    {
+      "n": 13,
+      "kind": "const",
+      "line": 123,
+      "before": "'L-index'",
+      "after": "'L-indexX'",
+      "rc": 1,
+      "verdict": "CAUGHT"
+    },
+    {
+      "n": 14,
+      "kind": "const",
+      "line": 124,
+      "before": "'R-index'",
+      "after": "'R-indexX'",
+      "rc": 1,
+      "verdict": "CAUGHT"
+    },
+    {
+      "n": 15,
+      "kind": "const",
+      "line": 125,
+      "before": "'R-middle'",
+      "after": "'R-middleX'",
+      "rc": 0,
+      "verdict": "SURVIVED"
+    },
+    {
+      "n": 16,
+      "kind": "const",
+      "line": 126,
+      "before": "'R-ring'",
+      "after": "'R-ringX'",
+      "rc": 0,
+      "verdict": "SURVIVED"
+    },
+    {
+      "n": 17,
+      "kind": "const",
+      "line": 127,
+      "before": "'R-pinky'",
+      "after": "'R-pinkyX'",
+      "rc": 0,
+      "verdict": "SURVIVED"
+    },
+    {
+      "n": 18,
+      "kind": "cmp",
+      "line": 144,
+      "before": "_DEX[ka] <= _DEX[kb]",
+      "after": "_DEX[ka] > _DEX[kb]",
+      "rc": 1,
+      "verdict": "CAUGHT"
+    },
+    {
+      "n": 19,
+      "kind": "drop_not",
+      "line": 156,
+      "before": "not C.same_hand(geometry, a, b)",
+      "after": "C.same_hand(geometry, a, b)",
+      "rc": 1,
+      "verdict": "CAUGHT"
+    },
+    {
+      "n": 20,
+      "kind": "swap_args",
+      "line": 158,
+      "before": "C.same_finger(geometry, a, b)",
+      "after": "C.same_finger(geometry, b, a)",
+      "rc": 0,
+      "verdict": "SURVIVED"
+    },
+    {
+      "n": 21,
+      "kind": "cmp",
+      "line": 160,
+      "before": "a[1] == b[1]",
+      "after": "a[1] != b[1]",
+      "rc": 1,
+      "verdict": "CAUGHT"
+    },
+    {
+      "n": 22,
+      "kind": "swap_args",
+      "line": 162,
+      "before": "_weak_and_strong(geometry, a, b)",
+      "after": "_weak_and_strong(geometry, b, a)",
+      "rc": 1,
+      "verdict": "CAUGHT"
+    },
+    {
+      "n": 23,
+      "kind": "cmp",
+      "line": 163,
+      "before": "weak_y < strong_y",
+      "after": "weak_y >= strong_y",
+      "rc": 1,
+      "verdict": "CAUGHT"
+    },
+    {
+      "n": 24,
+      "kind": "drop_not",
+      "line": 171,
+      "before": "not bad_scissor(geometry, a, b)",
+      "after": "bad_scissor(geometry, a, b)",
+      "rc": 1,
+      "verdict": "CAUGHT"
+    },
+    {
+      "n": 25,
+      "kind": "swap_args",
+      "line": 173,
+      "before": "_weak_and_strong(geometry, a, b)",
+      "after": "_weak_and_strong(geometry, b, a)",
+      "rc": 0,
+      "verdict": "SURVIVED"
+    },
+    {
+      "n": 26,
+      "kind": "drop_not",
+      "line": 183,
+      "before": "not bad_scissor(geometry, a, b)",
+      "after": "bad_scissor(geometry, a, b)",
+      "rc": 1,
+      "verdict": "CAUGHT"
+    },
+    {
+      "n": 27,
+      "kind": "const",
+      "line": 131,
+      "before": "1",
+      "after": "2",
+      "rc": 1,
+      "verdict": "CAUGHT"
+    },
+    {
+      "n": 28,
+      "kind": "const",
+      "line": 131,
+      "before": "2",
+      "after": "3",
+      "rc": 1,
+      "verdict": "CAUGHT"
+    },
+    {
+      "n": 29,
+      "kind": "const",
+      "line": 131,
+      "before": "3",
+      "after": "4",
+      "rc": 1,
+      "verdict": "CAUGHT"
+    },
+    {
+      "n": 30,
+      "kind": "const",
+      "line": 136,
+      "before": "1",
+      "after": "2",
+      "rc": 1,
+      "verdict": "CAUGHT"
+    },
+    {
+      "n": 31,
+      "kind": "swap_args",
+      "line": 143,
+      "before": "_kind(geometry, a[0])",
+      "after": "_kind(a[0], geometry)",
+      "rc": 1,
+      "verdict": "CAUGHT"
+    },
+    {
+      "n": 32,
+      "kind": "swap_args",
+      "line": 143,
+      "before": "_kind(geometry, b[0])",
+      "after": "_kind(b[0], geometry)",
+      "rc": 1,
+      "verdict": "CAUGHT"
+    },
+    {
+      "n": 33,
+      "kind": "swap_args",
+      "line": 156,
+      "before": "C.same_hand(geometry, a, b)",
+      "after": "C.same_hand(geometry, b, a)",
+      "rc": 0,
+      "verdict": "SURVIVED"
+    },
+    {
+      "n": 34,
+      "kind": "const",
+      "line": 157,
+      "before": "False",
+      "after": "True",
+      "rc": 1,
+      "verdict": "CAUGHT"
+    },
+    {
+      "n": 35,
+      "kind": "const",
+      "line": 159,
+      "before": "False",
+      "after": "True",
+      "rc": 1,
+      "verdict": "CAUGHT"
+    },
+    {
+      "n": 36,
+      "kind": "const",
+      "line": 161,
+      "before": "False",
+      "after": "True",
+      "rc": 1,
+      "verdict": "CAUGHT"
+    },
+    {
+      "n": 37,
+      "kind": "swap_args",
+      "line": 171,
+      "before": "bad_scissor(geometry, a, b)",
+      "after": "bad_scissor(geometry, b, a)",
+      "rc": 0,
+      "verdict": "SURVIVED"
+    },
+    {
+      "n": 38,
+      "kind": "const",
+      "line": 174,
+      "before": "'-'",
+      "after": "'-X'",
+      "rc": 1,
+      "verdict": "CAUGHT"
+    },
+    {
+      "n": 39,
+      "kind": "swap_args",
+      "line": 183,
+      "before": "bad_scissor(geometry, a, b)",
+      "after": "bad_scissor(geometry, b, a)",
+      "rc": 0,
+      "verdict": "SURVIVED"
+    },
+    {
+      "n": 40,
+      "kind": "swap_args",
+      "line": 185,
+      "before": "_kind(geometry, a[0])",
+      "after": "_kind(a[0], geometry)",
+      "rc": 1,
+      "verdict": "CAUGHT"
+    },
+    {
+      "n": 41,
+      "kind": "swap_args",
+      "line": 185,
+      "before": "_kind(geometry, b[0])",
+      "after": "_kind(b[0], geometry)",
+      "rc": 1,
+      "verdict": "CAUGHT"
+    },
+    {
+      "n": 42,
+      "kind": "const",
+      "line": 187,
+      "before": "'-'",
+      "after": "'-X'",
+      "rc": 1,
+      "verdict": "CAUGHT"
+    },
+    {
+      "n": 43,
+      "kind": "const",
+      "line": 187,
+      "before": "' dy'",
+      "after": "' dyX'",
+      "rc": 1,
+      "verdict": "CAUGHT"
+    },
+    {
+      "n": 44,
+      "kind": "const",
+      "line": 198,
+      "before": "True",
+      "after": "False",
+      "rc": 1,
+      "verdict": "CAUGHT"
+    },
+    {
+      "n": 45,
+      "kind": "swap_args",
+      "line": 205,
+      "before": "self.share_of(layout, bad_scissor, exclude_space=exclude_space)",
+      "after": "self.share_of(bad_scissor, layout, exclude_space=exclude_space)",
+      "rc": 1,
+      "verdict": "CAUGHT"
+    },
+    {
+      "n": 46,
+      "kind": "const",
+      "line": 212,
+      "before": "True",
+      "after": "False",
+      "rc": 1,
+      "verdict": "CAUGHT"
+    },
+    {
+      "n": 47,
+      "kind": "const",
+      "line": 223,
+      "before": "0.0",
+      "after": "1.0",
+      "rc": 1,
+      "verdict": "CAUGHT"
+    },
+    {
+      "n": 48,
+      "kind": "const",
+      "line": 224,
+      "before": "0.0",
+      "after": "1.0",
+      "rc": 1,
+      "verdict": "CAUGHT"
+    },
+    {
+      "n": 49,
+      "kind": "const",
+      "line": 234,
+      "before": "True",
+      "after": "False",
+      "rc": 1,
+      "verdict": "CAUGHT"
+    },
+    {
+      "n": 50,
+      "kind": "swap_args",
+      "line": 239,
+      "before": "self._partition(layout, bad_scissor_finger, FINGER_ORDER, exclude_space)",
+      "after": "self._partition(layout, bad_scissor_finger, exclude_space, FINGER_ORDER)",
+      "rc": 1,
+      "verdict": "CAUGHT"
+    },
+    {
+      "n": 51,
+      "kind": "const",
+      "line": 241,
+      "before": "True",
+      "after": "False",
+      "rc": 1,
+      "verdict": "CAUGHT"
+    },
+    {
+      "n": 52,
+      "kind": "swap_args",
+      "line": 247,
+      "before": "self._partition(layout, bad_scissor_cell, (), exclude_space)",
+      "after": "self._partition(layout, bad_scissor_cell, exclude_space, ())",
+      "rc": 1,
+      "verdict": "CAUGHT"
+    },
+    {
+      "n": 53,
+      "kind": "boolop",
+      "line": 254,
+      "before": "exclude_space and ' ' in bigram",
+      "after": "exclude_space or ' ' in bigram",
+      "rc": 1,
+      "verdict": "CAUGHT"
+    },
+    {
+      "n": 54,
+      "kind": "swap_args",
+      "line": 267,
+      "before": "dict.fromkeys(preset_keys, 0.0)",
+      "after": "dict.fromkeys(0.0, preset_keys)",
+      "rc": 1,
+      "verdict": "CAUGHT"
+    },
+    {
+      "n": 55,
+      "kind": "const",
+      "line": 268,
+      "before": "0.0",
+      "after": "1.0",
+      "rc": 1,
+      "verdict": "CAUGHT"
+    },
+    {
+      "n": 56,
+      "kind": "drop_not",
+      "line": 277,
+      "before": "not denominator",
+      "after": "denominator",
+      "rc": 1,
+      "verdict": "CAUGHT"
+    },
+    {
+      "n": 57,
+      "kind": "drop_not",
+      "line": 292,
+      "before": "not rows <= _EXPECTED_ROWS",
+      "after": "rows <= _EXPECTED_ROWS",
+      "rc": 1,
+      "verdict": "CAUGHT"
+    },
+    {
+      "n": 58,
+      "kind": "const",
+      "line": 136,
+      "before": "'-'",
+      "after": "'-X'",
+      "rc": 1,
+      "verdict": "CAUGHT"
+    },
+    {
+      "n": 59,
+      "kind": "const",
+      "line": 146,
+      "before": "0",
+      "after": "1",
+      "rc": 1,
+      "verdict": "CAUGHT"
+    },
+    {
+      "n": 60,
+      "kind": "const",
+      "line": 146,
+      "before": "1",
+      "after": "2",
+      "rc": 1,
+      "verdict": "CAUGHT"
+    },
+    {
+      "n": 61,
+      "kind": "const",
+      "line": 146,
+      "before": "1",
+      "after": "2",
+      "rc": 1,
+      "verdict": "CAUGHT"
+    },
+    {
+      "n": 62,
+      "kind": "const",
+      "line": 160,
+      "before": "1",
+      "after": "2",
+      "rc": 1,
+      "verdict": "CAUGHT"
+    },
+    {
+      "n": 63,
+      "kind": "const",
+      "line": 160,
+      "before": "1",
+      "after": "2",
+      "rc": 1,
+      "verdict": "CAUGHT"
+    },
+    {
+      "n": 64,
+      "kind": "drop_not",
+      "line": 226,
+      "before": "not self._counts(layout, bigram, exclude_space)",
+      "after": "self._counts(layout, bigram, exclude_space)",
+      "rc": 1,
+      "verdict": "CAUGHT"
+    },
+    {
+      "n": 65,
+      "kind": "swap_args",
+      "line": 230,
+      "before": "predicate(geometry, a, b)",
+      "after": "predicate(geometry, b, a)",
+      "rc": 0,
+      "verdict": "SURVIVED"
+    },
+    {
+      "n": 66,
+      "kind": "binop",
+      "line": 232,
+      "before": "100.0 * numerator / denominator",
+      "after": "100.0 * numerator * denominator",
+      "rc": 1,
+      "verdict": "CAUGHT"
+    },
+    {
+      "n": 67,
+      "kind": "const",
+      "line": 232,
+      "before": "0.0",
+      "after": "1.0",
+      "rc": 1,
+      "verdict": "CAUGHT"
+    },
+    {
+      "n": 68,
+      "kind": "cmp",
+      "line": 254,
+      "before": "' ' in bigram",
+      "after": "' ' not in bigram",
+      "rc": 1,
+      "verdict": "CAUGHT"
+    },
+    {
+      "n": 69,
+      "kind": "const",
+      "line": 255,
+      "before": "False",
+      "after": "True",
+      "rc": 1,
+      "verdict": "CAUGHT"
+    },
+    {
+      "n": 70,
+      "kind": "const",
+      "line": 267,
+      "before": "0.0",
+      "after": "1.0",
+      "rc": 1,
+      "verdict": "CAUGHT"
+    },
+    {
+      "n": 71,
+      "kind": "drop_not",
+      "line": 270,
+      "before": "not self._counts(layout, bigram, exclude_space)",
+      "after": "self._counts(layout, bigram, exclude_space)",
+      "rc": 1,
+      "verdict": "CAUGHT"
+    },
+    {
+      "n": 72,
+      "kind": "swap_args",
+      "line": 274,
+      "before": "classifier(geometry, a, b)",
+      "after": "classifier(geometry, b, a)",
+      "rc": 0,
+      "verdict": "SURVIVED"
+    },
+    {
+      "n": 73,
+      "kind": "cmp",
+      "line": 275,
+      "before": "key is not None",
+      "after": "key is None",
+      "rc": 1,
+      "verdict": "CAUGHT"
+    },
+    {
+      "n": 74,
+      "kind": "swap_args",
+      "line": 278,
+      "before": "dict.fromkeys(preset_keys, 0.0)",
+      "after": "dict.fromkeys(0.0, preset_keys)",
+      "rc": 1,
+      "verdict": "CAUGHT"
+    },
+    {
+      "n": 75,
+      "kind": "binop",
+      "line": 279,
+      "before": "100.0 * value / denominator",
+      "after": "100.0 * value * denominator",
+      "rc": 1,
+      "verdict": "CAUGHT"
+    },
+    {
+      "n": 76,
+      "kind": "cmp",
+      "line": 292,
+      "before": "rows <= _EXPECTED_ROWS",
+      "after": "rows > _EXPECTED_ROWS",
+      "rc": 1,
+      "verdict": "CAUGHT"
+    },
+    {
+      "n": 77,
+      "kind": "const",
+      "line": 143,
+      "before": "0",
+      "after": "1",
+      "rc": 1,
+      "verdict": "CAUGHT"
+    },
+    {
+      "n": 78,
+      "kind": "const",
+      "line": 143,
+      "before": "0",
+      "after": "1",
+      "rc": 1,
+      "verdict": "CAUGHT"
+    },
+    {
+      "n": 79,
+      "kind": "const",
+      "line": 145,
+      "before": "0",
+      "after": "1",
+      "rc": 1,
+      "verdict": "CAUGHT"
+    },
+    {
+      "n": 80,
+      "kind": "const",
+      "line": 145,
+      "before": "1",
+      "after": "2",
+      "rc": 1,
+      "verdict": "CAUGHT"
+    },
+    {
+      "n": 81,
+      "kind": "const",
+      "line": 145,
+      "before": "1",
+      "after": "2",
+      "rc": 1,
+      "verdict": "CAUGHT"
+    },
+    {
+      "n": 82,
+      "kind": "cmp",
+      "line": 174,
+      "before": "weak_x < 0",
+      "after": "weak_x >= 0",
+      "rc": 1,
+      "verdict": "CAUGHT"
+    },
+    {
+      "n": 83,
+      "kind": "const",
+      "line": 174,
+      "before": "'L'",
+      "after": "'LX'",
+      "rc": 1,
+      "verdict": "CAUGHT"
+    },
+    {
+      "n": 84,
+      "kind": "const",
+      "line": 174,
+      "before": "'R'",
+      "after": "'RX'",
+      "rc": 1,
+      "verdict": "CAUGHT"
+    },
+    {
+      "n": 85,
+      "kind": "const",
+      "line": 185,
+      "before": "0",
+      "after": "1",
+      "rc": 1,
+      "verdict": "CAUGHT"
+    },
+    {
+      "n": 86,
+      "kind": "const",
+      "line": 185,
+      "before": "0",
+      "after": "1",
+      "rc": 1,
+      "verdict": "CAUGHT"
+    },
+    {
+      "n": 87,
+      "kind": "binop",
+      "line": 187,
+      "before": "a[1] - b[1]",
+      "after": "a[1] + b[1]",
+      "rc": 1,
+      "verdict": "CAUGHT"
+    },
+    {
+      "n": 88,
+      "kind": "cmp",
+      "line": 194,
+      "before": "len(bg) == 2",
+      "after": "len(bg) != 2",
+      "rc": 1,
+      "verdict": "CAUGHT"
+    },
+    {
+      "n": 89,
+      "kind": "swap_args",
+      "line": 226,
+      "before": "self._counts(layout, bigram, exclude_space)",
+      "after": "self._counts(layout, exclude_space, bigram)",
+      "rc": 1,
+      "verdict": "CAUGHT"
+    },
+    {
+      "n": 90,
+      "kind": "binop",
+      "line": 232,
+      "before": "100.0 * numerator",
+      "after": "100.0 / numerator",
+      "rc": 1,
+      "verdict": "CAUGHT"
+    },
+    {
+      "n": 91,
+      "kind": "const",
+      "line": 254,
+      "before": "' '",
+      "after": "' X'",
+      "rc": 1,
+      "verdict": "CAUGHT"
+    },
+    {
+      "n": 92,
+      "kind": "swap_args",
+      "line": 270,
+      "before": "self._counts(layout, bigram, exclude_space)",
+      "after": "self._counts(layout, exclude_space, bigram)",
+      "rc": 1,
+      "verdict": "CAUGHT"
+    },
+    {
+      "n": 93,
+      "kind": "binop",
+      "line": 276,
+      "before": "charged.get(key, 0.0) + freq",
+      "after": "charged.get(key, 0.0) - freq",
+      "rc": 1,
+      "verdict": "CAUGHT"
+    },
+    {
+      "n": 94,
+      "kind": "const",
+      "line": 278,
+      "before": "0.0",
+      "after": "1.0",
+      "rc": 1,
+      "verdict": "CAUGHT"
+    },
+    {
+      "n": 95,
+      "kind": "binop",
+      "line": 279,
+      "before": "100.0 * value",
+      "after": "100.0 / value",
+      "rc": 1,
+      "verdict": "CAUGHT"
+    },
+    {
+      "n": 96,
+      "kind": "const",
+      "line": 174,
+      "before": "0",
+      "after": "1",
+      "rc": 0,
+      "verdict": "SURVIVED"
+    },
+    {
+      "n": 97,
+      "kind": "const",
+      "line": 194,
+      "before": "2",
+      "after": "3",
+      "rc": 1,
+      "verdict": "CAUGHT"
+    },
+    {
+      "n": 98,
+      "kind": "const",
+      "line": 232,
+      "before": "100.0",
+      "after": "101.0",
+      "rc": 1,
+      "verdict": "CAUGHT"
+    },
+    {
+      "n": 99,
+      "kind": "swap_args",
+      "line": 276,
+      "before": "charged.get(key, 0.0)",
+      "after": "charged.get(0.0, key)",
+      "rc": 1,
+      "verdict": "CAUGHT"
+    },
+    {
+      "n": 100,
+      "kind": "const",
+      "line": 279,
+      "before": "100.0",
+      "after": "101.0",
+      "rc": 1,
+      "verdict": "CAUGHT"
+    },
+    {
+      "n": 101,
+      "kind": "const",
+      "line": 294,
+      "before": "'bad-scissor is defined for the three-row board (rows '",
+      "after": "'bad-scissor is defined for the three-row board (rows X'",
+      "rc": 0,
+      "verdict": "SURVIVED"
+    },
+    {
+      "n": 102,
+      "kind": "const",
+      "line": 295,
+      "before": "'); got rows '",
+      "after": "'); got rows X'",
+      "rc": 0,
+      "verdict": "SURVIVED"
+    },
+    {
+      "n": 103,
+      "kind": "const",
+      "line": 295,
+      "before": "'.'",
+      "after": "'.X'",
+      "rc": 0,
+      "verdict": "SURVIVED"
+    },
+    {
+      "n": 104,
+      "kind": "const",
+      "line": 187,
+      "before": "1",
+      "after": "2",
+      "rc": 1,
+      "verdict": "CAUGHT"
+    },
+    {
+      "n": 105,
+      "kind": "const",
+      "line": 187,
+      "before": "1",
+      "after": "2",
+      "rc": 1,
+      "verdict": "CAUGHT"
+    },
+    {
+      "n": 106,
+      "kind": "const",
+      "line": 229,
+      "before": "0",
+      "after": "1",
+      "rc": 1,
+      "verdict": "CAUGHT"
+    },
+    {
+      "n": 107,
+      "kind": "const",
+      "line": 229,
+      "before": "1",
+      "after": "2",
+      "rc": 1,
+      "verdict": "CAUGHT"
+    },
+    {
+      "n": 108,
+      "kind": "const",
+      "line": 273,
+      "before": "0",
+      "after": "1",
+      "rc": 1,
+      "verdict": "CAUGHT"
+    },
+    {
+      "n": 109,
+      "kind": "const",
+      "line": 273,
+      "before": "1",
+      "after": "2",
+      "rc": 1,
+      "verdict": "CAUGHT"
+    },
+    {
+      "n": 110,
+      "kind": "const",
+      "line": 276,
+      "before": "0.0",
+      "after": "1.0",
+      "rc": 1,
+      "verdict": "CAUGHT"
+    }
+  ]
+}

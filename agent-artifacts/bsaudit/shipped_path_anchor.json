@@ -1,0 +1,41 @@
+{
+  "denominator": "layout-restricted bigram mass, space-EXCLUDED (kmstats convention)",
+  "attribution_rule": "all-to-descending-weaker-finger",
+  "emitted_keys": [
+    "attribution_rule",
+    "by_cell",
+    "by_finger",
+    "denominator",
+    "severity",
+    "share"
+  ],
+  "shares": {
+    "qwerty": 12.499980320042596,
+    "keybo-lsb": 3.710194629745682,
+    "keybo-lsb+lm": 4.116837973941816,
+    "flagship-c3": 3.4698526703865844,
+    "lsb-sib": 2.498015316566762,
+    "dvorak": 5.8030368239037715,
+    "graphite": 4.6603712114665035,
+    "semimak": 3.9201360814961785,
+    "archive-1843": 2.951160215462144,
+    "archive-1846": 3.640679348561638,
+    "colemak": 9.031181420384655,
+    "qwerty30m": 12.525987103813092,
+    "keybo-c30m": 2.7641131208936365,
+    "p13stab-win": 2.527235976325786,
+    "p16-balance": 4.341753675662379
+  },
+  "user_pair": {
+    "keybo_lsb": 3.710194629745682,
+    "keybo_lsb_lm": 4.116837973941816,
+    "gap": 0.40664334419613457,
+    "ratio": 1.109601620609323,
+    "dy2_exactly_equal": true,
+    "dy1_carries_the_whole_gap": true,
+    "fingers_that_move": [
+      "R-pinky"
+    ]
+  },
+  "max_abs_diff_vs_inprocess": 0.0
+}

@@ -1,0 +1,197 @@
+{
+  "equivalent": 11,
+  "test_gap": 5,
+  "survivors": [
+    {
+      "n": 11,
+      "kind": "const",
+      "line": 121,
+      "before": "'L-ring'",
+      "after": "'L-ringX'",
+      "rc": 0,
+      "verdict": "SURVIVED",
+      "class": "TEST-GAP",
+      "observable_diffs": [
+        "by_finger",
+        "FINGER_ORDER"
+      ]
+    },
+    {
+      "n": 12,
+      "kind": "const",
+      "line": 122,
+      "before": "'L-middle'",
+      "after": "'L-middleX'",
+      "rc": 0,
+      "verdict": "SURVIVED",
+      "class": "TEST-GAP",
+      "observable_diffs": [
+        "by_finger",
+        "FINGER_ORDER"
+      ]
+    },
+    {
+      "n": 15,
+      "kind": "const",
+      "line": 125,
+      "before": "'R-middle'",
+      "after": "'R-middleX'",
+      "rc": 0,
+      "verdict": "SURVIVED",
+      "class": "TEST-GAP",
+      "observable_diffs": [
+        "by_finger",
+        "FINGER_ORDER"
+      ]
+    },
+    {
+      "n": 16,
+      "kind": "const",
+      "line": 126,
+      "before": "'R-ring'",
+      "after": "'R-ringX'",
+      "rc": 0,
+      "verdict": "SURVIVED",
+      "class": "TEST-GAP",
+      "observable_diffs": [
+        "by_finger",
+        "FINGER_ORDER"
+      ]
+    },
+    {
+      "n": 17,
+      "kind": "const",
+      "line": 127,
+      "before": "'R-pinky'",
+      "after": "'R-pinkyX'",
+      "rc": 0,
+      "verdict": "SURVIVED",
+      "class": "TEST-GAP",
+      "observable_diffs": [
+        "by_finger",
+        "FINGER_ORDER"
+      ]
+    },
+    {
+      "n": 20,
+      "kind": "swap_args",
+      "line": 158,
+      "before": "C.same_finger(geometry, a, b)",
+      "after": "C.same_finger(geometry, b, a)",
+      "rc": 0,
+      "verdict": "SURVIVED",
+      "class": "EQUIVALENT",
+      "observable_diffs": []
+    },
+    {
+      "n": 25,
+      "kind": "swap_args",
+      "line": 173,
+      "before": "_weak_and_strong(geometry, a, b)",
+      "after": "_weak_and_strong(geometry, b, a)",
+      "rc": 0,
+      "verdict": "SURVIVED",
+      "class": "EQUIVALENT",
+      "observable_diffs": []
+    },
+    {
+      "n": 33,
+      "kind": "swap_args",
+      "line": 156,
+      "before": "C.same_hand(geometry, a, b)",
+      "after": "C.same_hand(geometry, b, a)",
+      "rc": 0,
+      "verdict": "SURVIVED",
+      "class": "EQUIVALENT",
+      "observable_diffs": []
+    },
+    {
+      "n": 37,
+      "kind": "swap_args",
+      "line": 171,
+      "before": "bad_scissor(geometry, a, b)",
+      "after": "bad_scissor(geometry, b, a)",
+      "rc": 0,
+      "verdict": "SURVIVED",
+      "class": "EQUIVALENT",
+      "observable_diffs": []
+    },
+    {
+      "n": 39,
+      "kind": "swap_args",
+      "line": 183,
+      "before": "bad_scissor(geometry, a, b)",
+      "after": "bad_scissor(geometry, b, a)",
+      "rc": 0,
+      "verdict": "SURVIVED",
+      "class": "EQUIVALENT",
+      "observable_diffs": []
+    },
+    {
+      "n": 65,
+      "kind": "swap_args",
+      "line": 230,
+      "before": "predicate(geometry, a, b)",
+      "after": "predicate(geometry, b, a)",
+      "rc": 0,
+      "verdict": "SURVIVED",
+      "class": "EQUIVALENT",
+      "observable_diffs": []
+    },
+    {
+      "n": 72,
+      "kind": "swap_args",
+      "line": 274,
+      "before": "classifier(geometry, a, b)",
+      "after": "classifier(geometry, b, a)",
+      "rc": 0,
+      "verdict": "SURVIVED",
+      "class": "EQUIVALENT",
+      "observable_diffs": []
+    },
+    {
+      "n": 96,
+      "kind": "const",
+      "line": 174,
+      "before": "0",
+      "after": "1",
+      "rc": 0,
+      "verdict": "SURVIVED",
+      "class": "EQUIVALENT",
+      "observable_diffs": []
+    },
+    {
+      "n": 101,
+      "kind": "const",
+      "line": 294,
+      "before": "'bad-scissor is defined for the three-row board (rows '",
+      "after": "'bad-scissor is defined for the three-row board (rows X'",
+      "rc": 0,
+      "verdict": "SURVIVED",
+      "class": "EQUIVALENT",
+      "observable_diffs": []
+    },
+    {
+      "n": 102,
+      "kind": "const",
+      "line": 295,
+      "before": "'); got rows '",
+      "after": "'); got rows X'",
+      "rc": 0,
+      "verdict": "SURVIVED",
+      "class": "EQUIVALENT",
+      "observable_diffs": []
+    },
+    {
+      "n": 103,
+      "kind": "const",
+      "line": 295,
+      "before": "'.'",
+      "after": "'.X'",
+      "rc": 0,
+      "verdict": "SURVIVED",
+      "class": "EQUIVALENT",
+      "observable_diffs": []
+    }
+  ]
+}

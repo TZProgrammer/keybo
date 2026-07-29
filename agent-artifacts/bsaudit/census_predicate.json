@@ -1,0 +1,133 @@
+{
+  "docstring_table": {
+    "ordered position pairs on ``ROW_STAGGERED_30``": 900,
+    "narrow ``is_scissor``": 24,
+    "wide (same-hand, distinct-finger, dy == 2)": 72,
+    "``bad-scissor``": 108,
+    "...of which dy == 1": 72,
+    "...of which dy == 2": 36,
+    "...of which middle-pinky": 12,
+    "narrow \\ bad (excluded: all weak-on-TOP)": 12,
+    "wide \\ bad (excluded: all weak-on-TOP)": 36
+  },
+  "row_staggered_30": {
+    "n_slots": 30,
+    "ordered_pairs_including_self": 900,
+    "ordered_pairs_distinct": 870,
+    "narrow_is_scissor": 24,
+    "narrow_dy_support": [
+      2
+    ],
+    "wide": 72,
+    "bad": 108,
+    "bad_dy_split": {
+      "1": 72,
+      "2": 36
+    },
+    "bad_dy_support": [
+      1,
+      2
+    ],
+    "bad_middle_pinky": 12,
+    "bad_adjacent": 36,
+    "bad_nonadjacent": 72,
+    "narrow_minus_bad": 12,
+    "narrow_minus_bad_all_weak_on_top": true,
+    "wide_minus_bad": 36,
+    "wide_minus_bad_all_weak_on_top": true,
+    "bad_minus_narrow": 96,
+    "bad_minus_wide": 72,
+    "bad_and_narrow": 12,
+    "bad_and_wide": 36,
+    "symmetry_violations_predicate": 0,
+    "symmetry_violations_finger": 0,
+    "symmetry_violations_cell": 0,
+    "fingers_charged": {
+      "L-middle": 12,
+      "L-pinky": 24,
+      "L-ring": 18,
+      "R-middle": 12,
+      "R-pinky": 24,
+      "R-ring": 18
+    },
+    "index_ever_charged": false,
+    "cells": {
+      "index-middle dy1": 16,
+      "index-middle dy2": 8,
+      "index-pinky dy1": 16,
+      "index-pinky dy2": 8,
+      "index-ring dy1": 16,
+      "index-ring dy2": 8,
+      "middle-pinky dy1": 8,
+      "middle-pinky dy2": 4,
+      "middle-ring dy1": 8,
+      "middle-ring dy2": 4,
+      "ring-pinky dy1": 8,
+      "ring-pinky dy2": 4
+    },
+    "n_cells": 12,
+    "cell_collisions": {},
+    "fingers_not_in_FINGER_ORDER": [],
+    "row_staggered_31_refused": false
+  },
+  "row_staggered_31": {
+    "n_slots": 31,
+    "ordered_pairs_including_self": 961,
+    "ordered_pairs_distinct": 930,
+    "narrow_is_scissor": 24,
+    "narrow_dy_support": [
+      2
+    ],
+    "wide": 72,
+    "bad": 116,
+    "bad_dy_split": {
+      "1": 80,
+      "2": 36
+    },
+    "bad_dy_support": [
+      1,
+      2
+    ],
+    "bad_middle_pinky": 14,
+    "bad_adjacent": 38,
+    "bad_nonadjacent": 78,
+    "narrow_minus_bad": 12,
+    "narrow_minus_bad_all_weak_on_top": true,
+    "wide_minus_bad": 36,
+    "wide_minus_bad_all_weak_on_top": true,
+    "bad_minus_narrow": 104,
+    "bad_minus_wide": 80,
+    "bad_and_narrow": 12,
+    "bad_and_wide": 36,
+    "symmetry_violations_predicate": 0,
+    "symmetry_violations_finger": 0,
+    "symmetry_violations_cell": 0,
+    "fingers_charged": {
+      "L-middle": 12,
+      "L-pinky": 24,
+      "L-ring": 18,
+      "R-middle": 12,
+      "R-pinky": 32,
+      "R-ring": 18
+    },
+    "index_ever_charged": false,
+    "cells": {
+      "index-middle dy1": 16,
+      "index-middle dy2": 8,
+      "index-pinky dy1": 20,
+      "index-pinky dy2": 8,
+      "index-ring dy1": 16,
+      "index-ring dy2": 8,
+      "middle-pinky dy1": 10,
+      "middle-pinky dy2": 4,
+      "middle-ring dy1": 8,
+      "middle-ring dy2": 4,
+      "ring-pinky dy1": 10,
+      "ring-pinky dy2": 4
+    },
+    "n_cells": 12,
+    "cell_collisions": {},
+    "fingers_not_in_FINGER_ORDER": []
+  },
+  "failures": []
+}

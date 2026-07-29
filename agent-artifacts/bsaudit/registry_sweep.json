@@ -1,0 +1,715 @@
+{
+  "cell_key_information": {
+    "n_cell_keys": 12,
+    "keys_that_merge_more_than_one_full_class": {
+      "index-middle dy1": [
+        "L|L-middle|adj|rows(1, 2)",
+        "L|L-middle|adj|rows(2, 3)",
+        "L|L-middle|non|rows(1, 2)",
+        "L|L-middle|non|rows(2, 3)",
+        "R|R-middle|adj|rows(1, 2)",
+        "R|R-middle|adj|rows(2, 3)",
+        "R|R-middle|non|rows(1, 2)",
+        "R|R-middle|non|rows(2, 3)"
+      ],
+      "index-middle dy2": [
+        "L|L-middle|adj|rows(1, 3)",
+        "L|L-middle|non|rows(1, 3)",
+        "R|R-middle|adj|rows(1, 3)",
+        "R|R-middle|non|rows(1, 3)"
+      ],
+      "index-pinky dy1": [
+        "L|L-pinky|non|rows(1, 2)",
+        "L|L-pinky|non|rows(2, 3)",
+        "R|R-pinky|non|rows(1, 2)",
+        "R|R-pinky|non|rows(2, 3)"
+      ],
+      "index-pinky dy2": [
+        "L|L-pinky|non|rows(1, 3)",
+        "R|R-pinky|non|rows(1, 3)"
+      ],
+      "index-ring dy1": [
+        "L|L-ring|non|rows(1, 2)",
+        "L|L-ring|non|rows(2, 3)",
+        "R|R-ring|non|rows(1, 2)",
+        "R|R-ring|non|rows(2, 3)"
+      ],
+      "index-ring dy2": [
+        "L|L-ring|non|rows(1, 3)",
+        "R|R-ring|non|rows(1, 3)"
+      ],
+      "middle-pinky dy1": [
+        "L|L-pinky|non|rows(1, 2)",
+        "L|L-pinky|non|rows(2, 3)",
+        "R|R-pinky|non|rows(1, 2)",
+        "R|R-pinky|non|rows(2, 3)"
+      ],
+      "middle-pinky dy2": [
+        "L|L-pinky|non|rows(1, 3)",
+        "R|R-pinky|non|rows(1, 3)"
+      ],
+      "middle-ring dy1": [
+        "L|L-ring|adj|rows(1, 2)",
+        "L|L-ring|adj|rows(2, 3)",
+        "R|R-ring|adj|rows(1, 2)",
+        "R|R-ring|adj|rows(2, 3)"
+      ],
+      "middle-ring dy2": [
+        "L|L-ring|adj|rows(1, 3)",
+        "R|R-ring|adj|rows(1, 3)"
+      ],
+      "ring-pinky dy1": [
+        "L|L-pinky|adj|rows(1, 2)",
+        "L|L-pinky|adj|rows(2, 3)",
+        "R|R-pinky|adj|rows(1, 2)",
+        "R|R-pinky|adj|rows(2, 3)"
+      ],
+      "ring-pinky dy2": [
+        "L|L-pinky|adj|rows(1, 3)",
+        "R|R-pinky|adj|rows(1, 3)"
+      ]
+    },
+    "merged_class_counts": {
+      "index-middle dy1": 8,
+      "index-middle dy2": 4,
+      "index-pinky dy1": 4,
+      "index-pinky dy2": 2,
+      "index-ring dy1": 4,
+      "index-ring dy2": 2,
+      "middle-pinky dy1": 4,
+      "middle-pinky dy2": 2,
+      "middle-ring dy1": 4,
+      "middle-ring dy2": 2,
+      "ring-pinky dy1": 4,
+      "ring-pinky dy2": 2
+    },
+    "hand_is_recoverable_from_cell_key": false,
+    "adjacency_is_recoverable_from_cell_key": false,
+    "rowpair_is_recoverable_from_cell_key": false
+  },
+  "registry": {
+    "archive-1843": {
+      "share": 2.951160215462144,
+      "by_finger": {
+        "L-pinky": 0.7993925925247193,
+        "L-ring": 0.5940758573875853,
+        "L-middle": 0.291041692545998,
+        "L-index": 0.0,
+        "R-index": 0.0,
+        "R-middle": 0.06665164536452925,
+        "R-ring": 0.4470475517314568,
+        "R-pinky": 0.7529508759078554
+      },
+      "by_cell": {
+        "middle-pinky dy1": 0.7942695320867862,
+        "middle-ring dy1": 0.4997946679217648,
+        "index-ring dy1": 0.5217248648224732,
+        "index-pinky dy1": 0.4075090017879527,
+        "ring-pinky dy1": 0.22229387312627133,
+        "index-middle dy1": 0.3237927627754175,
+        "index-pinky dy2": 0.07071940751878147,
+        "middle-pinky dy2": 0.05491233418671747,
+        "index-middle dy2": 0.03390057513510971,
+        "middle-ring dy2": 0.013713967896476017,
+        "index-ring dy2": 0.00588990847832809,
+        "ring-pinky dy2": 0.0026393197260654324
+      },
+      "dy1": 2.7693847025206657,
+      "dy2": 0.1817755129414782,
+      "dy1_pct_of_total": 93.84054067993009
+    },
+    "archive-1846": {
+      "share": 3.640679348561638,
+      "by_finger": {
+        "L-pinky": 1.545678733502867,
+        "L-ring": 0.5975473867517265,
+        "L-middle": 0.291041692545998,
+        "L-index": 0.0,
+        "R-index": 0.0,
+        "R-middle": 0.08678700665568558,
+        "R-ring": 0.5955813221679686,
+        "R-pinky": 0.5240432069373928
+      },
+      "by_cell": {
+        "middle-pinky dy1": 1.016853389766148,
+        "ring-pinky dy1": 0.46809521363249484,
+        "index-ring dy1": 0.6677463563847497,
+        "middle-ring dy1": 0.39968187375019537,
+        "index-pinky dy1": 0.4349396993385532,
+        "index-ring dy2": 0.1209505624913229,
+        "index-middle dy1": 0.34790290704666055,
+        "middle-pinky dy2": 0.10655689535135951,
+        "index-middle dy2": 0.02992579215502303,
+        "index-pinky dy2": 0.030727315597004534,
+        "ring-pinky dy2": 0.012549426754699677,
+        "middle-ring dy2": 0.004749916293427139
+      },
+      "dy1": 3.3352194399188018,
+      "dy2": 0.3054599086428368,
+      "dy1_pct_of_total": 91.60981016459145
+    },
+    "colemak": {
+      "share": 9.031181420384655,
+      "by_finger": {
+        "L-pinky": 1.4661487687009958,
+        "L-ring": 1.0258365299059422,
+        "L-middle": 0.7460079903726268,
+        "L-index": 0.0,
+        "R-index": 0.0,
+        "R-middle": 1.6080263853992691,
+        "R-ring": 1.6602436657655208,
+        "R-pinky": 2.5249180802403
+      },
+      "by_cell": {
+        "middle-pinky dy1": 1.4595412617425036,
+        "index-middle dy1": 2.305987386851867,
+        "index-ring dy1": 1.996577856855738,
+        "index-pinky dy1": 1.6331522673945256,
+        "ring-pinky dy1": 0.8946927028887388,
+        "middle-ring dy1": 0.5715462527036698,
+        "index-ring dy2": 0.10978874882888758,
+        "index-middle dy2": 0.048046988920029024,
+        "middle-ring dy2": 0.008167337283167934,
+        "ring-pinky dy2": 0.0012833811592455665,
+        "index-pinky dy2": 0.0019927893875752215,
+        "middle-pinky dy2": 0.0004044463687069462
+      },
+      "dy1": 8.861497728437042,
+      "dy2": 0.16968369194761226,
+      "dy1_pct_of_total": 98.12113516439153
+    },
+    "dvorak": {
+      "share": 5.8030368239037715,
+      "by_finger": {
+        "L-pinky": 0.8478400866529896,
+        "L-ring": 1.1875518559348328,
+        "L-middle": 0.9578507481564801,
+        "L-index": 0.0,
+        "R-index": 0.0,
+        "R-middle": 0.4504251548166353,
+        "R-ring": 1.6708294362341158,
+        "R-pinky": 0.6885395421087182
+      },
+      "by_cell": {
+        "index-ring dy1": 2.447224269959844,
+        "ring-pinky dy1": 0.4773276858597698,
+        "index-middle dy1": 1.4049699268311169,
+        "middle-ring dy1": 0.41037543042154995,
+        "index-pinky dy1": 0.8812479752783103,
+        "middle-pinky dy1": 0.1733408536203538,
+        "index-pinky dy2": 0.0028198303632198446,
+        "index-middle dy2": 0.0033059761419984867,
+        "ring-pinky dy2": 0.000986463107509007,
+        "middle-pinky dy2": 0.0006568205325450353,
+        "middle-ring dy2": 0.0005006254059032281,
+        "index-ring dy2": 0.0002809663816515348
+      },
+      "dy1": 5.794486141970945,
+      "dy2": 0.008550681932827136,
+      "dy1_pct_of_total": 99.85265159963136
+    },
+    "flagship-c3": {
+      "share": 3.4698526703865844,
+      "by_finger": {
+        "L-pinky": 1.497522272248257,
+        "L-ring": 0.45973813498819,
+        "L-middle": 0.31896643785371576,
+        "L-index": 0.0,
+        "R-index": 0.0,
+        "R-middle": 0.06665164536452925,
+        "R-ring": 0.6611365497460507,
+        "R-pinky": 0.46583763018584173
+      },
+      "by_cell": {
+        "middle-pinky dy1": 0.9695736331339505,
+        "ring-pinky dy1": 0.46892159289331264,
+        "middle-ring dy1": 0.4626849303991197,
+        "index-ring dy1": 0.5330805985491069,
+        "index-pinky dy1": 0.3939625805221512,
+        "index-middle dy1": 0.3759301442493331,
+        "middle-pinky dy2": 0.10712949977047799,
+        "index-ring dy2": 0.07076942601841509,
+        "middle-ring dy2": 0.05433972976759898,
+        "ring-pinky dy2": 0.013334686512751232,
+        "index-pinky dy2": 0.010437909601455141,
+        "index-middle dy2": 0.00968793896891196
+      },
+      "dy1": 3.204153479746974,
+      "dy2": 0.2656991906396104,
+      "dy1_pct_of_total": 92.342637688706
+    },
+    "graphite": {
+      "share": 4.6603712114665035,
+      "by_finger": {
+        "L-pinky": 1.5853384939209434,
+        "L-ring": 0.32770249101978444,
+        "L-middle": 0.21108543314088987,
+        "L-index": 0.0,
+        "R-index": 0.0,
+        "R-middle": 0.3635059171746979,
+        "R-ring": 0.7120280716585401,
+        "R-pinky": 1.460710804551648
+      },
+      "by_cell": {
+        "middle-pinky dy1": 2.1460001523815126,
+        "index-pinky dy1": 0.6027775420140284,
+        "index-ring dy1": 0.583100325630559,
+        "middle-ring dy1": 0.4195401386906207,
+        "index-middle dy1": 0.5623263845986817,
+        "ring-pinky dy1": 0.2437113036902449,
+        "middle-ring dy2": 0.025172193518064583,
+        "middle-pinky dy2": 0.027950828574397856,
+        "index-pinky dy2": 0.01921416168440728,
+        "index-ring dy2": 0.011917904839080253,
+        "index-middle dy2": 0.012264965716906088,
+        "ring-pinky dy2": 0.006395310128000194
+      },
+      "dy1": 4.557455847005647,
+      "dy2": 0.10291536446085625,
+      "dy1_pct_of_total": 97.79169169598248
+    },
+    "keybo-c30m": {
+      "share": 2.7641131208936365,
+      "by_finger": {
+        "L-pinky": 1.070896077155555,
+        "L-ring": 0.30602576209881455,
+        "L-middle": 0.4182899830617414,
+        "L-index": 0.0,
+        "R-index": 0.0,
+        "R-middle": 0.25298129666835334,
+        "R-ring": 0.6611365497460507,
+        "R-pinky": 0.05478345216312167
+      },
+      "by_cell": {
+        "middle-pinky dy1": 0.41677776731821736,
+        "index-middle dy1": 0.664639379030208,
+        "middle-ring dy1": 0.4756323571171616,
+        "index-ring dy1": 0.4203401278227975,
+        "index-pinky dy1": 0.344657228085773,
+        "ring-pinky dy1": 0.2944444848308881,
+        "middle-ring dy2": 0.07073873982232085,
+        "index-pinky dy2": 0.04658686232438969,
+        "ring-pinky dy2": 0.014596196034185367,
+        "middle-pinky dy2": 0.008616990725223045,
+        "index-middle dy2": 0.006631900699886771,
+        "index-ring dy2": 0.00045108708258530234
+      },
+      "dy1": 2.6164913442050457,
+      "dy2": 0.14762177668859103,
+      "dy1_pct_of_total": 94.65934387515716
+    },
+    "keybo-lsb": {
+      "share": 3.710194629745682,
+      "by_finger": {
+        "L-pinky": 1.545678733502867,
+        "L-ring": 1.0213651811778839,
+        "L-middle": 0.35616823396464364,
+        "L-index": 0.0,
+        "R-index": 0.0,
+        "R-middle": 0.06665164536452925,
+        "R-ring": 0.6611365497460507,
+        "R-pinky": 0.059194285989707475
+      },
+      "by_cell": {
+        "index-ring dy1": 1.0817267700670161,
+        "index-pinky dy1": 0.7457546560617955,
+        "middle-pinky dy1": 0.4134274484286484,
+        "index-middle dy1": 0.38965362486659827,
+        "middle-ring dy1": 0.4756323571171616,
+        "ring-pinky dy1": 0.29458287957527307,
+        "index-pinky dy2": 0.1288424384028391,
+        "middle-ring dy2": 0.07073873982232085,
+        "index-ring dy2": 0.05440386391743594,
+        "index-middle dy2": 0.03316625446257459,
+        "ring-pinky dy2": 0.013334686512751232,
+        "middle-pinky dy2": 0.008930910511267102
+      },
+      "dy1": 3.400777736116493,
+      "dy2": 0.3094168936291888,
+      "dy1_pct_of_total": 91.66035950921533
+    },
+    "keybo-lsb+lm": {
+      "share": 4.116837973941816,
+      "by_finger": {
+        "L-pinky": 1.545678733502867,
+        "L-ring": 1.0213651811778839,
+        "L-middle": 0.35616823396464364,
+        "L-index": 0.0,
+        "R-index": 0.0,
+        "R-middle": 0.06665164536452925,
+        "R-ring": 0.6611365497460507,
+        "R-pinky": 0.46583763018584173
+      },
+      "by_cell": {
+        "index-ring dy1": 1.0817267700670161,
+        "index-pinky dy1": 0.8240596912550727,
+        "middle-pinky dy1": 0.6924763618170963,
+        "index-middle dy1": 0.38965362486659827,
+        "middle-ring dy1": 0.4756323571171616,
+        "ring-pinky dy1": 0.34387227518968233,
+        "index-pinky dy2": 0.1288424384028391,
+        "middle-ring dy2": 0.07073873982232085,
+        "index-ring dy2": 0.05440386391743594,
+        "index-middle dy2": 0.03316625446257459,
+        "ring-pinky dy2": 0.013334686512751232,
+        "middle-pinky dy2": 0.008930910511267102
+      },
+      "dy1": 3.8074210803126274,
+      "dy2": 0.3094168936291888,
+      "dy1_pct_of_total": 92.48411291414205
+    },
+    "lsb-sib": {
+      "share": 2.498015316566762,
+      "by_finger": {
+        "L-pinky": 0.8107885251682365,
+        "L-ring": 0.6089083371316962,
+        "L-middle": 0.29133597316654175,
+        "L-index": 0.0,
+        "R-index": 0.0,
+        "R-middle": 0.06665164536452925,
+        "R-ring": 0.6611365497460507,
+        "R-pinky": 0.059194285989707475
+      },
+      "by_cell": {
+        "middle-pinky dy1": 0.5523303562209836,
+        "index-ring dy1": 0.6822173527388705,
+        "middle-ring dy1": 0.4626849303991197,
+        "index-middle dy1": 0.3240870433959613,
+        "index-ring dy2": 0.0708028739721578,
+        "index-pinky dy1": 0.16781820350997487,
+        "ring-pinky dy1": 0.12208318998916123,
+        "middle-ring dy2": 0.05433972976759898,
+        "index-middle dy2": 0.03390057513510971,
+        "middle-pinky dy2": 0.014286572315594503,
+        "ring-pinky dy2": 0.007658047097278098,
+        "index-pinky dy2": 0.005806442024951762
+      },
+      "dy1": 2.3112210762540712,
+      "dy2": 0.18679424031269085,
+      "dy1_pct_of_total": 92.5222940358341
+    },
+    "p13stab-win": {
+      "share": 2.527235976325786,
+      "by_finger": {
+        "L-pinky": 0.364977361850573,
+        "L-ring": 0.7395024472879315,
+        "L-middle": 0.13118504645554668,
+        "L-index": 0.0,
+        "R-index": 0.0,
+        "R-middle": 0.030540814527093722,
+        "R-ring": 0.38558615126046253,
+        "R-pinky": 0.8754441549441786
+      },
+      "by_cell": {
+        "middle-pinky dy1": 0.8317465915708419,
+        "index-ring dy1": 0.8492233235078176,
+        "ring-pinky dy1": 0.289528124208734,
+        "index-middle dy2": 0.08947934270801793,
+        "middle-ring dy1": 0.26795145279924926,
+        "index-pinky dy1": 0.092568011298465,
+        "index-middle dy1": 0.07224651827462249,
+        "ring-pinky dy2": 0.02305034381040546,
+        "middle-pinky dy2": 0.0030375316932542374,
+        "index-ring dy2": 0.0064534764257354335,
+        "middle-ring dy2": 0.0014603458155916709,
+        "index-pinky dy2": 0.0004909142130511899
+      },
+      "dy1": 2.40326402165973,
+      "dy2": 0.12397195466605591,
+      "dy1_pct_of_total": 95.09456355372511
+    },
+    "p16-balance": {
+      "share": 4.341753675662379,
+      "by_finger": {
+        "L-pinky": 0.9691434126647093,
+        "L-ring": 1.473386044710334,
+        "L-middle": 0.11373316916995807,
+        "L-index": 0.0,
+        "R-index": 0.0,
+        "R-middle": 0.2645236024672401,
+        "R-ring": 0.7384096081646786,
+        "R-pinky": 0.7825578384854592
+      },
+      "by_cell": {
+        "index-ring dy1": 1.6006858880355157,
+        "ring-pinky dy1": 1.0362688528969335,
+        "middle-ring dy1": 0.48950650695724957,
+        "middle-pinky dy1": 0.3157115530339999,
+        "index-middle dy1": 0.2999885598792341,
+        "index-ring dy2": 0.12098830651251881,
+        "index-middle dy2": 0.07826821175796408,
+        "ring-pinky dy2": 0.07936524326833311,
+        "index-pinky dy1": 0.28202117834213575,
+        "middle-pinky dy2": 0.033506257515298746,
+        "index-pinky dy2": 0.0048281660934674465,
+        "middle-ring dy2": 0.0006149513697285345
+      },
+      "dy1": 4.024182539145069,
+      "dy2": 0.3175711365173107,
+      "dy1_pct_of_total": 92.68564823708333
+    },
+    "qwerty": {
+      "share": 12.499980320042596,
+      "by_finger": {
+        "L-pinky": 4.883653951348046,
+        "L-ring": 4.2784084833942995,
+        "L-middle": 0.9725357671603805,
+        "L-index": 0.0,
+        "R-index": 0.0,
+        "R-middle": 0.15946777957084057,
+        "R-ring": 2.1944891160537936,
+        "R-pinky": 0.011425222515234921
+      },
+      "by_cell": {
+        "index-pinky dy1": 3.5766822567053644,
+        "middle-ring dy1": 3.29885766370083,
+        "index-ring dy1": 2.815501174134152,
+        "middle-pinky dy1": 0.8210661082310879,
+        "index-middle dy2": 0.7981251663886162,
+        "ring-pinky dy1": 0.43288530179912,
+        "middle-ring dy2": 0.21151987226313002,
+        "index-middle dy1": 0.3338783803426048,
+        "index-ring dy2": 0.14701888934998186,
+        "middle-pinky dy2": 0.05550398821310016,
+        "index-pinky dy2": 0.00582960627998288,
+        "ring-pinky dy2": 0.00311191263462563
+      },
+      "dy1": 11.27887088491316,
+      "dy2": 1.2211094351294367,
+      "dy1_pct_of_total": 90.23110913885601
+    },
+    "qwerty30m": {
+      "share": 12.525987103813092,
+      "by_finger": {
+        "L-pinky": 4.8354568267974765,
+        "L-ring": 4.236184568963293,
+        "L-middle": 0.9629377432285715,
+        "L-index": 0.0,
+        "R-index": 0.0,
+        "R-middle": 0.1578939808311373,
+        "R-ring": 2.172831548522393,
+        "R-pinky": 0.1606824354702207
+      },
+      "by_cell": {
+        "index-pinky dy1": 3.598612256059969,
+        "middle-ring dy1": 3.266301005248791,
+        "index-ring dy1": 2.787714794895598,
+        "middle-pinky dy1": 0.8213445766246545,
+        "index-middle dy2": 0.7902484129505972,
+        "ring-pinky dy1": 0.45252718576800494,
+        "middle-ring dy2": 0.20943236775729326,
+        "index-middle dy1": 0.33058331110911154,
+        "index-ring dy2": 0.14556794958400365,
+        "middle-pinky dy2": 0.06815956504060013,
+        "ring-pinky dy2": 0.027948066816749374,
+        "index-pinky dy2": 0.027547611957719566
+      },
+      "dy1": 11.257083129706128,
+      "dy2": 1.2689039741069632,
+      "dy1_pct_of_total": 89.8698285125913
+    },
+    "semimak": {
+      "share": 3.9201360814961785,
+      "by_finger": {
+        "L-pinky": 0.5877858009121883,
+        "L-ring": 0.1758696476411811,
+        "L-middle": 0.07599927441875612,
+        "L-index": 0.0,
+        "R-index": 0.0,
+        "R-middle": 0.6213853444636135,
+        "R-ring": 1.0194129253823685,
+        "R-pinky": 1.4396830886780712
+      },
+      "by_cell": {
+        "ring-pinky dy1": 0.953417964614256,
+        "index-pinky dy1": 0.5454305650291941,
+        "index-ring dy1": 0.6145883520287397,
+        "index-middle dy1": 0.6764465067013881,
+        "middle-pinky dy1": 0.4808054360547283,
+        "middle-ring dy1": 0.5565960443400436,
+        "ring-pinky dy2": 0.02840590486247541,
+        "index-middle dy2": 0.02093811218098159,
+        "index-ring dy2": 0.016681323058788857,
+        "middle-ring dy2": 0.007416853595977386,
+        "index-pinky dy2": 0.009934655985509635,
+        "middle-pinky dy2": 0.009474363044096061
+      },
+      "dy1": 3.82728486876835,
+      "dy2": 0.09285121272782894,
+      "dy1_pct_of_total": 97.63142883824608
+    }
+  },
+  "user_pair": {
+    "a": "keybo-lsb",
+    "b": "keybo-lsb+lm",
+    "share_a": 3.710194629745682,
+    "share_b": 4.116837973941816,
+    "gap_b_minus_a": 0.40664334419613457,
+    "ratio_b_over_a": 1.109601620609323,
+    "qwerty_share": 12.499980320042596,
+    "differing_positions": [
+      9,
+      19
+    ],
+    "per_finger_gap": {
+      "L-pinky": 0.0,
+      "L-ring": 0.0,
+      "L-middle": 0.0,
+      "L-index": 0.0,
+      "R-index": 0.0,
+      "R-middle": 0.0,
+      "R-ring": 0.0,
+      "R-pinky": 0.40664334419613424
+    },
+    "per_cell_gap": {
+      "index-middle dy1": 0.0,
+      "index-middle dy2": 0.0,
+      "index-pinky dy1": 0.07830503519327725,
+      "index-pinky dy2": 0.0,
+      "index-ring dy1": 0.0,
+      "index-ring dy2": 0.0,
+      "middle-pinky dy1": 0.27904891338844784,
+      "middle-pinky dy2": 0.0,
+      "middle-ring dy1": 0.0,
+      "middle-ring dy2": 0.0,
+      "ring-pinky dy1": 0.04928939561440926,
+      "ring-pinky dy2": 0.0
+    },
+    "n_bigrams_with_differing_flag": 16,
+    "mass_only_in_a": 0.044861991241932554,
+    "mass_only_in_b": 0.4515053354380668,
+    "gap_by_dy": {
+      "1": 0.4066433441961343
+    },
+    "differing_bigrams": {
+      "ld": {
+        "freq": 843395,
+        "pct": 0.2588058435490007,
+        "flagged_in": "keybo-lsb+lm",
+        "cell": "middle-pinky dy1",
+        "finger": "R-pinky",
+        "dy": 1
+      },
+      "nl": {
+        "freq": 229148,
+        "pct": 0.07031680462602508,
+        "flagged_in": "keybo-lsb+lm",
+        "cell": "ring-pinky dy1",
+        "finger": "R-pinky",
+        "dy": 1
+      },
+      "gl": {
+        "freq": 166897,
+        "pct": 0.05121434069540082,
+        "flagged_in": "keybo-lsb+lm",
+        "cell": "index-pinky dy1",
+        "finger": "R-pinky",
+        "dy": 1
+      },
+      "dl": {
+        "freq": 110330,
+        "pct": 0.033856080150773064,
+        "flagged_in": "keybo-lsb+lm",
+        "cell": "middle-pinky dy1",
+        "finger": "R-pinky",
+        "dy": 1
+      },
+      "lv": {
+        "freq": 91360,
+        "pct": 0.028034908751696067,
+        "flagged_in": "keybo-lsb+lm",
+        "cell": "index-pinky dy1",
+        "finger": "R-pinky",
+        "dy": 1
+      },
+      "nm": {
+        "freq": 65502,
+        "pct": 0.02010007216564794,
+        "flagged_in": "keybo-lsb",
+        "cell": "ring-pinky dy1",
+        "finger": "R-pinky",
+        "dy": 1
+      },
+      "dm": {
+        "freq": 42781,
+        "pct": 0.013127861551076068,
+        "flagged_in": "keybo-lsb",
+        "cell": "middle-pinky dy1",
+        "finger": "R-pinky",
+        "dy": 1
+      },
+      "mn": {
+        "freq": 18349,
+        "pct": 0.005630610121331777,
+        "flagged_in": "keybo-lsb",
+        "cell": "ring-pinky dy1",
+        "finger": "R-pinky",
+        "dy": 1
+      },
+      "ln": {
+        "freq": 15327,
+        "pct": 0.0047032732753638975,
+        "flagged_in": "keybo-lsb+lm",
+        "cell": "ring-pinky dy1",
+        "finger": "R-pinky",
+        "dy": 1
+      },
+      "gm": {
+        "freq": 15040,
+        "pct": 0.004615203892573434,
+        "flagged_in": "keybo-lsb",
+        "cell": "index-pinky dy1",
+        "finger": "R-pinky",
+        "dy": 1
+      },
+      "lg": {
+        "freq": 13834,
+        "pct": 0.00424512836767692,
+        "flagged_in": "keybo-lsb+lm",
+        "cell": "index-pinky dy1",
+        "finger": "R-pinky",
+        "dy": 1
+      },
+      "mg": {
+        "freq": 2197,
+        "pct": 0.0006741757281904144,
+        "flagged_in": "keybo-lsb",
+        "cell": "index-pinky dy1",
+        "finger": "R-pinky",
+        "dy": 1
+      },
+      "md": {
+        "freq": 1581,
+        "pct": 0.0004851487602499068,
+        "flagged_in": "keybo-lsb",
+        "cell": "middle-pinky dy1",
+        "finger": "R-pinky",
+        "dy": 1
+      },
+      "vl": {
+        "freq": 1072,
+        "pct": 0.0003289560221302341,
+        "flagged_in": "keybo-lsb+lm",
+        "cell": "index-pinky dy1",
+        "finger": "R-pinky",
+        "dy": 1
+      },
+      "mv": {
+        "freq": 550,
+        "pct": 0.0001687740785183104,
+        "flagged_in": "keybo-lsb",
+        "cell": "index-pinky dy1",
+        "finger": "R-pinky",
+        "dy": 1
+      },
+      "vm": {
+        "freq": 196,
+        "pct": 6.014494434470698e-05,
+        "flagged_in": "keybo-lsb",
+        "cell": "index-pinky dy1",
+        "finger": "R-pinky",
+        "dy": 1
+      }
+    }
+  }
+}
