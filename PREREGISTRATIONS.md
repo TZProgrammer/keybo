@@ -9752,3 +9752,28 @@ reported "their roll split carries no direction"** — but **the mirror maps the
 mirror test separately found something TRUE and kept: our `lsb`/`lsb-dist`/`sfb-dist`/`sfs-dist` DO separate mirror pairs by up to 7.94pp, so our frame is not mirror-invariant either.**
 🟠 DID NOT DETERMINE, stated rather than guessed: provenance of their frequency data; provenance of their effort grid (**no statement exists anywhere**); whether cols 5&6 is redundant at high n; whether
 `optimiser.js`/`magic.html` add anything (not audited).
+
+### KAGGLE-1 INTERIM — 🔴 A SEVENTH WRONG CONSTANT, MINE AGAIN, AND IT WENT INTO FIVE BRIEFS: I conflated the AALTO training frame (4 layouts) with the COMMUNITY dataset (12 labels / 9 participants). The conclusion gets STRONGER — the fold count is 4, not 11 (2026-07-29)
+Interim from `kaggle` (still working; this is not its terminal callback). **It did exactly what my correction message instructed — re-derived the constants I gave it instead of trusting them — and caught me a second time in
+one session.**
+🔴 **THE ERROR, VERIFIED MYSELF.** I told five agents the training frame was *"3,098 bigram rows / 467,579 samples, 11 layouts, exactly 1 participant per layout."* Measured on disk:
+    /local/home/zegertho/keybo-e2e/bistrokes31_v1.tsv        rows=2201   layouts=4  -> azerty dvorak qwerty qwertz   <- the k31 BIGRAM frame
+    /local/home/zegertho/keybo-e2e/tristrokes31_cond_v1.tsv  rows=16642  layouts=4  -> azerty dvorak qwerty qwertz   <- the k31 TRIGRAM frame
+    data/community/processed/bistrokes_community.tsv         rows=5444   layouts=12                                  <- a DIFFERENT dataset
+ **My "11 layouts / 1 participant each" was the COMMUNITY set**, where each label embeds one participant as `label@geometry#participant` (12 labels / **9 distinct participants** per its own `ingest_report.json`). **No frame
+has "3,098 rows AND 11 layouts" — I conflated two datasets.** ⚠ **AND THE IN-TREE CONTRADICTION THAT SHOULD HAVE CAUGHT IT, which the child found and I confirmed: `train.py:62` says the weight cap exists "so a
+64-PARTICIPANT layout can't dominate"** — a comment incompatible with "1 participant per layout" sitting 60 lines from the loader.
+✅ **BUT THE CONCLUSION SURVIVES AND STRENGTHENS, WHICH IS PRECISELY WHY NOBODY AUDITED THE NUMBER — the child's framing, adopted verbatim: "Do not weaken the claim — weaken the n."** The aalto LOLO harness has **4 folds,
+not 11**, against **46 features.** So **volume-hungry competition technique is MORE mismatched than I argued, not less.** ⚠ **Seventh instance of the signature failure, and the second I have committed today** (the sixth was
+"swap diff exactly 0.0", CYANO-1). Both were numbers *supporting a true conclusion*, which is the whole mechanism: **no lens tests a number that points the right way.**
+🟡 **SECOND CORRECTION, to the defect I asked it to headline — I got the mechanism wrong while getting the verdict right.** I called the `cv-mae` path *"random K-fold, UNGROUPED."* `check_cv(5, y, classifier=False)` returns
+**`KFold(shuffle=False)`**, and `XGBRegressor` is not a classifier so there is no stratification either => it is **CONTIGUOUS-BLOCK, ungrouped** KFold. **"Ungrouped / leaks" is TRUE; "random" is FALSE** — and the
+difference is **load-bearing**: with `shuffle=False` the leak magnitude is a function of **ROW ORDER in the TSV**, which it measured to be interleaved (`qwerty x506, qwertz x189, qwerty x3, qwertz x62, … azerty x187`).
+=> ⚠ **A naive `shuffle=True` "fix" would make the leakage WORSE.** `GroupKFold` remains the right answer, but **the reasoning to write down is not the reasoning in my brief.**
+🔴 **AND A THIRD DEFECT IT FOUND THAT WAS IN NO BRIEF, WHICH I VERIFIED: THE `cv-mae` PATH TUNES IN THE WRONG TARGET SPACE.** `cli/tune.py`'s cv-mae branch calls `build_training_matrix()`, which defaults to
+`target_space="MS"`, while **every shipped k31 model is `target_space: LOGRAT`** — confirmed directly in the meta sidecar (`extra.training.target_space = 'LOGRAT'`). So that path optimizes MAE on raw durations for a model
+family fitted on log-ratios.
+🟢 **BLAST RADIUS LOOKS LIKE ZERO, and it is confirming rather than asserting:** the shipped default objective is `lolo`, and PREREG:3548 already records that CV-MAE winners **"never shipped."** => all three `cv-mae`
+defects are **latent**, not retroactive — but they are three independent defects in one code path that nobody had audited, which is itself the pattern.
+=> STATUS: not yet a verdict. It has still to finish the blast-radius grep, survey competition practice, and **PRE-REGISTER before running anything**. Registering the interim because **the constant correction affects four
+other live agents** and must not wait for its terminal callback.
