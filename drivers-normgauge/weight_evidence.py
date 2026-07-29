@@ -393,7 +393,10 @@ def decide(support: dict, indep: dict, cross: list[dict]) -> dict:
             f"the skill is not distinguishable from none"
         )
     else:
-        gap = abs(a["rho_over_ceiling"] - c["rho_over_ceiling"])
+        gap = abs(
+            a["rho_plain_mean_aggregation"] / a["ceiling"]
+            - c["rho_plain_mean_aggregation"] / c["ceiling"]
+        )
         # SEs on the SAME scale as the gap (rho/ceiling), not on the raw rho scale.
         pooled_se = float(np.hypot(a["rho_over_ceiling_boot_se"], c["rho_over_ceiling_boot_se"]))
         if gap <= pooled_se:
@@ -408,13 +411,42 @@ def decide(support: dict, indep: dict, cross: list[dict]) -> dict:
                 f"CI crosses 0"
             )
     reasons.append(f"(c) held-out: {'USABLE' if c_usable else 'REFUTED'} — {why}")
+    # The self-diagnostic that found AMENDMENT 2's defect, kept in the artifact so the next
+    # reader sees it without having to re-derive it: a point estimate outside its own interval.
+    ci_diagnostics = {}
+    for cell in cross:
+        lo, hi = cell["rho_ci95"]
+        half = (hi - lo) / 2 if np.isfinite(hi) and np.isfinite(lo) else float("nan")
+        ci_diagnostics[cell["surface"]] = {
+            "iqr_mean_point_inside_own_ci": bool(lo <= cell["rho"] <= hi),
+            "plain_mean_point_inside_own_ci": bool(lo <= cell["rho_plain_mean_aggregation"] <= hi),
+            "aggregation_gap_over_ci_half_width": (
+                float(abs(cell["aggregation_gap"]) / half) if half else float("nan")
+            ),
+            "fraction_of_cells_surviving_a_resample": (
+                cell["boot_median_surviving_cells"] / cell["n_cells"] if cell["n_cells"] else None
+            ),
+            "verdict": (
+                "interval is INDICATIVE ONLY: it is an interval for the plain-mean statistic, and "
+                "at this cell richness a participant resample barely moves the cell values, so "
+                "the width is a LOWER bound on uncertainty (AMENDMENT 2)"
+            ),
+        }
 
     if c_usable:
+        # AMENDMENT 2 A2.3: use the PLAIN-MEAN point estimate, because the bootstrap interval it
+        # is judged against is a plain-mean interval. Comparing an IQR-mean estimate to a
+        # plain-mean interval is the mismatched-ruler error -- and it showed up as a point
+        # estimate lying OUTSIDE its own CI. The IQR-mean values are reported alongside; the
+        # branch and the weights are robust to the choice (weights move <= 0.0136).
         split = {
-            "AALTO": max(0.0, a["rho_over_ceiling"]),
-            "COMMUNITY": max(0.0, c["rho_over_ceiling"]),
+            "AALTO": max(0.0, a["rho_plain_mean_aggregation"] / a["ceiling"]),
+            "COMMUNITY": max(0.0, c["rho_plain_mean_aggregation"] / c["ceiling"]),
         }
-        rule = "held-out predictive skill (rho/ceiling), POOL at its unique variance share"
+        rule = (
+            "held-out predictive skill (rho/ceiling on the plain-mean aggregation that matches "
+            "the bootstrap interval; AMENDMENT 2), POOL at its measured unique variance share"
+        )
     else:
         ess = {m: registered_ess(support[m]) for m in ("AALTO", "COMMUNITY")}
         split = dict(ess)
@@ -446,6 +478,21 @@ def decide(support: dict, indep: dict, cross: list[dict]) -> dict:
     return {
         "weights": weights,
         "rule": rule,
+        "ci_diagnostics": ci_diagnostics,
+        "weights_under_iqr_mean_variant": {
+            "AALTO": scale
+            * max(0.0, a["rho_over_ceiling"])
+            / (max(0.0, a["rho_over_ceiling"]) + max(0.0, c["rho_over_ceiling"]))
+            if c_usable
+            else None,
+            "COMMUNITY": scale
+            * max(0.0, c["rho_over_ceiling"])
+            / (max(0.0, a["rho_over_ceiling"]) + max(0.0, c["rho_over_ceiling"]))
+            if c_usable
+            else None,
+            "POOL": w_pool,
+            "note": "the mismatched variant, reported so the choice need not be taken on trust",
+        },
         "branch_taken": "(c) held-out" if c_usable else "(a) precision + (b) independence",
         "reasons": reasons,
         "equal_weights_are_not_neutral": {

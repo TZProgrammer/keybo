@@ -1,0 +1,251 @@
+{
+ "frame": "standardized",
+ "frame_caveat": "the shipped .standardized surfaces share AALTO's bigram tensor (standardization substitutes it), so the three sources differ only in their conditional trigram increment and are LESS independent than the .native arrays; POOL is additionally fitted on the union of AALTO's and COMMUNITY's sources",
+ "corpus": "/tmp/normgauge/data/corpus/blend-v1/trigrams.txt",
+ "support": {
+  "AALTO": {
+   "path": "/local/home/zegertho/keybo-e2e/tristrokes31_cond_v1.tsv",
+   "labels_kept": [
+    "azerty",
+    "dvorak",
+    "qwerty",
+    "qwertz"
+   ],
+   "labels_in_file": {
+    "qwerty": 7057,
+    "qwertz": 3706,
+    "azerty": 3089,
+    "dvorak": 2791
+   },
+   "samples": 26368247,
+   "rows_kept": 8620,
+   "cells_covered": 5219,
+   "cells_total": 29791,
+   "coverage": 0.1751871370548152,
+   "median_samples_per_covered_cell": 728.0,
+   "min_samples_per_covered_cell": 10
+  },
+  "COMMUNITY": {
+   "path": "/local/home/zegertho/repos/keybo/data/community/processed/tristrokes_last_community.tsv",
+   "labels_kept": [
+    "colemak@rowStagger#alite",
+    "custom-aa426873@rowStagger#vg",
+    "custom-d42a1f92@rowStagger#ddn",
+    "mtgap-variant@rowStagger#richarddavison"
+   ],
+   "labels_in_file": {
+    "colemak-dh@ortholinear#grzegorzkulesza": 6820,
+    "colemak-dh@ortholinear#grzegorzkulesza+pseudo": 9146,
+    "colemak-dh@ortholinear#grzegorzkulesza+rareboost": 5028,
+    "colemak@rowStagger#alite": 2365,
+    "custom-0f8904ec@rowStagger#octahedron": 1390,
+    "custom-aa426873@rowStagger#vg": 2813,
+    "custom-abcaff22@ortholinear#andrewcastro": 2107,
+    "custom-d42a1f92@rowStagger#ddn": 1955,
+    "mtgap-variant@rowStagger#richarddavison": 1798,
+    "qwerty@ortholinear#grzegorzkulesza": 234,
+    "qwerty@rowStagger#grzegorzkulesza": 34,
+    "recurva-variant@angleMod#vg": 4826
+   },
+   "samples": 29047,
+   "rows_kept": 1327,
+   "cells_covered": 1044,
+   "cells_total": 29791,
+   "coverage": 0.035044140847907086,
+   "median_samples_per_covered_cell": 18.0,
+   "min_samples_per_covered_cell": 10
+  }
+ },
+ "support_ratio_whole_surface": 907.7786690536028,
+ "brief_643x_correction": {
+  "claim_in_brief": "AALTO 7,669,316 vs COMMUNITY 11,930 = 643x",
+  "actual_scope": "scissor-neighbourhood cell groups under a COVERED-PAIR filter (state/scissorsupport/artifacts/ss2d_support_filtered.json)",
+  "asymmetry": "AALTO's count is IDENTICAL in the filtered and unfiltered artifacts; COMMUNITY loses 92.1% (151,365 -> 11,930)",
+  "unfiltered_same_groups": 50.66769728801242,
+  "whole_stroke_table": 46.16148955404527,
+  "measured_here_on_surface_cells": 907.7786690536028,
+  "verdict": "the CONCLUSION (AALTO is far better supported) is confirmed and strengthened; the CONSTANT 643x is mis-scoped and is not used as a reliability ratio"
+ },
+ "independence": {
+  "fit_level": {
+   "pool_n": 400,
+   "pool_seed": 20260728,
+   "intercept": 2.059191634748409e-12,
+   "beta_aalto": 0.49875667091820963,
+   "beta_community": 0.5080166987904411,
+   "beta_sum": 1.0067733697086507,
+   "r2": 0.9388125360516154,
+   "unique_variance_share": 0.06118746394838459,
+   "resid_sd_ms": 866283204.9554354,
+   "resid_sd_pct_of_pool_sd": 24.735438249738124,
+   "fit_corr": [
+    [
+     1.0,
+     0.8958150497096393,
+     0.9296930798038839
+    ],
+    [
+     0.8958150497096392,
+     1.0,
+     0.9669975883041412
+    ],
+    [
+     0.929693079803884,
+     0.9669975883041412,
+     1.0
+    ]
+   ]
+  },
+  "cell_level": {
+   "intercept": 26.793534300474587,
+   "beta_aalto": 0.4545303933987025,
+   "beta_community": 0.449590789219817,
+   "beta_sum": 0.9041211826185195,
+   "r2": 0.8739965444894748,
+   "unique_variance_share": 0.12600345551052516
+  },
+  "reading": "POOL is a near-symmetric blend of the other two with most of its fit variance explained by them, so it is NOT an independent third vote. Its registered weight is its unique variance share (1 - r2) at fit level."
+ },
+ "held_out": [
+  {
+   "surface": "AALTO",
+   "held_out_source": "tristrokes_last_community.tsv",
+   "held_out_labels": [
+    "colemak@rowStagger#alite",
+    "custom-aa426873@rowStagger#vg",
+    "custom-d42a1f92@rowStagger#ddn",
+    "mtgap-variant@rowStagger#richarddavison"
+   ],
+   "n_cells": 866,
+   "n_rows": 1327,
+   "n_participants": 4,
+   "participants": [
+    200001,
+    200003,
+    200006,
+    200007
+   ],
+   "median_pids_per_cell": 1.0,
+   "rho": 0.278601478462859,
+   "rho_plain_mean_aggregation": 0.27236217605255253,
+   "aggregation_gap": 0.006239302410306458,
+   "ceiling": 0.5149860410544709,
+   "rho_over_ceiling": 0.5409884079428686,
+   "boot_n": 2000,
+   "boot_estimator": "cluster bootstrap over participants, re-aggregating each cell's value from the drawn participants' samples (plain mean); see AMENDMENT 1 A1.2",
+   "boot_median_surviving_cells": 650.0,
+   "rho_ci95": [
+    0.1619956242745095,
+    0.3210102092753683
+   ],
+   "rho_boot_se": 0.04232434678313797,
+   "rho_over_ceiling_boot_se": 0.08218542525245118,
+   "ci_treats_ceiling_as_fixed": "the ceiling is estimated from the same held-out data but is not resampled, so this interval UNDERSTATES total uncertainty -- conservative for a falsifier that fires on a WIDE interval, so it cannot rescue branch (c)",
+   "crosses_zero": false,
+   "note": "the two sources are DISJOINT (aalto pids <200000, community pids 200001-200007), so this is genuinely out-of-sample without any refit; bucket-centered because the wpm axis is a model input"
+  },
+  {
+   "surface": "COMMUNITY",
+   "held_out_source": "tristrokes31_cond_v1.tsv",
+   "held_out_labels": [
+    "azerty",
+    "dvorak",
+    "qwerty",
+    "qwertz"
+   ],
+   "n_cells": 23714,
+   "n_rows": 8726,
+   "n_participants": 55404,
+   "participants": [
+    40,
+    45,
+    74,
+    87,
+    113,
+    114,
+    155,
+    177,
+    223,
+    238,
+    242,
+    252,
+    275,
+    278,
+    280,
+    319
+   ],
+   "median_pids_per_cell": 138.0,
+   "rho": 0.41145780071690674,
+   "rho_plain_mean_aggregation": 0.37923012090388186,
+   "aggregation_gap": 0.03222767981302488,
+   "ceiling": 0.9757151709442128,
+   "rho_over_ceiling": 0.4216986811004829,
+   "boot_n": 2000,
+   "boot_estimator": "cluster bootstrap over participants, re-aggregating each cell's value from the drawn participants' samples (plain mean); see AMENDMENT 1 A1.2",
+   "boot_median_surviving_cells": 23714.0,
+   "rho_ci95": [
+    0.3643355307999181,
+    0.372001956716974
+   ],
+   "rho_boot_se": 0.0020166231162350046,
+   "rho_over_ceiling_boot_se": 0.002066815374289498,
+   "ci_treats_ceiling_as_fixed": "the ceiling is estimated from the same held-out data but is not resampled, so this interval UNDERSTATES total uncertainty -- conservative for a falsifier that fires on a WIDE interval, so it cannot rescue branch (c)",
+   "crosses_zero": false,
+   "note": "the two sources are DISJOINT (aalto pids <200000, community pids 200001-200007), so this is genuinely out-of-sample without any refit; bucket-centered because the wpm axis is a model input"
+  }
+ ],
+ "decision": {
+  "weights": {
+   "AALTO": 0.5411334196884872,
+   "COMMUNITY": 0.39767911636312825,
+   "POOL": 0.06118746394838459
+  },
+  "rule": "held-out predictive skill (rho/ceiling on the plain-mean aggregation that matches the bootstrap interval; AMENDMENT 2), POOL at its measured unique variance share",
+  "ci_diagnostics": {
+   "AALTO": {
+    "iqr_mean_point_inside_own_ci": true,
+    "plain_mean_point_inside_own_ci": true,
+    "aggregation_gap_over_ci_half_width": 0.07847459288432897,
+    "fraction_of_cells_surviving_a_resample": 0.7505773672055427,
+    "verdict": "interval is INDICATIVE ONLY: it is an interval for the plain-mean statistic, and at this cell richness a participant resample barely moves the cell values, so the width is a LOWER bound on uncertainty (AMENDMENT 2)"
+   },
+   "COMMUNITY": {
+    "iqr_mean_point_inside_own_ci": false,
+    "plain_mean_point_inside_own_ci": false,
+    "aggregation_gap_over_ci_half_width": 8.407484833663164,
+    "fraction_of_cells_surviving_a_resample": 1.0,
+    "verdict": "interval is INDICATIVE ONLY: it is an interval for the plain-mean statistic, and at this cell richness a participant resample barely moves the cell values, so the width is a LOWER bound on uncertainty (AMENDMENT 2)"
+   }
+  },
+  "weights_under_iqr_mean_variant": {
+   "AALTO": 0.5275719442130166,
+   "COMMUNITY": 0.41124059183859885,
+   "POOL": 0.06118746394838459,
+   "note": "the mismatched variant, reported so the choice need not be taken on trust"
+  },
+  "branch_taken": "(c) held-out",
+  "reasons": [
+   "(c) held-out: USABLE \u2014 rho/ceiling separates by 0.1402 > pooled SE 0.0822, and neither CI crosses 0",
+   "(b) independence: POOL's unique variance share is 0.0612 at fit level (R2=0.93881), so it takes that weight and the other two split the remaining 0.9388"
+  ],
+  "equal_weights_are_not_neutral": {
+   "effective_source_loadings_under_equal_weights": {
+    "AALTO": 0.49958555697273654,
+    "COMMUNITY": 0.502672232930147,
+    "POOL_unique": 0.020395821316128195
+   },
+   "reading": "under (1/3,1/3,1/3) the AALTO+COMMUNITY consensus is counted ~1.5x because POOL re-votes it; POOL's own unique signal gets only a third of its already small share"
+  }
+ },
+ "provenance": {
+  "cell_kw": {
+   "wpm_lo": 40,
+   "wpm_hi": 140,
+   "bucket_width": 20,
+   "min_cell_samples": 10
+  },
+  "n_boot": 2000,
+  "boot_seed": 20260728,
+  "numpy": "2.5.0"
+ }
+}
