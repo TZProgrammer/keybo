@@ -9823,3 +9823,42 @@ independently and stands** — so nothing it has concluded rested on the `9`.
 => **RUNNING TALLY: 8 distinct wrong constants attached to true conclusions, and the last three formed a CHAIN — a brief constant, its correction, and the correction's correction.** ⚠ **The durable lesson from this
 addendum specifically: when a number appears to be corroborated by documentation, check that the documentation is describing the SAME QUANTITY. `9 submitters` and `9 layout strings` are one keystroke apart in a README
 and 2 units apart in truth.**
+
+### KCSCORE-1 — 🟢 A CLEAN NULL WITH THE BEST CONTROL AVAILABLE: nothing in keycraft's 150 layouts beats arm B, and the ONE exact-charset case lands +5.32 ms/char behind AT IDENTICAL COVERAGE — so the null is not a coverage artifact; and 🔴 the `is_inwards` MECHANISM is now read from source (2026-07-29)
+User ask: run our speed model on keycraft's top 30. Child `kcscore`, branch `keycraft-score` (3 commits `eb8339e`/`f6ab351`/`a2d0085`), not pushed, no CR, nothing copied in, no layout adopted.
+🟢 **THE ANSWER IS NO, AND THE CONTROL IS AS CLEAN AS THIS QUESTION ALLOWS. 0 of 144 scorable layouts scores below arm B's 253.9006.** ⚠ The obvious objection is coverage — a different charset covers a different share of
+the corpus — and it is **killed by the one case that removes the confound entirely: `trendei` (their #85) is the ONLY exact C30M permutation in all 150.** I scored it myself: **259.2242 ms/char at coverage 88.7147%,
+IDENTICAL to arm B's 88.7147% to four decimals, i.e. +5.3236 behind.** => **with the coverage difference driven to EXACTLY ZERO the gap WIDENS rather than closes.** Corroborated across the field: **pearson(coverage,
+ms/char) over all 144 = +0.006.** Verified twice by the child (`analyze --json` and a direct `timecard.card()` bypassing the CLI, agreeing to 6 decimals) and its harness reproduced all three of my arm constants exactly.
+🔴 **THE STRUCTURAL FINDING THAT REFRAMES THE ASK: A KEYCRAFT BOARD IS NOT A 30-KEY LAYOUT.** All 150 are **3x12 + a 6-slot thumb row**. Of the top 30: **ZERO are C30M permutations** (so all three fitted surfaces are N/A
+for every one), **only 10 fit our 3x10 frame at all**, **19 put a LETTER on a thumb**, and 2 are unscorable outright — **including their #1 `northwest`, a 36-key board whose inner grid holds 29 keys, so no 30-char string
+exists for it.** => **our model cannot see most of their top 30 AS DESIGNED**, which bounds every cross-tool comparison in this ledger. 🟢 And it used their **authoritative `data/layouts/*.klf`** (BSD-3-Clause, vendorable
+with attribution) after **scraping the rendered ASCII art FAILED at 19/150 because the lattice differs per geometry** — 150/150 parsed, round-trip cross-checked against the site's own drawing, **nothing hand-transcribed.**
+🟢 **THE FIELD: OURS IS BOTH FASTER AND TIGHTER.** keycraft top-30 (28 scorable) mean **257.68, sd 1.14**; our 7 candidates mean **254.40, sd 0.42**, and **sit entirely below the whole keycraft field — our WORST (254.98)
+beats their best faithful layout (`compound`, 256.27) by 1.29.** 🟢 **But our model partly AGREES with their ordering: their top-30 mean is 0.88 ms/char faster than their other 116** — so their objective is not
+uncorrelated with speed, just weakly so.
+🟢 **THE RANK CORRELATION — the number I most wanted, and the two objectives barely agree:** spearman(keycraft Score, −ms/char) = **+0.358** over all 144, **+0.220** on the cleanest subset (faithful AND coverage-matched,
+n=55), **+0.500** on the top-30 only. ⚠ **Sharpest case: `compound` is their #109 of 150 yet is the fastest layout under our model that our frame holds exactly.** 🟠 **Reverse direction UNKNOWN and it did not guess** —
+computing their Score needs their 10M Reddit corpus and their predicates.
+🟢 **`northwest` RESEMBLES GRAPHITE, NOT US — and this corrects the impression from KEYCRAFT-1's cell-based measure.** By same-slot letters: **9/23 with graphite including 6 of 8 high-frequency core letters**, versus
+**6/23 (2/8 core) for the flmpg arms and ZERO for the entire pyuo family.** Scale reference it supplied: **our own arm B vs BALL-1 share 24/26.** => the user's observed resemblance is real but it is to **graphite**, and
+the two independent audits agree on that ordering while differing on the metric.
+🟢 **ROUTES DIFFER, and only one mechanism survives its own scrutiny:** robust separations are `sfb`, `sfs`, `redir`, `scissor`, `comfort`; **`scissor` is the big one at 2.68x-2.79x depending on scope** (ours n=7 mean
+0.1745 vs keycraft 0.4678@n=8 / 0.4863@n=55 / 0.4740@n=65 / 0.4765@n=144). ⚠ **AND THE COUNTER-INTUITIVE PART: their fastest layouts have LOWER `sfb` (1.44 vs our flmpg 2.44) and are STILL slower — so `sfb` minimization
+is NOT what buys the last 2 ms/char under our model.** That is directly relevant to the user's flagship-c3-vs-BALL-1 question.
+🔴 **THE `is_inwards` MECHANISM, NOW READ FROM SOURCE AND CONFIRMED BY ME — this closes the loop on CYANO-1.** `features/classify.py:127-144`: `outer, inner = (a, b) if abs(a[0]) > abs(b[0]) else (b, a)` **sorts the two
+positions by COLUMN MAGNITUDE, discarding which key was struck first**, then returns `outer[1] > inner[1]` — **a comparison of ROWS.** So `is_inwards`/`is_outwards` are **swap-invariant BY CONSTRUCTION**, and their
+docstrings ("rolling toward the index finger" / "toward the pinky") name a direction the code cannot evaluate. The child extended the corpus-reversal test: **0/11 kmstats gauges AND 0/11 oxey pattern shares move, every
+delta exactly 0.00e+00, `inroll`/`outroll` included.** => ⚠ **AND THE CONSEQUENCE IT DREW IS THE IMPORTANT ONE: keycraft's objective IS direction-sensitive (`FLW +8.00` is its only positive weight, and it splits
+2RL-IN/2RL-OUT), so OUR GAUGE FRAME STRUCTURALLY CANNOT SEE THE AXIS THEY OPTIMIZE. Any "they do it differently" claim is about the gauges we can compute, not a complete account.**
+🟢 **THREE SELF-KILLS, AND IT COMMITTED THE CAMPAIGN'S OWN SIGNATURE FAILURE TWICE WHILE HUNTING IT:** (1) **averaging our 7 candidates into one column HID A SIGN FLIP on `roll`/`sr-roll`** (flmpg arms above keycraft, the
+pyuo family below), so *"we buy speed with rolls"* was true for 3 of 7 and false for 4 — **conclusion right, mechanism wrong** (fixed `f6ab351`); (2) its scissor ratio **"2.75x" was STALE from the grouping that fix had
+already discarded** — correct is 2.68x at the stated scope (fixed `a2d0085`); (3) it **wrote "2201 rows" echoing my brief while its own `wc -l` printed 2202 in the same command.** It also killed *"north is our #1"* as a
+**projection artifact** (its `s` is on a thumb, coverage collapses to 73.7%), and 🟢 **CLEARED a suspicion of its own that was wrong: keycraft's dvorak projection is byte-identical to our registry dvorak at 255.02/87.49%,
+matching my independent measurement — cross-source validation, not an artifact.**
+🟢 **AND IT DID NOT SOFTEN THE CAVEAT I MOST EXPECTED TO BE SOFTENED:** with **4** training layouts, *"our model prefers the layouts our own search produced"* is **weak evidence about real typing speed** — and ⚠ **the 30
+keycraft layouts are NOT 30 extra folds: they are unlabelled predictions with no measured times to check against.** That is the correct reading of this entire result and it is registered as such.
+⚠ **A CORRECTION TO MY BRIEF: `keybo-lsb`/`flagship-c3`/`qwerty30m` are NOT in "our registry"** — `NAMED_LAYOUTS` holds only colemak/dvorak/graphite/qwerty/semimak; those three live in `cli/analyze.py::_EXTRA_NAMED`.
+Immaterial to results. All `oxey-style` values are **FRESH post-fix** (its tree carries `33b7bf1`/`4d37f72`).
+=> FOUR IMPROVEMENT PROPOSALS registered from it, two worth acting on: **`analyze` should FLAG cross-coverage comparisons** (the trap that would have produced a wrong headline here), and **`saved_vs_ref_pct` mixes
+normalizations** (`timecard.py:148-155`) — consistent with the registered coverage-artifact finding on that field.
