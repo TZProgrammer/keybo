@@ -1,0 +1,131 @@
+{
+  "config": {
+    "cache": "/tmp/kaggle-work/matrix_bigram_lograt.npz",
+    "n_candidates": 12,
+    "seed": 42,
+    "target_space": "LOGRAT",
+    "n_examples": 143635,
+    "n_features": 20,
+    "layouts": [
+      "azerty",
+      "dvorak",
+      "qwerty",
+      "qwertz"
+    ],
+    "nthread": 8
+  },
+  "leak_diagnostic": {
+    "shipped_kfold_folds_straddling_a_layout": 4,
+    "n_folds": 4
+  },
+  "splitters": {
+    "kfold_noshuffle_SHIPPED": {
+      "believed_cv_mae": [
+        0.22751529873512188,
+        0.2345851225820112,
+        0.2260204527179267,
+        0.23870468470537554,
+        0.23439763496042967,
+        0.22407871087272396,
+        0.2292106371720247,
+        0.2258001547820802,
+        0.2373645674107191,
+        0.2310148848291988,
+        0.24480916274403308,
+        0.22743366643387725
+      ],
+      "best_index": 5,
+      "best_believed_cv_mae": 0.22407871087272396,
+      "best_params": {
+        "n_estimators": 321,
+        "max_depth": 5,
+        "learning_rate": 0.1336995918419717,
+        "min_child_weight": 5,
+        "subsample": 0.9032350960341495
+      },
+      "secs": 287.0,
+      "lolo_mae_per_layout": {
+        "azerty": 0.28555152841327835,
+        "dvorak": 0.33111688523512345,
+        "qwerty": 0.19774072281182378,
+        "qwertz": 0.22619291358015206
+      },
+      "lolo_mae_mean": 0.2601505125100944,
+      "optimism": 0.03607180163737045
+    },
+    "kfold_shuffle_naivefix": {
+      "believed_cv_mae": [
+        0.2069923457770629,
+        0.22038029955928062,
+        0.2047939255757385,
+        0.22585370503879326,
+        0.2200411298117125,
+        0.19666999049000572,
+        0.20910548311545593,
+        0.19754008475357482,
+        0.22457450346322194,
+        0.21462492888445367,
+        0.23382315203852655,
+        0.2066133937433501
+      ],
+      "best_index": 5,
+      "best_believed_cv_mae": 0.19666999049000572,
+      "best_params": {
+        "n_estimators": 321,
+        "max_depth": 5,
+        "learning_rate": 0.1336995918419717,
+        "min_child_weight": 5,
+        "subsample": 0.9032350960341495
+      },
+      "secs": 179.3,
+      "lolo_mae_per_layout": {
+        "azerty": 0.28555152841327835,
+        "dvorak": 0.33111688523512345,
+        "qwerty": 0.19774072281182378,
+        "qwertz": 0.22619291358015206
+      },
+      "lolo_mae_mean": 0.2601505125100944,
+      "optimism": 0.06348052202008869
+    },
+    "groupkfold_layout_FIX": {
+      "believed_cv_mae": [
+        0.2593180998418014,
+        0.2622338642953669,
+        0.25805146886787195,
+        0.2647392080829095,
+        0.2626815184571577,
+        0.2601505125100944,
+        0.25973825516901294,
+        0.26107726514924334,
+        0.26424103158565915,
+        0.2601839151816847,
+        0.26900308779602455,
+        0.2582028551629044
+      ],
+      "best_index": 2,
+      "best_believed_cv_mae": 0.25805146886787195,
+      "best_params": {
+        "n_estimators": 386,
+        "max_depth": 5,
+        "learning_rate": 0.043060453881598265,
+        "min_child_weight": 5,
+        "subsample": 0.7483192096930324
+      },
+      "secs": 241.3,
+      "lolo_mae_per_layout": {
+        "azerty": 0.2812758410522169,
+        "dvorak": 0.32076997773436233,
+        "qwerty": 0.19839697742605533,
+        "qwertz": 0.2317630792588532
+      },
+      "lolo_mae_mean": 0.25805146886787195,
+      "optimism": 0.0
+    }
+  },
+  "selection_indices": {
+    "kfold_noshuffle_SHIPPED": 5,
+    "kfold_shuffle_naivefix": 5,
+    "groupkfold_layout_FIX": 2
+  },
+  "selection_differs": true
+}

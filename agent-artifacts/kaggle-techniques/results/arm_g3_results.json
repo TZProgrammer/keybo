@@ -1,0 +1,494 @@
+{
+  "config": {
+    "seeds": [
+      42,
+      7,
+      13,
+      99,
+      2024
+    ],
+    "n_candidates": 8,
+    "n_examples": 143635
+  },
+  "per_seed": {
+    "42": {
+      "candidates": [
+        {
+          "n_estimators": 135,
+          "max_depth": 5,
+          "learning_rate": 0.09899811915536944,
+          "min_child_weight": 3,
+          "subsample": 0.8789472116237456
+        },
+        {
+          "n_estimators": 443,
+          "max_depth": 2,
+          "learning_rate": 0.19561202329461608,
+          "min_child_weight": 1,
+          "subsample": 0.9044558807961411
+        },
+        {
+          "n_estimators": 386,
+          "max_depth": 5,
+          "learning_rate": 0.043060453881598265,
+          "min_child_weight": 5,
+          "subsample": 0.7483192096930324
+        },
+        {
+          "n_estimators": 280,
+          "max_depth": 2,
+          "learning_rate": 0.13589572161451963,
+          "min_child_weight": 5,
+          "subsample": 0.929104645308332
+        },
+        {
+          "n_estimators": 318,
+          "max_depth": 3,
+          "learning_rate": 0.06090296992125985,
+          "min_child_weight": 1,
+          "subsample": 0.6255269024416701
+        },
+        {
+          "n_estimators": 321,
+          "max_depth": 5,
+          "learning_rate": 0.1336995918419717,
+          "min_child_weight": 5,
+          "subsample": 0.9032350960341495
+        },
+        {
+          "n_estimators": 380,
+          "max_depth": 3,
+          "learning_rate": 0.1947256443910826,
+          "min_child_weight": 3,
+          "subsample": 0.9113533988295047
+        },
+        {
+          "n_estimators": 457,
+          "max_depth": 5,
+          "learning_rate": 0.10400978067086616,
+          "min_child_weight": 1,
+          "subsample": 0.6175215063148914
+        }
+      ],
+      "honest_lolo_mae": [
+        0.2584303314521226,
+        0.26304923320395274,
+        0.257872888056249,
+        0.2648315596228936,
+        0.26218618757392403,
+        0.25990775976866054,
+        0.2600460510644619,
+        0.2599810015335221
+      ],
+      "believed_kfold_mae": [
+        0.22759888668097944,
+        0.23445399307251077,
+        0.22589937265345156,
+        0.23869133229302844,
+        0.23441089077701938,
+        0.22356808092728286,
+        0.2288227566962377,
+        0.22533931044518296
+      ],
+      "pick_kfold": 5,
+      "pick_grouped": 2,
+      "pick_oracle": 2,
+      "honest_of_kfold_pick": 0.25990775976866054,
+      "honest_of_grouped_pick": 0.257872888056249,
+      "honest_of_oracle": 0.257872888056249,
+      "grouped_better_by": 0.002034871712411568,
+      "grouped_better_pct": 0.7829207231914785,
+      "kfold_regret_vs_oracle": 0.002034871712411568,
+      "grouped_regret_vs_oracle": 0.0,
+      "picks_agree": false,
+      "optimism_kfold": 0.036339678841377676,
+      "secs": 92.6
+    },
+    "7": {
+      "candidates": [
+        {
+          "n_estimators": 477,
+          "max_depth": 4,
+          "learning_rate": 0.1814984841745236,
+          "min_child_weight": 3,
+          "subsample": 0.6900828759962367
+        },
+        {
+          "n_estimators": 410,
+          "max_depth": 2,
+          "learning_rate": 0.17723962017132716,
+          "min_child_weight": 2,
+          "subsample": 0.6021061218262299
+        },
+        {
+          "n_estimators": 299,
+          "max_depth": 5,
+          "learning_rate": 0.16347249717536833,
+          "min_child_weight": 1,
+          "subsample": 0.7212129707277254
+        },
+        {
+          "n_estimators": 287,
+          "max_depth": 3,
+          "learning_rate": 0.06587652577774243,
+          "min_child_weight": 2,
+          "subsample": 0.7780305223530586
+        },
+        {
+          "n_estimators": 291,
+          "max_depth": 4,
+          "learning_rate": 0.11962952337340865,
+          "min_child_weight": 3,
+          "subsample": 0.9170647676855013
+        },
+        {
+          "n_estimators": 498,
+          "max_depth": 4,
+          "learning_rate": 0.1980128265827393,
+          "min_child_weight": 4,
+          "subsample": 0.6861234792942396
+        },
+        {
+          "n_estimators": 438,
+          "max_depth": 2,
+          "learning_rate": 0.13025712876914555,
+          "min_child_weight": 1,
+          "subsample": 0.6142721115094384
+        },
+        {
+          "n_estimators": 117,
+          "max_depth": 2,
+          "learning_rate": 0.10391708455855204,
+          "min_child_weight": 3,
+          "subsample": 0.9668671092771409
+        }
+      ],
+      "honest_lolo_mae": [
+        0.26033978221691434,
+        0.26381336925402354,
+        0.2606243887976544,
+        0.26233950172678977,
+        0.2593300506263784,
+        0.26217995292859203,
+        0.26385615067457874,
+        0.27202674515135256
+      ],
+      "believed_kfold_mae": [
+        0.22687327428705856,
+        0.23526047140877704,
+        0.22521304321281058,
+        0.2346662180645157,
+        0.22707817834547706,
+        0.2258309712319121,
+        0.23619352107687835,
+        0.24971596870045568
+      ],
+      "pick_kfold": 2,
+      "pick_grouped": 4,
+      "pick_oracle": 4,
+      "honest_of_kfold_pick": 0.2606243887976544,
+      "honest_of_grouped_pick": 0.2593300506263784,
+      "honest_of_oracle": 0.2593300506263784,
+      "grouped_better_by": 0.0012943381712759994,
+      "grouped_better_pct": 0.4966297195927077,
+      "kfold_regret_vs_oracle": 0.0012943381712759994,
+      "grouped_regret_vs_oracle": 0.0,
+      "picks_agree": false,
+      "optimism_kfold": 0.03541134558484385,
+      "secs": 91.3
+    },
+    "13": {
+      "candidates": [
+        {
+          "n_estimators": 458,
+          "max_depth": 5,
+          "learning_rate": 0.17395445268777063,
+          "min_child_weight": 1,
+          "subsample": 0.7045785445665906
+        },
+        {
+          "n_estimators": 424,
+          "max_depth": 2,
+          "learning_rate": 0.1903638404802914,
+          "min_child_weight": 1,
+          "subsample": 0.8455166764188408
+        },
+        {
+          "n_estimators": 415,
+          "max_depth": 2,
+          "learning_rate": 0.18387329205185082,
+          "min_child_weight": 1,
+          "subsample": 0.7145186416664682
+        },
+        {
+          "n_estimators": 493,
+          "max_depth": 3,
+          "learning_rate": 0.034833429898635485,
+          "min_child_weight": 5,
+          "subsample": 0.7753120189213686
+        },
+        {
+          "n_estimators": 237,
+          "max_depth": 5,
+          "learning_rate": 0.09357199988415926,
+          "min_child_weight": 5,
+          "subsample": 0.6468159533900265
+        },
+        {
+          "n_estimators": 307,
+          "max_depth": 5,
+          "learning_rate": 0.1096161334998522,
+          "min_child_weight": 5,
+          "subsample": 0.6993116779546688
+        },
+        {
+          "n_estimators": 211,
+          "max_depth": 5,
+          "learning_rate": 0.1962610920541213,
+          "min_child_weight": 2,
+          "subsample": 0.8948600890483134
+        },
+        {
+          "n_estimators": 315,
+          "max_depth": 3,
+          "learning_rate": 0.025422949347558316,
+          "min_child_weight": 5,
+          "subsample": 0.8395910609467085
+        }
+      ],
+      "honest_lolo_mae": [
+        0.26358731941366004,
+        0.2626816032258899,
+        0.26308633453200275,
+        0.2628271123980203,
+        0.25846478373019355,
+        0.2592328426656898,
+        0.2608577510054165,
+        0.2689513382929962
+      ],
+      "believed_kfold_mae": [
+        0.22629367492562466,
+        0.2344329236557191,
+        0.23516952908884742,
+        0.2356487579520528,
+        0.22503899799596644,
+        0.22470929508933407,
+        0.22470560780320203,
+        0.24438911644277544
+      ],
+      "pick_kfold": 6,
+      "pick_grouped": 4,
+      "pick_oracle": 4,
+      "honest_of_kfold_pick": 0.2608577510054165,
+      "honest_of_grouped_pick": 0.25846478373019355,
+      "honest_of_oracle": 0.25846478373019355,
+      "grouped_better_by": 0.002392967275222979,
+      "grouped_better_pct": 0.9173456667474262,
+      "kfold_regret_vs_oracle": 0.002392967275222979,
+      "grouped_regret_vs_oracle": 0.0,
+      "picks_agree": false,
+      "optimism_kfold": 0.03615214320221449,
+      "secs": 268.0
+    },
+    "99": {
+      "candidates": [
+        {
+          "n_estimators": 483,
+          "max_depth": 4,
+          "learning_rate": 0.12171649372120791,
+          "min_child_weight": 1,
+          "subsample": 0.9888745488544852
+        },
+        {
+          "n_estimators": 304,
+          "max_depth": 5,
+          "learning_rate": 0.1222910296210237,
+          "min_child_weight": 4,
+          "subsample": 0.7147146891476528
+        },
+        {
+          "n_estimators": 484,
+          "max_depth": 4,
+          "learning_rate": 0.10415423459916247,
+          "min_child_weight": 1,
+          "subsample": 0.9721769990718665
+        },
+        {
+          "n_estimators": 344,
+          "max_depth": 3,
+          "learning_rate": 0.07569890095583451,
+          "min_child_weight": 2,
+          "subsample": 0.7564318604155589
+        },
+        {
+          "n_estimators": 375,
+          "max_depth": 3,
+          "learning_rate": 0.08300269089715051,
+          "min_child_weight": 4,
+          "subsample": 0.7511536863346937
+        },
+        {
+          "n_estimators": 474,
+          "max_depth": 4,
+          "learning_rate": 0.02730210327013774,
+          "min_child_weight": 4,
+          "subsample": 0.7194622383538243
+        },
+        {
+          "n_estimators": 242,
+          "max_depth": 4,
+          "learning_rate": 0.10140547175340009,
+          "min_child_weight": 4,
+          "subsample": 0.7740400126264246
+        },
+        {
+          "n_estimators": 455,
+          "max_depth": 3,
+          "learning_rate": 0.12536834879070274,
+          "min_child_weight": 4,
+          "subsample": 0.8396526977035439
+        }
+      ],
+      "honest_lolo_mae": [
+        0.25993346196707784,
+        0.2590472062812704,
+        0.259751430995394,
+        0.26059404528286967,
+        0.2599415596390959,
+        0.26025185726650013,
+        0.25912118154115166,
+        0.2596420495313785
+      ],
+      "believed_kfold_mae": [
+        0.2264128852274392,
+        0.22464409605767705,
+        0.22679662201778994,
+        0.2327608919150044,
+        0.2315741036419915,
+        0.231936961085852,
+        0.22827647763465286,
+        0.2293031131312257
+      ],
+      "pick_kfold": 1,
+      "pick_grouped": 1,
+      "pick_oracle": 1,
+      "honest_of_kfold_pick": 0.2590472062812704,
+      "honest_of_grouped_pick": 0.2590472062812704,
+      "honest_of_oracle": 0.2590472062812704,
+      "grouped_better_by": 0.0,
+      "grouped_better_pct": 0.0,
+      "kfold_regret_vs_oracle": 0.0,
+      "grouped_regret_vs_oracle": 0.0,
+      "picks_agree": true,
+      "optimism_kfold": 0.03440311022359338,
+      "secs": 53.1
+    },
+    "2024": {
+      "candidates": [
+        {
+          "n_estimators": 196,
+          "max_depth": 4,
+          "learning_rate": 0.058578176222886386,
+          "min_child_weight": 2,
+          "subsample": 0.9197864387099333
+        },
+        {
+          "n_estimators": 223,
+          "max_depth": 5,
+          "learning_rate": 0.04560172675040933,
+          "min_child_weight": 5,
+          "subsample": 0.6314902135047996
+        },
+        {
+          "n_estimators": 166,
+          "max_depth": 2,
+          "learning_rate": 0.08473644050408317,
+          "min_child_weight": 2,
+          "subsample": 0.8355037262158921
+        },
+        {
+          "n_estimators": 167,
+          "max_depth": 5,
+          "learning_rate": 0.03896942235470762,
+          "min_child_weight": 4,
+          "subsample": 0.8262924204103322
+        },
+        {
+          "n_estimators": 375,
+          "max_depth": 2,
+          "learning_rate": 0.10372145589358803,
+          "min_child_weight": 1,
+          "subsample": 0.9197713753805987
+        },
+        {
+          "n_estimators": 490,
+          "max_depth": 4,
+          "learning_rate": 0.07856293791489007,
+          "min_child_weight": 3,
+          "subsample": 0.6825375645542121
+        },
+        {
+          "n_estimators": 406,
+          "max_depth": 3,
+          "learning_rate": 0.07004745195356275,
+          "min_child_weight": 4,
+          "subsample": 0.6852629382935871
+        },
+        {
+          "n_estimators": 449,
+          "max_depth": 3,
+          "learning_rate": 0.1652927575642145,
+          "min_child_weight": 2,
+          "subsample": 0.7073461303899914
+        }
+      ],
+      "honest_lolo_mae": [
+        0.2610315316096703,
+        0.25884979972505756,
+        0.27107915271191624,
+        0.26183352542908606,
+        0.2649811350249476,
+        0.2586329419082919,
+        0.26012141233285996,
+        0.2601888734683476
+      ],
+      "believed_kfold_mae": [
+        0.23354578819274413,
+        0.22890609496529968,
+        0.2473646567185851,
+        0.23384162905066577,
+        0.23862369880850998,
+        0.2263717743406009,
+        0.23216778438296523,
+        0.22963783177379887
+      ],
+      "pick_kfold": 5,
+      "pick_grouped": 5,
+      "pick_oracle": 5,
+      "honest_of_kfold_pick": 0.2586329419082919,
+      "honest_of_grouped_pick": 0.2586329419082919,
+      "honest_of_oracle": 0.2586329419082919,
+      "grouped_better_by": 0.0,
+      "grouped_better_pct": 0.0,
+      "kfold_regret_vs_oracle": 0.0,
+      "grouped_regret_vs_oracle": 0.0,
+      "picks_agree": true,
+      "optimism_kfold": 0.032261167567690985,
+      "secs": 44.2
+    }
+  },
+  "aggregate": {
+    "n_seeds": 5,
+    "picks_agree_count": 2,
+    "grouped_wins": 3,
+    "ties": 2,
+    "mean_grouped_better_pct": 0.4393792219063225,
+    "median_grouped_better_pct": 0.4966297195927077,
+    "min_pct": 0.0,
+    "max_pct": 0.9173456667474262,
+    "sign_test_p_two_sided": 0.25,
+    "mean_kfold_optimism": 0.03491348908394408,
+    "mean_kfold_regret_vs_oracle": 0.0011444354317821093,
+    "mean_grouped_regret_vs_oracle": 0.0
+  }
+}

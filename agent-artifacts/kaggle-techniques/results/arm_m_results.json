@@ -1,0 +1,257 @@
+{
+  "config": {
+    "tsv": "/local/home/zegertho/keybo-e2e/bistrokes31_v1.tsv",
+    "seeds": [
+      0,
+      1,
+      2
+    ],
+    "base_params": {
+      "n_estimators": 300,
+      "max_depth": 3,
+      "learning_rate": 0.05,
+      "subsample": 0.7,
+      "colsample_bytree": 0.7
+    },
+    "priors": {
+      "distance": 1,
+      "dy": 1,
+      "same_finger": 1,
+      "scissor": 1,
+      "lsb": 1,
+      "wpm": -1
+    },
+    "constraint_tuple": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      1,
+      1,
+      0,
+      1,
+      1,
+      0,
+      0,
+      0,
+      -1
+    ],
+    "feature_order": [
+      "bottom",
+      "home",
+      "top",
+      "pinky",
+      "ring",
+      "middle",
+      "index",
+      "lateral",
+      "same_hand",
+      "same_finger",
+      "adjacent",
+      "scissor",
+      "lsb",
+      "dx",
+      "dy",
+      "distance",
+      "angle",
+      "inwards",
+      "outwards",
+      "wpm"
+    ],
+    "n_rows": 2202
+  },
+  "arms": {
+    "BASELINE_unconstrained": {
+      "folds": {
+        "azerty": {
+          "ceiling": 0.8750926551111002,
+          "rho_mean": 0.8677823651498615,
+          "rho_per_seed": [
+            0.8663970658060239,
+            0.8674923597434814,
+            0.8694576699000791
+          ],
+          "rho_frac_ceiling_mean": 0.9916462674911714,
+          "wmae_mean": 9.15574549142241,
+          "umae_mean": 12.115795015392516,
+          "beats_baseline": [
+            true,
+            true,
+            true
+          ],
+          "n_cells": 1001
+        },
+        "dvorak": {
+          "ceiling": 0.7892358437911149,
+          "rho_mean": 0.6986713039170275,
+          "rho_per_seed": [
+            0.7040603399006871,
+            0.6932986025753036,
+            0.6986549692750917
+          ],
+          "rho_frac_ceiling_mean": 0.8852503461588133,
+          "wmae_mean": 13.37865325302895,
+          "umae_mean": 16.162642587820002,
+          "beats_baseline": [
+            true,
+            true,
+            true
+          ],
+          "n_cells": 799
+        },
+        "qwerty": {
+          "ceiling": 0.9905723741741344,
+          "rho_mean": 0.778173797386581,
+          "rho_per_seed": [
+            0.7789301532515381,
+            0.7793406995362686,
+            0.7762505393719361
+          ],
+          "rho_frac_ceiling_mean": 0.7855799512230132,
+          "wmae_mean": 9.016281506495853,
+          "umae_mean": 24.70069674851489,
+          "beats_baseline": [
+            true,
+            true,
+            true
+          ],
+          "n_cells": 2648
+        },
+        "qwertz": {
+          "ceiling": 0.9210966192706895,
+          "rho_mean": 0.9168493441404341,
+          "rho_per_seed": [
+            0.917324375352724,
+            0.9164869662421558,
+            0.9167366908264226
+          ],
+          "rho_frac_ceiling_mean": 0.9953888929332751,
+          "wmae_mean": 8.201990837105923,
+          "umae_mean": 12.083937540834006,
+          "beats_baseline": [
+            true,
+            true,
+            true
+          ],
+          "n_cells": 1406
+        }
+      },
+      "tau_heldout_per_seed": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "tau_heldout_mean": 1.0,
+      "tau_heldout_min": 1.0,
+      "lolo_mean_rho_frac_ceiling": 0.9144663644515684,
+      "n_finite_frac_cells": 12,
+      "wmae_overall": 9.938167772013283,
+      "umae_overall": 16.265767973140353,
+      "secs": 919.7
+    },
+    "MONOTONE_priors": {
+      "folds": {
+        "azerty": {
+          "ceiling": 0.8750926551111002,
+          "rho_mean": 0.8563219292752132,
+          "rho_per_seed": [
+            0.8563854426087575,
+            0.856738119874779,
+            0.855842225342103
+          ],
+          "rho_frac_ceiling_mean": 0.978550013274304,
+          "wmae_mean": 14.427585450344234,
+          "umae_mean": 17.424812517625398,
+          "beats_baseline": [
+            true,
+            true,
+            true
+          ],
+          "n_cells": 1001
+        },
+        "dvorak": {
+          "ceiling": 0.7892358437911149,
+          "rho_mean": 0.6770039385582054,
+          "rho_per_seed": [
+            0.6786152925631418,
+            0.677526184429063,
+            0.6748703386824113
+          ],
+          "rho_frac_ceiling_mean": 0.8577967459082944,
+          "wmae_mean": 17.596220101087994,
+          "umae_mean": 19.444214270619273,
+          "beats_baseline": [
+            true,
+            true,
+            true
+          ],
+          "n_cells": 799
+        },
+        "qwerty": {
+          "ceiling": 0.9905723741741344,
+          "rho_mean": 0.7785451649315739,
+          "rho_per_seed": [
+            0.7748109703160477,
+            0.7777986295492894,
+            0.7830258949293843
+          ],
+          "rho_frac_ceiling_mean": 0.7859548532036005,
+          "wmae_mean": 16.07157678051787,
+          "umae_mean": 30.847162058276144,
+          "beats_baseline": [
+            true,
+            true,
+            true
+          ],
+          "n_cells": 2648
+        },
+        "qwertz": {
+          "ceiling": 0.9210966192706895,
+          "rho_mean": 0.9025398187803612,
+          "rho_per_seed": [
+            0.9026397140828151,
+            0.9022776715050886,
+            0.9027020707531799
+          ],
+          "rho_frac_ceiling_mean": 0.9798535787646019,
+          "wmae_mean": 15.777279009863946,
+          "umae_mean": 18.778491424474765,
+          "beats_baseline": [
+            true,
+            true,
+            true
+          ],
+          "n_cells": 1406
+        }
+      },
+      "tau_heldout_per_seed": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "tau_heldout_mean": 1.0,
+      "tau_heldout_min": 1.0,
+      "lolo_mean_rho_frac_ceiling": 0.9005387977877003,
+      "n_finite_frac_cells": 12,
+      "wmae_overall": 15.96816533545351,
+      "umae_overall": 21.623670067748893,
+      "secs": 591.6
+    }
+  },
+  "verdict": {
+    "delta_tau_heldout_mean": 0.0,
+    "delta_wmae_pct": 60.67514356540857,
+    "delta_lolo_rho_frac_ceiling": -0.013927566663868074,
+    "gate1_ranking_not_degraded": true,
+    "gate2_rho_frac_not_worse_than_0.005": false,
+    "gate3_wmae_within_+0.91pct": false,
+    "ADOPT": false
+  }
+}

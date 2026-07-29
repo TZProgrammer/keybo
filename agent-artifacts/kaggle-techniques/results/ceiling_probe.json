@@ -1,0 +1,22 @@
+{
+  "azerty": {
+    "ceiling": 0.8750926551111002,
+    "n_participants": 166,
+    "n_cells": 1001
+  },
+  "dvorak": {
+    "ceiling": 0.7892358437911149,
+    "n_participants": 64,
+    "n_cells": 799
+  },
+  "qwerty": {
+    "ceiling": 0.9905723741741344,
+    "n_participants": 54690,
+    "n_cells": 2648
+  },
+  "qwertz": {
+    "ceiling": 0.9210966192706895,
+    "n_participants": 485,
+    "n_cells": 1406
+  }
+}
