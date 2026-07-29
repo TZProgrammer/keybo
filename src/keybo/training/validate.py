@@ -27,6 +27,7 @@ Cells below the sample floor are refused, not printed with a caveat.
 from __future__ import annotations
 
 from collections import defaultdict
+from collections.abc import Mapping
 from dataclasses import dataclass
 
 import numpy as np
@@ -36,6 +37,7 @@ from scipy.stats import kendalltau, spearmanr
 from keybo.data.strokes import StrokeRow, iqr_average
 from keybo.features import bigram_features_from_positions, trigram_features_from_positions
 from keybo.geometry import ROW_STAGGERED_30, Geometry
+from keybo.verdicts import bucket_regression_report
 
 
 @dataclass
@@ -613,8 +615,15 @@ def validate(
     train_params: dict | None = None,
     geometry: Geometry = ROW_STAGGERED_30,
     progress: bool = False,
+    baseline_buckets: Mapping[int, float] | None = None,
 ) -> dict:
     """Run the full leave-one-layout-out experiment; returns the report dict.
+
+    ``baseline_buckets`` (bucket start wpm -> rho, e.g. an incumbent's ``bucket_rhos``) turns on the
+    high-wpm non-regression VERDICT: each fold/seed gains a ``high_wpm_gate`` block from
+    :func:`keybo.verdicts.bucket_regression_report`. Omitting it leaves ``gated: False`` in the
+    artifact rather than nothing at all, so an UNGATED result is never mistaken for a passing one
+    (HIGHWPM-1: these per-bucket rhos were computed all along and nothing ever gated on them).
 
     Report shape::
 
@@ -731,6 +740,11 @@ def validate(
                 "worst_bucket": worst_bucket,
                 "worst_bucket_rho": float(worst_rho),
                 "bucket_rhos": {str(k): v for k, v in bucket_rhos.items()},
+                # Always present, gated or not: an artifact that merely OMITS a verdict reads the
+                # same whether the gate ran and passed or never ran at all (TAUGATE-1).
+                "high_wpm_gate": bucket_regression_report(
+                    bucket_rhos, baseline_buckets or {}, f"{holdout} seed={seed}"
+                ),
             }
         )
         pred_heldout[seed][holdout] = aggregate_layout_table(test_cells, pred)[holdout]

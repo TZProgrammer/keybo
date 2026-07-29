@@ -21,7 +21,7 @@ the "not measured" state a distinct value from any legitimate score. Prefer
 from __future__ import annotations
 
 import math
-from collections.abc import Iterable, Sequence
+from collections.abc import Iterable, Mapping, Sequence
 
 
 class EmptyComparison(ValueError):
@@ -170,3 +170,111 @@ def all_distinct(values: Sequence[float], what: str, *, tol: float = 0.0) -> boo
             if abs(vals[i] - vals[j]) <= tol:
                 return False
     return True
+
+
+#: Tolerance for the top-bucket non-regression gate, in rho units.
+#:
+#: Derived from what the gate must and must not catch, not chosen for roundness. It has to pass
+#: search/seed wobble and still refuse the measured blend regression, and HIGHWPM-1 measured that
+#: regression at 0.0733 in the 120-140 bucket -- an order of magnitude above this floor. 0.005 is
+#: also the ranking-degradation bar the arm gates already use, so a reader meets one number twice
+#: rather than two numbers once.
+HIGH_WPM_TOLERANCE = 0.005
+
+
+class HighWpmRegression(ValueError):
+    """A candidate lost accuracy in the FASTEST wpm bucket, so it is refused rather than ranked.
+
+    Fast and slow typing are different motor regimes, and a layout objective is aimed at people
+    who have stopped being slow. HIGHWPM-1 measured a blended objective giving up rho in every
+    bucket against the shipped ``ms/char`` -- **worst in the fastest** (120-140: -0.0733) -- while
+    ``ms/char`` got *better* with speed. That structure had been computed all along by
+    :func:`keybo.training.validate._per_bucket_rho` and never gated on, so it took a human noticing
+    to surface it.
+
+    Raised (not returned) for the same reason :class:`MarginTooSmall` is: a candidate that regresses
+    expert typing is indistinguishable from a good one once it is a row in a leaderboard.
+    """
+
+
+def bucket_regression_report(
+    candidate: Mapping[int, float],
+    baseline: Mapping[int, float],
+    what: str,
+    *,
+    tolerance: float = HIGH_WPM_TOLERANCE,
+) -> dict:
+    """The gate's verdict as a serializable dict — including when it did NOT run.
+
+    ``gated`` says whether a verdict was reachable at all; ``passed`` is ``None`` when it was not.
+    Both are explicit because an artifact that merely omits a verdict reads identically whether the
+    gate ran and passed or never ran — the ambiguity that let the ``lolo`` tau gate report a pass
+    while checking nothing (TAUGATE-1).
+
+    Never raises: use it for reporting, and :func:`require_no_high_wpm_regression` to enforce.
+    """
+    deltas = {
+        bucket: float(candidate[bucket]) - float(baseline[bucket])
+        for bucket in sorted(baseline)
+        if bucket in candidate
+        and math.isfinite(float(baseline[bucket]))
+        and math.isfinite(float(candidate[bucket]))
+    }
+    top = max(baseline) if baseline else None
+    gated = bool(baseline) and top in deltas
+    report: dict = {
+        "candidate": what,
+        "gated": gated,
+        "passed": None,
+        "tolerance": float(tolerance),
+        "top_bucket": top,
+        "top_bucket_delta": deltas.get(top) if gated else None,
+        "worst_bucket": min(deltas, key=lambda b: deltas[b]) if deltas else None,
+        "deltas": deltas,
+    }
+    if gated:
+        report["passed"] = deltas[top] >= -tolerance
+    return report
+
+
+def require_no_high_wpm_regression(
+    candidate: Mapping[int, float],
+    baseline: Mapping[int, float],
+    what: str,
+    *,
+    tolerance: float = HIGH_WPM_TOLERANCE,
+) -> dict:
+    """Refuse ``candidate`` if it regresses the FASTEST bucket's rho versus ``baseline``.
+
+    Both maps are ``bucket start wpm -> rho`` (the shape ``_per_bucket_rho`` returns). Returns the
+    :func:`bucket_regression_report` on success so a caller can serialize the passing verdict too.
+
+    Deliberately scoped to the TOP bucket. A candidate that trades slow-typist accuracy for fast is
+    a different decision, and folding it in here would make one gate quietly settle two questions.
+    The full per-bucket ``deltas`` ride along in the report for whoever wants that argument.
+
+    An absent or non-finite top bucket is REFUSED, not passed: "not measured" is not "did not
+    regress" — the same absence-is-not-disproof rule that a wrongly-closed line of inquiry in this
+    campaign was built on.
+    """
+    report = bucket_regression_report(candidate, baseline, what, tolerance=tolerance)
+    if not report["gated"]:
+        top = max(baseline) if baseline else None
+        raise HighWpmRegression(
+            f"{what}: the top wpm bucket ({top}) was not measured for this candidate, so the "
+            f"high-wpm gate could not run. 'Not measured' is not 'did not regress' — supply the "
+            f"bucket (lower min_bucket_cells, or widen the fold) or state explicitly that the "
+            f"result is ungated."
+        )
+    if not report["passed"]:
+        delta = report["top_bucket_delta"]
+        worst = report["worst_bucket"]
+        raise HighWpmRegression(
+            f"{what}: rho in the fastest bucket ({report['top_bucket']}+ wpm) falls by "
+            f"{-delta:.6g} versus the baseline, beyond the {tolerance:.6g} tolerance "
+            f"(worst bucket overall: {worst}). Fast and slow typing are different regimes and this "
+            f"objective is aimed at people who have stopped being slow, so a top-bucket regression "
+            f"is refused rather than ranked. Per-bucket deltas: "
+            f"{ {b: round(d, 4) for b, d in report['deltas'].items()} }."
+        )
+    return report
