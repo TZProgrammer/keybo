@@ -51,7 +51,18 @@
      0.9092989773104555
     ]
    ],
-   "abs_r_with_ms_per_char": 0.8181337753670708
+   "abs_r_with_ms_per_char": 0.8181337753670708,
+   "signed_r_with_ms_per_char": 0.8181337753670708,
+   "spearman_with_ms_per_char": -0.08565531475748193,
+   "leverage_audit": {
+    "dropped": "qwerty + qwerty30m",
+    "pearson_full": 0.8181337753670708,
+    "pearson_without_leverage": -0.8694315546718484,
+    "spearman_full": -0.08565531475748193,
+    "spearman_without_leverage": -0.5470588235294118,
+    "sign_flips": true,
+    "verdict": "SIGN FLIPS under leverage deletion \u2014 the full-field Pearson is an ARTIFACT and must not be quoted as a relationship"
+   }
   },
   "travel_max_share": {
    "on_gauge_frame": {
@@ -83,7 +94,18 @@
      0.47648349233266113
     ]
    ],
-   "abs_r_with_ms_per_char": 0.27259797608611314
+   "abs_r_with_ms_per_char": 0.27259797608611314,
+   "signed_r_with_ms_per_char": 0.27259797608611314,
+   "spearman_with_ms_per_char": 0.04231166150670795,
+   "leverage_audit": {
+    "dropped": "qwerty + qwerty30m",
+    "pearson_full": 0.27259797608611314,
+    "pearson_without_leverage": 0.0332165636275475,
+    "spearman_full": 0.04231166150670795,
+    "spearman_without_leverage": -0.32647058823529407,
+    "sign_flips": false,
+    "verdict": "sign is stable under leverage deletion"
+   }
   },
   "travel_pinky_share": {
    "on_gauge_frame": {
@@ -115,7 +137,18 @@
      0.6295703960710729
     ]
    ],
-   "abs_r_with_ms_per_char": 0.6791824441685302
+   "abs_r_with_ms_per_char": 0.6791824441685302,
+   "signed_r_with_ms_per_char": -0.6791824441685302,
+   "spearman_with_ms_per_char": -0.4716202270381837,
+   "leverage_audit": {
+    "dropped": "qwerty + qwerty30m",
+    "pearson_full": -0.6791824441685302,
+    "pearson_without_leverage": -0.5583445066285196,
+    "spearman_full": -0.4716202270381837,
+    "spearman_without_leverage": -0.2588235294117647,
+    "sign_flips": false,
+    "verdict": "sign is stable under leverage deletion"
+   }
   },
   "travel_gini": {
    "on_gauge_frame": {
@@ -147,7 +180,18 @@
      0.7303123612924971
     ]
    ],
-   "abs_r_with_ms_per_char": 0.6109794339018367
+   "abs_r_with_ms_per_char": 0.6109794339018367,
+   "signed_r_with_ms_per_char": 0.6109794339018367,
+   "spearman_with_ms_per_char": 0.15376676986584106,
+   "leverage_audit": {
+    "dropped": "qwerty + qwerty30m",
+    "pearson_full": 0.6109794339018367,
+    "pearson_without_leverage": 0.18986843379239382,
+    "spearman_full": 0.15376676986584106,
+    "spearman_without_leverage": -0.19411764705882353,
+    "sign_flips": false,
+    "verdict": "sign is stable under leverage deletion"
+   }
   },
   "pinky_off_home": {
    "on_gauge_frame": {
@@ -179,7 +223,18 @@
      0.4735794883427978
     ]
    ],
-   "abs_r_with_ms_per_char": 0.5257703572004079
+   "abs_r_with_ms_per_char": 0.5257703572004079,
+   "signed_r_with_ms_per_char": -0.5257703572004079,
+   "spearman_with_ms_per_char": -0.4613003095975232,
+   "leverage_audit": {
+    "dropped": "qwerty + qwerty30m",
+    "pearson_full": -0.5257703572004079,
+    "pearson_without_leverage": -0.56987004567796,
+    "spearman_full": -0.4613003095975232,
+    "spearman_without_leverage": -0.2588235294117647,
+    "sign_flips": false,
+    "verdict": "sign is stable under leverage deletion"
+   }
   },
   "pinky_usage_total": {
    "on_gauge_frame": {
@@ -211,7 +266,18 @@
      0.5376745026722183
     ]
    ],
-   "abs_r_with_ms_per_char": 0.36866942087644483
+   "abs_r_with_ms_per_char": 0.36866942087644483,
+   "signed_r_with_ms_per_char": -0.36866942087644483,
+   "spearman_with_ms_per_char": 0.16408668730650156,
+   "leverage_audit": {
+    "dropped": "qwerty + qwerty30m",
+    "pearson_full": -0.36866942087644483,
+    "pearson_without_leverage": 0.3496502939057244,
+    "spearman_full": 0.16408668730650156,
+    "spearman_without_leverage": 0.6382352941176471,
+    "sign_flips": true,
+    "verdict": "SIGN FLIPS under leverage deletion \u2014 the full-field Pearson is an ARTIFACT and must not be quoted as a relationship"
+   }
   },
   "pinky_off_fraction": {
    "on_gauge_frame": {
@@ -243,7 +309,18 @@
      0.3128308166715584
     ]
    ],
-   "abs_r_with_ms_per_char": 0.4161102688694625
+   "abs_r_with_ms_per_char": 0.4161102688694625,
+   "signed_r_with_ms_per_char": -0.4161102688694625,
+   "spearman_with_ms_per_char": -0.4716202270381837,
+   "leverage_audit": {
+    "dropped": "qwerty + qwerty30m",
+    "pearson_full": -0.4161102688694625,
+    "pearson_without_leverage": -0.6393700929914069,
+    "spearman_full": -0.4716202270381837,
+    "spearman_without_leverage": -0.4088235294117647,
+    "sign_flips": false,
+    "verdict": "sign is stable under leverage deletion"
+   }
   },
   "cross": {
    "travel_total_vs_pinky_off_home": -0.2075053593967804,
@@ -434,7 +511,19 @@
    "pinky_total": 0.06865420194365224,
    "pinky_off_home": 0.06455661944985958
   },
-  "reading": "C2 is supported only if pinky_off_home adds materially MORE over the frequency control than pinky_total does. If both increments are small, the claim is UNSUPPORTED on this evidence \u2014 which is a complete answer."
+  "reading": "C2 is supported only if pinky_off_home adds materially MORE over the frequency control than pinky_total does. If both increments are small, the claim is UNSUPPORTED on this evidence \u2014 which is a complete answer.",
+  "effective_generalization_unit": {
+   "layouts_the_time_surface_was_fitted_on": 4,
+   "which": [
+    "azerty",
+    "dvorak",
+    "qwerty",
+    "qwertz"
+   ],
+   "verified": "cut -f1 on /local/home/zegertho/keybo-e2e/bistrokes31_v1.tsv (2201 rows) and tristrokes31_cond_v1.tsv (16642 rows) \u2014 both yield exactly these four",
+   "target_space": "LOGRAT (confirmed in all six k31 meta sidecars)",
+   "so": "every r2/increment here is against MODEL PREDICTIONS, not measured time; n_pool is a sampling density over one fitted surface, NOT an evidence count"
+  }
  },
  "generalization_beyond_pinky": {
   "per_finger": {

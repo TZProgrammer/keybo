@@ -61,6 +61,48 @@ def pearson(x, y) -> float:
     return float(np.corrcoef(x, y)[0, 1])
 
 
+def spearman(x, y) -> float:
+    """Rank correlation — reported beside every Pearson r because this field has leverage points.
+
+    ``qwerty``/``qwerty30m`` sit at travel_total ≈5.1e8 while every optimized board is 2.2–2.8e8,
+    a 1.9x gap. Those two points ALONE produce a Pearson +0.82 between travel and ms/char; drop
+    them and it is **−0.87**, and Spearman over all 18 is **−0.09**. A magnitude-sensitive
+    statistic on this field is not trustworthy on its own.
+    """
+    x, y = np.asarray(x, float), np.asarray(y, float)
+    if x.std() == 0 or y.std() == 0:
+        return float("nan")
+    rank = lambda v: np.argsort(np.argsort(v)).astype(float)  # noqa: E731
+    return float(np.corrcoef(rank(x), rank(y))[0, 1])
+
+
+def leverage_audit(values, ms, drop_indices: list[int], label: str) -> dict:
+    """Is a correlation's SIGN stable when the high-leverage layouts are removed?
+
+    Added after this harness's own first pass reported travel_total ~ ms/char at r=+0.82 and the
+    subset check flipped it to −0.87. A sign that flips under a two-point deletion is an artifact,
+    and reporting only the full-field number would have shipped a wrong constant attached to an
+    intuitive ("more travel is slower") and therefore unquestioned conclusion.
+    """
+    values, ms = np.asarray(values, float), np.asarray(ms, float)
+    keep = [i for i in range(len(values)) if i not in set(drop_indices)]
+    full, subset = pearson(values, ms), pearson(values[keep], ms[keep])
+    return {
+        "dropped": label,
+        "pearson_full": full,
+        "pearson_without_leverage": subset,
+        "spearman_full": spearman(values, ms),
+        "spearman_without_leverage": spearman(values[keep], ms[keep]),
+        "sign_flips": bool(full * subset < 0),
+        "verdict": (
+            "SIGN FLIPS under leverage deletion — the full-field Pearson is an ARTIFACT and must "
+            "not be quoted as a relationship"
+            if full * subset < 0
+            else "sign is stable under leverage deletion"
+        ),
+    }
+
+
 def r2_on_frame(target, predictors: dict[str, list[float]]) -> dict:
     """OLS R2 of ``target`` on the given predictors + intercept, standardized.
 
@@ -153,6 +195,20 @@ def cost_claim(pool: list[dict]) -> dict:
     ALONGSIDE a frequency control (``sfb`` — same-finger bigram mass — is the frequency-structure
     proxy available on every row), and the honest question is what the geometric term adds ON TOP
     of it, not what it explains alone.
+
+    ⚠⚠ **``n_pool`` IS NOT AN EVIDENCE COUNT, and every R2 below is R2 against a MODEL'S
+    PREDICTIONS — not against measured time.** The pool is N layouts scored by the shipped k31
+    surface, and that surface's generalization unit is **4 layouts** (verified on disk:
+    ``bistrokes31_v1.tsv`` and ``tristrokes31_cond_v1.tsv`` each hold exactly
+    ``{azerty, dvorak, qwerty, qwertz}``; rows 2201 / 16642). So 160 rows are 160 evaluations of
+    one fitted function, not 160 independent observations of typing cost, and ``n=160`` massively
+    overstates the evidential weight of these numbers.
+
+    Direction of the consequence, stated so it cannot be read the flattering way: this **weakens
+    any positive finding** here and **strengthens** the negative one. The verdict this function
+    reaches is "C2 is unsupported on this evidence" — an insufficient-evidence claim — so a
+    smaller true n reinforces it. Had the increments come out large, the same caveat would have
+    barred calling them a measured effect.
     """
     ms = [row["ms_per_char"] for row in pool]
     total = [row["pinky_usage"] for row in pool]
@@ -189,6 +245,21 @@ def cost_claim(pool: list[dict]) -> dict:
             "control than pinky_total does. If both increments are small, the claim is "
             "UNSUPPORTED on this evidence — which is a complete answer."
         ),
+        # The n that actually bounds these numbers, carried in the artifact so a later reader
+        # cannot pick up `n_pool` as though it were an evidence count.
+        "effective_generalization_unit": {
+            "layouts_the_time_surface_was_fitted_on": 4,
+            "which": ["azerty", "dvorak", "qwerty", "qwertz"],
+            "verified": (
+                "cut -f1 on /local/home/zegertho/keybo-e2e/bistrokes31_v1.tsv (2201 rows) and "
+                "tristrokes31_cond_v1.tsv (16642 rows) — both yield exactly these four"
+            ),
+            "target_space": "LOGRAT (confirmed in all six k31 meta sidecars)",
+            "so": (
+                "every r2/increment here is against MODEL PREDICTIONS, not measured time; n_pool "
+                "is a sampling density over one fitted surface, NOT an evidence count"
+            ),
+        },
     }
 
 
@@ -285,11 +356,18 @@ def main(board_path: str, out_path: str) -> None:
         "pinky_usage_total": pinky_total,
         "pinky_off_fraction": pinky_fraction,
     }
+    # The two qwerty boards are high-leverage on any magnitude statistic (travel_total ≈5.1e8 vs
+    # 2.2-2.8e8 for every optimized board). Every ms/char correlation therefore carries a signed
+    # value, a rank value, and a leverage audit — see `leverage_audit`.
+    leverage = [i for i, n in enumerate(names) if n.startswith("qwerty")]
     correlations = {
         name: {
             "on_gauge_frame": r2_on_frame(values, predictors),
             "closest_single_gauges": single_best(values, predictors)[:5],
             "abs_r_with_ms_per_char": abs(pearson(values, ms)),
+            "signed_r_with_ms_per_char": pearson(values, ms),
+            "spearman_with_ms_per_char": spearman(values, ms),
+            "leverage_audit": leverage_audit(values, ms, leverage, "qwerty + qwerty30m"),
         }
         for name, values in targets.items()
     }
