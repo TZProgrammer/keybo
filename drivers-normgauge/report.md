@@ -244,3 +244,109 @@ restore-to-green check — without it the harness would have reported a caught m
 The branch `normgauge` is **committed and unpushed** (11 commits, `64c9ddf`…`12f4a45`). Landing it
 touches a shipped CLI surface (`keybo optimize --model-weight`) and adds a new scoring module, so
 **pushing it or raising a CR is the human gate** — my brief forbids both, and I have not done either.
+
+---
+
+# 10. ⚠ RECOVERY — HOW TO FIND THIS WORK AFTER MY WORKSPACE IS DESTROYED
+
+**The branch is the only copy. It is NOT pushed.** But the ref and all objects live in the **shared
+clone**, not in my worktree, so destroying `/tmp/normgauge` does not lose anything.
+
+| | |
+|---|---|
+| **Branch** | `normgauge` |
+| **HEAD SHA** | `477bd64eb3ff3cd0a66b0c7082ea37df52e54222` |
+| **Base SHA** (worktree's stated base, ledger commit) | `dd04219f2980c72cc866361e9974ddc3638a046f` |
+| **Parent of my first commit** (base + one local ledger commit) | `37b2dd54c25deb66616300e653dc80911bfbc715` |
+| **Where the ref lives** | `/local/home/zegertho/repos/keybo/.git` (`refs/heads/normgauge`) |
+| **Worktree (disposable)** | `/tmp/normgauge` → gitdir `…/.git/worktrees/normgauge` |
+| **My commits** | 14, all prefixed `NORMGAUGE-1` |
+| **Files on branch** | 491 total; 117 under `drivers-normgauge/` |
+
+**VERIFIED recoverable without my worktree** — run from `/local/home/zegertho/repos/keybo`:
+
+```bash
+git rev-parse normgauge                       # -> 477bd64eb3ff3cd0a66b0c7082ea37df52e54222
+git log --oneline 37b2dd5..normgauge          # -> my 14 commits
+git show normgauge:src/keybo/scoring/model_norm.py     # the shipped gauge
+git show normgauge:drivers-normgauge/anchors.json      # the anchors of record
+git show normgauge:drivers-normgauge/report.md         # this report
+git diff --stat 37b2dd5..normgauge -- src tests        # 1213 insertions, 2 deletions, 4 files
+```
+
+⚠ **If the worktree is removed with `rm -rf` rather than `git worktree remove`**, run
+`git worktree prune` in the shared clone to clear the stale registration. **The branch is
+unaffected either way** — I confirmed `git show normgauge:…` reads my content from the shared clone
+with the worktree still attached, and the ref is a normal `refs/heads/` entry.
+
+## 10.1 The 14 commits, oldest first (one line each)
+
+| # | SHA | what it is |
+|---|---|---|
+| 1 | `64c9ddff4fb14fce50f0b0994143faf46777ce02` | **PRE-REGISTRATION** — gauge, weighting decision tree, ESS shrinkage form, 10 predictions, all before any anchor existed |
+| 2 | `156bd479fd1de703b30cd337d76d6488c92c3f27` | **the shipped code** — `model_norm.py` (SurfaceFits/Anchors/BlendSpec/ModelBlendScorer) + 27 tests |
+| 3 | `8387f1c348c1c152f7c51e8b0baaa024898436ff` | **anchors of record** — 9 search cells, AALTO gate MET at +0.0024% |
+| 4 | `d517811d5c37d9a70707bc1fce078d84ac60c522` | **AMENDMENT 1** — killed 2 defects in my own prereg, PRE-result (n=7→4; bootstrap no-op) |
+| 5 | `ff47694ec00b75f1773c499bad23951de3880ed7` | weight-evidence driver + blend search + 15 sensitivity-band cells |
+| 6 | `11755aaa069295275c2b1b957f581ceaea54dd7c` | **AMENDMENT 2** — 3rd defect, POST-result, published with its blast radius (41.8× margin) |
+| 7 | `8105bec1f0c26eec51a2886fbd5c7141ab3eca1a` | **THE WEIGHTS** — branch (c) fires → `0.5411 / 0.3977 / 0.0612` |
+| 8 | `c6f9932d85b11644f45aa011c069f19bcc909d40` | **THE RESULTS** — the two-claims separation; P7 refuted |
+| 9 | `afb83e83b0f05620dd21d3447a2721fdf3d746c3` | **SELF-SEPARATION** — killed a wrong constant in commit 8; drop-pool is a TIE |
+| 10 | `aba7c69edfdc6b6d6c6c6b2de5f23c553bf3c4b7` | **deliverable 2** — `--model-weight` / `--model-anchors` in the shipped CLI + 9 CLI tests |
+| 11 | `9d6167cc69fbf2f549205939635ac00fa563a48e` | full suite green + report + the audit that found a wrong constant inside a *correction* |
+| 12 | `12f4a45d28bd9f15a1b35304ba0fb6bbc681c6c4` | rc **sentinels** for all 27 search cells + per-cell support maps |
+| 13 | `5a90247be43ff85073818f70bacb98e90a543da7` | **6th self-kill** — P10 is unscoreable (cross-scale comparison) |
+| 14 | `477bd64eb3ff3cd0a66b0c7082ea37df52e54222` | run logs (132 KB, all 33 runs) + row-count maps — **HEAD** |
+
+## 10.2 Every durable artifact, by path on the branch
+
+**Load-bearing** (a conclusion rests on it):
+
+| path | what |
+|---|---|
+| `src/keybo/scoring/model_norm.py` | the three gauges + the blend scorer (501 lines) |
+| `src/keybo/cli/optimize.py` | `--model-weight` / `--model-anchors` wiring (+130 lines) |
+| `tests/scoring/test_model_norm.py` | 27 tests, mutation-controlled |
+| `tests/cli/test_optimize_model_weight.py` | 9 tests through the real CLI |
+| `drivers-normgauge/anchors.json` | **the anchors of record** + full provenance |
+| `drivers-normgauge/weight-evidence.json` | the 4 rules measured, branch taken, shipped weights, CI self-diagnostics |
+| `drivers-normgauge/blend-report.json` | 18 cells, noise quadruple, 15-gauge + ms/char table, contested counts |
+| `drivers-normgauge/PREREGISTRATION.md` | prereg + both amendments |
+| `drivers-normgauge/SELF-KILL.md` | the 6 self-kills with arithmetic |
+| `drivers-normgauge/BRIEF-CORRECTION-AUDIT.md` | audit of the parent's 2 corrections (found `9` should be `7`) |
+| `drivers-normgauge/report.md` | this report, mirrored onto the branch |
+
+**Reproducible bulk** (kept for audit): `drivers-normgauge/runs/anchor-*.json` (9),
+`runs/blend-*.json` (18), `runs/.sentinel-*` (27 rc sentinels), `anchors-evidence.json`,
+`blend-runs.json`, `support-cells.json`, `support-*.npy`, `rows-*.npy`, `logs/*.log` (33),
+`build_anchors.py`, `weight_evidence.py`, `run_blend.py`, `blend_cell.py`, `reorder_check.py`,
+`probe_*.py`, `run_anchors.sh`, `run_blend_cells.sh`.
+
+**NOT on the branch, by design:** `drivers-normgauge/cache/` — 353 MB of stroke-table parse cache,
+keyed by `(path, mtime, size, labels)` and fully regenerable from
+`/local/home/zegertho/keybo-e2e/tristrokes31_cond_v1.tsv` and
+`…/repos/keybo/data/community/processed/tristrokes_last_community.tsv`.
+
+## 10.3 The one-command re-check
+
+**RUN AND VERIFIED — 36 passed** from a fresh checkout of `477bd64`, not asserted:
+
+```bash
+cd /local/home/zegertho/repos/keybo
+git worktree add --detach /tmp/ng-recheck 477bd64      # --detach: see the note below
+cd /tmp/ng-recheck && PYTHONPATH=/tmp/ng-recheck/src \
+  /local/home/zegertho/repos/keybo/.venv/bin/python -m pytest \
+  tests/scoring/test_model_norm.py tests/cli/test_optimize_model_weight.py -q -m "" -p no:randomly
+# -> 36 passed
+cd /local/home/zegertho/repos/keybo && git worktree remove --force /tmp/ng-recheck
+```
+
+⚠ **Use `--detach <SHA>`, not `git worktree add /tmp/x normgauge`.** While `/tmp/normgauge` still
+exists, the latter fails with *"fatal: 'normgauge' is already used by worktree at /tmp/normgauge"* —
+git refuses to check one branch out twice. After my workspace is destroyed the branch form works
+again (run `git worktree prune` first if `/tmp/normgauge` was `rm -rf`'d rather than
+`git worktree remove`'d), but `--detach <SHA>` works in **both** cases, so prefer it.
+
+⚠ `PYTHONPATH` must lead, or the shared clone's editable `.pth` shadows the checkout —
+`assert_module_under` in the tests catches it if it does, which is why the suite is trustworthy from
+a strange cwd.
