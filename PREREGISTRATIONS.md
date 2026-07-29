@@ -9799,3 +9799,27 @@ tables, never read from my brief** — which is exactly why the generate-don't-r
 => **RUNNING TALLY: EIGHT wrong constants attached to true conclusions. THREE are mine and TWO of those were committed today — the second one INSIDE the correction of the first.** ⚠ **That is the finding: the correction
 path is not privileged. A fix issued under time pressure to five agents at once is exactly as susceptible as the original claim, and it inherits the same immunity — because it, too, pointed the right way.** The standing
 instruction (agents must re-derive my verifications; it supersedes any "do not rediscover" line) has now caught **three** of my errors in one session, two of them in as many hours.
+
+### KAGGLE-1 ADDENDUM 2 — 🟢 THE `9` IS TRACED TO ITS SOURCE, AND THE COINCIDENCE THAT PROTECTED IT IS NOW NAMED: `9` IS A GENUINELY CORRECT NUMBER IN THIS DATASET — it is the count of distinct LAYOUT NAMES, and the README states it — so a naive submitter parse returned the right number for the WRONG REFERENT and looked documented (2026-07-29)
+Attribution first, because I recorded it imprecisely in the previous addendum. **The `9` originated with `kaggle`, which generated it via a naive `label.split('#')[1]` and relayed it to me; I propagated it without deriving
+it.** So the failure is properly two failures: **its generation, and my un-derived propagation to four other agents.** ⚠ **And it flagged the sharpest part itself: "I caught yours and committed the identical failure in the
+same message."** A wrong constant found and a wrong constant introduced, in one breath.
+🟢 **THE REFINEMENT IT OFFERED IS EXACT — I verified every element.** My phrasing "three of those strings are the SAME PERSON" **undercounts the label side.** `grzegorzkulesza` appears in **FIVE** labels
+(`colemak-dh@ortholinear#grzegorzkulesza`, `…+pseudo`, `…+rareboost`, `qwerty@ortholinear#grzegorzkulesza`, `qwerty@rowStagger#grzegorzkulesza`), which the naive parse reduces to **3 distinct tokens** (bare / +pseudo /
++rareboost) collapsing to **1 person** => **overcount exactly 2, and 9 − 2 = 7.** The two `qwerty@*` labels carry no `+` tag so the naive parse already collapsed them correctly. **So: 5 labels, 3 naive tokens, 1 person,
+overcount 2.** The mechanism I named (corpus tags appended after the submitter name) is right; only the count of affected strings differed.
+🟢 **AND `data/community/README.md` LINE 40 SAYS "7 submitters" VERBATIM** — as the child put it, *"it was one grep away and I did not run it."* Confirmed on disk.
+🔴 **BUT THE README EXPOSES THE THING NEITHER OF US SAW, AND IT IS WHY THIS ERROR WAS SO DURABLE. THE SAME LINE ALSO SAYS "9 distinct layout strings" — AND THAT 9 IS CORRECT.** Measured: the 12 labels decompose into
+**9 distinct LAYOUT NAMES** (`colemak, colemak-dh, custom-0f8904ec, custom-aa426873, custom-abcaff22, custom-d42a1f92, mtgap-variant, qwerty, recurva-variant`), **3 GEOMETRIES** (`angleMod, ortholinear, rowStagger`), and
+**7 SUBMITTERS.** => **`9` is a genuinely true number in this dataset for a DIFFERENT referent, stated in the project's own documentation.** So the naive submitter parse produced **the right number attached to the wrong
+noun**, and anyone spot-checking it against the README would have found `9` there and felt corroborated. ⚠ **That is a mechanism worth registering in its own right: a wrong constant is hardest to catch when the same value
+is CORRECT elsewhere in the same artifact.** It is the arithmetic cousin of this campaign's `name != thing` signature — here the *value* matched while the *referent* did not.
+=> 🟢 **THE FOUR-WAY DECOMPOSITION, registered so no future reader has to re-derive it, and every number scoped:** COMMUNITY `bistrokes_community.tsv` = **5,445 rows / 12 labels / 9 layout names / 3 geometries /
+7 submitters** — and separately, the AALTO/k31 TRAINING frame is **`bistrokes31_v1.tsv` 2,202 rows / 4 layouts** and **`tristrokes31_cond_v1.tsv` 16,643 rows / 4 layouts** (azerty, dvorak, qwerty, qwertz), a **different
+file** from the community set. **"4 LOLO folds" is an n of *aalto layouts in the k31 training tables*** — the frame the arm actually runs on. The child asserted all of these by `wc -l`/`cut` rather than retyping, and
+independently confirmed the no-header point.
+🟢 **BOTH RULES ADOPTED BY THE CHILD, each having now bitten it: (1) report what an n is an n OF; (2) generate or assert, never retype.** And its binding constraint is unaffected — **the AALTO 4-fold count was derived
+independently and stands** — so nothing it has concluded rested on the `9`.
+=> **RUNNING TALLY: 8 distinct wrong constants attached to true conclusions, and the last three formed a CHAIN — a brief constant, its correction, and the correction's correction.** ⚠ **The durable lesson from this
+addendum specifically: when a number appears to be corroborated by documentation, check that the documentation is describing the SAME QUANTITY. `9 submitters` and `9 layout strings` are one keystroke apart in a README
+and 2 units apart in truth.**
