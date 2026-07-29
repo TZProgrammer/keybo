@@ -87,3 +87,23 @@ floor is the max across-cell within-seed sd of the *same* searcher on the *same*
 a search-reproducibility floor, not an independent error model. A zero within-cell sd (3 of 6 cells)
 cannot be the yardstick — it would make every gap "resolvable" — so the **MAX** across cells is
 used, which is the conservative choice.
+
+---
+
+## KILL 6 🔴 A PREDICTION I REGISTERED THAT CANNOT BE SCORED — in the section warning against this
+
+**P10, as registered:** *"Search noise sd, measured by me on MY quadruple, is within 2x of
+0.0492–0.0995 (the two prior arms' values on this engine) — a check on borrowing, not a borrowed
+floor."*
+
+**It is unscoreable, and the reason is the exact error the same paragraph forbids.** My sd is in
+**normalized blend units** (0 = random-pool mean, 1 = per-model optimum); the two prior values are in
+**ms/char**. A ratio between them is a category error, so "within 2x" has no truth value. My measured
+0.000576 is not 85x smaller than 0.0492 — it is **not on that axis at all**.
+
+I wrote a borrowed-ruler comparison into the very prediction meant to guard against borrowed rulers.
+The standing rule (a floor is a property of a *(pool × replicate-structure × scale × statistic)*
+quadruple, quotable only if **all four** match) was satisfied by my *measurement* and violated by my
+*prediction about* the measurement. **Scored ⚠ UNTESTABLE, with the reason stated rather than quietly
+dropped** — an untestable-by-vagueness is not evidence, but an untestable-by-category-error is a
+finding about the registrant.

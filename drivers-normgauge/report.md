@@ -222,3 +222,25 @@ sign-inverting mutant is **size-preserving**, so mutate-then-restore inside one 
 cache CPython considered valid while it held the other version's bytecode (verified directly: pyc
 mtime 1785288965 / size 24429 exactly matching the restored source). Caught only by `testkit`'s
 restore-to-green check — without it the harness would have reported a caught mutant that never ran.
+
+---
+
+## 8. FINAL GATE STATUS
+
+* **Full test suite: rc=0**, read from a sentinel (`/tmp/ngC.sentinel`), zero failures — including
+  the two pre-existing tests my `--model-weight` flag had broken by reading `args.model_weight`
+  directly on a hand-built `SimpleNamespace`. **My own 36 tests all passed while those two went
+  red**, which is the argument for running the whole suite and not just the new file.
+* **Harness positive-controlled before any pass was believed** (`assert_harness_detects_a_fatal_mutant`).
+* **Evaluator bit-exact across batch lengths** with a live mutation control proving the unpadded
+  path really is batch-dependent (5.6e-15), so the guard cannot silently retire.
+* **`unique_evals` reported as ACHIEVED** (5,000,263–5,003,863), not requested. **rc from sentinels**,
+  never from a callback: `drivers-normgauge/runs/.sentinel-*` for all 27 search cells.
+* **`oxey-style` computed fresh** by today's code (post the nested-`bad_redirect` fix).
+* Lint + format clean on every file touched.
+
+## 9. ONE THING ONLY A HUMAN CAN DO
+
+The branch `normgauge` is **committed and unpushed** (11 commits, `64c9ddf`…`12f4a45`). Landing it
+touches a shipped CLI surface (`keybo optimize --model-weight`) and adds a new scoring module, so
+**pushing it or raising a CR is the human gate** — my brief forbids both, and I have not done either.
