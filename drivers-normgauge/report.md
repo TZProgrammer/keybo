@@ -255,19 +255,19 @@ clone**, not in my worktree, so destroying `/tmp/normgauge` does not lose anythi
 | | |
 |---|---|
 | **Branch** | `normgauge` |
-| **HEAD SHA** | `477bd64eb3ff3cd0a66b0c7082ea37df52e54222` |
+| **HEAD SHA** | `f2d76f8b43ef5d53426dd32610279cf037a24425` |
 | **Base SHA** (worktree's stated base, ledger commit) | `dd04219f2980c72cc866361e9974ddc3638a046f` |
 | **Parent of my first commit** (base + one local ledger commit) | `37b2dd54c25deb66616300e653dc80911bfbc715` |
 | **Where the ref lives** | `/local/home/zegertho/repos/keybo/.git` (`refs/heads/normgauge`) |
 | **Worktree (disposable)** | `/tmp/normgauge` → gitdir `…/.git/worktrees/normgauge` |
-| **My commits** | 14, all prefixed `NORMGAUGE-1` |
+| **My commits** | 15, all prefixed `NORMGAUGE-1` |
 | **Files on branch** | 491 total; 117 under `drivers-normgauge/` |
 
 **VERIFIED recoverable without my worktree** — run from `/local/home/zegertho/repos/keybo`:
 
 ```bash
-git rev-parse normgauge                       # -> 477bd64eb3ff3cd0a66b0c7082ea37df52e54222
-git log --oneline 37b2dd5..normgauge          # -> my 14 commits
+git rev-parse normgauge                       # -> f2d76f8b43ef5d53426dd32610279cf037a24425
+git log --oneline 37b2dd5..normgauge          # -> my 15 commits
 git show normgauge:src/keybo/scoring/model_norm.py     # the shipped gauge
 git show normgauge:drivers-normgauge/anchors.json      # the anchors of record
 git show normgauge:drivers-normgauge/report.md         # this report
@@ -279,7 +279,7 @@ git diff --stat 37b2dd5..normgauge -- src tests        # 1213 insertions, 2 dele
 unaffected either way** — I confirmed `git show normgauge:…` reads my content from the shared clone
 with the worktree still attached, and the ref is a normal `refs/heads/` entry.
 
-## 10.1 The 14 commits, oldest first (one line each)
+## 10.1 The 15 commits, oldest first (one line each)
 
 | # | SHA | what it is |
 |---|---|---|
@@ -296,7 +296,8 @@ with the worktree still attached, and the ref is a normal `refs/heads/` entry.
 | 11 | `9d6167cc69fbf2f549205939635ac00fa563a48e` | full suite green + report + the audit that found a wrong constant inside a *correction* |
 | 12 | `12f4a45d28bd9f15a1b35304ba0fb6bbc681c6c4` | rc **sentinels** for all 27 search cells + per-cell support maps |
 | 13 | `5a90247be43ff85073818f70bacb98e90a543da7` | **6th self-kill** — P10 is unscoreable (cross-scale comparison) |
-| 14 | `477bd64eb3ff3cd0a66b0c7082ea37df52e54222` | run logs (132 KB, all 33 runs) + row-count maps — **HEAD** |
+| 14 | `477bd64eb3ff3cd0a66b0c7082ea37df52e54222` | run logs (132 KB, all 33 runs) + row-count maps |
+| 15 | `f2d76f8b43ef5d53426dd32610279cf037a24425` | **state flush** — every state file mirrored onto the branch (report/memory/summary/events/index/reflection-proposal) — **HEAD** |
 
 ## 10.2 Every durable artifact, by path on the branch
 
@@ -315,6 +316,8 @@ with the worktree still attached, and the ref is a normal `refs/heads/` entry.
 | `drivers-normgauge/SELF-KILL.md` | the 6 self-kills with arithmetic |
 | `drivers-normgauge/BRIEF-CORRECTION-AUDIT.md` | audit of the parent's 2 corrections (found `9` should be `7`) |
 | `drivers-normgauge/report.md` | this report, mirrored onto the branch |
+| `drivers-normgauge/reflection-proposal.md` | reusable learnings for the parent's knowledge pass |
+| `drivers-normgauge/{memory.md,summary.md,events.log,profiles-and-artifacts-index.md}` | state-dir snapshots (the state dir survives destruction, but these make the branch self-contained) |
 
 **Reproducible bulk** (kept for audit): `drivers-normgauge/runs/anchor-*.json` (9),
 `runs/blend-*.json` (18), `runs/.sentinel-*` (27 rc sentinels), `anchors-evidence.json`,
@@ -329,11 +332,13 @@ keyed by `(path, mtime, size, labels)` and fully regenerable from
 
 ## 10.3 The one-command re-check
 
-**RUN AND VERIFIED — 36 passed** from a fresh checkout of `477bd64`, not asserted:
+**RUN AND VERIFIED — 36 passed** from a fresh detached checkout, not asserted. (Verified at
+`477bd64`; HEAD `f2d76f8` adds only state-file snapshots under `drivers-normgauge/`, no `src/`
+or `tests/` change — `git diff --stat 477bd64..HEAD -- src tests` is empty, so the result holds.)
 
 ```bash
 cd /local/home/zegertho/repos/keybo
-git worktree add --detach /tmp/ng-recheck 477bd64      # --detach: see the note below
+git worktree add --detach /tmp/ng-recheck f2d76f8      # --detach: see the note below
 cd /tmp/ng-recheck && PYTHONPATH=/tmp/ng-recheck/src \
   /local/home/zegertho/repos/keybo/.venv/bin/python -m pytest \
   tests/scoring/test_model_norm.py tests/cli/test_optimize_model_weight.py -q -m "" -p no:randomly

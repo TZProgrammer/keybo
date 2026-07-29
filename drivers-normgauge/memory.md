@@ -256,3 +256,25 @@ that axis. The quadruple rule was satisfied by my MEASUREMENT and violated by my
 4. **Scope, not count, must travel with a participant/fold number.** Three different true answers
    coexist here (7 = whole community file, 4 = the fitted rowStagger subset, 9 = naive label-variants),
    and two separate agents got it wrong in opposite directions on the same day.
+
+## STATE FLUSH (reflection step 1) — completed
+- **Child cascade:** N/A — I spawned NO children (`state/normgauge/children` and
+  `children-roster.tsv` both absent, `callbacks.log` absent). Nothing to fan in.
+- **Committed everything:** working tree clean except `drivers-normgauge/cache/` (353 MB parse cache,
+  regenerable from the two source TSVs, deliberately excluded).
+- **BRANCH PROVENANCE (the parent's critical ask), verified from the SHARED clone not my worktree:**
+  - branch `normgauge`, **HEAD `f2d76f8b43ef5d53426dd32610279cf037a24425`**
+  - base `dd04219f2980c72cc866361e9974ddc3638a046f`; parent-of-my-first-commit
+    `37b2dd54c25deb66616300e653dc80911bfbc715`
+  - **15 commits**, all prefixed `NORMGAUGE-1`; 491 files on branch, 117 under `drivers-normgauge/`
+  - the ref lives in `/local/home/zegertho/repos/keybo/.git/refs/heads/normgauge`, so **destroying
+    /tmp/normgauge loses nothing**. Verified `git show normgauge:src/keybo/scoring/model_norm.py`
+    reads from the shared clone.
+  - **RECOVERY RECIPE RUN, NOT ASSERTED:** `git worktree add --detach /tmp/ng-recheck 477bd64` then
+    the two test files → **36 passed**. Probe worktree removed afterwards. `git diff --stat
+    477bd64..HEAD -- src tests` is EMPTY, so that result holds at HEAD.
+  - ⚠ `git worktree add /tmp/x normgauge` FAILS while /tmp/normgauge exists ("already used by
+    worktree"). Use `--detach <SHA>`, which works before AND after destruction.
+- **report.md §10** carries branch/HEAD/base, one line per commit, every durable artifact path, and
+  the verified recovery recipe.
+- **reflection-proposal.md** written (state dir + branch). NO shared-KB write — parent's gate.
