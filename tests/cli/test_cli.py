@@ -67,6 +67,49 @@ def test_no_command_prints_help_and_exits_nonzero(capsys):
     assert rc != 0
 
 
+def test_no_cli_module_docstring_contains_an_argparse_breaking_bare_percent():
+    """Every ``keybo.cli.*`` docstring is handed to argparse as ``help=``, which %-EXPANDS it.
+
+    ``__main__.py`` does ``subparsers.add_parser(name, help=module.__doc__)``, so a bare ``%`` in
+    any CLI module's docstring makes argparse raise ``TypeError`` the moment that help is
+    formatted. The blast radius is not the one file: it breaks ``keybo`` with **no arguments at
+    all**, and ``--help``, for every subcommand at once.
+
+    Found the hard way (FT round, 2026-07-29): adding the prose "88-97% of travel is modelled" to
+    ``analyze``'s docstring took down ``main([])``. It is also **invisible to a single-file test
+    run** — ``pytest tests/cli/test_analyze.py`` stays green because nothing there formats the
+    root parser's help — which is why this needs its own test rather than trusting the suite to
+    surface it.
+
+    ``%%`` and ``%(name)s`` are legitimate; a lone ``%`` is not.
+    """
+    import importlib
+    import pkgutil
+    import re
+
+    import keybo.cli
+
+    offenders = []
+    for info in pkgutil.iter_modules(keybo.cli.__path__):
+        module = importlib.import_module(f"keybo.cli.{info.name}")
+        # strip the legal forms first, then any surviving % is a bug
+        stripped = re.sub(r"%%|%\([^)]*\)[diouxXeEfFgGcrsa]", "", module.__doc__ or "")
+        if "%" in stripped:
+            offenders.append(
+                (
+                    info.name,
+                    [
+                        stripped[max(0, m.start() - 40) : m.start() + 20]
+                        for m in re.finditer("%", stripped)
+                    ],
+                )
+            )
+    assert not offenders, (
+        "these keybo.cli module docstrings contain a bare '%' and will crash argparse help "
+        f"formatting for the WHOLE CLI (use '%%' or reword): {offenders}"
+    )
+
+
 def test_fetch_data_downloads_and_extracts(tmp_path, capsys):
     # Reuse the download test's local fixture server so this never hits the network.
     import socketserver

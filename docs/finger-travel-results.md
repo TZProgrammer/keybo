@@ -232,7 +232,8 @@ and I tested it, over 160 layouts, with the registered frequency control:
 | `sfb` + pinky off-home | 0.6111 → **increment +0.0646** |
 
 **C2 requires off-home to add materially more than total. It adds slightly LESS (+0.065 vs
-+0.069).** The frequency control alone explains 8× more variance than either geometric term. This
++0.069).** The frequency control alone explains **6.2× more variance than off-home and 21.7×
+more than pinky-total** (R² 0.5465 vs 0.0876 and 0.0252). This
 is the same result `bad_scissor` produced: bigram frequency beats every geometric axis. **P5, the
 null I registered expecting to fail to reject, is confirmed.**
 
@@ -344,7 +345,8 @@ gauge. Do not put either in the objective.**
 3. **P4's superlative** — keybo-lsb is not the field's worst on off-home; two boards are worse.
 4. **Two of my own test expectations** — a trigram's leading character is a departure and is never
    charged; `w` is column −4 (**ring**, not middle). The implementation was right both times.
-5. **`usage` "sums to 100"** under the `letter-freqs` convention — it sums to ~93.5%, because
+5. **`usage` "sums to 100"** under the `letter-freqs` convention — it sums to 92.4–93.5%
+   (layout-dependent; I first wrote "~93.5%", which is the *maximum*, not the typical), because
    untypeable corpus mass stays in the denominator. Now published as `coverage_pct` rather than
    normalized away.
 6. **The registered R² > 0.95 redundancy bar itself** — unusable at n = 18 *layouts* / k = 15
@@ -354,6 +356,20 @@ gauge. Do not put either in the objective.**
    already printed 2202/16643. The first line of each TSV is data, not a header. Corrected in §6;
    the general form is the failure mode of this whole session: **seeing a number and copying a
    supplied one are different acts, and only the first is measurement.**
+8. **"the frequency control explains 8× more variance"** — it is **6.2×** vs off-home (21.7× vs
+   pinky-total). The claim's direction was right and the constant was inflated in the direction
+   that made my own conclusion look stronger, which is exactly why it needed checking.
+9. **"the observed fraction is typically ~4%"** — true for the optimized cluster, wrong for qwerty
+   at 11.66%. Now a measured range (3.08–11.66%, median 4.52%).
+10. **A bug I shipped and caught**: adding the prose "88–97% of travel is modelled" to
+    `cli/analyze.py`'s docstring **broke `keybo` with no arguments at all**. `__main__.py` passes
+    every CLI module docstring to argparse as `help=`, and argparse `%`-expands it, so one bare
+    `%` raises `TypeError` while formatting the root help — for every subcommand at once. It
+    survived a green `tests/cli/test_analyze*.py` because nothing there formats the root parser's
+    help; only the full-directory run caught it. Fixed, and pinned by a new positive-controlled
+    test (`test_no_cli_module_docstring_contains_an_argparse_breaking_bare_percent`) that scans
+    every `keybo.cli.*` docstring, since the next person to write a percentage in a docstring will
+    hit the same thing.
 
 ### The rule this round earned
 

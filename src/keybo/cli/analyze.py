@@ -18,8 +18,8 @@ One command, one corpus, every gauge the campaign uses:
 * **finger-travel and off-home usage** — two per-finger DIAGNOSTICS
   (:mod:`keybo.analysis.finger_travel`), reported with their caveats attached rather
   than as gauges: ``travel_total`` is |r| = 0.970 with ``sfb-dist`` (a near-restatement),
-  88–97% of travel is a *modelled* from-home term, and **``off_home``'s sign is not
-  "lower is better"** — see ``docs/finger-travel-results.md``;
+  the great majority of travel is a *modelled* from-home term, and **``off_home``'s sign
+  is not "lower is better"** — see ``docs/finger-travel-results.md``;
 * **the three fitted model surfaces** (aalto / community / pool)
   (:mod:`keybo.analysis.surfaces`).
 
@@ -830,7 +830,8 @@ def _print_off_home(rows: dict[str, dict], names: list[str], w: int, shown: dict
     print(
         "⚠ 'pinky use is fine if it stays home' is UNSUPPORTED on this evidence: off-home adds "
         "+0.065 R2\nover an `sfb` frequency control while pinky-TOTAL adds +0.069, and the control "
-        "alone explains 8x more\nthan either. And the pinky is NOT special — index (.398) > ring "
+        "alone explains 6.2x more\nvariance than off-home (and 21.7x more than pinky-total). And "
+        "the pinky is NOT special — index (.398) > ring "
         "(.319) > pinky (.296) > middle (.278)."
     )
 
