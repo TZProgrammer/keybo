@@ -1,0 +1,22 @@
+=== KEYBOARD_TYPE distribution over table pids ===
+  laptop     28685
+  full       26720
+
+=== held-out KEYBOARD_TYPE == full ===
+  pids 26720, cells 20176, scoreable 13781, ceiling 0.9697
+    ms/char (shipped)      rho +0.4694
+    drop-pool 50/50        rho +0.4233
+    registered (c)         rho +0.4356
+
+=== held-out KEYBOARD_TYPE == laptop ===
+  pids 28684, cells 19649, scoreable 13421, ceiling 0.9700
+    ms/char (shipped)      rho +0.4701
+    drop-pool 50/50        rho +0.4311
+    registered (c)         rho +0.4428
+
+=== PAIRED PER-LEVEL DELTAS (blend - ms/char), RAW rho ===
+  drop-pool 50/50: full d-0.0462  laptop d-0.0390  => wins 0/2
+  registered (c): full d-0.0338  laptop d-0.0273  => wins 0/2
+
+wrote drivers-widen/arm2_keyboard_type.json
+EXIT=0

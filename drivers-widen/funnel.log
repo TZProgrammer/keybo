@@ -1,0 +1,20 @@
+[    0.5s] metadata rows: 168594
+RAW LAYOUT: {'qwerty': 165324, 'qwertz': 1979, 'azerty': 1082, 'dvorak': 209}
+RAW KEYBOARD_TYPE: {'laptop': 91250, 'full': 73759, 'small': 1886, 'on-screen': 1699}
+RAW FINGERS: {'9-10': 80039, '7-8': 27024, '3-4': 21879, '1-2': 21494, '5-6': 18157, '10+': 1}
+[    1.0s] pass filter: 62095 participants
+POOL (pass filter) by layout: {'qwerty': 61278, 'qwertz': 550, 'azerty': 190, 'dvorak': 77}
+KEYBOARD_TYPE among passing pool: {'laptop': 31851, 'full': 30244}
+  passing qwerty: KB {'full': 29792, 'laptop': 31486}
+  passing qwertz: KB {'laptop': 222, 'full': 328}
+  passing azerty: KB {'full': 81, 'laptop': 109}
+  passing dvorak: KB {'full': 43, 'laptop': 34}
+[    1.1s] scanning shipped table for distinct pids per layout ...
+[   12.6s] table scan done
+TABLE distinct pids by layout: {'qwerty': 54690, 'qwertz': 485, 'azerty': 166, 'dvorak': 64}
+TABLE rows by layout: {'qwerty': 7057, 'qwertz': 3706, 'azerty': 3089, 'dvorak': 2791}
+[   12.6s] load_strokes(min_samples=10) ...
+USED-IN-FIT distinct pids by layout (min_samples=10,min_cell_samples=10): {'qwerty': 54689, 'qwertz': 485, 'azerty': 166, 'dvorak': 64}
+CELLS by layout: {'qwerty': 17184, 'qwertz': 4391, 'azerty': 1827, 'dvorak': 677}
+[  225.8s] done
+EXIT=0

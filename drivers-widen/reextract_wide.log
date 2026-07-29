@@ -1,0 +1,10 @@
+[     0.4s] min_wpm=0.0: 1253 qualifying non-qwerty files
+[     1.1s]   200/1253 files
+[     1.8s]   400/1253 files
+[     2.5s]   600/1253 files
+[     3.2s]   800/1253 files
+[     4.0s]   1000/1253 files
+[     4.7s]   1200/1253 files
+[     4.9s] extraction done: 521671 cond-trigram occ, 10102 rows
+[     5.2s] wrote drivers-widen/tables/nonqw_wpm0.tsv
+EXIT=0

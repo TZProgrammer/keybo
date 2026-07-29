@@ -1,0 +1,208 @@
+{
+ "shipped": {
+  "folds": [
+   "azerty",
+   "dvorak",
+   "qwerty",
+   "qwertz"
+  ],
+  "bound": 0.06992692603328392,
+  "verdicts": {
+   "drop-pool 50/50": {
+    "deltas": {
+     "azerty": -0.09886780513316051,
+     "dvorak": -0.1835012452963306,
+     "qwerty": -0.029128803526243363,
+     "qwertz": -0.057495419023588956
+    },
+    "wins": 0,
+    "n_folds": 4,
+    "clears_bound_folds": 0,
+    "mean_raw_delta": -0.09224831824483086,
+    "rel": {
+     "azerty": -0.17411896433181884,
+     "dvorak": -0.3170265313686148,
+     "qwerty": -0.06555441274408941,
+     "qwertz": -0.10968600398346208
+    },
+    "clears_perfold": {
+     "azerty": false,
+     "dvorak": false,
+     "qwerty": false,
+     "qwertz": false
+    }
+   },
+   "registered (c)": {
+    "deltas": {
+     "azerty": -0.07323551567309805,
+     "dvorak": -0.13737465550346084,
+     "qwerty": -0.01963463870111526,
+     "qwertz": -0.04152851338922947
+    },
+    "wins": 0,
+    "n_folds": 4,
+    "clears_bound_folds": 0,
+    "mean_raw_delta": -0.0679433308167259,
+    "rel": {
+     "azerty": -0.12897719458960225,
+     "dvorak": -0.23733577645149342,
+     "qwerty": -0.044187781634571606,
+     "qwertz": -0.07922538460271832
+    },
+    "clears_perfold": {
+     "azerty": false,
+     "dvorak": false,
+     "qwerty": false,
+     "qwertz": false
+    }
+   }
+  },
+  "raw_rho": {
+   "ms/char (shipped)": {
+    "azerty": 0.5678175580274413,
+    "dvorak": 0.5788198372677177,
+    "qwerty": 0.44434542705700175,
+    "qwertz": 0.5241819095922013
+   },
+   "drop-pool 50/50": {
+    "azerty": 0.46894975289428076,
+    "dvorak": 0.3953185919713871,
+    "qwerty": 0.4152166235307584,
+    "qwertz": 0.4666864905686124
+   },
+   "registered (c)": {
+    "azerty": 0.4945820423543432,
+    "dvorak": 0.44144518176425684,
+    "qwerty": 0.4247107883558865,
+    "qwertz": 0.4826533962029719
+   }
+  },
+  "ceilings": {
+   "azerty": 0.8099555887119936,
+   "dvorak": 0.7175984395085713,
+   "qwerty": 0.9758714341715645,
+   "qwertz": 0.8539151401465699
+  },
+  "n_cells": {
+   "azerty": 1827,
+   "dvorak": 677,
+   "qwerty": 17184,
+   "qwertz": 4391
+  },
+  "n_scoreable": {
+   "azerty": 860,
+   "dvorak": 235,
+   "qwerty": 12596,
+   "qwertz": 2590
+  },
+  "n_pids": {
+   "azerty": 166,
+   "dvorak": 64,
+   "qwerty": 54689,
+   "qwertz": 485
+  }
+ },
+ "widened": {
+  "folds": [
+   "azerty",
+   "dvorak",
+   "qwerty",
+   "qwertz"
+  ],
+  "bound": 0.07094693656442866,
+  "verdicts": {
+   "drop-pool 50/50": {
+    "deltas": {
+     "azerty": -0.0817899236077681,
+     "dvorak": -0.14076732558696414,
+     "qwerty": -0.029128803526243363,
+     "qwertz": -0.052104256872062105
+    },
+    "wins": 0,
+    "n_folds": 4,
+    "clears_bound_folds": 0,
+    "mean_raw_delta": -0.07594757739825943,
+    "rel": {
+     "azerty": -0.15153037431294172,
+     "dvorak": -0.2765625501015303,
+     "qwerty": -0.06555441274408941,
+     "qwertz": -0.10351970541040238
+    },
+    "clears_perfold": {
+     "azerty": false,
+     "dvorak": false,
+     "qwerty": false,
+     "qwertz": false
+    }
+   },
+   "registered (c)": {
+    "deltas": {
+     "azerty": -0.05932147936251925,
+     "dvorak": -0.09947375025384081,
+     "qwerty": -0.01963463870111526,
+     "qwertz": -0.037435233816794866
+    },
+    "wins": 0,
+    "n_folds": 4,
+    "clears_bound_folds": 0,
+    "mean_raw_delta": -0.053966275533567545,
+    "rel": {
+     "azerty": -0.109903586849007,
+     "dvorak": -0.19543394693088215,
+     "qwerty": -0.044187781634571606,
+     "qwertz": -0.07437558098563027
+    },
+    "clears_perfold": {
+     "azerty": false,
+     "dvorak": false,
+     "qwerty": false,
+     "qwertz": false
+    }
+   }
+  },
+  "raw_rho": {
+   "ms/char (shipped)": {
+    "azerty": 0.5397592659466075,
+    "dvorak": 0.508989107654982,
+    "qwerty": 0.44434542705700175,
+    "qwertz": 0.5033269430732586
+   },
+   "drop-pool 50/50": {
+    "azerty": 0.4579693423388394,
+    "dvorak": 0.3682217820680178,
+    "qwerty": 0.4152166235307584,
+    "qwertz": 0.45122268620119654
+   },
+   "registered (c)": {
+    "azerty": 0.48043778658408826,
+    "dvorak": 0.40951535740114114,
+    "qwerty": 0.4247107883558865,
+    "qwertz": 0.4658917092564638
+   }
+  },
+  "ceilings": {
+   "azerty": 0.817856297866338,
+   "dvorak": 0.7140806385429087,
+   "qwerty": 0.9758714341715645,
+   "qwertz": 0.8620441716439879
+  },
+  "n_cells": {
+   "azerty": 2036,
+   "dvorak": 786,
+   "qwerty": 17184,
+   "qwertz": 4579
+  },
+  "n_scoreable": {
+   "azerty": 997,
+   "dvorak": 282,
+   "qwerty": 12596,
+   "qwertz": 2736
+  },
+  "n_pids": {
+   "azerty": 242,
+   "dvorak": 83,
+   "qwerty": 54689,
+   "qwertz": 634
+  }
+ }
+}

@@ -1,0 +1,49 @@
+{
+ "kb_distribution": {
+  "full": 26720,
+  "laptop": 28685
+ },
+ "levels": {
+  "full": {
+   "n_cells": 20176,
+   "n_scoreable": 13781,
+   "n_pids": 26720,
+   "ceiling": 0.9697262761184439,
+   "rho": {
+    "ms/char (shipped)": 0.46941643153164336,
+    "drop-pool 50/50": 0.4232652398370245,
+    "registered (c)": 0.43563153231330143
+   }
+  },
+  "laptop": {
+   "n_cells": 19649,
+   "n_scoreable": 13421,
+   "n_pids": 28684,
+   "ceiling": 0.9700439674681169,
+   "rho": {
+    "ms/char (shipped)": 0.4700861760397267,
+    "drop-pool 50/50": 0.43106619345741365,
+    "registered (c)": 0.44280598677961147
+   }
+  }
+ },
+ "verdict": {
+  "drop-pool 50/50": {
+   "deltas": {
+    "full": -0.04615119169461884,
+    "laptop": -0.03901998258231304
+   },
+   "wins": 0,
+   "n_levels": 2
+  },
+  "registered (c)": {
+   "deltas": {
+    "full": -0.033784899218341935,
+    "laptop": -0.027280189260115217
+   },
+   "wins": 0,
+   "n_levels": 2
+  }
+ },
+ "interpretation": "full & laptop are both AALTO-source, same ROW_STAGGERED geometry; a KEYBOARD_TYPE hold-out is an AALTO frame, NOT a non-AALTO substitute."
+}

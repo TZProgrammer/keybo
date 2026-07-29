@@ -1,0 +1,101 @@
+[shipped] loading /local/home/zegertho/keybo-e2e/tristrokes31_cond_v1.tsv ...
+[shipped] loaded 8829 rows, layouts ['azerty', 'dvorak', 'qwerty', 'qwertz']
+[shipped] azerty: computing split_half_ceiling (1827 cells) ...
+[shipped] azerty: ceiling 0.8100
+[shipped] dvorak: computing split_half_ceiling (677 cells) ...
+[shipped] dvorak: ceiling 0.7176
+[shipped] qwerty: computing split_half_ceiling (17184 cells) ...
+[shipped] qwerty: ceiling 0.9759
+[shipped] qwertz: computing split_half_ceiling (4391 cells) ...
+[shipped] qwertz: ceiling 0.8539
+
+########## TABLE: shipped ##########
+folds: ['azerty', 'dvorak', 'qwerty', 'qwertz']
+layout      n_cells scoreable  n_pids  ceiling
+azerty         1827       860     166   0.8100
+dvorak          677       235      64   0.7176
+qwerty        17184     12596   54689   0.9759
+qwertz         4391      2590     485   0.8539
+
+=== RAW bucket-centered rho per fold ===
+objective                  azerty     dvorak     qwerty     qwertz  #finite
+ms/char (shipped)         +0.5678    +0.5788    +0.4443    +0.5242        4
+drop-pool 50/50           +0.4689    +0.3953    +0.4152    +0.4667        4
+registered (c)            +0.4946    +0.4414    +0.4247    +0.4827        4
+
+=== rho / ceiling per fold (reported; NOT verdict basis) ===
+objective                  azerty     dvorak     qwerty     qwertz
+ms/char (shipped)         +0.7010    +0.8066    +0.4553    +0.6139
+drop-pool 50/50           +0.5790    +0.5509    +0.4255    +0.5465
+registered (c)            +0.6106    +0.6152    +0.4352    +0.5652
+
+=== PAIRED PER-FOLD DELTAS in RAW rho (blend - ms/char) — PRIMARY VERDICT ===
+reweighting margin bound (from ceilings [0.81, 0.7176, 0.9759, 0.8539]): 0.0699
+
+  drop-pool 50/50:
+    azerty    ms/char +0.5678  blend +0.4689  delta -0.0989  rel -17.41%  no
+    dvorak    ms/char +0.5788  blend +0.3953  delta -0.1835  rel -31.70%  no
+    qwerty    ms/char +0.4443  blend +0.4152  delta -0.0291  rel -6.56%  no
+    qwertz    ms/char +0.5242  blend +0.4667  delta -0.0575  rel -10.97%  no
+    => wins 0/4 folds; clears-bound 0/4 folds; mean raw delta -0.0922
+
+  registered (c):
+    azerty    ms/char +0.5678  blend +0.4946  delta -0.0732  rel -12.90%  no
+    dvorak    ms/char +0.5788  blend +0.4414  delta -0.1374  rel -23.73%  no
+    qwerty    ms/char +0.4443  blend +0.4247  delta -0.0196  rel -4.42%  no
+    qwertz    ms/char +0.5242  blend +0.4827  delta -0.0415  rel -7.92%  no
+    => wins 0/4 folds; clears-bound 0/4 folds; mean raw delta -0.0679
+[widened] loading drivers-widen/tables/tristrokes31_widened.tsv ...
+[widened] loaded 9707 rows, layouts ['azerty', 'dvorak', 'qwerty', 'qwertz']
+[widened] azerty: computing split_half_ceiling (2036 cells) ...
+[widened] azerty: ceiling 0.8179
+[widened] dvorak: computing split_half_ceiling (786 cells) ...
+[widened] dvorak: ceiling 0.7141
+[widened] qwerty: ceiling 0.9759 (cached)
+[widened] qwertz: computing split_half_ceiling (4579 cells) ...
+[widened] qwertz: ceiling 0.8620
+
+########## TABLE: widened ##########
+folds: ['azerty', 'dvorak', 'qwerty', 'qwertz']
+layout      n_cells scoreable  n_pids  ceiling
+azerty         2036       997     242   0.8179
+dvorak          786       282      83   0.7141
+qwerty        17184     12596   54689   0.9759
+qwertz         4579      2736     634   0.8620
+
+=== RAW bucket-centered rho per fold ===
+objective                  azerty     dvorak     qwerty     qwertz  #finite
+ms/char (shipped)         +0.5398    +0.5090    +0.4443    +0.5033        4
+drop-pool 50/50           +0.4580    +0.3682    +0.4152    +0.4512        4
+registered (c)            +0.4804    +0.4095    +0.4247    +0.4659        4
+
+=== rho / ceiling per fold (reported; NOT verdict basis) ===
+objective                  azerty     dvorak     qwerty     qwertz
+ms/char (shipped)         +0.6600    +0.7128    +0.4553    +0.5839
+drop-pool 50/50           +0.5600    +0.5157    +0.4255    +0.5234
+registered (c)            +0.5874    +0.5735    +0.4352    +0.5404
+
+=== PAIRED PER-FOLD DELTAS in RAW rho (blend - ms/char) — PRIMARY VERDICT ===
+reweighting margin bound (from ceilings [0.8179, 0.7141, 0.9759, 0.862]): 0.0709
+
+  drop-pool 50/50:
+    azerty    ms/char +0.5398  blend +0.4580  delta -0.0818  rel -15.15%  no
+    dvorak    ms/char +0.5090  blend +0.3682  delta -0.1408  rel -27.66%  no
+    qwerty    ms/char +0.4443  blend +0.4152  delta -0.0291  rel -6.56%  no
+    qwertz    ms/char +0.5033  blend +0.4512  delta -0.0521  rel -10.35%  no
+    => wins 0/4 folds; clears-bound 0/4 folds; mean raw delta -0.0759
+
+  registered (c):
+    azerty    ms/char +0.5398  blend +0.4804  delta -0.0593  rel -10.99%  no
+    dvorak    ms/char +0.5090  blend +0.4095  delta -0.0995  rel -19.54%  no
+    qwerty    ms/char +0.4443  blend +0.4247  delta -0.0196  rel -4.42%  no
+    qwertz    ms/char +0.5033  blend +0.4659  delta -0.0374  rel -7.44%  no
+    => wins 0/4 folds; clears-bound 0/4 folds; mean raw delta -0.0540
+
+
+########## SHIPPED vs WIDENED — did the verdict change? ##########
+drop-pool 50/50: shipped wins 0/4 (clears 0) mean-delta -0.0922  ->  widened wins 0/4 (clears 0) mean-delta -0.0759
+registered (c): shipped wins 0/4 (clears 0) mean-delta -0.0679  ->  widened wins 0/4 (clears 0) mean-delta -0.0540
+
+wrote drivers-widen/gate_widened.json
+EXIT=0
