@@ -513,14 +513,16 @@
   },
   "reading": "C2 is supported only if pinky_off_home adds materially MORE over the frequency control than pinky_total does. If both increments are small, the claim is UNSUPPORTED on this evidence \u2014 which is a complete answer.",
   "effective_generalization_unit": {
-   "layouts_the_time_surface_was_fitted_on": 4,
+   "scope": "distinct LAYOUTS in the Aalto/k31 tables the shipped time surface is fit on",
+   "n": 4,
    "which": [
     "azerty",
     "dvorak",
     "qwerty",
     "qwertz"
    ],
-   "verified": "cut -f1 on /local/home/zegertho/keybo-e2e/bistrokes31_v1.tsv (2201 rows) and tristrokes31_cond_v1.tsv (16642 rows) \u2014 both yield exactly these four",
+   "not_this": "NOT participants (~55k PIDs on the Aalto side are not independent units for LAYOUT-level generalization), and NOT the separate community frame",
+   "verified": "cut -f1 on /local/home/zegertho/keybo-e2e/bistrokes31_v1.tsv (2202 rows) and tristrokes31_cond_v1.tsv (16643 rows) \u2014 both yield exactly these four. Rows counted with `awk END{NR}`; the FIRST LINE OF EACH FILE IS DATA, NOT A HEADER, so `wc -l` minus one undercounts by one",
    "target_space": "LOGRAT (confirmed in all six k31 meta sidecars)",
    "so": "every r2/increment here is against MODEL PREDICTIONS, not measured time; n_pool is a sampling density over one fitted surface, NOT an evidence count"
   }

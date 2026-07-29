@@ -198,11 +198,19 @@ def cost_claim(pool: list[dict]) -> dict:
 
     ⚠⚠ **``n_pool`` IS NOT AN EVIDENCE COUNT, and every R2 below is R2 against a MODEL'S
     PREDICTIONS — not against measured time.** The pool is N layouts scored by the shipped k31
-    surface, and that surface's generalization unit is **4 layouts** (verified on disk:
+    surface, and that surface's generalization unit is **4 LAYOUTS** (verified on disk:
     ``bistrokes31_v1.tsv`` and ``tristrokes31_cond_v1.tsv`` each hold exactly
-    ``{azerty, dvorak, qwerty, qwertz}``; rows 2201 / 16642). So 160 rows are 160 evaluations of
-    one fitted function, not 160 independent observations of typing cost, and ``n=160`` massively
-    overstates the evidential weight of these numbers.
+    ``{azerty, dvorak, qwerty, qwertz}``; **2202 and 16643 rows** — counted with ``awk END{NR}``,
+    and note the FIRST LINE OF EACH FILE IS DATA, NOT A HEADER, so a ``wc -l`` minus one
+    undercounts by exactly one). So 160 rows are 160 evaluations of one fitted function, not 160
+    independent observations of typing cost, and ``n=160`` massively overstates the evidential
+    weight of these numbers.
+
+    **SCOPE TRAVELS WITH THE COUNT.** "n = 4" here means *distinct LAYOUTS in the Aalto/k31
+    tables that the shipped time surface was fitted on* — not participants (there are ~55k PIDs on
+    that side, which are not independent units for LAYOUT-level generalization), and not the
+    separate community frame (which this module never touches). A bare "n = 4" is unusable; the
+    scope is the load-bearing half.
 
     Direction of the consequence, stated so it cannot be read the flattering way: this **weakens
     any positive finding** here and **strengthens** the negative one. The verdict this function
@@ -248,11 +256,20 @@ def cost_claim(pool: list[dict]) -> dict:
         # The n that actually bounds these numbers, carried in the artifact so a later reader
         # cannot pick up `n_pool` as though it were an evidence count.
         "effective_generalization_unit": {
-            "layouts_the_time_surface_was_fitted_on": 4,
+            # The SCOPE is part of the number: this is distinct LAYOUTS in the Aalto/k31 tables the
+            # shipped surface was fitted on -- not participants, not the community frame.
+            "scope": "distinct LAYOUTS in the Aalto/k31 tables the shipped time surface is fit on",
+            "n": 4,
             "which": ["azerty", "dvorak", "qwerty", "qwertz"],
+            "not_this": (
+                "NOT participants (~55k PIDs on the Aalto side are not independent units for "
+                "LAYOUT-level generalization), and NOT the separate community frame"
+            ),
             "verified": (
-                "cut -f1 on /local/home/zegertho/keybo-e2e/bistrokes31_v1.tsv (2201 rows) and "
-                "tristrokes31_cond_v1.tsv (16642 rows) — both yield exactly these four"
+                "cut -f1 on /local/home/zegertho/keybo-e2e/bistrokes31_v1.tsv (2202 rows) and "
+                "tristrokes31_cond_v1.tsv (16643 rows) — both yield exactly these four. Rows "
+                "counted with `awk END{NR}`; the FIRST LINE OF EACH FILE IS DATA, NOT A HEADER, "
+                "so `wc -l` minus one undercounts by one"
             ),
             "target_space": "LOGRAT (confirmed in all six k31 meta sidecars)",
             "so": (

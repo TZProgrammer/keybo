@@ -66,9 +66,12 @@ Reading notes:
 * **`p13stab-win` puts 22.05% of all travel on the pinkies** (17.44% on L-pinky alone), ~16× what
   colemak asks of them. If a per-finger travel budget is ever used as a filter, this is the board
   it would reject.
-* Observed (same-finger) travel is only **~4.3%** of the total on graphite; the other ~95.7% is
-  the **modelled** from-home branch. That ratio is published per row as `observed_fraction_pct`,
-  and it is the single most important limitation of the metric (§5).
+* Observed (same-finger) travel is only **4.28%** of the total on graphite; the other 95.72% is
+  the **modelled** from-home branch. Across the field the observed fraction runs **3.08%
+  (semimak) to 11.66% (qwerty)**, median 4.52% — the optimized boards cluster near 4% and qwerty
+  is an outlier because it has far more same-finger bigram mass. So the metric is **88–97%
+  assumption** depending on the board. That ratio is published per row as
+  `observed_fraction_pct`, and it is the single most important limitation of the metric (§5).
 
 ## 2. Table: off-home pinky usage — the user's second metric
 
@@ -113,7 +116,8 @@ is *slow* (257.39). The claim's own favourable case does not behave as the claim
 ## 3. Redundancy — is either metric a restatement?
 
 Registered bar: R² > 0.95 on the 15-gauge frame ⇒ a restatement, do not add it as a gauge. That
-bar turns out to be **unusable as stated** and I am reporting it as such: with n = 18 and k = 15
+bar turns out to be **unusable as stated** and I am reporting it as such: with n = 18 *layouts in
+this field* and k = 15 *gauges*
 the frame fits *anything* (every candidate scores R² ≥ 0.96, `dof_warning = True`). This is the
 ledger's own registered "~4–5 effective dof" problem. **The informative statistic is the closest
 SINGLE gauge**, where a high value cannot be bought with degrees of freedom.
@@ -232,13 +236,24 @@ and I tested it, over 160 layouts, with the registered frequency control:
 is the same result `bad_scissor` produced: bigram frequency beats every geometric axis. **P5, the
 null I registered expecting to fail to reject, is confirmed.**
 
-⚠ **And the n is smaller than it looks.** Those 160 rows are 160 evaluations of one fitted
-surface whose generalization unit is **4 layouts** — verified on disk: `bistrokes31_v1.tsv` (2201
-rows) and `tristrokes31_cond_v1.tsv` (16642 rows) each contain exactly
-`{azerty, dvorak, qwerty, qwertz}`; all six k31 sidecars are `target_space=LOGRAT`. So every R²
-above is against **model predictions, not measured time**, and `n=160` is a sampling density, not
-an evidence count. Direction of that caveat, stated so it cannot be read the flattering way: it
+⚠ **And the n is smaller than it looks — and the SCOPE of that n is half the fact.** Those 160
+rows are 160 evaluations of one fitted surface whose generalization unit is **4 distinct LAYOUTS
+in the Aalto/k31 tables the shipped time surface was fitted on** — verified on disk:
+`bistrokes31_v1.tsv` (**2202** rows) and `tristrokes31_cond_v1.tsv` (**16643** rows) each contain
+exactly `{azerty, dvorak, qwerty, qwertz}`; all six k31 sidecars are `target_space=LOGRAT`.
+
+That scope qualifier is load-bearing, not pedantry: the Aalto side carries ~55k participant IDs,
+and a bare "n = 55,000" or even a bare "n = 4" is unusable without saying *what it is an n of*.
+For layout-level generalization the unit is **layouts**, and there are four. So every R² above is
+against **model predictions, not measured time**, and `n=160` is a sampling density, not an
+evidence count. Direction of that caveat, stated so it cannot be read the flattering way: it
 **weakens any positive finding here and strengthens this negative one.**
+
+(Row counts here are `awk END{NR}`, asserted not retyped. **The first line of each TSV is a data
+row, not a header** — a `wc -l` minus one undercounts by exactly one, which is how 2202/16643 gets
+mis-stated as 2201/16642. I propagated that very error into an earlier revision of this document
+after my own terminal had printed the correct 2202: seeing a number and copying a supplied one are
+different acts, and I did the second.)
 
 ## 7. Is the pinky special? — NO (P6 confirmed)
 
@@ -313,8 +328,10 @@ gauge. Do not put either in the objective.**
    time-model test run here came out *against* the intuition, and the timing evidence behind it
    generalizes over only 4 layouts.
 6. **If the campaign wants a travel metric in the objective, the honest blocker is data, not
-   design**: 95.7% of the headline is the modelled from-home branch because no raw text corpus
-   ships. A metric that is ~96% assumption should not be optimized. Resolving that needs a corpus
+   design**: **88.3–96.9% of the headline is the modelled from-home branch** (observed fraction
+   runs 3.08% on semimak to 11.66% on qwerty, median 4.52% across the 18-layout field) because no
+   raw text corpus ships. A metric that is ~90%+ assumption should not be optimized. Resolving
+   that needs a corpus
    with sequence information, at which point definition (d) becomes measurable rather than
    modelled.
 
@@ -330,6 +347,26 @@ gauge. Do not put either in the objective.**
 5. **`usage` "sums to 100"** under the `letter-freqs` convention — it sums to ~93.5%, because
    untypeable corpus mass stays in the denominator. Now published as `coverage_pct` rather than
    normalized away.
-6. **The registered R² > 0.95 redundancy bar itself** — unusable at n=18/k=15, where everything
-   clears it. Replaced by the closest-single-gauge statistic and reported as a defect in my own
-   pre-registration.
+6. **The registered R² > 0.95 redundancy bar itself** — unusable at n = 18 *layouts* / k = 15
+   *gauges*, where everything clears it. Replaced by the closest-single-gauge statistic and
+   reported as a defect in my own pre-registration.
+7. **My own row counts, 2201/16642** — I wrote the numbers I was handed while my own terminal had
+   already printed 2202/16643. The first line of each TSV is data, not a header. Corrected in §6;
+   the general form is the failure mode of this whole session: **seeing a number and copying a
+   supplied one are different acts, and only the first is measurement.**
+
+### The rule this round earned
+
+**Report what an `n` is an `n` OF.** Three counts were in play today — 4 layouts (the fitted Aalto
+subset), ~55k participant IDs (same side, different unit), 7 participants (a different file
+entirely) — and each is correct *for its own scope* and wrong quoted bare. This is the same defect
+as this ledger's unscoped `bad_scissor` share and its "GL certificate" cells. Every `n` in this
+document now carries its unit inline, and `ft_analysis.json`'s `effective_generalization_unit`
+block carries a `scope` field beside the integer. **A count without a scope is not a measurement,
+it is a number.**
+
+A second, harder rule from the same source: **the correction path is not privileged.** Of the
+three corrections I received today, one contained its own wrong constant — and it survived for the
+same reason the original did: it pointed the right way. So the discipline is not "trust the
+correction over the brief", it is *re-derive both*. That is why every constant in this document is
+either generated in-process or asserted against disk, and why §11 exists at all.

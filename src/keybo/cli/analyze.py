@@ -15,6 +15,11 @@ One command, one corpus, every gauge the campaign uses:
   fingers as an exact partition (:mod:`keybo.analysis.scissor_fingers`);
 * **the oxeylyzer redirect family** including bad-redirect
   (:mod:`keybo.analysis.redirects`);
+* **finger-travel and off-home usage** — two per-finger DIAGNOSTICS
+  (:mod:`keybo.analysis.finger_travel`), reported with their caveats attached rather
+  than as gauges: ``travel_total`` is |r| = 0.970 with ``sfb-dist`` (a near-restatement),
+  88–97% of travel is a *modelled* from-home term, and **``off_home``'s sign is not
+  "lower is better"** — see ``docs/finger-travel-results.md``;
 * **the three fitted model surfaces** (aalto / community / pool)
   (:mod:`keybo.analysis.surfaces`).
 
@@ -60,6 +65,8 @@ from keybo.analysis.community import (
     legacy_board_of,
     pinned_char,
 )
+from keybo.analysis.finger_travel import FINGER_ORDER as TRAVEL_FINGERS
+from keybo.analysis.finger_travel import FingerTravel, OffHomeUsage
 from keybo.analysis.kmstats import STAT_NAMES, KmStats
 from keybo.analysis.redirects import REDIRECT_CLASSES, RedirectFamily
 from keybo.analysis.scissor_fingers import FINGER_NAMES, ScissorByFinger
@@ -287,6 +294,12 @@ def run(args: argparse.Namespace) -> int:
     redirects = RedirectFamily(trigrams)
     severity = ScissorSeverity(bigrams)
     bad_scissor = BadScissor(bigrams)
+    travel = FingerTravel(bigrams)
+    # `letter-freqs` reconciles against DislocationScorer/per_finger_dislocation, which is the
+    # comparison a reader of this table actually makes; `restricted` matches every other share
+    # here. BOTH are emitted, named, because the choice moves numbers by up to ~0.9 pp.
+    off_home = OffHomeUsage(bigrams, convention="letter-freqs")
+    off_home_restricted = OffHomeUsage(bigrams, convention="restricted")
 
     surf = None if args.no_time else default_surface(args.target_wpm, args.corpus)
     ref_card = surf.card(ref_lay) if surf is not None else None
@@ -382,6 +395,32 @@ def run(args: argparse.Namespace) -> int:
             "denominator": "layout-restricted bigram mass, space-EXCLUDED (kmstats convention)",
             "severity": "flat (1.0 per qualifying bigram) -- the spec refuted a distance grading",
         }
+
+        # finger-travel + off-home (the FT round): DIAGNOSTICS, not gauges and not objectives.
+        # docs/finger-travel-results.md measured what each is worth, and the two headline caveats
+        # ride along in the JSON so a consumer cannot pick up the numbers without them:
+        #   * travel_total is |r|=0.970 with `sfb-dist` -- a near-restatement. Use the per-finger
+        #     SPLIT and the dispersion stats; do NOT treat the total as a 16th gauge.
+        #   * ~96% of travel is the MODELLED from-home branch (no raw-text corpus ships), which is
+        #     why `observed_fraction_pct` is reported next to it.
+        row["finger_travel"] = travel.report(layout)
+        row["finger_travel"]["use"] = (
+            "DIAGNOSTIC. travel_total is |r|=0.970 with sfb-dist (near-restatement); the value is "
+            "the per-finger split + dispersion, and it separates layouts that alt/imbalance/sfr "
+            "tie BY CONSTRUCTION. Do NOT optimize: a 1-swap descent cuts travel 10.2% and makes "
+            "predicted time 2.68 ms/char WORSE (optimizing the ruler, cf. WSCISSOR-GEN-1)."
+        )
+        row["off_home"] = off_home.report(layout)
+        row["off_home_restricted_convention"] = off_home_restricted.report(layout)
+        row["off_home"]["use"] = (
+            "DIAGNOSTIC, and the most INDEPENDENT quantity of the FT round (closest single "
+            "incumbent is `alt` at |r|=0.605). ⚠ ITS SIGN IS NOT 'lower is better': in the "
+            "18-layout field more off-home pinky mass goes with FASTER predicted typing "
+            "(r=-0.53, sign-stable), because the optimizer deliberately spends it. The user's "
+            "cost claim is UNSUPPORTED here -- off-home adds +0.065 R2 over an sfb frequency "
+            "control while pinky-TOTAL adds +0.069. And the pinky is NOT special: index (.398) "
+            "> ring (.319) > pinky (.296)."
+        )
 
         # --- community scores: raw and primed; N/A when the charset cannot be boarded ---
         gk, v1, o2 = community_suite(pinned_char(lay))
@@ -673,6 +712,9 @@ def _print_report(
         "direction. Do not read this pair's ordering here as a posture claim."
     )
 
+    _print_finger_travel(rows, names, w, shown)
+    _print_off_home(rows, names, w, shown)
+
     print("\n== redirect family, oxeylyzer-1 classes (% of layout-covered trigram mass) ==")
     print(
         f"{'layout':<{w}}"
@@ -707,6 +749,90 @@ def _print_report(
                 "costliest bigrams (ms/char): "
                 + "  ".join(f"{bg!r} {v:.4f}" for bg, v in a["top_bigrams_ms_per_char"][:8])
             )
+
+
+def _print_finger_travel(
+    rows: dict[str, dict], names: list[str], w: int, shown: dict[str, str]
+) -> None:
+    """Per-finger travel shares, WITH the absolute total and the modelled fraction.
+
+    The total is printed in the same row as the shares on purpose: normalizing destroys the level,
+    and two boards can share every percentage at very different totals — the ``saved_vs_ref_pct``
+    coverage artifact this ledger registered. Same reason ``obs%`` is here: ~96% of this metric is
+    a modelled from-home term, and a reader who does not know that will over-read the shares.
+    """
+    print("\n== finger travel (% of the layout's OWN total travel; an exact partition of 100) ==")
+    print(
+        f"{'layout':<{w}}"
+        + "".join(f"{f.replace('-', ''):>9}" for f in TRAVEL_FINGERS)
+        + f"{'TOTAL':>12}{'gini':>7}{'obs%':>7}"
+    )
+    for n in names:
+        block = rows[n]["finger_travel"]
+        print(
+            f"{shown[n]:<{w}}"
+            + "".join(f"{block['shares'][f]:>9.3f}" for f in TRAVEL_FINGERS)
+            + f"{block['total']:>12.4g}"
+            + f"{block['dispersion']['gini']:>7.3f}{block['observed_fraction_pct']:>7.2f}"
+        )
+    print(
+        "TOTAL is printed beside the shares deliberately — shares alone hide the LEVEL, and two "
+        "layouts\ncan share every percentage at very different totals. gini = 0 is perfectly even "
+        "across the 8 fingers."
+    )
+    print(
+        "⚠ obs% is the share of travel that is OBSERVED motion (a same-finger bigram); the rest "
+        "is the\nMODELLED 'the finger was at home' term. It runs 3.1-11.7% across the 18-layout "
+        "field (median 4.5%;\nthe optimized boards cluster near 4%, qwerty is 11.7% because it has "
+        "far more same-finger mass), so\nthis metric is roughly 88-97% ASSUMPTION. No raw-text "
+        "corpus ships, so lag-1 is the honest ceiling.\nA distance is NOT a time and NOT a comfort "
+        "claim."
+    )
+    print(
+        "⚠ travel_total is |r|=0.970 with `sfb-dist` — a near-restatement, NOT a new gauge. Its "
+        "value is\nthe per-finger split, which separates layouts alt/imbalance/sfr tie BY "
+        "CONSTRUCTION. Do NOT optimize\nit: a 1-swap descent cuts travel 10.2% and makes "
+        "predicted time 2.68 ms/char WORSE."
+    )
+
+
+def _print_off_home(rows: dict[str, dict], names: list[str], w: int, shown: dict[str, str]) -> None:
+    """Per-finger off-home-row usage — and a loud note that its sign is not the intuitive one."""
+    print("\n== off-home usage: mass on each finger's NON-home-row keys (home row = 2) ==")
+    print(
+        f"{'layout':<{w}}"
+        + "".join(f"{f.replace('-', ''):>9}" for f in TRAVEL_FINGERS)
+        + f"{'pinkyTot':>10}{'pinkyOFF':>10}{'off%own':>9}"
+    )
+    for n in names:
+        block = rows[n]["off_home"]
+        pinky = block["pinky"]
+        print(
+            f"{shown[n]:<{w}}"
+            + "".join(f"{block['off_home'][f]:>9.3f}" for f in TRAVEL_FINGERS)
+            + f"{pinky['usage']:>10.2f}{pinky['off_home']:>10.2f}{pinky['off_fraction']:>9.1f}"
+        )
+    first = rows[names[0]]["off_home"]
+    print(f"convention: {first['convention']} — {first['denominator']}")
+    print(
+        f"the 8 off-home cells are an exact partition of the layout's total off-home mass; "
+        f"`usage` sums to\n{first['usage_sums_to']:.2f} (= coverage_pct, NOT 100, under this "
+        "convention: untypeable corpus mass stays in the\ndenominator and belongs to no finger). "
+        "off%own is a per-finger RATIO — never sum it."
+    )
+    print(
+        "⚠ THE SIGN IS NOT 'LOWER IS BETTER'. In the 18-layout field more off-home pinky mass "
+        "goes with\nFASTER predicted typing (r=-0.53, sign-stable under leverage deletion) — the "
+        "optimizer SPENDS it.\nThe three boards with the least (colemak 0.56, qwerty 2.58, "
+        "graphite 2.75) are the three SLOWEST.\nRead it as a tripwire for extremes, not a term to "
+        "minimize."
+    )
+    print(
+        "⚠ 'pinky use is fine if it stays home' is UNSUPPORTED on this evidence: off-home adds "
+        "+0.065 R2\nover an `sfb` frequency control while pinky-TOTAL adds +0.069, and the control "
+        "alone explains 8x more\nthan either. And the pinky is NOT special — index (.398) > ring "
+        "(.319) > pinky (.296) > middle (.278)."
+    )
 
 
 def _print_wfd_reconciliation(
