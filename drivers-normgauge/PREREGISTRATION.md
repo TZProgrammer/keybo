@@ -305,3 +305,65 @@ that quadruple, not of a metric or a corpus, and **I do not borrow one.**
   **if I reproduce that null I report it as the answer.** The deliverable is then the
   interpretable weight, which is still worth shipping.
 * No claim that the three sources are independent — §0.1 and §2.3 say the opposite.
+
+---
+
+# AMENDMENT 1 — registered BEFORE any cross-prediction result exists (2026-07-28)
+
+Two defects in §2.4 above, both found by me while diagnosing a slow run, both corrected here
+**before a single cross-prediction number was produced.** No result has been seen; the
+amendment is therefore a pre-registration, not a post-hoc adjustment. The original §2.4 text is
+left standing above so the change is auditable.
+
+## A1.1 🔴 MY OWN PARTICIPANT COUNT WAS WRONG — and the true number is WORSE for my design
+
+§2.4 says *"n=7 community participants is very thin."* **The 7 pids are in the whole community
+file; the 4-label rowStagger TRAINING subset the COMMUNITY surface was fitted on has only
+FOUR** — 200001, 200003, 200006, 200007 (generated, not retyped). So the held-out design is
+thinner than I registered, and my registered falsifier is *more* likely to fire, not less.
+
+This is a **wrong constant attached to a true conclusion** — the conclusion ("thin, may be
+underpowered") holds and in fact strengthens. Logged as one of this arm's own kills.
+
+## A1.2 🔴 MY REGISTERED BOOTSTRAP CANNOT PROPAGATE PARTICIPANT UNCERTAINTY ON THE AALTO SIDE
+
+§2.4 registered a participant bootstrap that **keeps a cell if it contains ANY drawn
+participant**. Measured, before use:
+
+| side | cells | pids | median pids/cell | fraction of cells surviving a resample |
+|---|---|---|---|---|
+| held-out COMMUNITY | 866 | 4 | 1.0 | mean **0.6827**, min 0.1547 |
+| held-out AALTO | 24,079 | 55,404 | 139.0 | mean **0.999992**, min 0.999917 |
+
+⚠ **On the AALTO side the resample is a NO-OP: essentially every cell survives every draw, so
+the cell VALUES never move and the interval collapses toward zero width.** An inclusion-only
+bootstrap over pid-rich cells does not resample the estimator's inputs — it resamples which
+cells exist, and when that set is invariant the CI is an artifact. **It would have manufactured
+significance on exactly the side with the most data**, which is the worst possible direction for
+an error in a weighting rule.
+
+Note the two sides fail in *opposite* ways, which is why one number could not have revealed it:
+COMMUNITY's cells are pid-POOR (median 1 pid/cell) so its inclusion-bootstrap does move, while
+AALTO's are pid-RICH so its does not. A single-sided check would have looked fine.
+
+**CORRECTED ESTIMATOR, registered now:** a **cluster bootstrap over participants that
+RE-AGGREGATES each cell's observed value from the drawn participants' own samples** (drawn with
+multiplicity), rather than including or excluding whole cells. Participant sampling then
+propagates into the cell values, which is the quantity the correlation is computed over.
+
+**Two consequences I state rather than hide:**
+1. The replicate's cell value is a **plain sample mean** over drawn participants, whereas the
+   point estimate uses the shipped **IQR-mean** (`keybo.data.strokes.iqr_average`). Re-running
+   an IQR-mean per cell per resample is not affordable. **So I also report the point estimate
+   under BOTH aggregations**; if they disagree materially, the CI is reported as
+   indicative-only rather than load-bearing.
+2. A cell whose drawn participants contribute no samples is dropped from that replicate. This is
+   unavoidable and is reported as a per-replicate surviving-cell count.
+
+**The falsifier of §2.4 is UNCHANGED** (CI crossing 0, or the two rho/ceiling values within one
+pooled bootstrap SE → (c) is refuted and the tree falls through to (a)+(b)). Only the estimator
+that computes the interval changes, and it changes in the CONSERVATIVE direction: a wider,
+honest interval makes the falsifier *easier* to trigger, so this amendment cannot be a way of
+rescuing my preferred branch.
+
+**Prediction P6 is unchanged and still predicts (c) FAILS.**
