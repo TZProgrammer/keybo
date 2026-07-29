@@ -9656,3 +9656,55 @@ fixture's corpus (`data/corpus` == iweb), making them a genuine corpus-pinned co
 => **SEVEN FIXES TABLED, NONE APPLIED** (they are `src/` doc + test changes: delete the nonexistent-test citation and the refuted "inflates", scope or drop the 96.6% constant in BOTH files, correct the "under a
 tenth" claim, reject unknown classifier keys in `_partition`, pin all 8 `FINGER_ORDER` labels, and disclose the dy1 boundary artifact where the pair is reported). **The user's artifact being undisclosed is the one I
 would fix first** — it is the defect they personally caught, and a reader still cannot see it.
+
+### KEYCRAFT-1 — 🟢 THE STRONGEST EXTERNAL RESULT OF THE CAMPAIGN: an INDEPENDENT Go implementation agrees with our `sfb`/`sfs`/`alt`/`redir` to 0.0000% relative — evidence the audit said we structurally could not produce — and it has the ONE thing we provably lack: a direction channel (2026-07-28)
+User ask: audit https://rbscholtus.github.io/keycraft/, then (escalated) the `northwest` resemblance, feature augmentation, and joint-optimization feasibility. Child `keycraft`, branch `keycraft-audit`. Source identified:
+**github.com/rbscholtus/keycraft @ a17210b, Go CLI, BSD-3-Clause**, and critically `internal/keycraft` (the whole engine) is **STDLIB-ONLY** => runnable offline, **deterministic (3 runs -> identical sha256)**, RNG confined to
+the optimizer. Nothing integrated, copied, pushed or CR'd; no default/schema/corpus touched. **Vendoring is permitted with attribution — that call is the human's.**
+🟢 **THE CROSS-CHECK WORKED, AND IT PARTIALLY CLOSES A REGISTERED STRUCTURAL GAP.** ULTRAAUDIT-FINAL's second reason the defect count cannot be bounded was: *"THE KEYMEOW REFERENCE SOURCE IS NOT VENDORED … a convention
+error that `kmstats` and `kmrun` SHARE is structurally invisible to every method used in this campaign."* Keycraft is a **third, independently-written implementation (Go vs Python, independent finger maps, no shared
+code)**. It validated its harness FIRST against keycraft's own published qwerty page (**35 metrics to <=0.01pp**), then fed OUR blend-v1 into its engine: **`SFB`/`sfb`, `SFS`/`sfs`, `ALT`/`alt`, `RED`/`redir` agree to
+0.0000% RELATIVE on qwerty, graphite, semimak and colemak.** => **those four conventions are now corroborated by something that cannot share our bugs.**
+ ⚠ **DISAGREEMENT, EQUAL PROMINENCE: `LSB` differs by +12.4% (qwerty), +35.1% (graphite), +6.4% (semimak), +6.3% (colemak)** — a real convention gap, each definition including a finger pair the other omits (keycraft has
+ ring-index, lacks ring-middle, plus 3 hardcoded stagger pairs). **Neither is established as right; the gap is the finding.**
+ 🟢 **AND IT FOUND THE DENOMINATOR CONVENTION FIRST, WHICH SAVED THE WHOLE COMPARISON:** keycraft divides by the WHOLE-corpus ngram total while we divide by layout-restricted mass (coverage bi=0.603 / tri=0.455), so its
+ raw numbers are 0.45-0.60x ours **BY CONSTRUCTION**. *"A naive compare would have 'found' a fake 2x disagreement on everything."* That is the campaign's denominator trap, caught before it became a headline.
+🟢 **THE HEADLINE, AND I VERIFIED IT BY A THIRD METHOD: ALL 15 OF OUR GAUGES ARE EXACTLY DIRECTION-BLIND.** The child tested by **CORPUS REVERSAL** (reverse every ngram, keep unigrams) — an independent second method
+versus the swap test that originally established this. I reproduced it myself on the 11 `kmstats` gauges: reversing the entire corpus moves **0 of 11, every delta exactly 0.00e+00** (sfr, sfb, sfs, sfb-dist, sfs-dist,
+lsb, lsb-dist, alt, roll, sr-roll, redir). **Three independent methods now agree the served frame has no direction channel.** Keycraft has **4** (2RL-IN/OUT, 3RL-IN/OUT, IN:OUT, LSB), and its README's worked example for
+RED-SFS is literally **"you"** — the exact case the user raised. Verified in blend-v1: **you = 1,661,958 vs yuo = 4,146.**
+ 🟢 **BUT THE NOVELTY IS DIRECTION, NOT ROLLS — and this is the precise finding:** `2RL-IN + 2RL-OUT` (the magnitude) regresses on our 15 gauges at **R2 = 1.0000 — it IS our `roll`**. Whereas **`IN − OUT` is
+ R2 = 0.2801, and still 0.2831 even when GIVEN the magnitudes** => **unrecoverable from our frame.** ⚠ **AND THE TRAP: `FLW` and the 2RL/3RL totals are direction-INVARIANT, and keycraft weights FLW at +8.00 (its
+ LARGEST weight) while every IN/OUT column is 0.00 — it computes direction and then DISCARDS it. Importing FLW buys ZERO direction.**
+=> 🟢 **TAKE #1, AND IT IS THE SINGLE NEXT STEP: add `2RL-IN − 2RL-OUT` as a 16th gauge in `kmstats.py`, reusing the `_direction()` WE ALREADY HAVE** (verified present at `kmstats.py:47`). **No refit, no vendored file,
+no corpus change** — and it is the first axis in the frame that is not recoverable from the existing 15. **Second tier:** POH's graded 6-cell-per-hand pinky penalty table (**already in flight with the `travel` sibling —
+hand them the weights**), the HSB/HSS row-distance scissor split (R2 ~0.40, ⚠ but 🟠 **NOT regressed against our `bad_scissor` partitions — check that first**), and its `.gen` hard-constraint seeding format. **ALREADY
+HAVE:** SFB/SFS/RED/ALT exactly; 2RL/3RL/FLW = our `roll` (R2=1.0000); HLD = `imbalance` (0.9998). **SKIP:** its composite `Score` (**R2 = 0.9719 with our frame** AND pool-relative — median/IQR from whichever `.klf`
+files happen to be in the directory, with metrics at |w|<=0.01 silently dropped); FLW; its LSB convention; **and its corpora — its `shai` is iWeb-DERIVED, the same licensed source as our own unreproducible anchor, so
+NOT independent.**
+🟢 **JOINT OPTIMIZATION: FEASIBLE AS A REAL SEARCH OBJECTIVE, and the bottleneck is US.** `Scorer.Score` = **0.0817 ms/layout, 12,241/sec single-threaded** => 1M layouts in ~82s. ⚠ **I timed our own path
+independently: `KmStats.stats` = 36.30 ms/layout on my machine (the child measured 32.3), i.e. 444x SLOWER than keycraft (it said ~395x) — 1M layouts is ~605 min through our gauges vs ~1.4 min through its.** So
+**keycraft is not the constraint; our gauge path is.**
+ 🟢 **RECOMMENDATION (b) HARD CONSTRAINT — and keycraft is itself the proof of ARM G's finding.** Minimize our ms/char subject to net-inward >= X, **seeded from arm B (IN:OUT 1.67) or keybo-lsb (2.14), which are already
+ feasible** (the ARM H lesson: seed from a known-feasible point or "EMPTY" may only mean "UNREACHABLE"). **NOT a sum: keycraft puts +8.00 on a direction-INVARIANT aggregate and 0.00 on every direction column — the new
+ term is exactly what a sum sacrifices**, which is ARM G's mechanism observed in a second codebase. And at **R2 = 0.9719** a joint COMPOSITE term is ~97% collinear with what we already minimize. => **"not worth it, r is
+ high" is the right answer for its COMPOSITE; the ONE direction term is worth it.** ⚠ Operational: **freeze median/IQR (`ComputeReferenceStats` -> `NewScorerWithStats`) or the objective DRIFTS with the directory
+ contents.**
+🔴 **`northwest` IS NOT A C30M PERMUTATION, AND THE CHILD KILLED ITS OWN HEADLINE ON IT.** It has all 30 C30M chars **plus 6 extras (`` ` `` `\` `=` `/` `;` `_`) on a 36-alpha COLSTAG board with `s` on the LEFT THUMB.**
+Faithful comparison impossible; **it substituted nothing** (as instructed). 🟢 **AND: "northwest beats our best on SFB" is REFUTED BY ITS OWN TEST — the lead IS THE THUMB KEY: move `s` off the thumb and SFB goes
+0.518 -> 2.457, a 4.7x collapse.** A 36-key board is not apples-to-apples. ⚠ **On the axis we cannot see, `keybo-lsb` (IN:OUT 2.142) actually EXCEEDS northwest (1.936), both >> graphite (0.990).**
+ 🟢 **THE RESEMBLANCE IS REAL AND IT IS IN THE CORE**, measured by (finger,row) cell over the 26 letters: **graphite 10/26 (core 6/10 on `taonrl`) > arm-H 7/26 > arm B & BALL-1 6/26 (core 3/10) > keybo-lsb 0/26 DIRECT
+ but 7/26 MIRRORED > qwerty 2/26.** => it resembles graphite directly and **keybo-lsb hand-flipped**, and the shared structure is the high-frequency core — **convergent evidence from an independent optimizer with a
+ different objective.**
+🔴 **FIVE DEFECTS FOUND IN KEYCRAFT ITSELF, proven numerically and worth reporting upstream:** (1) **LSB is order-ASYMMETRIC** — 3 hardcoded ROWSTAG pairs appended one-directionally unlike every other pair, so
+`corpus{qx} = 100%` but `{xq} = 0%` (control `et`/`te` both 100%); (2) those pairs **bypass its own `fingerPairsToTrack` gate** and sit at dx=1.75, below its stated 2.0/3.5 thresholds; (3) **no right-hand mirror** —
+`ip` is 0% in both directions; (4) `IN:OUT` divides with **no zero check** -> Inf/NaN; (5) **R0..R3 sum to >100%** (thumb in the numerator, not the denominator) — **visible on their own `northwest` page at 107.6%.**
+🟢 **WHAT IT KILLED OF ITS OWN — five things, and two are exemplary:** the fake 2x disagreement (denominator artifact, caught before publishing); *"its trigram suite fixes our blind spot"* (**FLW is invariant**);
+⚠ **it DOWNGRADED its own `ALT` 0.0000% agreement to WEAK evidence** — `alt` is a hand-partition invariant, and it verified `alt` is identical under an alternative column placement that MOVES sfb/sfs/red, **so only
+those three are discriminating**; and it nearly blamed a charset for model-surface N/A when the cause was **its own `--no-time` flag.** 🟠 Honest gaps named: HSB/HSS not regressed against `bad_scissor`; blend-v1 has no
+unigram table so POH/FLD carry a marginalization caveat (**no SFB/SFS/LSB/ALT/RED/roll figure does**).
+🟢 **METHOD WORTH STEALING, ranked:** **pattern-guided perturbation that attributes bad-pattern corpus mass back to specific KEY INDICES and perturbs the worst offenders** — this pairs directly with our per-cell
+partitions and finger-TIME attribution and is the most transferable idea in the audit; **median/IQR robust normalization instead of min-max** (directly relevant to ARM G's range-domination failure, where oxey-style's
+48.5% share of board range made it cheapest to sacrifice); Breakout Local Search (steepest descent + adaptive-magnitude jump on a stagnation counter + tabu scaled to free keys); column-swap as a structural move; and a
+98%-coverage trigram prefilter for an 86x speedup (**approximation — search-only, never reporting**). 🟢 **And direction ordering is CORPUS-ROBUST: identical on blend-v1 and shai, though magnitudes move and graphite's
+net FLIPS SIGN.**
