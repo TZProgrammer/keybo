@@ -32,12 +32,42 @@
    "qwertz": 0.5652240761536644
   }
  },
- "means": {
+ "means_of_ratios_REORDERABLE": {
   "ms/char (shipped)": 0.6442109312560771,
   "drop-pool 50/50": 0.525470419517714,
   "registered (c)": 0.5565586760921823
  },
- "reweighting_margin_bound": 0.15251112445344636,
+ "paired_per_fold": {
+  "drop-pool 50/50": {
+   "per_fold_deltas": [
+    -0.12206571139336408,
+    -0.2557157808509125,
+    -0.029849017510151177,
+    -0.06733153719902452
+   ],
+   "n_folds": 4,
+   "wins": 0,
+   "losses": 4,
+   "mean_paired_delta": -0.11874051173836307,
+   "all_same_sign": true
+  },
+  "registered (c)": {
+   "per_fold_deltas": [
+    -0.09041917445073566,
+    -0.19143666978643148,
+    -0.02012010805274106,
+    -0.04863306836567083
+   ],
+   "n_folds": 4,
+   "wins": 0,
+   "losses": 4,
+   "mean_paired_delta": -0.08765225516389476,
+   "all_same_sign": true
+  }
+ },
+ "bound_doc_conformant": 0.06992692603328392,
+ "bound_raw_ceilings": 0.15251112445344636,
+ "reweighting_margin_bound_DEPRECATED_raw": 0.15251112445344636,
  "verdicts": {
   "drop-pool 50/50": {
    "mean": 0.525470419517714,

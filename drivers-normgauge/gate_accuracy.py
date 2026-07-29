@@ -148,9 +148,45 @@ def main() -> int:
         print(f"{label:22s} " + " ".join(f"{v:+10.4f}" for v in vals) + f" {means[label]:+10.4f}")
 
     base = means["ms/char (shipped)"]
+    # PAIRED PER-FOLD DELTAS -- the non-reorderable statistic. A mean-of-ratios across folds with
+    # DIFFERENT ceilings is a ceiling-WEIGHTED mean and CAN reorder two arms (WIDEN-REFLECT-1);
+    # a paired per-fold delta cannot, because each fold's ceiling divides both arms identically.
+    # Both are reported: the mean-of-ratios because the ledger quotes it, the paired delta because
+    # it is the one a verdict may rest on.
+    paired: dict[str, dict] = {}
+    for label in WEIGHTINGS:
+        if label.startswith("ms/char"):
+            continue
+        ds = [
+            per_fold[label][f] - per_fold["ms/char (shipped)"][f]
+            for f in folds
+            if f in per_fold.get(label, {})
+            and f in per_fold["ms/char (shipped)"]
+            and np.isfinite(per_fold[label][f])
+            and np.isfinite(per_fold["ms/char (shipped)"][f])
+        ]
+        paired[label] = {
+            "per_fold_deltas": [float(d) for d in ds],
+            "n_folds": len(ds),
+            "wins": int(sum(1 for d in ds if d > 0)),
+            "losses": int(sum(1 for d in ds if d < 0)),
+            "mean_paired_delta": float(np.mean(ds)) if ds else float("nan"),
+            "all_same_sign": bool(ds) and (all(d > 0 for d in ds) or all(d < 0 for d in ds)),
+        }
+    print("\n=== PAIRED PER-FOLD DELTAS (non-reorderable; the threshold-free verdict) ===")
+    for label, p in paired.items():
+        print(
+            f"{label:22s} wins {p['wins']}/{p['n_folds']}  mean paired delta "
+            f"{p['mean_paired_delta']:+.4f}  sign-consistent: {p['all_same_sign']}"
+        )
     obs_ceils = [ceilings[f] for f in folds]
-    bound = reweighting_margin_bound(obs_ceils)
-    print(f"\nreweighting margin bound over observed ceilings {[round(c,4) for c in obs_ceils]}: {bound:.4f}")
+    # DOC-CONFORMANT bound: verdicts.py prescribes [(1+c)/2 for c in ceilings] for the
+    # Spearman-Brown length correction. Passing RAW ceilings (as GATE-1 did) gives a bound 2.18x
+    # LOOSER, which flipped one registered verdict. Both are printed; the doc form is the one to use.
+    bound_doc = reweighting_margin_bound([(1.0 + c) / 2.0 for c in obs_ceils])
+    bound_raw = reweighting_margin_bound(obs_ceils)
+    print(f"bound: doc-conformant {bound_doc:.6f}  |  raw-ceilings (as GATE-1 registered) {bound_raw:.6f}")
+    _unused_bound = reweighting_margin_bound(obs_ceils)
     print("\n=== VERDICT ===")
     verdicts = {}
     for label in WEIGHTINGS:
@@ -158,7 +194,7 @@ def main() -> int:
             continue
         delta = means[label] - base
         rel = delta / abs(base) if base else float("nan")
-        clears = rel > bound
+        clears = rel > bound_doc
         verdicts[label] = {"mean": means[label], "delta_vs_ms_per_char": delta,
                            "relative": rel, "clears_gate": bool(clears)}
         print(f"{label:22s} mean {means[label]:+.4f} vs ms/char {base:+.4f} -> "
@@ -168,7 +204,10 @@ def main() -> int:
     out.write_text(json.dumps({
         "design": "leave-one-layout-out over AALTO; bucket-centered rho / split-half ceiling",
         "held_out_units": folds, "ceilings": ceilings, "per_fold": per_fold,
-        "means": means, "reweighting_margin_bound": bound, "verdicts": verdicts,
+        "means_of_ratios_REORDERABLE": means,
+        "paired_per_fold": paired,
+        "bound_doc_conformant": bound_doc,
+        "bound_raw_ceilings": bound_raw, "reweighting_margin_bound_DEPRECATED_raw": bound_raw, "verdicts": verdicts,
         "limit": "the three .standardized surfaces share AALTO's bigram tensor, which biases "
                  "this test TOWARD ms/char; a narrow loss reads as 'not demonstrated'",
     }, indent=1))
