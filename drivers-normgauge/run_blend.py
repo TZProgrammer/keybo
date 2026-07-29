@@ -244,9 +244,18 @@ def gauge_table(layouts: dict[str, str]) -> dict:
     from keybo.cli import analyze as A
 
     parser = argparse.ArgumentParser()
-    A.add_arguments(parser)
-    parser.add_argument("--json", action="store_true")
-    args = parser.parse_args([*layouts.values(), "--json", "--no-model-scores"])
+    A.add_arguments(parser)  # already defines --json; do NOT re-add it
+    # Pass each DISTINCT board exactly once: the shipped `analyze` refuses a duplicate layout
+    # under two names (analyze.py:452 "refusing to emit a table with a dropped row"), and in this
+    # arm two names legitimately collide because the solo cells rediscovered their own anchors --
+    # the positive control passing. Aliases are re-attached to the returned rows below.
+    distinct = sorted(set(layouts.values()))
+    # Build the namespace from defaults and SET `layouts` directly instead of round-tripping
+    # through argv: a random C30M permutation can begin with `-` or `.`, and argparse reads such
+    # a token as an option ("unrecognized arguments"). Parsing an empty argv then assigning is
+    # the only form that is safe for arbitrary layout strings.
+    args = parser.parse_args(["--json", "--no-model-scores", S.C30M])
+    args.layouts = distinct
     buffer = io.StringIO()
     with contextlib.redirect_stdout(buffer):
         rc = A.run(args)
@@ -254,19 +263,50 @@ def gauge_table(layouts: dict[str, str]) -> dict:
         raise SystemExit(f"analyze returned rc={rc}")
     payload = json.loads(buffer.getvalue())
 
-    by_text = {v: k for k, v in layouts.items()}
+    # `analyze` always includes its --ref row (default `qwerty`), whose CHARSET is NOT C30M
+    # (`;` and `/` where C30M has `'` and `-`). That row must be DROPPED before any invariance
+    # or dominance claim: verified empirically here -- all 12 C30M field rows share
+    # sfr = 2.6595771027 exactly while the qwerty ref row reads 2.6644097196. This is the
+    # documented trap that made `sfr` look non-invariant to a prior arm, and keeping the row
+    # would have made every pair look "15 of 15 contested" by comparing across charsets.
+    # layout string -> the FIRST requested key naming it (dict order). Aliases resolve to that
+    # one canonical row; `aliases` below records the rest so a reader can see two names met.
+    by_text: dict[str, str] = {}
+    for key, text in layouts.items():
+        by_text.setdefault(text, key)
     rows = {}
+    dropped = {}
     for key, row in payload["rows"].items():
-        name = by_text.get(row["layout"], key)
+        if row["layout"] not in by_text:
+            dropped[key] = row["layout"]  # the --ref row we did not ask for
+            continue
         entry = {g: row["gauges"].get(g) for g in A.GAUGE_NAMES}
         entry["ms_per_char"] = (row.get("time") or {}).get("ms_per_char")
         entry["layout"] = row["layout"]
-        rows[name] = entry
+        rows[by_text[row["layout"]]] = entry
+    # Count DISTINCT layout STRINGS, not keys: two keys can legitimately name the same board.
+    # In this arm they do, and it is the positive control passing -- `blend:solo-COMMUNITY`
+    # rediscovered `anchor:COMMUNITY`, and likewise for POOL. Comparing against len(layouts)
+    # treated that success as a dropped row. Aliases are recorded so the reader sees them.
+    aliases = {v: sorted(k for k, w in layouts.items() if w == v) for v in set(layouts.values())}
+    aliases = {v: ks for v, ks in aliases.items() if len(ks) > 1}
+    for text, keys in aliases.items():
+        canonical = by_text[text]
+        for extra in keys:
+            if extra != canonical and canonical in rows:
+                rows[extra] = rows[canonical]  # same board, both names resolvable
+    if len(set(id(v) for v in rows.values())) != len(set(layouts.values())):
+        raise SystemExit(
+            f"analyze returned {len(rows)} rows for {len(set(layouts.values()))} distinct "
+            f"layouts; refusing to report a partial table (dropped as --ref: {dropped})"
+        )
     return {
         "gauges": list(A.GAUGE_NAMES),
         "gauge_frame": payload["gauge_frame"],
         "corpus": payload["corpus"],
         "corpus_provenance": payload["corpus_provenance"],
+        "dropped_ref_row": dropped,
+        "aliases": aliases,
         "rows": rows,
     }
 
