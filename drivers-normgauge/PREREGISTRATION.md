@@ -367,3 +367,64 @@ honest interval makes the falsifier *easier* to trigger, so this amendment canno
 rescuing my preferred branch.
 
 **Prediction P6 is unchanged and still predicts (c) FAILS.**
+
+---
+
+# AMENDMENT 2 — a THIRD defect in my own estimator, found AFTER the result, reported with its blast radius (2026-07-28)
+
+Unlike Amendment 1 this one was found **after** seeing the cross-prediction numbers, so it does
+NOT get the protection of pre-registration and I am not treating it as though it does. What
+follows is the defect, the reason it is not load-bearing, and the stress test that shows the
+conclusion survives — stated in that order so the reader can discount it themselves.
+
+## A2.1 🔴 THE DEFECT: the COMMUNITY-side point estimate falls OUTSIDE its own CI
+
+`rho = 0.411458` against `CI95 = [0.364336, 0.372002]`. **A point estimate outside its own
+interval is diagnostic of a broken interval**, and it is the number the weights rest on.
+
+**Cause, confirmed by arithmetic, not guessed:** Amendment 1 A1.2 already recorded that the
+bootstrap replicates aggregate a cell with a **plain mean** while the point estimate uses the
+shipped **IQR-mean**, and said the two would be compared. They differ by `0.032228`, while the
+CI half-width is `0.003833` — **the aggregation bias is 8.41× the interval's half-width.** The
+CI midpoint `0.368169` sits far closer to the plain-mean estimate (`0.379230`, gap 0.011) than to
+the IQR-mean one (`0.411458`, gap 0.043). So the interval is an honest interval **for a
+different statistic than the one it was placed around.** A1.2's "if they disagree materially,
+report the CI as indicative-only" clause fires: **it disagrees materially.**
+
+## A2.2 🔴 AND THE NO-OP PROBLEM IS ONLY PARTLY FIXED
+
+Amendment 1's cluster bootstrap fixed the *mechanism* but not the *consequence* on the AALTO
+side: `boot_median_surviving_cells = 23714` of `23714` cells — **exactly 1.000 survive.** With
+55,404 participants at median 138 per cell, a participant resample essentially never empties a
+cell, so cell values move only slightly. **That is why COMMUNITY's SE is 0.00207 — implausibly
+small, and it is an artifact of cell richness, not evidence of precision.** The COMMUNITY-side
+CI is therefore **too narrow, and I am not treating its width as meaningful.**
+
+Note this is a *different* failure from the pre-amendment one: values now do move (the estimator
+is no longer degenerate), they just move too little to represent between-participant uncertainty
+at this cell richness. Honest label: **the AALTO-side interval is a lower bound on uncertainty.**
+
+## A2.3 THE DECISION SURVIVES, and here is the arithmetic that shows it
+
+| variant | rho/ceil AALTO | rho/ceil COMM | gap | pooled SE | (c) verdict | weights (aalto / comm / pool) |
+|---|---|---|---|---|---|---|
+| as registered (IQR point, plain CI) — **mismatched** | 0.540988 | 0.421699 | 0.119290 | 0.082211 | **USABLE** | 0.5276 / 0.4112 / 0.0612 |
+| internally consistent (plain point, plain CI) | 0.528873 | 0.388669 | 0.140204 | 0.082211 | **USABLE** | 0.5411 / 0.3977 / 0.0612 |
+
+* **Same branch either way.** The weights move by **≤ 0.0136**.
+* **Stress test:** to make the falsifier fire, COMMUNITY's rho/ceiling SE would have to be
+  **≥ 0.086462** against a measured 0.002067 — a **41.8× widening.** The interval is too narrow,
+  but not by a factor of forty.
+* The gap is driven by the AALTO side's SE (0.0822), which comes from the pid-POOR held-out
+  COMMUNITY data where the bootstrap demonstrably *does* move (650 of 866 cells survive a median
+  resample). So the pooled SE is dominated by the side whose interval is trustworthy.
+
+**REGISTERED RESOLUTION:** ship the **internally consistent** variant — the plain-mean point
+estimate with its own plain-mean interval — because comparing an IQR-mean estimate to a
+plain-mean interval is exactly the mismatched-ruler error this campaign keeps finding. The
+IQR-mean values are reported alongside. Both are shown above so no reader has to take the
+choice on trust.
+
+**What I will NOT claim:** that the held-out intervals are tight, that COMMUNITY's SE of 0.00207
+is meaningful, or that (c) is settled beyond the 41.8× margin above. The weight is
+evidence-based and the branch is robust; the *interval* is indicative only.
