@@ -1,0 +1,154 @@
+{
+ "a_decomposition": {
+  "raw": 3270,
+  "shipped_qualifying": 817,
+  "leave_one_out": {
+   "FINGERS": {
+    "qualifying_if_off": 1499,
+    "blocks_alone": 682
+   },
+   "WPM": {
+    "qualifying_if_off": 1253,
+    "blocks_alone": 436
+   },
+   "KB": {
+    "qualifying_if_off": 854,
+    "blocks_alone": 37
+   }
+  },
+  "marginals": {
+   "FINGERS": 1352,
+   "WPM": 1626,
+   "KB": 2952
+  },
+  "exclusive_blame": {
+   "FINGERS,KB,WPM": 129,
+   "WPM": 436,
+   "FINGERS": 682,
+   "FINGERS,WPM": 1017,
+   "FINGERS,KB": 90,
+   "KB,WPM": 62,
+   "KB": 37
+  }
+ },
+ "b_redundancy_test": {
+  "net_new_pids": 436,
+  "shipped_pids": 817,
+  "net_new_in_table": 384,
+  "net_new_with_inwindow": 244,
+  "net_new_dead_weight": 140,
+  "net_new_inwindow_frac": 0.25433281668310553,
+  "shipped_inwindow_frac": 0.9493657195390259,
+  "net_new_inwindow_wpm_mean": 46.93891966759003,
+  "net_new_inwindow_wpm_median": 45.0,
+  "shipped_inwindow_wpm_mean": 70.6563874406766,
+  "shipped_inwindow_wpm_median": 67,
+  "per_fold_bucket_new_share": {
+   "azerty": {
+    "40": {
+     "old": 26838,
+     "new": 12474,
+     "new_share": 0.3173076923076923
+    },
+    "60": {
+     "old": 27296,
+     "new": 298,
+     "new_share": 0.010799449155613539
+    },
+    "80": {
+     "old": 12374,
+     "new": 15,
+     "new_share": 0.0012107514730809589
+    },
+    "100": {
+     "old": 5570,
+     "new": 0,
+     "new_share": 0.0
+    },
+    "120": {
+     "old": 1955,
+     "new": 0,
+     "new_share": 0.0
+    }
+   },
+   "dvorak": {
+    "40": {
+     "old": 6124,
+     "new": 3509,
+     "new_share": 0.3642686598152185
+    },
+    "60": {
+     "old": 9890,
+     "new": 111,
+     "new_share": 0.0110988901109889
+    },
+    "80": {
+     "old": 8096,
+     "new": 0,
+     "new_share": 0.0
+    },
+    "100": {
+     "old": 4898,
+     "new": 14,
+     "new_share": 0.0028501628664495114
+    },
+    "120": {
+     "old": 2342,
+     "new": 0,
+     "new_share": 0.0
+    }
+   },
+   "qwertz": {
+    "40": {
+     "old": 82530,
+     "new": 24936,
+     "new_share": 0.23203617888448438
+    },
+    "60": {
+     "old": 82855,
+     "new": 1776,
+     "new_share": 0.02098521818246269
+    },
+    "80": {
+     "old": 43836,
+     "new": 187,
+     "new_share": 0.004247779569770347
+    },
+    "100": {
+     "old": 15270,
+     "new": 0,
+     "new_share": 0.0
+    },
+    "120": {
+     "old": 3679,
+     "new": 0,
+     "new_share": 0.0
+    }
+   }
+  }
+ },
+ "c_margin_bound": {
+  "shipped": {
+   "ceilings": {
+    "azerty": 0.8099555887119936,
+    "dvorak": 0.7175984395085713,
+    "qwerty": 0.9758714341715645,
+    "qwertz": 0.8539151401465699
+   },
+   "bound_spearman_brown_weights": 0.06992692603328392,
+   "bound_over_raw_ceilings": 0.15251112445344636,
+   "reported_in_run": 0.06992692603328392
+  },
+  "widened": {
+   "ceilings": {
+    "azerty": 0.817856297866338,
+    "dvorak": 0.7140806385429087,
+    "qwerty": 0.9758714341715645,
+    "qwertz": 0.8620441716439879
+   },
+   "bound_spearman_brown_weights": 0.07094693656442866,
+   "bound_over_raw_ceilings": 0.15491018938078893,
+   "reported_in_run": 0.07094693656442866
+  }
+ }
+}
