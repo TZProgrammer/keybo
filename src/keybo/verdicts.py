@@ -172,7 +172,17 @@ def all_distinct(values: Sequence[float], what: str, *, tol: float = 0.0) -> boo
     return True
 
 
-#: Tolerance for the top-bucket non-regression gate, in rho units.
+#: Lowest wpm bucket the non-regression gate protects.
+#:
+#: The ask was "high WPM buckets" -- PLURAL -- and a top-bucket-only gate has a measured hole: a
+#: -0.20 collapse in 100-120 passed cleanly while 120-140 was held flat. So the scope is a FLOOR,
+#: not a single bucket. 80 is where it sits because the campaign's own posture data puts the touch
+#: typists there: 74.8% of participants at >=80 wpm use 9-10 fingers, rising to 84.7% at >=120,
+#: while the 40-60 band is where the slow-typing regime dominates. Below the floor a slow-for-fast
+#: trade stays a separate decision this gate must not settle.
+HIGH_WPM_FLOOR = 80
+
+#: Tolerance for the high-wpm non-regression gate, in rho units.
 #:
 #: Derived from what the gate must and must not catch, not chosen for roundness. It has to pass
 #: search/seed wobble and still refuse the measured blend regression, and HIGHWPM-1 measured that
@@ -203,6 +213,7 @@ def bucket_regression_report(
     what: str,
     *,
     tolerance: float = HIGH_WPM_TOLERANCE,
+    floor: int = HIGH_WPM_FLOOR,
 ) -> dict:
     """The gate's verdict as a serializable dict — including when it did NOT run.
 
@@ -221,19 +232,25 @@ def bucket_regression_report(
         and math.isfinite(float(candidate[bucket]))
     }
     top = max(baseline) if baseline else None
-    gated = bool(baseline) and top in deltas
+    high = {b: d for b, d in deltas.items() if b >= floor}
+    gated = bool(baseline) and top in deltas and bool(high)
+    regressing = sorted(b for b, d in high.items() if d < -tolerance)
     report: dict = {
         "candidate": what,
         "gated": gated,
         "passed": None,
         "tolerance": float(tolerance),
+        "high_wpm_floor": int(floor),
+        "gated_buckets": sorted(high),
+        "regressing_high_buckets": regressing,
         "top_bucket": top,
         "top_bucket_delta": deltas.get(top) if gated else None,
         "worst_bucket": min(deltas, key=lambda b: deltas[b]) if deltas else None,
+        "worst_high_bucket": min(high, key=lambda b: high[b]) if high else None,
         "deltas": deltas,
     }
     if gated:
-        report["passed"] = deltas[top] >= -tolerance
+        report["passed"] = not regressing
     return report
 
 
@@ -243,8 +260,9 @@ def require_no_high_wpm_regression(
     what: str,
     *,
     tolerance: float = HIGH_WPM_TOLERANCE,
+    floor: int = HIGH_WPM_FLOOR,
 ) -> dict:
-    """Refuse ``candidate`` if it regresses the FASTEST bucket's rho versus ``baseline``.
+    """Refuse ``candidate`` if it regresses rho in ANY bucket at or above ``floor``.
 
     Both maps are ``bucket start wpm -> rho`` (the shape ``_per_bucket_rho`` returns). Returns the
     :func:`bucket_regression_report` on success so a caller can serialize the passing verdict too.
@@ -257,7 +275,7 @@ def require_no_high_wpm_regression(
     regress" — the same absence-is-not-disproof rule that a wrongly-closed line of inquiry in this
     campaign was built on.
     """
-    report = bucket_regression_report(candidate, baseline, what, tolerance=tolerance)
+    report = bucket_regression_report(candidate, baseline, what, tolerance=tolerance, floor=floor)
     if not report["gated"]:
         top = max(baseline) if baseline else None
         raise HighWpmRegression(
@@ -267,14 +285,14 @@ def require_no_high_wpm_regression(
             f"result is ungated."
         )
     if not report["passed"]:
-        delta = report["top_bucket_delta"]
-        worst = report["worst_bucket"]
+        offenders = report["regressing_high_buckets"]
+        detail = ", ".join(f"{b}: {report['deltas'][b]:+.4g}" for b in offenders)
         raise HighWpmRegression(
-            f"{what}: rho in the fastest bucket ({report['top_bucket']}+ wpm) falls by "
-            f"{-delta:.6g} versus the baseline, beyond the {tolerance:.6g} tolerance "
-            f"(worst bucket overall: {worst}). Fast and slow typing are different regimes and this "
-            f"objective is aimed at people who have stopped being slow, so a top-bucket regression "
-            f"is refused rather than ranked. Per-bucket deltas: "
+            f"{what}: rho regresses in {len(offenders)} of {len(report['gated_buckets'])} high-wpm "
+            f"buckets (at or above {floor} wpm), beyond the {tolerance:.6g} tolerance — {detail}. "
+            f"Worst high bucket: {report['worst_high_bucket']}. Fast and slow typing are different "
+            f"regimes and this objective is aimed at people who have stopped being slow, so a "
+            f"high-wpm regression is refused rather than ranked. All per-bucket deltas: "
             f"{ {b: round(d, 4) for b, d in report['deltas'].items()} }."
         )
     return report

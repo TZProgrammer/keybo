@@ -134,3 +134,48 @@ def test_the_report_marks_an_UNGATED_result_as_ungated() -> None:
     report = bucket_regression_report(_MS_PER_CHAR, {}, "no baseline")
     assert report["gated"] is False
     assert report["passed"] is None, "None means 'no verdict', which is not True"
+
+
+# --- ALL high-wpm buckets, not just the top one --------------------------------------------
+
+
+def test_a_regression_one_bucket_BELOW_the_top_is_also_refused() -> None:
+    """The user said "high WPM buckets" -- plural. A top-bucket-only gate has a hole.
+
+    Measured on the shipped top-bucket-only form: a -0.20 collapse in 100-120 PASSED while the
+    120-140 bucket was held flat. That is a large regression in expert-typing territory sneaking
+    through a gate whose whole purpose is to catch exactly that.
+    """
+    sneak = dict(_MS_PER_CHAR)
+    sneak[100] -= 0.20
+    with pytest.raises(HighWpmRegression) as exc:
+        require_no_high_wpm_regression(sneak, _MS_PER_CHAR, "regresses 100-120 only")
+    assert "100" in str(exc.value), "the message must name the bucket that actually regressed"
+
+
+def test_the_high_wpm_FLOOR_is_what_defines_scope_and_slow_buckets_stay_out() -> None:
+    """Scope is the FLOOR, not the single top bucket: below it, a trade is still allowed.
+
+    A candidate that gives up accuracy on 40-60 typists but holds every fast bucket is a different
+    decision, and this gate must not silently settle it.
+    """
+    slow_only = dict(_MS_PER_CHAR)
+    slow_only[40] -= 0.30
+    require_no_high_wpm_regression(slow_only, _MS_PER_CHAR, "slow-bucket sacrifice")
+
+
+def test_every_gated_bucket_at_or_above_the_floor_is_checked() -> None:
+    """Each of 80/100/120 must be able to fire on its own."""
+    for bucket in (80, 100, 120):
+        candidate = dict(_MS_PER_CHAR)
+        candidate[bucket] -= 0.10
+        with pytest.raises(HighWpmRegression) as exc:
+            require_no_high_wpm_regression(candidate, _MS_PER_CHAR, f"regresses {bucket}")
+        assert str(bucket) in str(exc.value)
+
+
+def test_the_report_names_EVERY_regressing_high_bucket_not_just_the_worst() -> None:
+    """A reader fixing this needs the full list, not one example."""
+    report = bucket_regression_report(_DROP_POOL, _MS_PER_CHAR, "drop-pool 50/50")
+    assert set(report["regressing_high_buckets"]) == {80, 100, 120}
+    assert report["high_wpm_floor"] == 80
