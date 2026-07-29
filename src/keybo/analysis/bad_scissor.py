@@ -29,9 +29,16 @@ Nothing here is re-decided, and nothing is invented.
 overlap-restricted effect is **+0.41 ms [+0.23, +0.55]** — bigram *frequency* explains more
 variance than any geometric axis. Two further caveats travel with every number below: the
 mid-board layout ordering is **not robust** (only "qwerty is worst" and
-"lsb-sib < archive-1843" survive every weighting), and **96.6 % of the flagged mass has bottom
-key ``c`` or ``x``** — so the measured effect is a statement about a few qwerty-era letter
+"lsb-sib < archive-1843" survive every weighting), and **most of the flagged mass sits on a few
+bottom keys (``c``/``x``)** — so the measured effect is a statement about a few qwerty-era letter
 placements, not a structural law.
+
+⚠ The figure **96.6 %** stood here unscoped and is WITHDRAWN AS A NUMBER (2026-07-28, BSAUDIT-1):
+it reproduces in NONE of 24 shipped frames — qwerty measures 7.559 % on iWeb and 10.019 % on
+blend-v1 — and the Aalto raw frame it may refer to is not in this repo, so it is unverifiable
+against anything shipped. The DIRECTION holds (dvorak 0.000 %, qwerty highest); only the constant
+is withdrawn. A constant published without its frame cannot be checked, and this one supported a
+conclusion that is true, which is why it went unquestioned.
 
     bad-scissor fires  <=>  same hand AND different fingers AND different rows
                             AND the WEAKER finger of the pair is on the LOWER row
@@ -71,9 +78,16 @@ to wire.
 ``kmstats``/``sfb``/``lsb`` convention, NOT ``oxey.pattern_shares``'. ``Layout.has_key(" ")``
 is True, so the oxey convention silently counts space-touching bigrams in the denominator.
 Space is in no bad-scissor pair (``hand(0) == 0``), so choosing wrong leaves the
-**numerator bit-identical** and inflates every share by a plausible ~1.497x constant. That
-is exactly the failure the campaign's trap #9 describes, and
-``test_the_space_including_denominator_would_inflate_every_share_by_about_1_497x`` pins it.
+**numerator bit-identical** and MOVES every share by a plausible ~1.497x constant. The
+direction is DEFLATION, not inflation: space-touching bigrams are 33.85% of the mass, so
+adding them to the denominator makes every share SMALLER (measured 1.496137-1.499860x across
+all 15 registry layouts). That is exactly the failure the campaign's trap #9 describes, and
+``test_the_space_including_denominator_moves_every_share_by_about_1_497x`` pins it.
+
+(Corrected 2026-07-28 per BSAUDIT-1: this paragraph said "inflates" and cited a test named
+``..._would_inflate_...``, which exists in no file — the real test was RENAMED to ``..._moves_...``
+precisely because the direction was wrong, and the docstring kept both the stale name and the
+refuted word. A citation is not a proof unless the cited thing exists.)
 
 **Attribution: the whole of a pair's mass to the finger holding the LOWER key** — not to both,
 not split. The predicate is an asymmetric statement about one finger: the flag fires *because*
@@ -241,8 +255,13 @@ class BadScissor:
     def by_cell(self, layout: Layout, *, exclude_space: bool = True) -> dict[str, float]:
         """Share per ``"<finger-pair> dy<n>"`` class — a second exact partition.
 
-        The ``dy2`` subtotal is the number that motivates the predicate: it is under a tenth
-        of the priced mass, and ``dy == 2`` is the *only* thing the incumbent gauges see.
+        The ``dy2`` subtotal is the number that motivates the predicate, and ``dy == 2`` is
+        the *only* thing the incumbent gauges see. It is USUALLY a small share of the priced
+        mass but NOT always under a tenth: on blend-v1 (the CLI default) it exceeds 10% for
+        4 of 15 registry layouts, peaking at 12.908% on ``qwerty30m``; on iWeb only 1 of 15
+        does. Corrected 2026-07-28 per BSAUDIT-1, which had said "under a tenth" without
+        naming a corpus — and the complement of this ledger's own registered 87.1-99.4% dy1
+        range is 12.9%, so the old claim was contradicted by a published number.
         """
         return self._partition(layout, bad_scissor_cell, (), exclude_space)
 
@@ -273,6 +292,21 @@ class BadScissor:
             a, b = layout.pos(bigram[0]), layout.pos(bigram[1])
             key = classifier(geometry, a, b)
             if key is not None:
+                if preset_keys and key not in charged:
+                    # REFUSE an unclassified key rather than appending it (BSAUDIT-1 D4). The old
+                    # `charged.get(key, 0.0)` silently grew the dict, and a caller that PRINTS a
+                    # fixed column list then shows a partition that no longer sums to `share`:
+                    # a drifted `R-pinky` label printed 0.0000 while its real 0.4658 sat
+                    # unprinted, so 0.46584 pp vanished from a 4.11684 total. Every
+                    # exact-partition test still passed, because they sum `.values()` and never
+                    # the printed columns — so this cannot be caught downstream, only here.
+                    raise ValueError(
+                        f"{classifier.__name__} returned {key!r}, which is not one of this "
+                        f"partition's declared keys {sorted(charged)}. Either the classifier's "
+                        f"label set drifted from the caller's column list, or a new class was "
+                        f"added without extending the presets — both silently break the "
+                        f"partition when it is printed."
+                    )
                 charged[key] = charged.get(key, 0.0) + freq
         if not denominator:
             return dict.fromkeys(preset_keys, 0.0)

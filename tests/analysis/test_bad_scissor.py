@@ -24,6 +24,7 @@ import pytest
 
 from keybo.analysis.bad_scissor import (
     ATTRIBUTION_RULE,
+    FINGER_ORDER,
     BadScissor,
     bad_scissor,
     bad_scissor_finger,
@@ -411,3 +412,43 @@ def test_the_module_docstring_does_not_overstate_the_identification_limit():
     assert "EMPIRICAL, not structural" in doc
     assert "no amount of data" not in doc
     assert "more data cannot" not in doc
+
+
+# --- BSAUDIT-1 D4: the printed partition must not be silently breakable -------------------
+
+
+def test_all_eight_finger_labels_are_pinned_not_just_a_two_of_eight_spot_check(corpora):
+    """``by_finger``'s key set is EXACT, so a renamed label fails here rather than downstream.
+
+    The prior assertion was ``set(...) >= {"L-pinky", "R-index"}`` — a 2-of-8 spot check that
+    leaves 5 labels unpinned (both index columns are structurally 0.0, so they carry no mass).
+    A drifted label used to be APPENDED by ``_partition``, and a caller printing a fixed column
+    list then showed a table that no longer summed to ``share``: 0.46584 pp vanished from a
+    4.11684 total while every exact-partition test still passed, because they sum ``.values()``
+    and never the printed columns. Set equality is what catches that.
+    """
+    bigrams, *_ = corpora
+    got = BadScissor(bigrams).by_finger(_layout(LAYOUTS["qwerty"]))
+    assert set(got) == set(FINGER_ORDER)
+    assert len(FINGER_ORDER) == 8, "eight fingers, or the exactness above is vacuous"
+    # ordering is part of the contract too: callers print FINGER_ORDER as columns
+    assert list(got) == list(FINGER_ORDER)
+
+
+def test_partition_REFUSES_an_undeclared_classifier_key_instead_of_appending_it(corpora):
+    """The D4 fix: an unknown key raises, naming both label sets, rather than growing the dict."""
+    bigrams, *_ = corpora
+    scorer = BadScissor(bigrams)
+    layout = _layout(LAYOUTS["qwerty"])
+
+    def drifted(geometry, a, b):  # a classifier whose label set has drifted
+        real = bad_scissor_finger(geometry, a, b)
+        return "R-little" if real == "R-pinky" else real
+
+    with pytest.raises(ValueError) as exc:
+        scorer._partition(layout, drifted, FINGER_ORDER, True)
+    message = str(exc.value)
+    assert "R-little" in message, "must name the offending key"
+    assert "R-pinky" in message, "must name the declared set so the drift is diagnosable"
+    # the open-ended partition (by_cell passes no presets) is UNAFFECTED by the guard
+    assert scorer.by_cell(layout), "by_cell must still accept its own dynamic keys"
