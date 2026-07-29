@@ -1,0 +1,7 @@
+[     0.1s] cell solo-POOL seed=20261015: pool-n=1.0000 [rule: solo POOL]
+[    22.6s]     island 1/40 best=0.998390 unique=125,832
+[   254.8s]     island 11/40 best=0.998390 unique=1,375,415
+[   489.5s]     island 21/40 best=0.998390 unique=2,626,725
+[   721.2s]     island 31/40 best=0.998390 unique=3,876,281
+[   927.6s]     island 40/40 best=1.000000 unique=5,000,263
+[   928.1s] wrote /tmp/normgauge/drivers-normgauge/runs/blend-solo-POOL-20261015.json

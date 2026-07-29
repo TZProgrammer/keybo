@@ -1,0 +1,7 @@
+[     0.1s] cell solo-AALTO seed=20261015: aalto-n=1.0000 [rule: solo AALTO]
+[    23.2s]     island 1/40 best=0.973907 unique=128,278
+[   254.1s]     island 11/40 best=1.000000 unique=1,376,541
+[   485.4s]     island 21/40 best=1.000000 unique=2,627,936
+[   714.6s]     island 31/40 best=1.000000 unique=3,875,665
+[   926.2s]     island 40/40 best=1.000000 unique=5,000,635
+[   926.6s] wrote /tmp/normgauge/drivers-normgauge/runs/blend-solo-AALTO-20261015.json

@@ -1,0 +1,7 @@
+[     0.1s] cell equal seed=20260728: aalto-n=0.3333, comm-n=0.3333, pool-n=0.3333 [rule: equal (reference only — NOT neutral: POOL is a union of the other two)]
+[    23.0s]     island 1/40 best=0.958897 unique=126,251
+[   253.7s]     island 11/40 best=0.958897 unique=1,375,118
+[   485.8s]     island 21/40 best=0.958897 unique=2,626,686
+[   717.5s]     island 31/40 best=0.958897 unique=3,875,824
+[   929.6s]     island 40/40 best=0.959895 unique=5,002,589
+[   930.2s] wrote /tmp/normgauge/drivers-normgauge/runs/blend-equal-20260728.json

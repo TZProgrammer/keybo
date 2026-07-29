@@ -1,0 +1,16 @@
+CELLS DONE
+rc=0 label=drop-pool seed=20260728
+rc=0 label=drop-pool seed=20260901
+rc=0 label=drop-pool seed=20261015
+rc=0 label=equal seed=20260728
+rc=0 label=equal seed=20260901
+rc=0 label=equal seed=20261015
+rc=0 label=solo-AALTO seed=20260728
+rc=0 label=solo-AALTO seed=20260901
+rc=0 label=solo-AALTO seed=20261015
+rc=0 label=solo-COMMUNITY seed=20260728
+rc=0 label=solo-COMMUNITY seed=20260901
+rc=0 label=solo-COMMUNITY seed=20261015
+rc=0 label=solo-POOL seed=20260728
+rc=0 label=solo-POOL seed=20260901
+rc=0 label=solo-POOL seed=20261015

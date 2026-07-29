@@ -1,0 +1,46 @@
+[     0.1s] gates: evaluator bit-stable, anchors directional and undrifted
+[     0.1s] weighting equal: aalto-n=0.3333, comm-n=0.3333, pool-n=0.3333 [rule: equal (reference only — NOT neutral: POOL is a union of the other two)]
+[     0.1s] weighting drop-pool: aalto-n=0.5000, comm-n=0.5000 [rule: drop POOL entirely (it is a measured union of the other two), 50/50]
+[     0.1s] weighting solo-AALTO: aalto-n=1.0000 [rule: solo AALTO]
+[     0.1s] weighting solo-COMMUNITY: comm-n=1.0000 [rule: solo COMMUNITY]
+[     0.1s] weighting solo-POOL: pool-n=1.0000 [rule: solo POOL]
+[     0.1s] weighting registered: aalto-n=0.5411, comm-n=0.3977, pool-n=0.0612 [rule: held-out predictive skill (rho/ceiling on the plain-mean aggregation that matches the bootstrap interval; AMENDMENT 2), POOL at its measured unique variance share]
+[     0.1s]   reusing blend-equal-20260728.json
+[     0.1s]   reusing blend-equal-20260901.json
+[     0.1s]   reusing blend-equal-20261015.json
+[     0.1s]   reusing blend-drop-pool-20260728.json
+[     0.1s]   reusing blend-drop-pool-20260901.json
+[     0.1s]   reusing blend-drop-pool-20261015.json
+[     0.1s]   reusing blend-solo-AALTO-20260728.json
+[     0.1s]   reusing blend-solo-AALTO-20260901.json
+[     0.1s]   reusing blend-solo-AALTO-20261015.json
+[     0.1s]   reusing blend-solo-COMMUNITY-20260728.json
+[     0.1s]   reusing blend-solo-COMMUNITY-20260901.json
+[     0.1s]   reusing blend-solo-COMMUNITY-20261015.json
+[     0.1s]   reusing blend-solo-POOL-20260728.json
+[     0.1s]   reusing blend-solo-POOL-20260901.json
+[     0.1s]   reusing blend-solo-POOL-20261015.json
+[     0.1s]   reusing blend-registered-20260728.json
+[     0.1s]   reusing blend-registered-20260901.json
+[     0.1s]   reusing blend-registered-20261015.json
+[     0.1s] search noise: pooled across-seed sd = 0.000211 normalized units (max 0.000576)
+[     0.1s]   equal            sd=0.000576 identical_champion=False (2 distinct)
+[     0.1s]   drop-pool        sd=0.000535 identical_champion=False (3 distinct)
+[     0.1s]   solo-AALTO       sd=0.000157 identical_champion=False (2 distinct)
+[     0.1s]   solo-COMMUNITY   sd=0.000000 identical_champion=True (1 distinct)
+[     0.1s]   solo-POOL        sd=0.000000 identical_champion=True (1 distinct)
+[     0.1s]   registered       sd=0.000000 identical_champion=True (1 distinct)
+[     0.1s] 6 DISTINCT champions across 6 weighting cells
+[     0.7s] scoring 21 layouts on the shipped 15-gauge frame + ms/char
+[    94.1s] agreement with ms/char over a 300-layout random pool (1.0 = rank-identical):
+[    94.1s]   aalto-n                +0.9964
+[    94.1s]   comm-n                 +0.8665
+[    94.1s]   pool-n                 +0.9157
+[    94.1s]   blend:equal            +0.9550
+[    94.1s]   blend:drop-pool        +0.9654
+[    94.1s]   blend:solo-AALTO       +0.9964
+[    94.1s]   blend:solo-COMMUNITY   +0.8665
+[    94.1s]   blend:solo-POOL        +0.9157
+[    94.1s]   blend:registered       +0.9716
+[    94.1s] the registered champion dominates 0 of 12 field layouts on CONTESTED axes
+[    94.1s] wrote /tmp/normgauge/drivers-normgauge/blend-report.json

@@ -1,0 +1,16 @@
+[    0.1s] gate: evaluator bit-stable
+[    0.1s] (a) scanning per-cell training support
+[    5.8s]   AALTO: 26,368,247 samples over 5,219 cells (median 728/cell, min 10)
+[    5.8s]   COMMUNITY: 29,047 samples over 1,044 cells (median 18/cell, min 10)
+[    5.8s]   whole-surface sample ratio = 907.78x  (the brief's 643x is the scissor-neighbourhood covered-pair-filtered figure; see PREREGISTRATION.md 2.1)
+[    5.8s] (b) measuring POOL's unique variance share
+[    5.9s]   fit level: POOL = 0.498757*AALTO + 0.508017*COMMUNITY, R2=0.93881, unique=0.0612
+[    5.9s] (c) held-out cross-prediction (no refit: the sources are disjoint)
+[    6.5s]     reused cached rows for tristrokes_last_community.tsv (1327 rows)
+[   14.5s]     reused cached rows for tristrokes31_cond_v1.tsv (8726 rows)
+[ 1474.5s]   AALTO surface -> held-out tristrokes_last_community.tsv: rho=+0.2786 ceiling=0.5150 rho/ceil=+0.5410 CI95=[0.1619956242745095, 0.3210102092753683] (cells 866, pids 4)
+[ 1474.5s]   COMMUNITY surface -> held-out tristrokes31_cond_v1.tsv: rho=+0.4115 ceiling=0.9757 rho/ceil=+0.4217 CI95=[0.3643355307999181, 0.372001956716974] (cells 23714, pids 55404)
+[ 1474.5s]   (c) held-out: USABLE — rho/ceiling separates by 0.1402 > pooled SE 0.0822, and neither CI crosses 0
+[ 1474.5s]   (b) independence: POOL's unique variance share is 0.0612 at fit level (R2=0.93881), so it takes that weight and the other two split the remaining 0.9388
+[ 1474.5s] DECIDED weights: aalto-n=0.5411  comm-n=0.3977  pool-n=0.0612
+[ 1474.5s] wrote /tmp/normgauge/drivers-normgauge/weight-evidence.json

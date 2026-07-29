@@ -1,0 +1,10 @@
+[     0.1s] gate: evaluator bit-stable across batch lengths (padded tile)
+[     0.1s] control: MODELNORM AALTO champion rescores 223236317224.4177 vs 223236317224.4177 rel=-1.367e-16
+[    23.3s]   COMMUNITY seed=20261015 island 1/40 best=222754026665.6005 unique=125,053
+[   208.7s]   COMMUNITY seed=20261015 island 9/40 best=222622666232.8025 unique=1,126,396
+[   392.9s]   COMMUNITY seed=20261015 island 17/40 best=222447818165.8890 unique=2,126,159
+[   578.5s]   COMMUNITY seed=20261015 island 25/40 best=222447818165.8890 unique=3,126,654
+[   762.1s]   COMMUNITY seed=20261015 island 33/40 best=222447818165.8890 unique=4,127,436
+[   922.5s]   COMMUNITY seed=20261015 island 40/40 best=222447818165.8890 unique=5,000,349
+[   922.5s]   COMMUNITY seed=20261015 budget reached at island 40
+[   923.3s] wrote /tmp/normgauge/drivers-normgauge/runs/anchor-COMMUNITY-20261015.json
