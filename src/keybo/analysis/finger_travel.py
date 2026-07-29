@@ -338,15 +338,66 @@ class OffHomeUsage(_PartitionBase):
     usage, not total usage) and a COST half (total does not hurt, off-home does). **This class
     implements only the measurement half.** The cost half is an empirical claim about typing
     time; shipping this metric does not ship it.
+
+    ⚠ **TWO DENOMINATOR CONVENTIONS, both defensible, and the choice moves every number by up to
+    ~0.9 pp — so it is selected explicitly and named in every record.** This is the trap-#9 shape:
+    the numerator is bit-identical between them and only the denominator moves, which is exactly
+    how a share silently changes meaning.
+
+    * ``convention="restricted"`` (**default**) — layout-restricted, space-EXCLUDED: a bigram
+      counts only if BOTH characters sit on the layout. The ``kmstats``/``sfb``/``lsb``/
+      ``bad_scissor`` convention, so this module's shares are comparable with theirs.
+    * ``convention="letter-freqs"`` — every bigram counts (space-touching INCLUDED), the space
+      *character* is skipped, and there is NO layout restriction. This is
+      :class:`keybo.scoring.DislocationScorer`'s ``_letter_freqs`` verbatim, so it is the
+      convention to use when reconciling against that scorer or its ``per_finger_dislocation``.
+
+    On ``keybo-lsb``/blend-v1 the pinky off-home share is **8.0015** restricted and **7.0857**
+    under letter-freqs. Neither is wrong; quoting one as if it were the other is.
+
+    ⚠ **A CONSEQUENCE THAT MUST NOT BE PAPERED OVER: under ``letter-freqs``, ``usage`` sums to
+    ~93.5%, NOT 100%.** The convention keeps corpus mass the board cannot type in the
+    denominator, and that mass belongs to no finger, so the eight cells provably cannot sum to
+    100. It is therefore an exact partition of :meth:`coverage_pct`, not of 100 — and the missing
+    ~6.5 pp is the layout's charset gap, which is real information rather than an error to
+    normalize away. ``restricted`` sums to exactly 100 because its denominator excludes that mass
+    from numerator and denominator alike. :meth:`report` publishes ``coverage_pct`` and
+    ``usage_sums_to`` so the reader can see which regime they are in instead of inferring it from
+    a number that looks a bit low.
     """
 
-    def usage(self, layout: Layout) -> dict[str, float]:
-        """Percent of layout-restricted, space-excluded LETTER mass on each finger's keys.
+    #: The two conventions, so a typo is a KeyError rather than a silently different number.
+    CONVENTIONS = ("restricted", "letter-freqs")
 
-        An exact partition of 100% over the eight fingers.
+    def __init__(self, bigram_freqs: Mapping[str, int], *, convention: str = "restricted") -> None:
+        super().__init__(bigram_freqs)
+        if convention not in self.CONVENTIONS:
+            raise ValueError(
+                f"unknown denominator convention {convention!r}; pick one of "
+                f"{list(self.CONVENTIONS)} — this choice moves every share by up to ~0.9 pp, so "
+                f"it is never inferred"
+            )
+        self.convention = convention
+
+    def usage(self, layout: Layout) -> dict[str, float]:
+        """Percent of the selected convention's LETTER mass on each finger's keys.
+
+        An exact partition of **100% under ``restricted``** and of :meth:`coverage_pct` under
+        ``letter-freqs`` (see the class docstring: that convention leaves untypeable corpus mass
+        in the denominator, and it belongs to no finger).
         """
         charged, total = self._by_row(layout, rows=None)
         return self._as_shares(charged, total)
+
+    def coverage_pct(self, layout: Layout) -> float:
+        """Percent of the convention's denominator that this board can actually type.
+
+        Exactly 100.0 under ``restricted``. Under ``letter-freqs`` it is what :meth:`usage` sums
+        to, so the shortfall is legible as a charset gap rather than read as a bug.
+        """
+        mass = letter_mass(self._bg, layout, convention=self.convention)
+        total = sum(mass.values())
+        return 100.0 * (total - mass.get(_OFF_LAYOUT, 0.0)) / total if total else 0.0
 
     def off_home(self, layout: Layout) -> dict[str, float]:
         """Percent of the SAME total letter mass sitting on each finger's non-home-row keys.
@@ -394,9 +445,12 @@ class OffHomeUsage(_PartitionBase):
             "off_fraction": fraction,
             "off_fraction_note": "per-finger ratio, NOT a partition — do not sum",
             "home_row": HOME_ROW,
-            "denominator": (
-                "layout-restricted, space-EXCLUDED letter mass (each character of each bigram)"
-            ),
+            "convention": self.convention,
+            "denominator": DENOMINATOR_NOTE[self.convention],
+            # Published so a reader never has to infer the regime from a total that looks low:
+            # `restricted` sums to 100, `letter-freqs` sums to coverage_pct (see the docstring).
+            "coverage_pct": self.coverage_pct(layout),
+            "usage_sums_to": sum(usage.values()),
             "pinky": {
                 "usage": pinky_usage,
                 "on_home": sum(on[label] for label in pinkies),
@@ -432,8 +486,13 @@ class OffHomeUsage(_PartitionBase):
         geometry = layout.geometry
         charged = dict.fromkeys(FINGER_ORDER, 0.0)
         total = 0.0
-        for character, mass in letter_mass(self._bg, layout).items():
+        for character, mass in letter_mass(self._bg, layout, convention=self.convention).items():
             total += mass
+            if character == _OFF_LAYOUT:
+                # In the denominator (that IS the letter-freqs convention) but chargeable to no
+                # finger. Skipped explicitly rather than filtered upstream, so the denominator
+                # this partition normalizes by is visibly the one the convention specifies.
+                continue
             position = layout.pos(character)
             on_home_row = position[1] == HOME_ROW
             if rows == "off" and on_home_row:
@@ -446,24 +505,63 @@ class OffHomeUsage(_PartitionBase):
         return charged, total
 
 
-def letter_mass(bigram_freqs: Mapping[str, int], layout: Layout) -> dict[str, float]:
-    """Letter frequency from a bigram table: each character of each bigram gets its frequency.
+def letter_mass(
+    bigram_freqs: Mapping[str, int], layout: Layout, *, convention: str = "restricted"
+) -> dict[str, float]:
+    """Letter frequency from a bigram table, under one of the two named conventions.
 
-    The same construction as ``DislocationScorer._letter_freqs``, but **space-excluded and
-    layout-restricted** to match this module's denominator: a bigram counts only if BOTH its
+    ``"restricted"`` — space-EXCLUDED and layout-restricted: a bigram counts only if BOTH its
     characters are on the layout, so a layout is not flattered by a charset that misses corpus
-    mass. (``DislocationScorer`` charges each character independently of its partner, which is a
-    different — and for its purpose fine — convention. Stated, not hidden.)
+    mass. Matches ``kmstats``/``sfb``/``lsb``/``bad_scissor``.
+
+    ``"letter-freqs"`` — ``keybo.scoring.DislocationScorer._letter_freqs`` verbatim: every bigram
+    contributes, the space *character* is skipped rather than the space-touching bigram, and each
+    character is charged independently of whether its partner is on the layout.
+
+    The two differ by up to ~0.9 pp on a real board (``keybo-lsb`` pinky off-home: 8.0015 vs
+    7.0857 on blend-v1). Both are legitimate; conflating them is what is not.
     """
+    if convention not in OffHomeUsage.CONVENTIONS:
+        raise ValueError(f"unknown convention {convention!r}")
     mass: dict[str, float] = {}
     for bigram, freq in bigram_freqs.items():
-        if len(bigram) != 2 or " " in bigram:
+        if len(bigram) != 2:
             continue
-        if not all(layout.has_key(character) for character in bigram):
-            continue
-        for character in bigram:
-            mass[character] = mass.get(character, 0.0) + float(freq)
+        if convention == "restricted":
+            if " " in bigram or not all(layout.has_key(character) for character in bigram):
+                continue
+            for character in bigram:
+                mass[character] = mass.get(character, 0.0) + float(freq)
+        else:
+            for character in bigram:
+                if character != " ":
+                    mass[character] = mass.get(character, 0.0) + float(freq)
+    if convention == "letter-freqs":
+        # `_letter_freqs` charges characters the layout may not carry; the partition is over the
+        # eight fingers of THIS board, so off-layout characters cannot be charged to a finger —
+        # but they DO stay in the denominator, which is exactly what makes this convention differ.
+        return {c: m for c, m in mass.items() if layout.has_key(c)} | {
+            _OFF_LAYOUT: sum(m for c, m in mass.items() if not layout.has_key(c))
+        }
     return mass
+
+
+#: Denominator-only bucket for ``letter-freqs``: mass the board cannot type. It is part of the
+#: denominator (that is the convention) but belongs to no finger, so it is kept under a key that
+#: is deliberately NOT a finger label — the ``_charge`` guard would reject it, which is the point.
+_OFF_LAYOUT = "<off-layout>"
+
+#: What each convention's denominator actually is, quoted in every emitted record.
+DENOMINATOR_NOTE = {
+    "restricted": (
+        "layout-restricted, space-EXCLUDED letter mass (each character of each bigram whose BOTH "
+        "characters sit on the layout) — the kmstats/sfb/bad_scissor convention"
+    ),
+    "letter-freqs": (
+        "DislocationScorer._letter_freqs verbatim: every bigram contributes, the space CHARACTER "
+        "is skipped, no layout restriction; off-layout mass stays in the denominator"
+    ),
+}
 
 
 def dispersion(shares: Mapping[str, float]) -> dict[str, float]:

@@ -75,15 +75,105 @@ def test_travel_shares_are_an_exact_partition_of_100(bigrams, name):
 
 
 @pytest.mark.parametrize("name", sorted(ALL_LAYOUTS))
-def test_usage_is_an_exact_partition_and_off_plus_on_equals_usage(bigrams, name):
-    """The shared-denominator property: per finger, ``off_home + on_home == usage`` exactly."""
-    off_home = OffHomeUsage(bigrams)
+@pytest.mark.parametrize("convention", OffHomeUsage.CONVENTIONS)
+def test_usage_is_an_exact_partition_and_off_plus_on_equals_usage(bigrams, name, convention):
+    """The shared-denominator property: per finger, ``off_home + on_home == usage`` exactly.
+
+    Under ``restricted`` the eight cells sum to 100. Under ``letter-freqs`` they sum to
+    ``coverage_pct`` instead, because that convention keeps untypeable corpus mass in the
+    denominator — asserted against the published field rather than tolerated as "about 100".
+    """
+    off_home = OffHomeUsage(bigrams, convention=convention)
     layout = _layout(ALL_LAYOUTS[name])
     usage, off, on = off_home.usage(layout), off_home.off_home(layout), off_home.on_home(layout)
-    assert sum(usage.values()) == pytest.approx(100.0, abs=1e-9)
+    expected_sum = off_home.coverage_pct(layout)
+    assert sum(usage.values()) == pytest.approx(expected_sum, abs=1e-9)
     for label in FINGER_ORDER:
         assert off[label] + on[label] == pytest.approx(usage[label], abs=1e-9), label
-    assert sum(off.values()) + sum(on.values()) == pytest.approx(100.0, abs=1e-9)
+    assert sum(off.values()) + sum(on.values()) == pytest.approx(expected_sum, abs=1e-9)
+    if convention == "restricted":
+        assert expected_sum == pytest.approx(100.0, abs=1e-9), (
+            "the restricted denominator drops untypeable mass from BOTH sides, so it must be 100"
+        )
+
+
+@pytest.mark.parametrize("name", sorted(ALL_LAYOUTS))
+def test_letter_freqs_usage_sums_to_coverage_and_NOT_to_100(bigrams, name):
+    """Pinned so the shortfall reads as a charset gap, not as a partition bug someone "fixes".
+
+    The two conventions must also actually DIFFER — if a future edit collapsed them, every
+    reconciliation against ``DislocationScorer`` would silently change meaning.
+    """
+    layout = _layout(ALL_LAYOUTS[name])
+    unrestricted = OffHomeUsage(bigrams, convention="letter-freqs")
+    restricted = OffHomeUsage(bigrams, convention="restricted")
+    coverage = unrestricted.coverage_pct(layout)
+    assert 90.0 < coverage < 100.0, "every board in the field misses some corpus mass"
+    assert sum(unrestricted.usage(layout).values()) == pytest.approx(coverage, abs=1e-9)
+    assert restricted.coverage_pct(layout) == pytest.approx(100.0, abs=1e-9)
+    assert unrestricted.usage(layout)["L-pinky"] != pytest.approx(
+        restricted.usage(layout)["L-pinky"], abs=1e-6
+    ), "the conventions must remain distinguishable"
+
+
+def test_an_unknown_denominator_convention_is_REFUSED_not_guessed(bigrams):
+    with pytest.raises(ValueError, match="unknown denominator convention"):
+        OffHomeUsage(bigrams, convention="unrestricted")
+
+
+#: The parent's independently-computed first cut, on **blend-v1**, ``_letter_freqs`` convention:
+#: ``(pinky usage, on-home, off-home)``. A genuine POSITIVE CONTROL — computed by a different
+#: agent, by a different route, before this module existed.
+PARENT_FIRST_CUT = {
+    "keybo-lsb": (12.82, 5.73, 7.09),
+    "graphite": (15.13, 12.38, 2.75),
+    "semimak": (17.57, 12.50, 5.06),
+    "qwerty30m": (10.82, 7.62, 3.21),
+}
+
+
+@pytest.fixture(scope="module")
+def blend_bigrams():
+    """blend-v1 bigrams — the CLI's PRODUCTION default, which is NOT the ``corpora`` fixture.
+
+    ⚠ ``tests/conftest.py``'s ``corpora`` reads ``data/corpus/`` (iWeb); ``keybo analyze``
+    defaults to ``data/corpus/blend-v1/``. Any test comparing against a number quoted from the
+    CLI or from a campaign board must load blend-v1 explicitly — reusing ``corpora`` silently
+    compares two different corpora, which is how a reproduction "fails" for the wrong reason.
+    (It did here first time round: semimak read 17.23 against an expected 17.57.)
+    """
+    from keybo.data.corpus import load_frequencies
+    from tests.conftest import CORPUS_DIR
+
+    return load_frequencies(str(CORPUS_DIR / "blend-v1" / "bigrams.txt"))
+
+
+@pytest.mark.parametrize("name", sorted(PARENT_FIRST_CUT))
+def test_the_letter_freqs_convention_REPRODUCES_the_independent_first_cut(blend_bigrams, name):
+    """Positive control: agreement with numbers this code did not produce.
+
+    Reproduces to <0.005 pp, which identifies the parent's convention as ``_letter_freqs``
+    exactly. The default ``restricted`` convention does NOT reproduce it (keybo-lsb reads 8.00 vs
+    7.09) — that gap is a denominator choice, and it is why the convention is explicit.
+    """
+    layout = _layout(ALL_LAYOUTS[name])
+    pinky = OffHomeUsage(blend_bigrams, convention="letter-freqs").report(layout)["pinky"]
+    expected_usage, expected_on, expected_off = PARENT_FIRST_CUT[name]
+    assert pinky["usage"] == pytest.approx(expected_usage, abs=0.01)
+    assert pinky["on_home"] == pytest.approx(expected_on, abs=0.01)
+    assert pinky["off_home"] == pytest.approx(expected_off, abs=0.01)
+
+
+def test_the_restricted_convention_does_NOT_reproduce_it_and_that_is_the_whole_point(
+    blend_bigrams,
+):
+    """If both conventions agreed, making the choice explicit would be pointless ceremony."""
+    layout = _layout(ALL_LAYOUTS["keybo-lsb"])
+    restricted = OffHomeUsage(blend_bigrams, convention="restricted").report(layout)["pinky"]
+    assert restricted["off_home"] == pytest.approx(8.0015, abs=0.01)
+    assert abs(restricted["off_home"] - PARENT_FIRST_CUT["keybo-lsb"][2]) > 0.5, (
+        "the two conventions differ by ~0.9 pp on this board — a real fork, not rounding"
+    )
 
 
 def test_report_cannot_hand_back_shares_without_the_absolute_total(bigrams):
