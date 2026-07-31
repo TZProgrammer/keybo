@@ -536,7 +536,9 @@ def layout_ranking_tau(
 # --- prediction + baseline --------------------------------------------------------------
 
 
-def _predict_cells(model, cells: list[Cell], geometry: Geometry) -> np.ndarray:
+def _predict_cells(
+    model, cells: list[Cell], geometry: Geometry, direction: bool = False
+) -> np.ndarray:
     """g(geometry, wpm) + b(ngram) per cell, in MILLISECONDS — the model's full prediction.
 
     The practice term b (stored in the model's training metadata, when trained with it)
@@ -547,13 +549,18 @@ def _predict_cells(model, cells: list[Cell], geometry: Geometry) -> np.ndarray:
     b lives in the model's target space (it was backfit there), so the order is fixed:
     add b to the raw prediction FIRST, then convert the sum to ms. For a LOGRAT model
     the reverse order would apply a log-space offset to a millisecond value.
+
+    ``direction`` MUST match the frame the model was trained on: a widened model expects the
+    22-/50-column matrix. Featurizing a widened model with the narrow frame relocates the exact
+    train/serve skew the version stamp exists to prevent into this harness — so the caller
+    threads it explicitly rather than inferring it.
     """
     featurize = (
         trigram_features_from_positions
         if len(cells[0].positions) == 3
         else bigram_features_from_positions
     )
-    X = np.vstack([featurize(geometry, c.positions, wpm=c.wpm) for c in cells])
+    X = np.vstack([featurize(geometry, c.positions, wpm=c.wpm, direction=direction) for c in cells])
     pred = model.predict(X)
     practice = (model.metadata.extra.get("training") or {}).get("practice_term")
     if practice:
@@ -616,8 +623,15 @@ def validate(
     geometry: Geometry = ROW_STAGGERED_30,
     progress: bool = False,
     baseline_buckets: Mapping[int, float] | None = None,
+    direction: bool = False,
 ) -> dict:
     """Run the full leave-one-layout-out experiment; returns the report dict.
+
+    ``direction=True`` trains AND evaluates every fold on the widened order-aware frame
+    (``FEATURE_VERSION_DIRECTION``). It is threaded into both the fold model and
+    :func:`_predict_cells` together — training and eval must agree on the frame or the model
+    is scored on a matrix it was not fitted for. The narrow default reproduces the served
+    frame exactly, which is what makes a narrow-vs-widened A/B a clean single-variable change.
 
     ``baseline_buckets`` (bucket start wpm -> rho, e.g. an incumbent's ``bucket_rhos``) turns on the
     high-wpm non-regression VERDICT: each fold/seed gains a ``high_wpm_gate`` block from
@@ -666,6 +680,7 @@ def validate(
             **cell_kw,
             "n_boot": n_boot,
             "train_params": dict(train_params or {}),
+            "direction": bool(direction),
         },
         "ceilings": {},
         "folds": {},
@@ -697,10 +712,12 @@ def validate(
         fold = report["folds"].setdefault(holdout, {"n_cells": len(test_cells), "seeds": []})
 
         params = {**(train_params or {}), "random_state": seed, "n_jobs": 1}
-        model = train_fn(train_rows, target_wpm=(wpm_lo + wpm_hi) / 2, **params)
+        model = train_fn(
+            train_rows, target_wpm=(wpm_lo + wpm_hi) / 2, direction=direction, **params
+        )
 
         obs = np.array([c.obs for c in test_cells])
-        pred = _predict_cells(model, test_cells, geometry)
+        pred = _predict_cells(model, test_cells, geometry, direction=direction)
         rho = _centered_spearman(test_cells, pred, obs)
         ceiling = report["ceilings"][holdout]
         train_cells = build_cells(train_rows, **cell_kw)
@@ -709,7 +726,7 @@ def validate(
         mae_model = float(np.mean(np.abs(pred - obs)))
         mae_baseline = float(np.mean(np.abs(base_pred - obs)))
 
-        pred_all = _predict_cells(model, all_cells, geometry)
+        pred_all = _predict_cells(model, all_cells, geometry, direction=direction)
         tau_all4 = layout_ranking_tau(obs_table, aggregate_layout_table(all_cells, pred_all))
 
         bucket_rhos = _per_bucket_rho(test_cells, pred, obs)
