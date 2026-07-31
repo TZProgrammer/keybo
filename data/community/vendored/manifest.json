@@ -1,5 +1,5 @@
 {
- "_note": "Declared identity for the vendored community tool data. GENERATED from the bytes by the snippet in PROVENANCE.md \u2014 never hand-transcribed. Identity was already ENFORCED indirectly by the KAN-1 parity goldens (a plausible-sibling substitution is caught 8/8); this file DECLARES it, so a swap can be named rather than merely detected.",
+ "_note": "Declared identity for the vendored community tool data. GENERATED from the bytes by the snippet in PROVENANCE.md \u2014 never hand-transcribed. Identity was already ENFORCED indirectly by the KAN-1 parity goldens (a plausible-sibling substitution is caught 8/8); this file DECLARES it, so a swap can be named rather than merely detected. Upstream org verified against the pinned checkouts' actual git remotes (github.com/o-x-e-y) after a hand-typed O-X-L typo shipped in the first cut \u2014 the metadata fields were transcribed even though the digests were generated, and the typo landed in the attribution document itself.",
  "_added": "2026-07-31 (VENDPROV-1) \u2014 closes the KAN-1 DEVIATION deliverable \"with provenance notes\"",
  "_verify": "python -c \"import gzip,hashlib,pathlib;[print(p.name,hashlib.sha256(p.read_bytes()).hexdigest()) for p in sorted(pathlib.Path('data/community/vendored').glob('*.json.gz'))]\"",
  "files": {
@@ -25,7 +25,7 @@
    "bytes": 343444,
    "sha256_container": "42844251345fca404ff8aa421faf166b56dbc852eec475f9e32ad606ed2cf581",
    "sha256_payload": "12fe4dbcd7d42a176df03ddffc4cffa99a60d8cfdbdbc3d21eec46af28b3f537",
-   "upstream": "github.com/O-X-L/oxeylyzer",
+   "upstream": "github.com/o-x-e-y/oxeylyzer",
    "pin": "d015a169",
    "licence": "Apache-2.0 (ATTRIBUTION REQUIRED)",
    "content": "third-party upstream blob"
@@ -34,7 +34,7 @@
    "bytes": 373364,
    "sha256_container": "c7bcfd6f4c11749db4fabf76b9d5be74af8f902d670d3505fe2c6a2f9115bad5",
    "sha256_payload": "bff9e2f088999364a9590590cdf9f21935b672dd2e74a8890aca752f7e39af97",
-   "upstream": "github.com/O-X-L/oxeylyzer-2",
+   "upstream": "github.com/o-x-e-y/oxeylyzer-2",
    "pin": "52b271a3",
    "licence": "NONE FOUND \u2014 no redistribution grant on record",
    "content": "third-party upstream blob"

@@ -2,7 +2,7 @@ Attribution notices for third-party content vendored in this directory.
 (Added 2026-07-31, VENDPROV-1. See PROVENANCE.md for full derivations and manifest.json for digests.)
 
 oxeylyzer1-english.json.gz
-  Source:   the oxeylyzer project (github.com/O-X-L/oxeylyzer), v0.2.0, commit d015a169,
+  Source:   the oxeylyzer project (github.com/o-x-e-y/oxeylyzer), v0.2.0, commit d015a169,
             file oxeylyzer-core/static/language_data/english.json — vendored verbatim (gzipped).
   Licence:  Apache License 2.0. Redistribution permitted; this NOTICE provides the attribution
             the licence requires. No modifications were made to the payload.
@@ -11,7 +11,7 @@ oxeylyzer1-english.json.gz
             pinned by sha256 in manifest.json.
 
 oxeylyzer2-english.json.gz
-  Source:   the oxeylyzer-2 project (github.com/O-X-L/oxeylyzer-2), commit 52b271a3,
+  Source:   the oxeylyzer-2 project (github.com/o-x-e-y/oxeylyzer-2), commit 52b271a3,
             file data/english.json — vendored verbatim (gzipped).
   Licence:  NONE FOUND in the upstream tree (no LICENSE/COPYING; 6 Cargo.toml, 0 license fields).
             Default all-rights-reserved: there is NO redistribution grant on record for this file.

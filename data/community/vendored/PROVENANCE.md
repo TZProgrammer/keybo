@@ -1,11 +1,10 @@
 # `data/community/vendored/` — provenance, licences, and what is *not* reproducible
 
-> **DRAFT — NOT COMMITTED.** Written by the `vendored-provenance` subagent (2026-07-31) for review.
-> Intended destination: `data/community/vendored/PROVENANCE.md`. Publishing it is a shared-state
-> write and stays user-gated. Format follows `data/corpus/blend-v1/PROVENANCE.md`.
->
-> **Two items need a human decision before this ships** — see §5 (oxeylyzer-2 has no licence;
-> oxeylyzer-1 is Apache-2.0 and currently un-attributed).
+> Committed 2026-07-31 on branch `vendored-provenance-record` (WIRE-1/VENDPROV-1),
+> closing the KAN-1 DEVIATION deliverable "with provenance notes" (registered 2026-07-13,
+> delivered 18 days later). The oxeylyzer-2 licence question remains OPEN and user-gated —
+> see NOTICE. An earlier draft header here said "NOT COMMITTED"; committing locally is
+> reversible and was never the gated act — pushing/publishing is.
 
 The four community-tool corpora that the `genkey` / `oxeylyzer-1` / `oxeylyzer-2` gauges score on,
 plus the keymeow-format corpus used by the G3 parity gate. All four were added by a single commit,
@@ -118,8 +117,7 @@ git -C ~/gk-parity/oxeylyzer-2 show 52b271a3:data/english.json                  
 `oxeylyzer1-english.json.gz` was taken from the installed data dir
 `~/.local/share/oxeylyzer/static/language_data/english.json` (identical to the repo copy).
 
-⚠ **`oxeylyzer1-english.json.gz` internally carries `"name": "shai"`, not `"english"`.** Upstream
-ships *both* `english.json` (`char_total` 449,763,627) and `shai.json` (`char_total` 449,763,611) —
+⚠ **`oxeylyzer1-english.json.gz` internally carries `"name": "shai"`, not `"english"`.** Upstream ships *both* files — `oxeylyzer-core/static/language_data/english.json` and `static/language_data/shai.json`, NOT siblings in one directory — `english.json` (`char_total` 449,763,627) and `shai.json` (`char_total` 449,763,611) —
 different files, both self-identifying as `shai`, differing by ~16 characters of total mass. The
 filename asserts a provenance the payload does not confirm; the sha256 in §4 is the fact.
 
@@ -235,10 +233,22 @@ git clone https://github.com/o-x-e-y/oxeylyzer-2 && git -C oxeylyzer-2 checkout 
 #   sources: oxeylyzer/oxeylyzer-core/static/language_data/english.json
 #            oxeylyzer-2/data/english.json
 
-# 3. Re-vendor. `gzip -9 -c` (stdout) is required for byte-identical output: `gzip -9 <file>`
-#    differs by one byte and Python's gzip level 9 produces a different deflate stream.
+# 3. Re-vendor. `-9` and the ORIGINAL FNAME+MTIME are what matter; `-c` is NOT required.
+#    CORRECTED 2026-07-31 (prov-check): an earlier revision of this file claimed `gzip -9 <file>`
+#    "differs by one byte". That is FALSE for all four — `cmp -l` reports 0 differing bytes,
+#    because gzip stores only the BASENAME in FNAME, so the redirected and in-place forms agree.
+#    The negative control was the one claim never run. What DOES differ by exactly one byte:
+#      * `gzip -9` vs plain `gzip`  -> the XFL byte at offset 9 (0x02 vs 0x00)
+#      * a 1-second mtime delta     -> offset 5
+#    The observation was real and got misattributed to the missing `-c` instead of a dropped `-9`.
+#    ⚠ TOOL-SPECIFIC: verified with gzip(1) 1.12. A Python `gzip.GzipFile(compresslevel=9)`
+#    reconstruction does NOT reproduce these bytes even with FNAME, MTIME and the OS byte
+#    restored, because zlib's deflate output differs from gzip(1)'s. A reader reaching for
+#    Python — this repo's own language — would wrongly conclude the files are unreproducible.
 cp <source> <FNAME-from-the-table-in-§4>
-touch -d "@<MTIME-from-the-table-in-§4>" <FNAME>
+touch -d "<MTIME-from-§4, ISO-8601 — NO `@` prefix; `@` demands a UNIX epoch,
+#          which this record does not publish. Or read it straight from the gz
+#          header, offset 4-7 little-endian.>" <FNAME>
 gzip -9 -c <FNAME> > data/community/vendored/<name>.json.gz
 ```
 
@@ -273,3 +283,8 @@ convention gap, and it stood for 18 days. Identity was *enforced* the whole time
 plausible sibling from any upstream is caught 8-of-8 by the KAN-1 parity goldens) but never
 *declared*: no digest was recorded anywhere. `manifest.json` beside this file now declares them.
 
+
+> Recipe note (2026-07-31): `touch -d` takes ISO-8601 directly; the `@` prefix demands a UNIX
+> epoch, which this record does not publish — a literal run of the earlier `@`-form returned
+> `invalid date format`. A reproducer can also read the epoch straight from the gz header
+> (offset 4-7, little-endian).
