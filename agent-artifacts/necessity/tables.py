@@ -185,6 +185,32 @@ def main() -> int:
           f"**{c3v['asym4x_reproduces_both_legs']}**. Its cross ±2 replicate sd contains the "
           f"archive's +0.2184: **{c3v['asym4x_cross_ci_contains_archive']}**.\n")
 
+    bnd = load(sys.argv[4]) if len(sys.argv) > 4 else None
+    if bnd:
+        bv = bnd["verdict"]
+        b1, b2, ar = bv["B1_useed_matched_arm"], bv["B2_within_matched_arm"], bv["archive"]
+        out.append("### T9 — BOUNDING: the per-seed-matched arm (bracket reopened) and the quantitative bound\n")
+        out.append("| arm | ACHIEVED u_B | ACHIEVED u_seed_geo | within | cross |")
+        out.append("|---|---|---|---|---|")
+        out.append(f"| `archive-x400` | {ar['u_B']:.4f} | {ar['u_seed_geo']:.4f} | "
+                   f"**{fmt(ar['within'])}** | **{fmt(ar['cross'])}** |")
+        out.append(f"| B1 `u_seed`-matched random (R={b1['within']['n']}) | "
+                   f"{b1['achieved_u_B']['mean']:.4f} | {b1['u_seed_geo']['mean']:.4f} | "
+                   f"{fmt(b1['within']['mean'])} ± {b1['within']['sd']:.4f} | "
+                   f"{fmt(b1['cross']['mean'])} ± {b1['cross']['sd']:.4f} |")
+        out.append(f"| B2 `within`-matched random (R={b2['within']['n']}) | "
+                   f"**{b2['achieved_u_B']['mean']:.4f}** | {b2['u_seed_geo']['mean']:.4f} | "
+                   f"{fmt(b2['within']['mean'])} ± {b2['within']['sd']:.4f} | "
+                   f"{fmt(b2['cross']['mean'])} ± {b2['cross']['sd']:.4f} |")
+        out.append(f"\nB1 bracketed: **{b1['bracketed']}**, `u_seed` miss "
+                   f"{b1['rel_miss_on_u_seed']:+.4f}. At MATCHED per-seed spread the archive leads by "
+                   f"**{fmt(b1['archive_minus_arm_within'])}** on the within leg and "
+                   f"**{fmt(b1['archive_minus_arm_cross'])}** on the cross leg.\n")
+        out.append(f"B2: a random pool needs `u_B` = **{b2['achieved_u_B']['mean']:.4f}** = "
+                   f"**{b2['u_B_ratio_random_over_archive']:.2f}×** the archive's {ar['u_B']:.4f} to "
+                   f"reach the archive's within-reliability {fmt(ar['within'])} — and its cross-source "
+                   f"rho there is {fmt(b2['cross']['mean'])}, i.e. the two legs do NOT move together.\n")
+
     print("\n".join(out))
     return 0
 

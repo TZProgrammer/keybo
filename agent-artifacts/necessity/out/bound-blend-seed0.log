@@ -1,0 +1,32 @@
+archive: u_A=0.0399 u_B=0.1605 q=0.2488 within=+0.9647 u_seed_geo=0.1617
+
+[B1 match archive u_seed_geo] bisecting u_B for target 0.1617
+  bracket check: u_B=0.04012 -> 0.1021 | u_B=0.32093 -> 0.3297
+  u_B=0.11347 -> 0.1408 (target 0.1617)
+  u_B=0.19083 -> 0.2112 (target 0.1617)
+  u_B=0.14715 -> 0.1707 (target 0.1617)
+  u_B=0.12921 -> 0.1528 (target 0.1617)
+  u_B=0.13789 -> 0.1592 (target 0.1617)
+
+[B1] replicating at the corrected u_B = 0.13789
+  cross=+0.0395 within=+0.6121 u_seed_geo=0.1619 u_A=0.0337 u_B=0.1376 q=0.2451
+  cross=+0.0576 within=+0.6490 u_seed_geo=0.1606 u_A=0.0341 u_B=0.1393 q=0.2446
+  cross=+0.0844 within=+0.6129 u_seed_geo=0.1645 u_A=0.0347 u_B=0.1404 q=0.2468
+  cross=+0.0763 within=+0.6298 u_seed_geo=0.1583 u_A=0.0339 u_B=0.1354 q=0.2503
+
+[B2 match archive within-reliability] bisecting u_B for target 0.9647
+  bracket check: u_B=0.16046 -> 0.6984 | u_B=0.64186 -> 0.9665
+  u_B=0.32093 -> 0.9079 (target 0.9647)
+  u_B=0.45386 -> 0.9478 (target 0.9647)
+
+[B2] replicating at u_B = 0.64186
+  cross=+0.2760 within=+0.9657 u_A=0.1556 u_B=0.5941 q=0.2619
+  cross=+0.2754 within=+0.9656 u_A=0.1680 u_B=0.6033 q=0.2784
+  cross=+0.2896 within=+0.9653 u_A=0.1661 u_B=0.5931 q=0.2801
+  cross=+0.3254 within=+0.9689 u_A=0.1513 u_B=0.6058 q=0.2498
+
+=== BOUNDS ===
+  B1 archive within +0.9647 vs u_seed-matched random +0.6259 (sd 0.0174) at u_seed_geo 0.1613 vs archive 0.1617 -> gap +0.3388
+  B2 a random pool needs u_B = 0.5991 = 3.73x the archive's 0.1605 to reach within +0.9647; its cross there is +0.2916 (archive +0.2184)
+
+wrote /tmp/necesspool-out/bound-blend-seed0.json (207.1s)
