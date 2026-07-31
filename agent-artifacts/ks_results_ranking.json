@@ -1,0 +1,203 @@
+{
+  "seeds": [
+    0,
+    1,
+    2
+  ],
+  "high_wpm_floor": 80,
+  "arms": {
+    "narrow": {},
+    "widened": {
+      "direction": true
+    },
+    "kitchensink": {
+      "kitchensink": true
+    }
+  },
+  "scope": {
+    "n_bistroke_rows": 2202,
+    "n_tristroke_rows": 16643,
+    "lolo_folds": [
+      "azerty",
+      "dvorak",
+      "qwerty",
+      "qwertz"
+    ]
+  },
+  "ranking": {
+    "bigram": {
+      "n_layouts": 15,
+      "fit_widened": {
+        "qwerty": 64542503849.92276,
+        "dvorak": 63013951844.71137,
+        "colemak": 63123005680.59038,
+        "graphite": 63133523376.966194,
+        "semimak": 63153814820.07422,
+        "keybo-c30m": 62709176579.299484,
+        "keybo-lsb": 62507250740.94079,
+        "p16-balance": 62850400104.20077,
+        "p13stab-win": 62299903715.57247,
+        "qwerty30m": 65037301397.86571,
+        "flagship-c3": 62662457447.89663,
+        "archive-1843": 62637995981.82674,
+        "archive-1846": 62628273737.35936,
+        "lsb-sib": 62615760568.53872,
+        "keybo-lsb+lm": 62542625630.39489
+      },
+      "fit_kitchensink": {
+        "qwerty": 64568518343.76183,
+        "dvorak": 62859059824.17655,
+        "colemak": 62946434150.2479,
+        "graphite": 62947846462.95628,
+        "semimak": 62974500921.54237,
+        "keybo-c30m": 62435234942.28228,
+        "keybo-lsb": 62237809414.23973,
+        "p16-balance": 62552570391.5885,
+        "p13stab-win": 62162026325.19607,
+        "qwerty30m": 65068241800.33398,
+        "flagship-c3": 62502875319.07352,
+        "archive-1843": 62488501485.82716,
+        "archive-1846": 62485007682.5689,
+        "lsb-sib": 62477350247.12886,
+        "keybo-lsb+lm": 62274224039.492874
+      },
+      "order_widened": [
+        "p13stab-win",
+        "keybo-lsb",
+        "keybo-lsb+lm",
+        "lsb-sib",
+        "archive-1846",
+        "archive-1843",
+        "flagship-c3",
+        "keybo-c30m",
+        "p16-balance",
+        "dvorak",
+        "colemak",
+        "graphite",
+        "semimak",
+        "qwerty",
+        "qwerty30m"
+      ],
+      "order_kitchensink": [
+        "p13stab-win",
+        "keybo-lsb",
+        "keybo-lsb+lm",
+        "keybo-c30m",
+        "lsb-sib",
+        "archive-1846",
+        "archive-1843",
+        "flagship-c3",
+        "p16-balance",
+        "dvorak",
+        "colemak",
+        "graphite",
+        "semimak",
+        "qwerty",
+        "qwerty30m"
+      ],
+      "kendall_tau": 0.9238095238095239,
+      "spearman_rho": 0.9642857142857141,
+      "n_positions_moved": 5,
+      "moved": [
+        "keybo-c30m",
+        "flagship-c3",
+        "archive-1843",
+        "archive-1846",
+        "lsb-sib"
+      ],
+      "argmin_widened": "p13stab-win",
+      "argmin_kitchensink": "p13stab-win",
+      "argmin_stable": true,
+      "median_adjacent_gap_pct": 0.09574648134379127,
+      "argmin_margin_pct": 0.3328207798120372
+    },
+    "trigram": {
+      "n_layouts": 15,
+      "fit_widened": {
+        "qwerty": 60707884676.82634,
+        "dvorak": 59383490214.1293,
+        "colemak": 59364951604.45197,
+        "graphite": 59655892436.54107,
+        "semimak": 59441755394.07828,
+        "keybo-c30m": 59404031085.05694,
+        "keybo-lsb": 59260083551.61926,
+        "p16-balance": 59375682203.36601,
+        "p13stab-win": 58623548474.32253,
+        "qwerty30m": 61358289806.90157,
+        "flagship-c3": 59246263524.04314,
+        "archive-1843": 59254403299.67306,
+        "archive-1846": 59286198777.07339,
+        "lsb-sib": 59245099281.748344,
+        "keybo-lsb+lm": 59277680605.849075
+      },
+      "fit_kitchensink": {
+        "qwerty": 60682205807.81918,
+        "dvorak": 59402357512.23503,
+        "colemak": 59328575103.54506,
+        "graphite": 59681494606.54046,
+        "semimak": 59461917865.56848,
+        "keybo-c30m": 59386768609.63181,
+        "keybo-lsb": 59226104262.66787,
+        "p16-balance": 59332383159.60275,
+        "p13stab-win": 58641014241.775406,
+        "qwerty30m": 61332843912.10311,
+        "flagship-c3": 59260187571.25234,
+        "archive-1843": 59288701939.23483,
+        "archive-1846": 59304291279.881805,
+        "lsb-sib": 59267543894.322975,
+        "keybo-lsb+lm": 59240506223.20017
+      },
+      "order_widened": [
+        "p13stab-win",
+        "lsb-sib",
+        "flagship-c3",
+        "archive-1843",
+        "keybo-lsb",
+        "keybo-lsb+lm",
+        "archive-1846",
+        "colemak",
+        "p16-balance",
+        "dvorak",
+        "keybo-c30m",
+        "semimak",
+        "graphite",
+        "qwerty",
+        "qwerty30m"
+      ],
+      "order_kitchensink": [
+        "p13stab-win",
+        "keybo-lsb",
+        "keybo-lsb+lm",
+        "flagship-c3",
+        "lsb-sib",
+        "archive-1843",
+        "archive-1846",
+        "colemak",
+        "p16-balance",
+        "keybo-c30m",
+        "dvorak",
+        "semimak",
+        "graphite",
+        "qwerty",
+        "qwerty30m"
+      ],
+      "kendall_tau": 0.8476190476190477,
+      "spearman_rho": 0.9392857142857142,
+      "n_positions_moved": 7,
+      "moved": [
+        "dvorak",
+        "keybo-c30m",
+        "keybo-lsb",
+        "flagship-c3",
+        "archive-1843",
+        "lsb-sib",
+        "keybo-lsb+lm"
+      ],
+      "argmin_widened": "p13stab-win",
+      "argmin_kitchensink": "p13stab-win",
+      "argmin_stable": true,
+      "median_adjacent_gap_pct": 0.03214241041937741,
+      "argmin_margin_pct": 1.0602408479214709
+    }
+  }
+}
