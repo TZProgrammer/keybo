@@ -17,7 +17,7 @@ But the answer splits by leg, and that split is the report's main contribution:
 **A null was acceptable and this is not one.** Every number below is generated from the emitted
 JSON by `tables.py`; no cell is hand-transcribed.
 
-- **Branch** `necessity-pool`, **HEAD** `74ee9ac` (stated after the final commit via `git rev-parse`), base `e6a5b9e`.
+- **Branch** `necessity-pool`, **HEAD** `4bfe010` (`git rev-parse HEAD` after the final commit; this line was corrected in the follow-up commit that carries it), base `e6a5b9e`.
 - Worktree `/tmp/necesspool`; drivers + artifacts committed under `agent-artifacts/necessity/`.
 - Nothing pushed, nothing merged, no layout adopted, no weight flipped, `PREREGISTRATIONS.md` untouched.
 - **Preregistration committed at `eb2fb04` BEFORE any new score existed** — prediction, verdict and five named falsifiers.
