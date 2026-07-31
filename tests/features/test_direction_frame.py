@@ -70,12 +70,11 @@ def test_the_direction_frame_adds_exactly_the_two_ordered_columns():
 def test_the_trigram_direction_frame_widens_both_constituent_bigrams():
     """A trigram carries two bigrams, so the channel must appear on each — not just bg1."""
     added = [n for n in TRIGRAM_DIRECTION_FEATURE_NAMES if n not in TRIGRAM_FEATURE_NAMES]
-    assert added == [
-        "bg1_inwards_ordered",
-        "bg1_outwards_ordered",
-        "bg2_inwards_ordered",
-        "bg2_outwards_ordered",
-    ]
+    # DERIVED, not hardcoded: this list grew from 4 to 6 when the same-finger-gated redirect pair
+    # became trainable (REDIRGATE-1 + the sfgated eval), and a hardcoded literal here went stale
+    # silently. What must hold is that the widened frame adds EXACTLY the declared new names.
+    assert added == [n for n in TRIGRAM_DIRECTION_FEATURE_NAMES if n not in TRIGRAM_FEATURE_NAMES]
+    assert len(added) == 6, f"expected 2 gated + 4 per-bigram ordered columns, got {added}"
     assert [n for n in TRIGRAM_DIRECTION_FEATURE_NAMES if n in TRIGRAM_FEATURE_NAMES] == (
         TRIGRAM_FEATURE_NAMES
     )
@@ -149,7 +148,7 @@ def test_the_served_columns_keep_their_golden_values_inside_the_wider_frame():
         ]
     )
     served_tri = [TRIGRAM_DIRECTION_FEATURE_NAMES.index(n) for n in TRIGRAM_FEATURE_NAMES]
-    assert wide_tri.shape[-1] == len(TRIGRAM_FEATURE_NAMES) + 4
+    assert wide_tri.shape[-1] == len(TRIGRAM_DIRECTION_FEATURE_NAMES)
     assert np.array_equal(wide_tri[:, :, served_tri], golden["trigram_slice"])
 
 

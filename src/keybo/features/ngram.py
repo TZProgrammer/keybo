@@ -168,6 +168,14 @@ def _trigram_row_from_positions(
     contract as the bigram frame: the default is byte-identical to the served columns.
     """
     row = _trigram_level_from_positions(geometry, a, b, c)
+    if direction:
+        # The same-finger-gated redirect pair (REDIRGATE-1), declared in
+        # TRIGRAM_DIRECTION_FEATURE_NAMES. Emitted here and NOT in
+        # _trigram_level_from_positions, because that function feeds the version-locked served
+        # frame: adding a key there would widen it silently for all three shipped
+        # trigram_cond31 models. Key ORDER matters -- the schema puts these straight after the
+        # trigram-level block, and a test pins list(row) == the name list.
+        row.update(trigram_direction_row(geometry, a, b, c))
     for name, value in _placement_row_from_positions(geometry, a, b, direction=direction).items():
         row[f"bg1_{name}"] = value
     for name, value in _placement_row_from_positions(geometry, b, c, direction=direction).items():

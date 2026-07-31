@@ -119,8 +119,19 @@ TRIGRAM_FEATURE_NAMES = [
 #: trigram-level ``redirect``/``bad_redirect`` columns are already order-aware (they compare
 #: ``|column|`` between successive keys), so what this adds is per-bigram direction, not a
 #: first direction signal at the trigram level.
+#: The same-finger-GATED redirect pair (REDIRGATE-1). Appended to the WIDENED trigram list only —
+#: never to :data:`TRIGRAM_FEATURE_NAMES`, because that list IS the version-locked served frame all
+#: three shipped ``trigram_cond31`` models carry. ``_TRIGRAM_LEVEL_NAMES`` is shared by both lists,
+#: so these must NOT go there either: adding a column to the shared prefix would silently widen the
+#: served frame.
+_TRIGRAM_GATED_NAMES = [
+    "redirect_sfgated",
+    "bad_redirect_sfgated",
+]
+
 TRIGRAM_DIRECTION_FEATURE_NAMES = [
     *_TRIGRAM_LEVEL_NAMES,
+    *_TRIGRAM_GATED_NAMES,
     *(f"bg1_{n}" for n in (*_BIGRAM_PLACEMENT_NAMES, *_BIGRAM_DIRECTION_NAMES)),
     *(f"bg2_{n}" for n in (*_BIGRAM_PLACEMENT_NAMES, *_BIGRAM_DIRECTION_NAMES)),
     "wpm",
