@@ -49,7 +49,17 @@ from keybo.features import (
     bigram_features_from_positions,
     trigram_features_from_positions,
 )
-from keybo.features.schema import FEATURE_VERSION
+from keybo.features.schema import (
+    BIGRAM_DIRECTION_FEATURE_NAMES,
+    BIGRAM_FEATURE_NAMES,
+    BIGRAM_KITCHENSINK_FEATURE_NAMES,
+    FEATURE_VERSION,
+    FEATURE_VERSION_DIRECTION,
+    FEATURE_VERSION_KITCHENSINK,
+    TRIGRAM_DIRECTION_FEATURE_NAMES,
+    TRIGRAM_FEATURE_NAMES,
+    TRIGRAM_KITCHENSINK_FEATURE_NAMES,
+)
 from keybo.geometry import ROW_STAGGERED_30, Geometry
 from keybo.models.base import ModelMetadata
 from keybo.models.xgboost_model import XGBoostTypingModel
@@ -84,8 +94,26 @@ def _group_target(durations: list[int], wpm: int, target_space: str) -> float:
     return iqr_average(durations)
 
 
-def _rows_to_examples(row: StrokeRow, geometry: Geometry, ngram: str, target_space: str = "MS"):
-    """Yield (feature_vector, target) per WPM group in a stroke row."""
+def _rows_to_examples(
+    row: StrokeRow,
+    geometry: Geometry,
+    ngram: str,
+    target_space: str = "MS",
+    direction: bool = False,
+    kitchensink: bool = False,
+):
+    """Yield (feature_vector, target) per WPM group in a stroke row.
+
+    ``direction=False`` (the default) builds the served frame byte for byte. ``direction=True``
+    builds the widened order-aware frame (:data:`BIGRAM_DIRECTION_FEATURE_NAMES` /
+    :data:`TRIGRAM_DIRECTION_FEATURE_NAMES`) — the same switch the feature pipeline exposes,
+    threaded here so a model can be TRAINED on the wider frame, not only scored on it.
+
+    ``kitchensink=True`` builds the KITCHEN-SINK frame (the widened frame plus the twelve
+    external-project channels; :data:`BIGRAM_KITCHENSINK_FEATURE_NAMES` /
+    :data:`TRIGRAM_KITCHENSINK_FEATURE_NAMES`). It implies ``direction``, so the three trainable
+    frames are narrow / widened / kitchen-sink and each has its own version stamp.
+    """
     by_wpm: dict[int, list[int]] = defaultdict(list)
     for wpm, duration, _pid, _hold in row.samples:
         by_wpm[wpm].append(duration)
@@ -93,9 +121,13 @@ def _rows_to_examples(row: StrokeRow, geometry: Geometry, ngram: str, target_spa
     for wpm, durations in by_wpm.items():
         target = _group_target(durations, wpm, target_space)
         if ngram == "bigram":
-            vec = bigram_features_from_positions(geometry, row.positions, wpm=wpm)
+            vec = bigram_features_from_positions(
+                geometry, row.positions, wpm=wpm, direction=direction, kitchensink=kitchensink
+            )
         else:
-            vec = trigram_features_from_positions(geometry, row.positions, wpm=wpm)
+            vec = trigram_features_from_positions(
+                geometry, row.positions, wpm=wpm, direction=direction, kitchensink=kitchensink
+            )
         yield vec, target, len(durations)
 
 
@@ -107,6 +139,8 @@ def build_training_matrix(
     progress: bool = False,
     target_space: str = "MS",
     with_layouts: bool = False,
+    direction: bool = False,
+    kitchensink: bool = False,
 ) -> tuple[np.ndarray, ...]:
     """Turn stroke rows into (X, y) using the shared feature pipeline.
 
@@ -126,14 +160,28 @@ def build_training_matrix(
     computed here and simply discarded.
     """
     X, y, _ngrams, layouts, _n = _build_matrix_full(
-        rows, ngram=ngram, geometry=geometry, progress=progress, target_space=target_space
+        rows,
+        ngram=ngram,
+        geometry=geometry,
+        progress=progress,
+        target_space=target_space,
+        direction=direction,
+        kitchensink=kitchensink,
     )
     if with_layouts:
         return X, y, layouts
     return X, y
 
 
-def _build_matrix_full(rows, ngram, geometry, progress=False, target_space="MS"):
+def _build_matrix_full(
+    rows,
+    ngram,
+    geometry,
+    progress=False,
+    target_space="MS",
+    direction=False,
+    kitchensink=False,
+):
     """(X, y, example ngram ids, example layouts, example raw-sample counts).
 
     ``y`` is already in ``target_space`` (per-sample aggregation for LOGRAT).
@@ -149,7 +197,9 @@ def _build_matrix_full(rows, ngram, geometry, progress=False, target_space="MS")
     layouts: list[str] = []
     counts: list[float] = []
     for row in iterator:
-        for vec, target, n in _rows_to_examples(row, geometry, ngram, target_space):
+        for vec, target, n in _rows_to_examples(
+            row, geometry, ngram, target_space, direction, kitchensink
+        ):
             features.append(vec)
             targets.append(target)
             ngrams.append(row.ngram)
@@ -213,10 +263,10 @@ def _train(
     layout_weights=True,
     target_space="MS",
     calibration=False,
+    direction=False,
+    kitchensink=False,
     **params,
 ) -> XGBoostTypingModel:
-    from keybo.features.schema import BIGRAM_FEATURE_NAMES, TRIGRAM_FEATURE_NAMES
-
     target_space = str(target_space).upper()
     if target_space not in _TARGET_SPACES:
         raise ValueError(f"unknown target_space {target_space!r} (known: {sorted(_TARGET_SPACES)})")
@@ -224,11 +274,40 @@ def _train(
     # Targets are built directly in the model's target space (per-sample log aggregation
     # for LOGRAT — PACE-2 ANCHOR-PS).
     X, y, ngrams, layouts, counts = _build_matrix_full(
-        rows, ngram=ngram, geometry=geometry, progress=progress, target_space=target_space
+        rows,
+        ngram=ngram,
+        geometry=geometry,
+        progress=progress,
+        target_space=target_space,
+        direction=direction,
+        kitchensink=kitchensink,
     )
-    names = BIGRAM_FEATURE_NAMES if ngram == "bigram" else TRIGRAM_FEATURE_NAMES
+    # The version stamp and the name list move TOGETHER with the frame: a widened model records
+    # FEATURE_VERSION_DIRECTION so it can never load where a served model is expected (base.py
+    # hard-errors on a mismatch), and it carries the widened name list so importances stay
+    # labelled. Stamping the narrow version on a wide frame is exactly the silent train/serve
+    # skew DIRECTION-1 refused to create. The kitchen-sink frame is the third population and gets
+    # the third stamp on the same principle — and it is checked FIRST because it implies
+    # ``direction``, so an `if direction` test would otherwise claim a kitchen-sink model.
+    if kitchensink:
+        names = (
+            BIGRAM_KITCHENSINK_FEATURE_NAMES
+            if ngram == "bigram"
+            else TRIGRAM_KITCHENSINK_FEATURE_NAMES
+        )
+        stamp = FEATURE_VERSION_KITCHENSINK
+    elif direction:
+        names = (
+            BIGRAM_DIRECTION_FEATURE_NAMES
+            if ngram == "bigram"
+            else TRIGRAM_DIRECTION_FEATURE_NAMES
+        )
+        stamp = FEATURE_VERSION_DIRECTION
+    else:
+        names = BIGRAM_FEATURE_NAMES if ngram == "bigram" else TRIGRAM_FEATURE_NAMES
+        stamp = FEATURE_VERSION
     metadata = ModelMetadata(
-        feature_version=FEATURE_VERSION,
+        feature_version=stamp,
         feature_names=names,
         wpm_range=wpm_range,
         ngram=ngram,
@@ -328,6 +407,8 @@ def train_bigram_model(
     layout_weights: bool = True,
     target_space: str = "LOGRAT",
     calibration: bool = False,
+    direction: bool = False,
+    kitchensink: bool = False,
     **params,
 ) -> XGBoostTypingModel:
     """Fit a bigram typing-time model from bistroke rows (R1W + LOGRAT recipe).
@@ -336,6 +417,13 @@ def train_bigram_model(
     speed-neutral (+3.90% vs +3.95%, LOLO identical) with single-population evidence and
     mixed community transfer. The estimator (``keybo.training.calibration``) remains
     available as a measurement tool; older sidecars with deltas still serve correctly.
+
+    ``direction=True`` trains on the widened order-aware frame and stamps
+    ``FEATURE_VERSION_DIRECTION``; the default reproduces the served frame exactly.
+
+    ``kitchensink=True`` trains on the KITCHEN-SINK frame (the widened frame plus the twelve
+    external-project channels) and stamps ``FEATURE_VERSION_KITCHENSINK``. It implies
+    ``direction`` and takes precedence over it, so the three model populations stay disjoint.
 
     ``progress`` is consumed here (feature-build bar), never forwarded into ``**params`` --
     XGBoost silently ignores unknown keyword params, so a leak would be invisible.
@@ -351,6 +439,8 @@ def train_bigram_model(
         layout_weights=layout_weights,
         target_space=target_space,
         calibration=calibration,
+        direction=direction,
+        kitchensink=kitchensink,
         **params,
     )
 
@@ -364,12 +454,21 @@ def train_trigram_model(
     practice_term: bool = True,
     layout_weights: bool = True,
     target_space: str = "LOGRAT",
+    direction: bool = False,
+    kitchensink: bool = False,
     **params,
 ) -> XGBoostTypingModel:
     """Fit a trigram typing-time model from tristroke rows. See train_bigram_model.
 
     LOGRAT by default per the conditioned-trigram A/B (2026-07-10): wmae −30.7% with
     umae/dec3/taus all improved — the bigram mechanism carries.
+
+    ``direction=True`` trains on the widened order-aware frame and stamps
+    ``FEATURE_VERSION_DIRECTION``; the default reproduces the served frame exactly.
+
+    ``kitchensink=True`` trains on the KITCHEN-SINK frame (the widened frame plus the twelve
+    external-project channels) and stamps ``FEATURE_VERSION_KITCHENSINK``. It implies
+    ``direction`` and takes precedence over it, so the three model populations stay disjoint.
     """
     return _train(
         rows,
@@ -381,5 +480,7 @@ def train_trigram_model(
         practice_term=practice_term,
         layout_weights=layout_weights,
         target_space=target_space,
+        direction=direction,
+        kitchensink=kitchensink,
         **params,
     )

@@ -81,6 +81,13 @@ def test_pattern_shares_and_weighted_fitness_are_value_pinned(corpora):
     read 14.2857 twice and the fitness was 598.6822: the difference,
     ``598.6822 - 570.1108 = 28.5714``, is exactly ``redirect`` weight 2.0 x the 14.2857
     share it should never have had. See tests/scoring/test_oxey_trigram_partition.py.
+
+    The two ``*_ordered`` shares are the order-aware roll channel. They are pinned here with
+    every other share while the FITNESS keeps its pre-existing value — the pair of assertions
+    that together say "a share was added and nothing was repriced". On this fixture they
+    happen to equal ``inroll``/``outroll``, because its only same-hand cross-column bigrams
+    (``ws``, ``wd``, ``de``) are all cross-row; ``test_oxey_corpus_reversal.py`` is where the
+    two pairs diverge, on a real corpus.
     """
     bigrams, skipgrams, trigrams = corpora
     lay = Layout(NAMED_LAYOUTS["qwerty"], ROW_STAGGERED_30)
@@ -99,9 +106,12 @@ def test_pattern_shares_and_weighted_fitness_are_value_pinned(corpora):
             "bad_redirect": 14.285714285714286,
             "alternate": 55.88235294117647,
             "imbalance": 29.41176470588235,
+            "inroll_ordered": 8.823529411764707,
+            "outroll_ordered": 0.0,
         },
         abs=1e-12,
     )
+    # UNCHANGED from before the ordered shares existed: they ship at weight 0.
     assert scorer.fitness(lay) == pytest.approx(570.1107715813598, abs=1e-12)
 
 

@@ -60,6 +60,42 @@ _BIGRAM_PLACEMENT_NAMES = [
 
 BIGRAM_FEATURE_NAMES = [*_BIGRAM_PLACEMENT_NAMES, "wpm"]
 
+# --- the ORDER-AWARE direction channel (opt-in, additive) ---------------------------------
+#
+# ``inwards``/``outwards`` above are SWAP-INVARIANT: over all 870 ordered position pairs of
+# ROW_STAGGERED_30, the number whose value changes when the pair is reversed is 0 (they sort
+# the pair by column magnitude, then compare rows — see keybo.features.classify). So the
+# served frame carries no direction-of-travel channel at all: direction enters it only
+# through the landing-key one-hots, computed from the second key alone.
+#
+# These two columns are the honest channel. They are kept OUT of BIGRAM_FEATURE_NAMES and
+# behind an explicit opt-in for one reason: the six models under data/models/k31/ are stamped
+# FEATURE_VERSION above, and keybo.models.base hard-errors on a mismatch. Widening the served
+# list would invalidate all six; redefining the existing columns in place would be worse —
+# they would keep loading and silently score on a frame whose columns 18/19 no longer mean
+# what they meant at training time. Additive-and-opt-in is the only option that neither
+# breaks a shipped artifact nor lies about one.
+#
+# A model trained on the wider frame records FEATURE_VERSION_DIRECTION instead, so the two
+# populations can never be confused for one another.
+_BIGRAM_DIRECTION_NAMES = [
+    "inwards_ordered",
+    "outwards_ordered",
+]
+
+#: The served bigram frame plus the ordered-direction channel. ``wpm`` stays last (a
+#: convention ``tests/features/test_schema.py`` pins), so the new columns are inserted before
+#: it rather than appended to the end.
+BIGRAM_DIRECTION_FEATURE_NAMES = [
+    *_BIGRAM_PLACEMENT_NAMES,
+    *_BIGRAM_DIRECTION_NAMES,
+    "wpm",
+]
+
+#: Stamped instead of :data:`FEATURE_VERSION` by anything trained on the wider frame. It must
+#: never equal ``FEATURE_VERSION``, or the load-time guard could not tell the frames apart.
+FEATURE_VERSION_DIRECTION = f"{FEATURE_VERSION}+direction.1"
+
 # Trigram-level features, then the skipgram (first+third key) features, then the two
 # constituent bigrams' placement features (prefixed), then wpm.
 _TRIGRAM_LEVEL_NAMES = [
@@ -78,3 +114,119 @@ TRIGRAM_FEATURE_NAMES = [
     *(f"bg2_{n}" for n in _BIGRAM_PLACEMENT_NAMES),
     "wpm",
 ]
+
+#: The trigram frame with the ordered-direction channel on BOTH constituent bigrams. The
+#: trigram-level ``redirect``/``bad_redirect`` columns are already order-aware (they compare
+#: ``|column|`` between successive keys), so what this adds is per-bigram direction, not a
+#: first direction signal at the trigram level.
+#: The same-finger-GATED redirect pair (REDIRGATE-1). Appended to the WIDENED trigram list only —
+#: never to :data:`TRIGRAM_FEATURE_NAMES`, because that list IS the version-locked served frame all
+#: three shipped ``trigram_cond31`` models carry. ``_TRIGRAM_LEVEL_NAMES`` is shared by both lists,
+#: so these must NOT go there either: adding a column to the shared prefix would silently widen the
+#: served frame.
+_TRIGRAM_GATED_NAMES = [
+    "redirect_sfgated",
+    "bad_redirect_sfgated",
+]
+
+TRIGRAM_DIRECTION_FEATURE_NAMES = [
+    *_TRIGRAM_LEVEL_NAMES,
+    *_TRIGRAM_GATED_NAMES,
+    *(f"bg1_{n}" for n in (*_BIGRAM_PLACEMENT_NAMES, *_BIGRAM_DIRECTION_NAMES)),
+    *(f"bg2_{n}" for n in (*_BIGRAM_PLACEMENT_NAMES, *_BIGRAM_DIRECTION_NAMES)),
+    "wpm",
+]
+
+# --- the KITCHEN-SINK block: external-project channels we provably lacked (opt-in, additive) ---
+#
+# The 12 definitions that survived the KITCHEN-SINK candidate audit
+# (``agent-artifacts/kitchensink_audit.py``, registered in
+# ``agent-artifacts/KITCHENSINK-preregistration.md``). Every one was checked over the FULL
+# enumeration of ``ROW_STAGGERED_30`` — 870 ordered pairs, 24,360 ordered triples — for how often it
+# fires, whether it can see stroke order, and how much of it OLS can already recover from the
+# columns we serve. Two candidates were REJECTED by that measurement rather than added:
+#
+# * keycraft's ``RED-WEAK`` came back R2 = 1.0000 against the widened frame, and that is an
+#   IDENTITY: it is bit-identical to ``bad_redirect_sfgated`` on all 24,360 triples. It is
+#   REDIRGATE-1's gated bad-redirect under another name, and that column already measured NULL.
+# * ``LSB-dist`` (the graded lateral stretch) came back R2 = 0.9768 on the smallest support of any
+#   candidate, 32 of 870 pairs — the same verdict KEYCRAFT-1 applied to ``2RL-IN + 2RL-OUT``.
+#
+# Third stamp, third population. These names are kept OUT of both lists above for exactly the
+# reason ``_BIGRAM_DIRECTION_NAMES`` is: ``_BIGRAM_PLACEMENT_NAMES`` and ``_TRIGRAM_LEVEL_NAMES``
+# are the SHARED PREFIXES of the version-locked served frames, so a name added there would widen
+# the served frame for all six shipped ``data/models/k31`` artifacts silently.
+_BIGRAM_KITCHENSINK_NAMES = [
+    # HSB — keycraft splits the ONE-row adjacent-finger reach from the two-row one; our
+    # ``scissor`` gates on ``dy == 2``, so every half scissor is invisible to the served frame.
+    "half_scissor",
+    # A two-row jump on the same hand regardless of finger ADJACENCY (``scissor`` requires
+    # adjacent fingers, so a pinky->index two-row jump is unflagged today).
+    "row_skip",
+    # POH — keycraft's pinky-off-home penalty. We serve a ``pinky`` one-hot and a ``home`` one-hot
+    # but no INTERACTION, which a tree can only build by spending depth.
+    "pinky_off_home",
+    # keycraft's RED-WEAK gate applied at bigram level: both keys on the two least-dextrous
+    # fingers. The served finger one-hot describes only the LANDING key, so pinky->ring and
+    # index->ring are identical in that block.
+    "weak_finger_pair",
+    # The SIGNED finger-rank step: the graded form of ``inwards_ordered``, which is binary (as is
+    # keycraft's own IN/OUT). Order-aware: 324 of 870 pairs change under reversal.
+    "finger_step",
+]
+
+_TRIGRAM_KITCHENSINK_NAMES = [
+    # 3RL — keycraft's monotonic one-hand roll. The served frame names ``redirect`` (the
+    # NON-monotonic case) but has no column for the smoothest trigram class.
+    "onehand",
+    # 3RL-IN — that roll travelling toward the index. Order-aware (756 of 24,360 triples).
+    "onehand_in",
+    # RED-SFS / ALT-SFS — keycraft prices a redirect and an alternation whose OUTER two keys share
+    # a finger apart from the plain forms. We have neither split.
+    "red_sfs",
+    "alt_sfs",
+    # FSS / HSS / LSS — the scissor and lateral-stretch predicates across the SKIPGRAM. The served
+    # trigram frame carries sg_dx/sg_dy/sg_distance/sg_same_finger but no sg_scissor and no sg_lsb.
+    "sg_full_scissor",
+    "sg_half_scissor",
+    "sg_lsb",
+]
+
+#: The widened bigram frame plus the kitchen-sink block. ``wpm`` stays last (the convention
+#: ``tests/features/test_schema.py`` pins).
+BIGRAM_KITCHENSINK_FEATURE_NAMES = [
+    *_BIGRAM_PLACEMENT_NAMES,
+    *_BIGRAM_DIRECTION_NAMES,
+    *_BIGRAM_KITCHENSINK_NAMES,
+    "wpm",
+]
+
+#: The widened trigram frame plus the kitchen-sink block. The five bigram-level definitions enter
+#: TWICE, once per constituent bigram, which is why 12 definitions produce 17 new trigram columns.
+TRIGRAM_KITCHENSINK_FEATURE_NAMES = [
+    *_TRIGRAM_LEVEL_NAMES,
+    *_TRIGRAM_GATED_NAMES,
+    *_TRIGRAM_KITCHENSINK_NAMES,
+    *(
+        f"bg1_{n}"
+        for n in (
+            *_BIGRAM_PLACEMENT_NAMES,
+            *_BIGRAM_DIRECTION_NAMES,
+            *_BIGRAM_KITCHENSINK_NAMES,
+        )
+    ),
+    *(
+        f"bg2_{n}"
+        for n in (
+            *_BIGRAM_PLACEMENT_NAMES,
+            *_BIGRAM_DIRECTION_NAMES,
+            *_BIGRAM_KITCHENSINK_NAMES,
+        )
+    ),
+    "wpm",
+]
+
+#: Stamped by anything trained on the kitchen-sink frame. Must equal neither
+#: :data:`FEATURE_VERSION` nor :data:`FEATURE_VERSION_DIRECTION`, or the load-time guard in
+#: ``keybo.models.base`` could not tell the three model populations apart.
+FEATURE_VERSION_KITCHENSINK = f"{FEATURE_VERSION}+kitchensink.1"

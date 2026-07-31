@@ -124,21 +124,204 @@ def rotation_angle(geometry: Geometry, a: Position, b: Position) -> float:
     return round(degrees(angle), 2)
 
 
-def is_inwards(geometry: Geometry, a: Position, b: Position) -> bool:
-    """Rolling toward the index finger (outer key on the higher row). Two fingers only."""
+def _roll_eligible(geometry: Geometry, a: Position, b: Position) -> bool:
+    """Whether a position pair is a two-finger cross-column roll at all.
+
+    The shared gate of all four roll-direction predicates, so the ordered and unordered
+    readings below are guaranteed to describe the same universe of pairs and differ only in
+    what they say ABOUT it. Three exclusions, each load-bearing:
+
+    * cross-hand pairs are not rolls (no single hand travels);
+    * same-FINGER pairs are not rolls but single-finger reaches — and this is the one that
+      matters, because :meth:`keybo.geometry.Geometry.same_finger` counts index columns 1
+      and 2 as one finger. Without it, ``(-2,2) -> (-1,2)`` would read as an inward step
+      when it is the index finger reaching to its own second column. :mod:`keybo.scoring.oxey`
+      records this exact error being fixed once already in its trigram path (its docstring:
+      "the direction step was ``abs(b.column) - abs(a.column)``, which reads the index
+      finger's two columns as a direction STEP"); this gate is what keeps it out of the
+      bigram path.
+    * equal |column| pairs have no horizontal direction to report. On the shipped geometries
+      this is unreachable after the same-finger gate (equal |column| implies equal finger),
+      so it is a guard against a future geometry, not live logic here.
+    """
     if not same_hand(geometry, a, b) or same_finger(geometry, a, b):
         return False
-    if abs(a[0]) == abs(b[0]):
+    return abs(a[0]) != abs(b[0])
+
+
+# --- the UNORDERED pair: a property of the two KEYS ---------------------------------------
+#
+# ⚠ These two are SWAP-INVARIANT BY CONSTRUCTION and that is deliberate, not a bug left in
+# place: they sort the pair by column magnitude and compare ROWS, so ``is_inwards(g, a, b) ==
+# is_inwards(g, b, a)`` for all 870 ordered K30 pairs (pinned in
+# ``tests/features/test_roll_direction_order.py``). What they actually measure is "is the
+# key further from the index on the higher row" — a real geometric distinction, but NOT a
+# direction of travel.
+#
+# They are kept unchanged, rather than fixed in place, because three callers depend on the
+# unordered reading and two of those dependencies are irreversible:
+#
+# 1. ``features/ngram.py`` serves them as columns 18/19 (``inwards``/``outwards``) of
+#    ``FEATURE_VERSION = "2026-07-05.3"``. Six trained models under ``data/models/k31/``
+#    carry that stamp and ``models/base.py`` hard-errors on a mismatch. Changing what these
+#    columns MEASURE while leaving the version string alone is exactly the train/serve skew
+#    the stamp exists to prevent: the models would keep loading and score on a frame whose
+#    column 18 no longer means what it meant during training. Bumping the version instead
+#    would invalidate all six.
+# 2. ``tests/features/test_k31_geometry.py`` asserts the K30 feature matrix bit-identical
+#    against a frozen golden ``.npz``. These columns are in it.
+# 3. ``analysis/effect_curves.py`` reads them as ``outer_high``/``outer_low`` — names it
+#    chose precisely BECAUSE the predicates are unordered, with the proof in its docstring.
+#    It wants the unordered semantics and would be wrong to receive ordered ones.
+#
+# The ordered predicates below are therefore ADDITIVE. That keeps every published
+# ``inroll``/``outroll`` number in the ledger reproducible; a silent renumbering of shipped
+# gauges is the outcome this split exists to avoid.
+
+
+def is_inwards(geometry: Geometry, a: Position, b: Position) -> bool:
+    """Outer key on the higher row (UNORDERED — see the note above; not a stroke direction).
+
+    Despite the name this cannot distinguish a stroke from its reverse. For the
+    direction the stroke actually travelled, use :func:`is_inwards_ordered`.
+    """
+    if not _roll_eligible(geometry, a, b):
         return False
     outer, inner = (a, b) if abs(a[0]) > abs(b[0]) else (b, a)
     return outer[1] > inner[1]
 
 
 def is_outwards(geometry: Geometry, a: Position, b: Position) -> bool:
-    """Rolling toward the pinky (outer key on the lower row). Two fingers only."""
-    if not same_hand(geometry, a, b) or same_finger(geometry, a, b):
-        return False
-    if abs(a[0]) == abs(b[0]):
+    """Outer key on the lower row (UNORDERED — see the note above; not a stroke direction).
+
+    See :func:`is_outwards_ordered` for the direction of travel.
+    """
+    if not _roll_eligible(geometry, a, b):
         return False
     outer, inner = (a, b) if abs(a[0]) > abs(b[0]) else (b, a)
     return outer[1] < inner[1]
+
+
+# --- the ORDERED stroke: which key was struck FIRST ----------------------------------------
+
+
+def is_inwards_ordered(geometry: Geometry, a: Position, b: Position) -> bool:
+    """A roll that TRAVELLED toward the index finger: struck ``a`` first, then ``b`` inboard.
+
+    The honest direction-of-travel predicate. ``is_inwards_ordered(g, a, b)`` is the negation
+    of ``is_inwards_ordered(g, b, a)`` on every roll-eligible pair — all 324 of them on K30 —
+    which is the property the unordered pair above provably lacks.
+
+    Two differences from :func:`is_inwards`, both consequences of asking the right question:
+
+    * **It reads COLUMNS, not rows.** Direction of travel across the hand is horizontal, so
+      the row is irrelevant to it; ``|column|`` decreasing means the stroke moved toward the
+      index. The row's contribution to a roll's difficulty is a separate quantity, already
+      carried by ``dy``/``distance``/``scissor`` and by the unordered predicates.
+    * **Flat rolls now have a direction.** The row comparison left every same-row roll
+      (108 of K30's 324 eligible pairs — a third of the roll universe) in neither class, even
+      though a flat pinky-to-index roll is the least ambiguous inward stroke there is. The
+      ordered pair partitions the eligible set exactly: 162 inward, 162 outward, none left
+      over.
+    """
+    if not _roll_eligible(geometry, a, b):
+        return False
+    return abs(b[0]) < abs(a[0])
+
+
+def is_outwards_ordered(geometry: Geometry, a: Position, b: Position) -> bool:
+    """A roll that TRAVELLED toward the pinky: struck ``a`` first, then ``b`` outboard.
+
+    The exact complement of :func:`is_inwards_ordered` on the roll-eligible set, so the two
+    partition it rather than merely being disjoint.
+    """
+    if not _roll_eligible(geometry, a, b):
+        return False
+    return abs(b[0]) > abs(a[0])
+
+
+# --- the KITCHEN-SINK predicates: external-project channels, reimplemented from DEFINITIONS ---
+#
+# Sources are keycraft (github.com/rbscholtus/keycraft, BSD-3-Clause) and cyanophage's
+# keyboard_svg.js, read via the KEYCRAFT-1 / CYANO-1 audits. Nothing is vendored: each predicate is
+# re-expressed in this module's vocabulary (signed columns, ``Geometry.finger``), and the audit in
+# ``agent-artifacts/kitchensink_audit.py`` is what decides whether it carries information the served
+# frame lacks. Two candidates were rejected BY that measurement — see
+# ``keybo.features.schema``'s kitchen-sink block for which and why.
+
+
+def finger_kind(geometry: Geometry, x: int) -> int:
+    """Finger dexterity rank of column ``x``: pinky 0, ring 1, middle 2, index 3.
+
+    keycraft's ``FingerKind`` ordering, hand-independent, so a left and a right pinky share a
+    rank. It exists here because a RANK supports the comparisons a one-hot cannot: "is this the
+    weaker of the two fingers", "did the stroke move toward the index", "are BOTH keys on weak
+    fingers". Derived from :meth:`keybo.geometry.Geometry.finger`, so the K31 quote-slot column
+    (``|x| == 6``, right pinky) ranks as a pinky without a special case here.
+    """
+    name = geometry.finger(x).name  # LP/LR/LM/LI/RI/RM/RR/RP, or THUMB
+    return {"P": 0, "R": 1, "M": 2, "I": 3}.get(name[1:], -1) if len(name) == 2 else -1
+
+
+def is_half_scissor(geometry: Geometry, a: Position, b: Position) -> bool:
+    """A ONE-row adjacent-finger reach — keycraft's HSB, invisible to the served frame.
+
+    :func:`is_scissor` gates on ``abs(dy) == 2``, so it sees only the full (two-row) scissor.
+    keycraft splits HSB from FSB and prices them separately, and the two are disjoint by
+    construction: a pair cannot span both one row and two. Fires on 48 of the 870 ordered pairs
+    of ``ROW_STAGGERED_30``.
+    """
+    if not is_adjacent(geometry, a, b):
+        return False
+    return abs(a[1] - b[1]) == 1
+
+
+def is_row_skip(geometry: Geometry, a: Position, b: Position) -> bool:
+    """A two-row jump on the same hand, on ANY two fingers.
+
+    :func:`is_scissor` additionally requires adjacent fingers, so a pinky-to-index two-row jump —
+    a real hand contortion — is unflagged today. This is a strict SUPERSET of ``is_scissor``
+    (100 pairs vs 24), which is why it is added rather than replacing it: the subset distinction
+    is the information, and the model gets both columns.
+    """
+    if not same_hand(geometry, a, b):
+        return False
+    return abs(a[1] - b[1]) == 2
+
+
+def is_pinky_off_home(geometry: Geometry, a: Position, b: Position) -> bool:
+    """The LANDING key is a pinky away from the home row — keycraft's POH.
+
+    An INTERACTION the served frame can only build by spending tree depth: it carries a ``pinky``
+    one-hot and a ``home`` one-hot, but their conjunction is what keycraft actually prices. Reads
+    the second key only, so it is order-aware in the same way the served row/finger one-hots are
+    (208 of 870 pairs change under reversal).
+    """
+    del a  # the landing key alone defines this, by keycraft's definition
+    return finger_kind(geometry, b[0]) == 0 and b[1] != 2
+
+
+def is_weak_finger_pair(geometry: Geometry, a: Position, b: Position) -> bool:
+    """Both keys on the two least-dextrous fingers (pinky or ring), same hand.
+
+    keycraft's RED-WEAK gate, applied at bigram level. The served finger one-hot describes only
+    the landing key, so a pinky-to-ring bigram and an index-to-ring bigram are identical in that
+    block; this is the column that separates them.
+    """
+    if not same_hand(geometry, a, b):
+        return False
+    return finger_kind(geometry, a[0]) <= 1 and finger_kind(geometry, b[0]) <= 1
+
+
+def finger_step(geometry: Geometry, a: Position, b: Position) -> float:
+    """SIGNED finger-rank step: positive toward the index, negative toward the pinky.
+
+    The graded form of :func:`is_inwards_ordered`, which is binary — as is keycraft's own IN/OUT
+    pair, so this is ours rather than theirs. It shares that function's roll-eligibility gate, so
+    a same-finger reach is 0 (the index finger's two columns are one finger and not a step), and
+    it is exactly antisymmetric on the eligible set: ``finger_step(g, a, b) == -finger_step(g, b,
+    a)`` on all 324 eligible pairs. Magnitude 1-3.
+    """
+    if not _roll_eligible(geometry, a, b):
+        return 0.0
+    return float(finger_kind(geometry, b[0]) - finger_kind(geometry, a[0]))

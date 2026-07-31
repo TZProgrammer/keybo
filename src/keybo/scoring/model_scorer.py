@@ -43,13 +43,30 @@ class _ModelScorerBase(IScorer):
 
 
 class BigramModelScorer(_ModelScorerBase):
-    """Scores a layout using a bigram typing-time model."""
+    """Scores a layout using a bigram typing-time model.
 
-    def __init__(self, model, bigram_freqs: Mapping[str, int], target_wpm: float = 0.0) -> None:
+    ``direction`` MUST match the frame the model was trained on: a widened model
+    (``FEATURE_VERSION_DIRECTION``) is featurized on the 22-column frame, a served model on the
+    20-column one. The default is the served frame, byte for byte. It exists so a
+    narrow-vs-widened ranking A/B runs BOTH arms through this one reviewed scoring path,
+    differing only in the frame — a driver re-implementing the has_key/space handling could
+    drift from serving.
+    """
+
+    def __init__(
+        self,
+        model,
+        bigram_freqs: Mapping[str, int],
+        target_wpm: float = 0.0,
+        direction: bool = False,
+        kitchensink: bool = False,
+    ) -> None:
         super().__init__(model, target_wpm)
         # Freeze the corpus into parallel lists so feature order is stable across calls.
         self._bigrams = list(bigram_freqs.keys())
         self._freqs = np.array([bigram_freqs[b] for b in self._bigrams], dtype=np.float64)
+        self._direction = direction
+        self._kitchensink = kitchensink
 
     def fitness(self, layout: Layout) -> float:
         # Score every bigram whose characters are all typable on this board. Space counts:
@@ -62,7 +79,15 @@ class BigramModelScorer(_ModelScorerBase):
         positions = []
         for bg, freq in zip(self._bigrams, self._freqs, strict=True):
             if all(layout.has_key(c) for c in bg):
-                vectors.append(bigram_features(layout, bg, wpm=self.target_wpm))
+                vectors.append(
+                    bigram_features(
+                        layout,
+                        bg,
+                        wpm=self.target_wpm,
+                        direction=self._direction,
+                        kitchensink=self._kitchensink,
+                    )
+                )
                 freqs.append(freq)
                 positions.append((layout.pos(bg[0]), layout.pos(bg[1])))
         if not vectors:
@@ -94,6 +119,8 @@ class TrigramModelScorer(_ModelScorerBase):
         model,
         trigram_freqs: Mapping[str, int],
         target_wpm: float = 0.0,
+        direction: bool = False,
+        kitchensink: bool = False,
     ) -> None:
         from keybo.models.base import reject_calibrated_trigram_model
 
@@ -101,6 +128,8 @@ class TrigramModelScorer(_ModelScorerBase):
         super().__init__(model, target_wpm)
         self._trigrams = list(trigram_freqs.keys())
         self._freqs = np.array([trigram_freqs[t] for t in self._trigrams], dtype=np.float64)
+        self._direction = direction
+        self._kitchensink = kitchensink
 
     def fitness(self, layout: Layout) -> float:
         # As with bigrams: score trigrams typable on this board (space included), skip those
@@ -110,7 +139,15 @@ class TrigramModelScorer(_ModelScorerBase):
         for tg, freq in zip(self._trigrams, self._freqs, strict=True):
             if not all(layout.has_key(c) for c in tg):
                 continue
-            rows.append(trigram_features(layout, tg, wpm=self.target_wpm))
+            rows.append(
+                trigram_features(
+                    layout,
+                    tg,
+                    wpm=self.target_wpm,
+                    direction=self._direction,
+                    kitchensink=self._kitchensink,
+                )
+            )
             freqs.append(freq)
         if not rows:
             return 0.0
