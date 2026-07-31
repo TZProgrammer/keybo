@@ -60,6 +60,42 @@ _BIGRAM_PLACEMENT_NAMES = [
 
 BIGRAM_FEATURE_NAMES = [*_BIGRAM_PLACEMENT_NAMES, "wpm"]
 
+# --- the ORDER-AWARE direction channel (opt-in, additive) ---------------------------------
+#
+# ``inwards``/``outwards`` above are SWAP-INVARIANT: over all 870 ordered position pairs of
+# ROW_STAGGERED_30, the number whose value changes when the pair is reversed is 0 (they sort
+# the pair by column magnitude, then compare rows — see keybo.features.classify). So the
+# served frame carries no direction-of-travel channel at all: direction enters it only
+# through the landing-key one-hots, computed from the second key alone.
+#
+# These two columns are the honest channel. They are kept OUT of BIGRAM_FEATURE_NAMES and
+# behind an explicit opt-in for one reason: the six models under data/models/k31/ are stamped
+# FEATURE_VERSION above, and keybo.models.base hard-errors on a mismatch. Widening the served
+# list would invalidate all six; redefining the existing columns in place would be worse —
+# they would keep loading and silently score on a frame whose columns 18/19 no longer mean
+# what they meant at training time. Additive-and-opt-in is the only option that neither
+# breaks a shipped artifact nor lies about one.
+#
+# A model trained on the wider frame records FEATURE_VERSION_DIRECTION instead, so the two
+# populations can never be confused for one another.
+_BIGRAM_DIRECTION_NAMES = [
+    "inwards_ordered",
+    "outwards_ordered",
+]
+
+#: The served bigram frame plus the ordered-direction channel. ``wpm`` stays last (a
+#: convention ``tests/features/test_schema.py`` pins), so the new columns are inserted before
+#: it rather than appended to the end.
+BIGRAM_DIRECTION_FEATURE_NAMES = [
+    *_BIGRAM_PLACEMENT_NAMES,
+    *_BIGRAM_DIRECTION_NAMES,
+    "wpm",
+]
+
+#: Stamped instead of :data:`FEATURE_VERSION` by anything trained on the wider frame. It must
+#: never equal ``FEATURE_VERSION``, or the load-time guard could not tell the frames apart.
+FEATURE_VERSION_DIRECTION = f"{FEATURE_VERSION}+direction.1"
+
 # Trigram-level features, then the skipgram (first+third key) features, then the two
 # constituent bigrams' placement features (prefixed), then wpm.
 _TRIGRAM_LEVEL_NAMES = [
@@ -76,5 +112,16 @@ TRIGRAM_FEATURE_NAMES = [
     *_TRIGRAM_LEVEL_NAMES,
     *(f"bg1_{n}" for n in _BIGRAM_PLACEMENT_NAMES),
     *(f"bg2_{n}" for n in _BIGRAM_PLACEMENT_NAMES),
+    "wpm",
+]
+
+#: The trigram frame with the ordered-direction channel on BOTH constituent bigrams. The
+#: trigram-level ``redirect``/``bad_redirect`` columns are already order-aware (they compare
+#: ``|column|`` between successive keys), so what this adds is per-bigram direction, not a
+#: first direction signal at the trigram level.
+TRIGRAM_DIRECTION_FEATURE_NAMES = [
+    *_TRIGRAM_LEVEL_NAMES,
+    *(f"bg1_{n}" for n in (*_BIGRAM_PLACEMENT_NAMES, *_BIGRAM_DIRECTION_NAMES)),
+    *(f"bg2_{n}" for n in (*_BIGRAM_PLACEMENT_NAMES, *_BIGRAM_DIRECTION_NAMES)),
     "wpm",
 ]

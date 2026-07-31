@@ -69,6 +69,16 @@ PATTERN_CLASSES: dict[str, tuple] = {
     # higher-row from outer-key-on-the-lower-row. See the module docstring for the proof.
     "outer_high": (C.is_inwards, ["inwards"]),
     "outer_low": (C.is_outwards, ["outwards"]),
+    # The genuinely ORDERED roll classes: direction of TRAVEL, from
+    # C.is_inwards_ordered/is_outwards_ordered. Unlike the two above, reversing a pair moves
+    # it between these classes, so their contrast IS a direction-of-travel effect. Their
+    # SHAP feature list is EMPTY on purpose: `inwards_ordered` is not a column of the served
+    # frame (it lives behind the opt-in `direction=True` frame -- see keybo.features.schema),
+    # so there is no served SHAP channel to attribute to, and compute_effect_curves emits a
+    # NaN SHAP curve plus a note rather than silently attributing to the wrong column. The
+    # class CONTRAST is fully computable and is the point: it prices `ab` against `ba`.
+    "roll_inward_ordered": (C.is_inwards_ordered, []),
+    "roll_outward_ordered": (C.is_outwards_ordered, []),
     "alternate": (
         lambda g, a, b: C.classify_positions(g, a, b) is C.BigramClass.ALTERNATE,
         ["same_hand"],

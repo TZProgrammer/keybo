@@ -110,12 +110,22 @@ def test_the_roll_classes_are_named_for_what_the_gauge_can_actually_represent():
     assert "outroll" not in PATTERN_CLASSES, "misnamed: the predicate is order-invariant"
 
 
-def test_every_pattern_class_predicate_is_order_invariant():
+#: Classes whose predicate is deliberately ORDER-DEPENDENT (direction of travel). Every other
+#: class in ``PATTERN_CLASSES`` must be a function of the unordered pair. Listed explicitly so
+#: adding an order-dependent class is a decision someone makes here, not a silent side effect.
+ORDER_DEPENDENT_CLASSES = {"roll_inward_ordered", "roll_outward_ordered"}
+
+
+def test_every_pattern_class_predicate_is_order_invariant_unless_declared():
     """Exhaustive, over all 900 ordered pairs — the proof behind the rename.
 
-    Every class in the table is a function of the unordered pair. If a future class IS
-    genuinely directional it must not go in this table without a landing-key channel to
-    carry it, so this asserts the invariant for the whole table rather than two entries.
+    Originally this asserted order-invariance for the WHOLE table, with the docstring caveat
+    that "if a future class IS genuinely directional it must not go in this table without a
+    landing-key channel to carry it". The ordered roll classes are that future class, and the
+    caveat's condition is satisfied (see the next test, which measures the channel rather than
+    assuming it), so the blanket assertion is now an allowlist: undeclared classes must still
+    be order-invariant, and declared ones must ACTUALLY be order-dependent — a class that
+    lands in the allowlist while being invariant is the failure this second half catches.
     """
     import itertools
 
@@ -124,11 +134,54 @@ def test_every_pattern_class_predicate_is_order_invariant():
 
     pairs = list(itertools.product(geometry.slots, repeat=2))
     assert len(pairs) == 900
+    assert set(PATTERN_CLASSES) >= ORDER_DEPENDENT_CLASSES, "allowlist names a missing class"
     for name, (predicate, _features) in PATTERN_CLASSES.items():
         violations = [
             (a, b) for a, b in pairs if predicate(geometry, a, b) != predicate(geometry, b, a)
         ]
-        assert violations == [], f"{name} is order-DEPENDENT on {len(violations)} pairs"
+        if name in ORDER_DEPENDENT_CLASSES:
+            assert len(violations) == 324, (
+                f"{name} is declared directional but moves on {len(violations)}"
+            )
+        else:
+            assert violations == [], f"{name} is order-DEPENDENT on {len(violations)} pairs"
+
+
+def test_the_ordered_roll_classes_are_separable_in_the_served_frame():
+    """The condition the original guard's docstring set for admitting a directional class.
+
+    A class contrast is only meaningful if the model can tell the class's pairs apart from the
+    reference's. The ordered roll classes carry no served feature COLUMN of their own —
+    ``inwards_ordered`` lives behind the ``direction=True`` opt-in — so this measures whether
+    the served frame separates them at all, rather than assuming it. It does, through the
+    landing-key one-hots: an inward stroke lands nearer the index by definition, so ``index``
+    and ``lateral`` rise and ``pinky``/``ring`` fall. Exactly those four columns move and no
+    non-landing column does, which is the docstring's "landing-key channel to carry it",
+    measured.
+    """
+    import itertools
+
+    import numpy as np
+
+    from keybo.analysis.effect_curves import PATTERN_CLASSES
+    from keybo.features import bigram_features_from_positions
+    from keybo.geometry import ROW_STAGGERED_30 as geometry
+
+    pairs = [(a, b) for a, b in itertools.product(geometry.slots, repeat=2) if a != b]
+    features = np.vstack([bigram_features_from_positions(geometry, p, wpm=90.0) for p in pairs])
+    inward = np.array([PATTERN_CLASSES["roll_inward_ordered"][0](geometry, *p) for p in pairs])
+    outward = np.array([PATTERN_CLASSES["roll_outward_ordered"][0](geometry, *p) for p in pairs])
+    assert inward.sum() == outward.sum() == 162
+
+    separating = {
+        name
+        for i, name in enumerate(BIGRAM_FEATURE_NAMES)
+        if abs(features[inward, i].mean() - features[outward, i].mean()) > 1e-12
+    }
+    assert separating == {"pinky", "ring", "index", "lateral"}
+    # and the SHAP feature list is empty, because none of those four is the class's own column
+    assert PATTERN_CLASSES["roll_inward_ordered"][1] == []
+    assert PATTERN_CLASSES["roll_outward_ordered"][1] == []
 
 
 def test_the_two_roll_classes_span_the_same_unordered_pairs_as_their_ordered_count_implies():

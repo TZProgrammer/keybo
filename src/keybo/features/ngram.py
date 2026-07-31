@@ -16,23 +16,41 @@ from __future__ import annotations
 import numpy as np
 
 from keybo.features import classify as C
-from keybo.features.schema import BIGRAM_FEATURE_NAMES, TRIGRAM_FEATURE_NAMES
+from keybo.features.schema import (
+    BIGRAM_DIRECTION_FEATURE_NAMES,
+    BIGRAM_FEATURE_NAMES,
+    TRIGRAM_DIRECTION_FEATURE_NAMES,
+    TRIGRAM_FEATURE_NAMES,
+)
 from keybo.geometry import Geometry, Position
 from keybo.layout import Layout
 
 
-def _placement_row_from_positions(geometry: Geometry, a: Position, b: Position) -> dict[str, float]:
+def _placement_row_from_positions(
+    geometry: Geometry, a: Position, b: Position, direction: bool = False
+) -> dict[str, float]:
     """The placement/relational/geometry features for one bigram, from key positions.
 
     Positions are the fundamental input: both scoring (positions from a layout) and training
     (positions recorded in the data) route through here, so the two can never diverge.
+
+    ``direction=False`` (the default) produces exactly the served frame, byte for byte —
+    guarded by the frozen golden matrix in ``tests/features/test_k31_geometry.py``.
+    ``direction=True`` appends the two ORDER-AWARE roll columns
+    (:data:`~keybo.features.schema.BIGRAM_DIRECTION_FEATURE_NAMES`).
+
+    The opt-in exists because the served ``inwards``/``outwards`` columns are swap-invariant
+    (0 of 870 ordered pairs change under reversal) and cannot be fixed in place: six shipped
+    models are stamped with the current ``FEATURE_VERSION`` and would keep loading while
+    scoring on a frame whose columns had silently changed meaning. See
+    :mod:`keybo.features.schema`.
     """
     g = geometry
     bx, by = b
     cls = C.classify_positions(g, a, b)
     abs_bx = abs(bx)
 
-    return {
+    row = {
         # second-key row one-hot
         "bottom": float(by == 1),
         "home": float(by == 2),
@@ -54,40 +72,56 @@ def _placement_row_from_positions(geometry: Geometry, a: Position, b: Position) 
         "dy": float(abs(a[1] - b[1])),
         "distance": g.distance(a, b),
         "angle": C.rotation_angle(g, a, b),
+        # ⚠ swap-INVARIANT (see keybo.features.classify): these two describe the key PAIR,
+        # not the stroke. The direction-of-travel channel is the opt-in block below.
         "inwards": float(C.is_inwards(g, a, b)),
         "outwards": float(C.is_outwards(g, a, b)),
     }
+    if direction:
+        row["inwards_ordered"] = float(C.is_inwards_ordered(g, a, b))
+        row["outwards_ordered"] = float(C.is_outwards_ordered(g, a, b))
+    return row
 
 
-def _placement_row(layout: Layout, bigram: str) -> dict[str, float]:
+def _placement_row(layout: Layout, bigram: str, direction: bool = False) -> dict[str, float]:
     """Placement features for a bigram on a layout (looks up positions, then delegates)."""
     return _placement_row_from_positions(
-        layout.geometry, layout.pos(bigram[0]), layout.pos(bigram[1])
+        layout.geometry, layout.pos(bigram[0]), layout.pos(bigram[1]), direction=direction
     )
 
 
-def bigram_model_row(layout: Layout, bigram: str, wpm: float) -> dict[str, float]:
+def _bigram_column_names(direction: bool) -> list[str]:
+    """The canonical column order for the frame ``direction`` selects."""
+    return BIGRAM_DIRECTION_FEATURE_NAMES if direction else BIGRAM_FEATURE_NAMES
+
+
+def bigram_model_row(
+    layout: Layout, bigram: str, wpm: float, direction: bool = False
+) -> dict[str, float]:
     """Full ordered bigram feature row (placement features + wpm)."""
-    row = _placement_row(layout, bigram)
+    row = _placement_row(layout, bigram, direction=direction)
     row["wpm"] = float(wpm)
     return row
 
 
-def bigram_features(layout: Layout, bigram: str, wpm: float = 0.0) -> np.ndarray:
+def bigram_features(
+    layout: Layout, bigram: str, wpm: float = 0.0, direction: bool = False
+) -> np.ndarray:
     """Bigram feature vector in canonical column order."""
-    row = bigram_model_row(layout, bigram, wpm)
-    return np.array([row[name] for name in BIGRAM_FEATURE_NAMES], dtype=np.float64)
+    row = bigram_model_row(layout, bigram, wpm, direction=direction)
+    return np.array([row[name] for name in _bigram_column_names(direction)], dtype=np.float64)
 
 
 def bigram_features_from_positions(
     geometry: Geometry,
     positions: tuple[Position, Position],
     wpm: float = 0.0,
+    direction: bool = False,
 ) -> np.ndarray:
     """Bigram feature vector from recorded key positions (training path)."""
-    row = _placement_row_from_positions(geometry, positions[0], positions[1])
+    row = _placement_row_from_positions(geometry, positions[0], positions[1], direction=direction)
     row["wpm"] = float(wpm)
-    return np.array([row[name] for name in BIGRAM_FEATURE_NAMES], dtype=np.float64)
+    return np.array([row[name] for name in _bigram_column_names(direction)], dtype=np.float64)
 
 
 def _trigram_level_from_positions(
@@ -125,18 +159,30 @@ def _trigram_row_from_positions(
     b: Position,
     c: Position,
     wpm: float,
+    direction: bool = False,
 ) -> dict[str, float]:
-    """Assemble the full trigram row from the three positions (the shared core)."""
+    """Assemble the full trigram row from the three positions (the shared core).
+
+    ``direction=True`` widens both constituent bigrams' placement blocks, so the trigram
+    frame gains ``bg1_/bg2_inwards_ordered`` and ``..._outwards_ordered``. Same opt-in
+    contract as the bigram frame: the default is byte-identical to the served columns.
+    """
     row = _trigram_level_from_positions(geometry, a, b, c)
-    for name, value in _placement_row_from_positions(geometry, a, b).items():
+    for name, value in _placement_row_from_positions(geometry, a, b, direction=direction).items():
         row[f"bg1_{name}"] = value
-    for name, value in _placement_row_from_positions(geometry, b, c).items():
+    for name, value in _placement_row_from_positions(geometry, b, c, direction=direction).items():
         row[f"bg2_{name}"] = value
     row["wpm"] = float(wpm)
     return row
 
 
-def trigram_model_row(layout: Layout, trigram: str, wpm: float) -> dict[str, float]:
+def _trigram_column_names(direction: bool) -> list[str]:
+    return TRIGRAM_DIRECTION_FEATURE_NAMES if direction else TRIGRAM_FEATURE_NAMES
+
+
+def trigram_model_row(
+    layout: Layout, trigram: str, wpm: float, direction: bool = False
+) -> dict[str, float]:
     """Full ordered trigram feature row: trigram-level + both bigrams + wpm."""
     return _trigram_row_from_positions(
         layout.geometry,
@@ -144,21 +190,25 @@ def trigram_model_row(layout: Layout, trigram: str, wpm: float) -> dict[str, flo
         layout.pos(trigram[1]),
         layout.pos(trigram[2]),
         wpm,
+        direction=direction,
     )
 
 
-def trigram_features(layout: Layout, trigram: str, wpm: float = 0.0) -> np.ndarray:
+def trigram_features(
+    layout: Layout, trigram: str, wpm: float = 0.0, direction: bool = False
+) -> np.ndarray:
     """Trigram feature vector in canonical column order."""
-    row = trigram_model_row(layout, trigram, wpm)
-    return np.array([row[name] for name in TRIGRAM_FEATURE_NAMES], dtype=np.float64)
+    row = trigram_model_row(layout, trigram, wpm, direction=direction)
+    return np.array([row[name] for name in _trigram_column_names(direction)], dtype=np.float64)
 
 
 def trigram_features_from_positions(
     geometry: Geometry,
     positions: tuple[Position, Position, Position],
     wpm: float = 0.0,
+    direction: bool = False,
 ) -> np.ndarray:
     """Trigram feature vector from recorded key positions (training path)."""
     a, b, c = positions
-    row = _trigram_row_from_positions(geometry, a, b, c, wpm)
-    return np.array([row[name] for name in TRIGRAM_FEATURE_NAMES], dtype=np.float64)
+    row = _trigram_row_from_positions(geometry, a, b, c, wpm, direction=direction)
+    return np.array([row[name] for name in _trigram_column_names(direction)], dtype=np.float64)

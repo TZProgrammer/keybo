@@ -48,6 +48,35 @@ Three honesty notes, load-bearing:
    inversions). See ``tests/scoring/test_oxey_trigram_partition.py``, which asserts class
    membership against ``_v1_pattern`` triple-for-triple rather than eyeballing totals.
 
+4. ⚠️ **``inroll``/``outroll`` are NOT stroke directions, and the honest pair sits beside
+   them.** Both delegate to :func:`keybo.features.classify.is_inwards` /
+   :func:`~keybo.features.classify.is_outwards`, which sort the two keys by column magnitude
+   and compare ROWS — discarding which key was struck first. Measured on
+   ``ROW_STAGGERED_30``: over all 870 ordered position pairs, the number whose verdict
+   changes when the pair is swapped is **0**, for both predicates. So a corpus in which every
+   n-gram is reversed — every inward stroke turned outward — produces ``inroll`` and
+   ``outroll`` values that are **bit-identical**, moving by exactly 0.00e+00. They measure
+   *outer-key-on-the-higher-row*, which is a real geometric distinction wearing a
+   direction-of-travel name (:mod:`keybo.analysis.effect_curves` renamed its own copies
+   ``outer_high``/``outer_low`` for exactly this reason).
+
+   :data:`ORDERED_ROLL_SHARES` (``inroll_ordered``/``outroll_ordered``) are the honest
+   counterparts, from :func:`~keybo.features.classify.is_inwards_ordered` /
+   :func:`~keybo.features.classify.is_outwards_ordered`. They read ``|column|`` in stroke
+   order, so reversing the corpus swaps them, and they also cover the 108 same-row rolls the
+   row comparison drops (162 inward / 162 outward, partitioning all 324 roll-eligible K30
+   pairs, against 108 / 108 / 108-unclassed for the pair above).
+
+   The old names are kept and the new shares added ALONGSIDE, at **weight 0** — they are
+   absent from :data:`DEFAULT_OXEY_WEIGHTS` by design. Two reasons, one per direction: the
+   published ``inroll``/``outroll`` numbers throughout this project's ledger stay
+   reproducible (a silent renumbering of shipped gauges is worse than a badly-named gauge),
+   and the weight table is a *community-preference* statement whose values were chosen to
+   reproduce the community's layout ORDERING — pricing a new class is a separate decision
+   from measuring it. ``tests/scoring/test_oxey_corpus_reversal.py`` pins both halves: the
+   ordered shares must move under reversal, the weighted ones must not, and ``fitness`` must
+   be unchanged.
+
 Units: dimensionless pattern score scaled so qwerty ≈ O(100); the ``--oxey-weight`` knob
 maps it into fitness-comparable magnitude the same way the comfort knob does.
 """
@@ -88,6 +117,13 @@ _TRIGRAM_CLASS: dict[str, str] = {
     "bad_redirects": "bad_redirect",
     "bad_redirects_sfs": "bad_redirect",
 }
+
+#: Order-aware roll shares, reported by :meth:`OxeyStyleScorer.pattern_shares` but
+#: deliberately ABSENT from :data:`DEFAULT_OXEY_WEIGHTS`, so they are measured at weight 0
+#: and cannot move any published ``oxey-style`` score. See the module docstring's fourth
+#: honesty note for why they are separate from ``inroll``/``outroll`` rather than replacing
+#: them.
+ORDERED_ROLL_SHARES: tuple[str, ...] = ("inroll_ordered", "outroll_ordered")
 
 #: name -> (signed weight per corpus-share PERCENT, why). Positive = penalty, negative =
 #: reward, mirroring community analyzers' sign conventions. Opinions, documented.
@@ -175,9 +211,15 @@ class OxeyStyleScorer(IScorer):
             self._w.update(weights)
 
     def pattern_shares(self, layout: Layout) -> dict[str, float]:
-        """Corpus-share percentages per pattern class (the analyzer-style stat block)."""
+        """Corpus-share percentages per pattern class (the analyzer-style stat block).
+
+        Includes the two unweighted :data:`ORDERED_ROLL_SHARES` alongside the weighted
+        classes. They are reported because they are the only roll shares in this block that
+        respond to stroke ORDER — reversing every n-gram in the corpus leaves
+        ``inroll``/``outroll`` bit-identical and swaps these two.
+        """
         g = layout.geometry
-        shares = {name: 0.0 for name in self._w}
+        shares = {name: 0.0 for name in (*self._w, *ORDERED_ROLL_SHARES)}
         # --- bigram patterns ---
         bg_total = 0.0
         hand_load = {-1: 0.0, 1: 0.0}
@@ -199,10 +241,16 @@ class OxeyStyleScorer(IScorer):
                 shares["lsb"] += f
             if C.is_scissor(g, a, b):
                 shares["scissor"] += f
+            # UNORDERED (outer-key-on-the-higher-row): the weighted, published pair.
             if C.is_inwards(g, a, b):
                 shares["inroll"] += f
             if C.is_outwards(g, a, b):
                 shares["outroll"] += f
+            # ORDERED (direction of travel): unweighted, additive, order-sensitive.
+            if C.is_inwards_ordered(g, a, b):
+                shares["inroll_ordered"] += f
+            if C.is_outwards_ordered(g, a, b):
+                shares["outroll_ordered"] += f
         # --- skipgram patterns (disjoint sfb) ---
         sg_total = 0.0
         for sg, f in self._sg.items():
@@ -223,7 +271,7 @@ class OxeyStyleScorer(IScorer):
             if name is not None:
                 shares[name] += f
         # normalize to percents of their own corpus
-        for k in ("sfb", "alternate", "lsb", "scissor", "inroll", "outroll"):
+        for k in ("sfb", "alternate", "lsb", "scissor", "inroll", "outroll", *ORDERED_ROLL_SHARES):
             shares[k] = 100.0 * shares[k] / bg_total if bg_total else 0.0
         shares["dsfb"] = 100.0 * shares["dsfb"] / sg_total if sg_total else 0.0
         for k in ("onehand", "redirect", "bad_redirect"):
@@ -235,5 +283,13 @@ class OxeyStyleScorer(IScorer):
         return shares
 
     def fitness(self, layout: Layout) -> float:
+        """Weighted sum over the WEIGHTED classes only (lower = better).
+
+        Iterates ``self._w`` rather than the share dict, so the unweighted
+        :data:`ORDERED_ROLL_SHARES` are reported by :meth:`pattern_shares` without entering
+        any score. Summing over the shares instead would either raise ``KeyError`` on the new
+        keys or — worse, if defaulted to 0.0 — silently start pricing them the moment someone
+        added a weight, renumbering every published ``oxey-style`` value.
+        """
         shares = self.pattern_shares(layout)
-        return sum(self._w[name] * share for name, share in shares.items())
+        return sum(weight * shares[name] for name, weight in self._w.items())

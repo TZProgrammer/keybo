@@ -13,14 +13,20 @@ from keybo.features.ngram import (
     trigram_model_row,
 )
 from keybo.features.schema import (
+    BIGRAM_DIRECTION_FEATURE_NAMES,
     BIGRAM_FEATURE_NAMES,
     FEATURE_VERSION,
+    FEATURE_VERSION_DIRECTION,
+    TRIGRAM_DIRECTION_FEATURE_NAMES,
     TRIGRAM_FEATURE_NAMES,
 )
 
 __all__ = [
+    "BIGRAM_DIRECTION_FEATURE_NAMES",
     "BIGRAM_FEATURE_NAMES",
     "FEATURE_VERSION",
+    "FEATURE_VERSION_DIRECTION",
+    "TRIGRAM_DIRECTION_FEATURE_NAMES",
     "TRIGRAM_FEATURE_NAMES",
     "bigram_features",
     "bigram_features_from_positions",
