@@ -316,7 +316,12 @@ def tune_lolo(
             raise ObjectiveNotEvaluated(message)
         warnings.warn(message, UnevaluatedObjectiveWarning, stacklevel=2)
 
-    gated, _saturated = apply_tau_gate(results, n_groups=len(report["folds"]) or None)
+    gated, tau_saturated = apply_tau_gate(results, n_groups=len(report["folds"]) or None)
+    # The saturation flag was previously discarded into `_saturated`, so a leaderboard produced by a
+    # gate that eliminated NOBODY was indistinguishable from a tau-filtered one. It is now recorded on
+    # the report, which is the smallest change that makes the fact readable by a caller (TAUGATE-1).
+    if isinstance(report, dict):
+        report["tau_gate_saturated"] = bool(tau_saturated)
     leaderboard = sorted(gated, key=lambda pf: -pf[1])
 
     # Minimum-margin gate. The score is a mean over folds of rho/ceiling, so a change in how

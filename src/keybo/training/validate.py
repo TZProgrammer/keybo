@@ -27,6 +27,7 @@ Cells below the sample floor are refused, not printed with a caveat.
 from __future__ import annotations
 
 from collections import defaultdict
+from collections.abc import Mapping
 from dataclasses import dataclass
 
 import numpy as np
@@ -36,6 +37,7 @@ from scipy.stats import kendalltau, spearmanr
 from keybo.data.strokes import StrokeRow, iqr_average
 from keybo.features import bigram_features_from_positions, trigram_features_from_positions
 from keybo.geometry import ROW_STAGGERED_30, Geometry
+from keybo.verdicts import HighWpmRegression, bucket_regression_report
 
 
 @dataclass
@@ -600,6 +602,64 @@ def _baseline_predict(coef: np.ndarray, cells: list[Cell]) -> np.ndarray:
 # --- the harness ------------------------------------------------------------------------
 
 
+def require_no_high_wpm_regression_in_report(report: dict, what: str) -> dict:
+    """Raise if ANY fold/seed in a validate() report regressed a high-wpm bucket.
+
+    ``validate(..., baseline_buckets=...)`` already COMPUTES a ``high_wpm_gate`` block per fold/seed —
+    and nothing ever raised on it, so a widened model that gave up rho above 80 wpm was reported and
+    ranked exactly like one that did not. The user's requirement is that validation on high-wpm buckets
+    *not regress*; a number in a dict does not enforce that, and every arm so far was judged by a human
+    reading the block.
+
+    Distinguishes STRUCTURAL from NOISE, because that distinction decided the last two arms: a bucket
+    that regresses on EVERY seed of a fold is structural (RETRAIN-DIRECTION-1's dvorak b120, 3/3 seeds);
+    one that regresses on some seeds is noise (the bigram arm's 4/12 scattered cells). Both are
+    reported; only STRUCTURAL raises, so seed wobble cannot veto an arm.
+
+    Returns the per-fold summary when it passes, so a caller can serialize the PASSING verdict too —
+    an artifact that merely omits a verdict reads identically to one that passed (TAUGATE-1).
+    """
+    ungated: list[str] = []
+    per_fold: dict[str, dict] = {}
+    structural: list[str] = []
+    for holdout, fold in report.get("folds", {}).items():
+        seeds = fold.get("seeds", [])
+        blocks = [rec.get("high_wpm_gate") for rec in seeds]
+        if not blocks or any(b is None for b in blocks):
+            ungated.append(holdout)
+            continue
+        if not all(b.get("gated") for b in blocks):
+            ungated.append(holdout)
+            continue
+        counts: dict[int, int] = {}
+        for b in blocks:
+            for bucket in b.get("regressing_high_buckets", []):
+                counts[bucket] = counts.get(bucket, 0) + 1
+        n = len(blocks)
+        struct = sorted(bucket for bucket, hits in counts.items() if hits == n)
+        per_fold[holdout] = {
+            "n_seeds": n,
+            "regressing_bucket_seed_counts": {str(k): v for k, v in sorted(counts.items())},
+            "structural_buckets": struct,
+            "noise_buckets": sorted(b for b, h in counts.items() if 0 < h < n),
+        }
+        if struct:
+            structural.append(f"{holdout} buckets {struct} on {n}/{n} seeds")
+    if ungated:
+        raise HighWpmRegression(
+            f"{what}: folds {sorted(ungated)} carry no high-wpm verdict, so the gate could not run. "
+            f"'Not measured' is not 'did not regress' — pass baseline_buckets to validate(), or state "
+            f"explicitly that the result is ungated."
+        )
+    if structural:
+        raise HighWpmRegression(
+            f"{what}: high-wpm regression is STRUCTURAL (every seed) in {'; '.join(structural)}. "
+            f"Fast and slow typing are different regimes and this objective is aimed at people who have "
+            f"stopped being slow, so this is refused rather than ranked. Per-fold detail: {per_fold}."
+        )
+    return {"passed": True, "gated": True, "per_fold": per_fold}
+
+
 def validate(
     rows: list[StrokeRow],
     seeds: list[int],
@@ -613,8 +673,15 @@ def validate(
     train_params: dict | None = None,
     geometry: Geometry = ROW_STAGGERED_30,
     progress: bool = False,
+    baseline_buckets: Mapping[int, float] | None = None,
 ) -> dict:
     """Run the full leave-one-layout-out experiment; returns the report dict.
+
+    ``baseline_buckets`` (bucket start wpm -> rho, e.g. an incumbent's ``bucket_rhos``) turns on the
+    high-wpm non-regression VERDICT: each fold/seed gains a ``high_wpm_gate`` block from
+    :func:`keybo.verdicts.bucket_regression_report`. Omitting it leaves ``gated: False`` in the
+    artifact rather than nothing at all, so an UNGATED result is never mistaken for a passing one
+    (HIGHWPM-1: these per-bucket rhos were computed all along and nothing ever gated on them).
 
     Report shape::
 
@@ -731,6 +798,11 @@ def validate(
                 "worst_bucket": worst_bucket,
                 "worst_bucket_rho": float(worst_rho),
                 "bucket_rhos": {str(k): v for k, v in bucket_rhos.items()},
+                # Always present, gated or not: an artifact that merely OMITS a verdict reads the
+                # same whether the gate ran and passed or never ran at all (TAUGATE-1).
+                "high_wpm_gate": bucket_regression_report(
+                    bucket_rhos, baseline_buckets or {}, f"{holdout} seed={seed}"
+                ),
             }
         )
         pred_heldout[seed][holdout] = aggregate_layout_table(test_cells, pred)[holdout]

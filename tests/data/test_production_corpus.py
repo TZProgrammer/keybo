@@ -25,6 +25,7 @@ from pathlib import Path
 
 import pytest
 
+import keybo.data.corpus as _corpus_module
 from keybo.data.corpus import (
     CORPUS_ENV_VAR,
     IWEB,
@@ -35,7 +36,38 @@ from keybo.data.corpus import (
     resolve_corpus_dir,
 )
 
-REPO = Path(__file__).resolve().parents[2]
+#: The tree whose ``data/`` these tests assert against — derived from the IMPORTED MODULE, not from
+#: this test file.
+#:
+#: Those two differ, and silently. ``corpus._repo_root()`` is ``Path(corpus.__file__).parents[3]``, so
+#: it follows wherever ``keybo`` was imported FROM; deriving REPO from ``__file__`` here follows the
+#: TEST instead. In the main clone they coincide and everything passes. In a git worktree run without
+#: the worktree's ``src/`` on ``PYTHONPATH``, the editable install resolves ``keybo`` to the MAIN
+#: CLONE's ``src/`` while the tests sit in the worktree — so three of these tests failed with
+#: ``/local/.../repos/keybo/data/corpus != /tmp/<worktree>/data/corpus``, which reads exactly like a
+#: broken resolver and is not one. **The resolver is correct** (verified: with the worktree on
+#: PYTHONPATH it returns the worktree, and 19/19 pass).
+#:
+#: This is the wrong-tree hazard ``keybo.testkit.assert_module_under`` exists for, so the guard below
+#: asserts the two trees agree rather than leaving a confusing failure. Keying REPO off the module
+#: makes the assertions true of the code actually under test — which is the only tree whose ``data/``
+#: the resolver will ever read.
+REPO = Path(_corpus_module.__file__).resolve().parents[3]
+
+
+def test_the_tests_and_the_module_under_test_come_from_the_SAME_TREE() -> None:
+    """Fail LOUDLY and specifically if the harness imported keybo from a different checkout.
+
+    Without this, a worktree run produces three path-mismatch failures that look like a resolver bug.
+    The remedy is ``PYTHONPATH=<worktree>/src``, and the message says so.
+    """
+    tests_tree = Path(__file__).resolve().parents[2]
+    if tests_tree != REPO:
+        raise AssertionError(
+            f"harness/tree mismatch: tests live in {tests_tree} but keybo was imported from {REPO}. "
+            f"An editable install resolves `keybo` to the main clone's src/, so a worktree run scores "
+            f"the wrong tree's data/. Re-run with PYTHONPATH={tests_tree}/src."
+        )
 
 
 # --------------------------------------------------------------- 1. the default is blend-v1
