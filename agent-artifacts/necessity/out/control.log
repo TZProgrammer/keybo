@@ -1,0 +1,16 @@
+frame=native (asserted) surfaces: A=8b2bd09f58bc B=e0d1d2d3fb1d
+archive bank: 2860 layouts (published: 2860)
+reference bank: mean_A=277.294976 sd_A=4.329948 mean_B=293.623124 sd_B=7.458071
+  published:    mean_A=277.294976 sd_A=4.329948 mean_B=293.623124 sd_B=7.458071
+  random-wide    rho=+0.7970054 (pub +0.7970054, delta 0.00e+00) u_A=0.9693 (pub 0.9693) u_B=0.9711 (pub 0.9711) PASS
+  archive-x400   rho=+0.2184272 (pub +0.2184272, delta 0.00e+00) u_A=0.0399 (pub 0.0399) u_B=0.1605 (pub 0.1605) PASS
+
+COMMUNITY per-seed parts: [0, 1, 2]; AALTO per-seed: NONE
+  within random-wide    mean=+0.9872249 (pub +0.9872, delta 2.49e-05) {'seed0|seed1': 0.99, 'seed0|seed2': 0.9865, 'seed1|seed2': 0.9851} PASS
+  within archive-x400   mean=+0.9647336 (pub +0.9647, delta 3.36e-05) {'seed0|seed1': 0.9616, 'seed0|seed2': 0.9484, 'seed1|seed2': 0.9842} PASS
+
+[IDENTITY] cov(zA,zB) == var(C) - var(D), and r == (k^2-1)/(k^2+1) iff sd_A == sd_B
+  random-wide    |cov - (varC-varD)| = 3.3307e-16  slack(Pearson - closed form) = +0.00000  u_A/u_B = 0.9982  k=3.0632
+  archive-x400   |cov - (varC-varD)| = 1.0842e-18  slack(Pearson - closed form) = +0.06336  u_A/u_B = 0.2488  k=1.0575
+
+wrote /tmp/necesspool-out/control.json — 4/4 checks PASS (80.9s)

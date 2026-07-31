@@ -1,0 +1,123 @@
+{
+  "schema_version": 1,
+  "note": "POSITIVE CONTROL for the necessity probe's from-scratch pipeline. Reproduces poolsweep-1's published archive/random cells and within-COMMUNITY seed reliability from main @ e6a5b9e with NOTHING cherry-picked (surfaces.py is bit-identical between main and the poolsweep branch). If this fails, no difference measured downstream can be attributed to a pool design.",
+  "frame": "native",
+  "surface_sha256": {
+    "AALTO_BASE": "8b2bd09f58bc3231d733da7f6d9321acfea8b0d5bd17ae4bba1322e658f433aa",
+    "COMMUNITY_BASE": "e0d1d2d3fb1d7c14a37891d0cce556af3a16a7d497f04a286305c31aa6fdac04"
+  },
+  "archive_bank_size": 2860,
+  "random_bank_size": 200000,
+  "reference": {
+    "mean_A": 277.29497628688523,
+    "sd_A": 4.329948395736461,
+    "mean_B": 293.6231244534948,
+    "sd_B": 7.458070569554029
+  },
+  "checks": [
+    {
+      "cell": "random-wide",
+      "measured": {
+        "n": 400,
+        "rho_spearman": 0.7970054187838673,
+        "rho_pearson": 0.8073767446736333,
+        "u_A": 0.9693046168337623,
+        "u_B": 0.9710624735972405,
+        "u_ratio": 0.9981897593499146,
+        "log_u_asymmetry": 0.0018118811157483644,
+        "c_spread": 0.9222810188177932,
+        "d_spread": 0.3010890337598374,
+        "k_c_over_d": 3.06315048177227,
+        "rho_algebraic_equalvar": 0.807375419401569,
+        "cov_zA_zB": 0.7599476714211538,
+        "var_C_minus_var_D": 0.7599476714211542,
+        "mean_A": 277.496282347441,
+        "mean_B": 294.07646983623886,
+        "sd_A": 4.197038970639294,
+        "sd_B": 7.242252455533916
+      },
+      "published": {
+        "rho": 0.7970054187838673,
+        "u_A": 0.9693,
+        "u_B": 0.9711
+      },
+      "abs_rho_delta": 0.0,
+      "pass": true
+    },
+    {
+      "cell": "archive-x400",
+      "measured": {
+        "n": 400,
+        "rho_spearman": 0.21842724017025103,
+        "rho_pearson": 0.11921646759738484,
+        "u_A": 0.03992075908971766,
+        "u_B": 0.16046425747627915,
+        "u_ratio": 0.24878287362915694,
+        "log_u_asymmetry": 1.391174756382083,
+        "c_spread": 0.08495559389396101,
+        "d_spread": 0.08033535668048544,
+        "k_c_over_d": 1.057511877763255,
+        "rho_algebraic_equalvar": 0.05586065201895664,
+        "cov_zA_zB": 0.0007636834008948078,
+        "var_C_minus_var_D": 0.0007636834008948089,
+        "mean_A": 254.82817566386845,
+        "mean_B": 258.39622919778964,
+        "sd_A": 0.17285482677710468,
+        "sd_B": 1.1967537561491775
+      },
+      "published": {
+        "rho": 0.21842724017025103,
+        "u_A": 0.0399,
+        "u_B": 0.1605
+      },
+      "abs_rho_delta": 0.0,
+      "pass": true
+    },
+    {
+      "cell": "within:random-wide",
+      "measured": {
+        "pairs": {
+          "seed0|seed1": 0.9900485628035175,
+          "seed0|seed2": 0.9865306658166613,
+          "seed1|seed2": 0.985095531847074
+        },
+        "mean": 0.987224920155751
+      },
+      "published": 0.9872,
+      "abs_rho_delta": 2.4920155751062545e-05,
+      "pass": true
+    },
+    {
+      "cell": "within:archive-x400",
+      "measured": {
+        "pairs": {
+          "seed0|seed1": 0.9615796973731086,
+          "seed0|seed2": 0.9484227401421259,
+          "seed1|seed2": 0.984198338739617
+        },
+        "mean": 0.9647335920849506
+      },
+      "published": 0.9647,
+      "abs_rho_delta": 3.359208495057331e-05,
+      "pass": true
+    }
+  ],
+  "identity": [
+    {
+      "cell": "random-wide",
+      "identity_abs_error": 3.3306690738754696e-16,
+      "pearson_slack": 1.3252720643119886e-06,
+      "u_ratio": 0.9981897593499146,
+      "k": 3.06315048177227
+    },
+    {
+      "cell": "archive-x400",
+      "identity_abs_error": 1.0842021724855044e-18,
+      "pearson_slack": 0.0633558155784282,
+      "u_ratio": 0.24878287362915694,
+      "k": 1.057511877763255
+    }
+  ],
+  "n_fail": 0,
+  "elapsed_seconds": 80.8538568019867
+}

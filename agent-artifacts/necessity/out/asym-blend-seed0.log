@@ -1,0 +1,65 @@
+frame=native (asserted) n=400 bank=200000 R=12
+COMMUNITY per-seed [0, 1, 2] | AALTO per-seed NONE (structural)
+reference bank sd_A=4.329948 sd_B=7.458071 mean_A=277.2950 mean_B=293.6231
+
+ARCHIVE TARGET (achieved, not requested): u_A=0.039921 u_B=0.160464 q=0.2488 rho=+0.2184
+geometric-mean narrowness held fixed for the ladder: u_geo=0.080037
+
+[REF] the two anchors
+  random-wide                cross=+0.7970 [+0.750,+0.836] within=+0.9872 u_A=0.9693 u_B=0.9711 q=0.9982 meanA=277.50
+  archive-x400               cross=+0.2184 [+0.114,+0.321] within=+0.9647 u_A=0.0399 u_B=0.1605 q=0.2488 meanA=254.83
+
+[PRIMARY] asym (q=0.249) vs sym (q=1) at FIXED u_geo=0.0800, paired over R=12 construction seeds
+  asym-match-r0              cross=-0.0119 [-0.107,+0.084] within=+0.7026 u_A=0.0395 u_B=0.1574 q=0.2511 meanA=277.12
+  sym-match-r0               cross=+0.0780 [-0.022,+0.176] within=+0.2650 u_A=0.0786 u_B=0.0794 q=0.9899 meanA=277.07
+  asym-match-r1              cross=+0.0447 [-0.053,+0.142] within=+0.6984 u_A=0.0396 u_B=0.1596 q=0.2481 meanA=277.11
+  sym-match-r1               cross=+0.0201 [-0.077,+0.120] within=+0.2038 u_A=0.0815 u_B=0.0795 q=1.0263 meanA=277.08
+  asym-match-r2              cross=+0.0280 [-0.069,+0.125] within=+0.6828 u_A=0.0396 u_B=0.1608 q=0.2461 meanA=277.11
+  sym-match-r2               cross=+0.0945 [-0.004,+0.190] within=+0.2670 u_A=0.0801 u_B=0.0808 q=0.9918 meanA=277.10
+  asym-match-r3              cross=+0.0883 [-0.009,+0.185] within=+0.6993 u_A=0.0396 u_B=0.1630 q=0.2432 meanA=277.11
+  sym-match-r3               cross=+0.0025 [-0.092,+0.095] within=+0.2278 u_A=0.0800 u_B=0.0806 q=0.9929 meanA=277.08
+  asym-match-r4              cross=+0.0320 [-0.068,+0.132] within=+0.6805 u_A=0.0402 u_B=0.1591 q=0.2529 meanA=277.12
+  sym-match-r4               cross=-0.0178 [-0.116,+0.079] within=+0.2131 u_A=0.0811 u_B=0.0794 q=1.0204 meanA=277.11
+  asym-match-r5              cross=-0.0174 [-0.121,+0.086] within=+0.7050 u_A=0.0397 u_B=0.1626 q=0.2444 meanA=277.12
+  sym-match-r5               cross=+0.0766 [-0.024,+0.177] within=+0.1918 u_A=0.0788 u_B=0.0789 q=0.9995 meanA=277.10
+  asym-match-r6              cross=-0.0109 [-0.107,+0.085] within=+0.6865 u_A=0.0404 u_B=0.1584 q=0.2548 meanA=277.12
+  sym-match-r6               cross=-0.0441 [-0.143,+0.057] within=+0.2452 u_A=0.0807 u_B=0.0811 q=0.9944 meanA=277.10
+  asym-match-r7              cross=-0.0472 [-0.147,+0.052] within=+0.6888 u_A=0.0402 u_B=0.1620 q=0.2484 meanA=277.12
+  sym-match-r7               cross=+0.0008 [-0.096,+0.099] within=+0.2347 u_A=0.0797 u_B=0.0804 q=0.9905 meanA=277.10
+  asym-match-r8              cross=+0.0100 [-0.087,+0.109] within=+0.6861 u_A=0.0392 u_B=0.1601 q=0.2451 meanA=277.12
+  sym-match-r8               cross=-0.0176 [-0.114,+0.079] within=+0.2287 u_A=0.0797 u_B=0.0794 q=1.0035 meanA=277.10
+  asym-match-r9              cross=-0.0017 [-0.099,+0.094] within=+0.7085 u_A=0.0396 u_B=0.1630 q=0.2431 meanA=277.10
+  sym-match-r9               cross=+0.0088 [-0.092,+0.110] within=+0.2426 u_A=0.0786 u_B=0.0795 q=0.9889 meanA=277.10
+  asym-match-r10             cross=+0.0045 [-0.090,+0.100] within=+0.7290 u_A=0.0393 u_B=0.1620 q=0.2422 meanA=277.12
+  sym-match-r10              cross=+0.0478 [-0.053,+0.148] within=+0.2631 u_A=0.0802 u_B=0.0793 q=1.0114 meanA=277.12
+  asym-match-r11             cross=+0.0393 [-0.065,+0.138] within=+0.6789 u_A=0.0407 u_B=0.1588 q=0.2562 meanA=277.12
+  sym-match-r11              cross=-0.0162 [-0.113,+0.081] within=+0.2309 u_A=0.0794 u_B=0.0804 q=0.9871 meanA=277.11
+
+[LADDER] q swept at FIXED u_geo — only the ASYMMETRY moves
+  ladder-q0.0625             cross=+0.0615 [-0.036,+0.157] within=+0.9161 u_A=0.0204 u_B=0.3228 q=0.0631 meanA=277.12
+  ladder-q0.125              cross=+0.0686 [-0.030,+0.164] within=+0.8285 u_A=0.0279 u_B=0.2229 q=0.1253 meanA=277.12
+  ladder-q0.25               cross=+0.0789 [-0.012,+0.167] within=+0.6940 u_A=0.0401 u_B=0.1602 q=0.2506 meanA=277.10
+  ladder-q0.5                cross=-0.0289 [-0.126,+0.069] within=+0.4892 u_A=0.0561 u_B=0.1122 q=0.5003 meanA=277.11
+  ladder-q1                  cross=-0.1006 [-0.199,+0.000] within=+0.2515 u_A=0.0785 u_B=0.0803 q=0.9769 meanA=277.10
+  ladder-q2                  cross=+0.0377 [-0.060,+0.133] within=-0.0363 u_A=0.1152 u_B=0.0572 q=2.0142 meanA=277.07
+  ladder-q4                  cross=-0.1841 [-0.278,-0.088] within=-0.2280 u_A=0.1619 u_B=0.0399 q=4.0539 meanA=277.01
+  ladder-q8                  cross=+0.0486 [-0.052,+0.146] within=-0.3379 u_A=0.2238 u_B=0.0280 q=8.0076 meanA=276.98
+  ladder-q16                 cross=+0.0520 [-0.043,+0.146] within=-0.4004 u_A=0.3160 u_B=0.0203 q=15.5639 meanA=276.96
+
+[LEVEL] asym and sym at 1x / 2x / 4x the u-levels (ratio fixed within each arm)
+  level-asym-1x              cross=+0.0047 [-0.090,+0.102] within=+0.6971 u_A=0.0394 u_B=0.1593 q=0.2471 meanA=277.11
+  level-sym-1x               cross=+0.0547 [-0.043,+0.154] within=+0.1916 u_A=0.0804 u_B=0.0794 q=1.0132 meanA=277.11
+  level-asym-2x              cross=+0.0588 [-0.033,+0.150] within=+0.9029 u_A=0.0801 u_B=0.3225 q=0.2484 meanA=277.13
+  level-sym-2x               cross=+0.0383 [-0.060,+0.133] within=+0.6709 u_A=0.1574 u_B=0.1575 q=0.9994 meanA=277.13
+  level-asym-4x              cross=+0.2998 [+0.210,+0.386] within=+0.9676 u_A=0.1648 u_B=0.6006 q=0.2743 meanA=277.12
+  level-sym-4x               cross=+0.2880 [+0.197,+0.375] within=+0.9018 u_A=0.3242 u_B=0.3217 q=1.0079 meanA=277.11
+
+=== VERDICT ===
+  archive       cross=+0.2184  within=+0.9647  q=0.2488
+  asym  (R=12)  cross=+0.0131 (rep sd 0.0357)  within=+0.6955  achieved q=0.2480
+  sym   (R=12)  cross=+0.0194 (rep sd 0.0447)  within=+0.2345  achieved q=0.9997
+  PAIRED asym-sym cross: -0.0063 (sd 0.0607) wilcoxon {'statistic': 34.0, 'p_two_sided': 0.7333984375}
+  UNPAIRED archive-asym(r0): +0.2303 CI [+0.0865,+0.3742] p=0.0015
+  F5 construction validity: worst u_A miss +0.0191, worst u_B miss +0.0192 -> PASS
+
+wrote /tmp/necesspool-out/asym-blend-seed0.json (41 cells, 171.9s)
