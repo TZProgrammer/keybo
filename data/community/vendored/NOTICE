@@ -1,0 +1,25 @@
+Attribution notices for third-party content vendored in this directory.
+(Added 2026-07-31, VENDPROV-1. See PROVENANCE.md for full derivations and manifest.json for digests.)
+
+oxeylyzer1-english.json.gz
+  Source:   the oxeylyzer project (github.com/O-X-L/oxeylyzer), v0.2.0, commit d015a169,
+            file oxeylyzer-core/static/language_data/english.json — vendored verbatim (gzipped).
+  Licence:  Apache License 2.0. Redistribution permitted; this NOTICE provides the attribution
+            the licence requires. No modifications were made to the payload.
+  Caveat:   the payload self-identifies as name="shai"; upstream ships both english.json and
+            shai.json, differing by ~16 in char_total. The vendored bytes are english.json's,
+            pinned by sha256 in manifest.json.
+
+oxeylyzer2-english.json.gz
+  Source:   the oxeylyzer-2 project (github.com/O-X-L/oxeylyzer-2), commit 52b271a3,
+            file data/english.json — vendored verbatim (gzipped).
+  Licence:  NONE FOUND in the upstream tree (no LICENSE/COPYING; 6 Cargo.toml, 0 license fields).
+            Default all-rights-reserved: there is NO redistribution grant on record for this file.
+            Its resolution (contact upstream / remove / replace) is an open item for the project
+            owner — recorded in PREREGISTRATIONS.md entry VENDPROV-1. This notice documents the
+            situation; it does not cure it.
+
+genkey-keybo.json.gz / keymeow-keybo.json.gz
+  These are keybo's OWN corpus data serialized in genkey's / keymeow's file formats (generators
+  preserved at the location named in PROVENANCE.md). No third-party content is contained;
+  the tools' licences (GPL-3.0 for genkey) apply to the tools, not to these data files.
