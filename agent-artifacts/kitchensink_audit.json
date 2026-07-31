@@ -1,0 +1,144 @@
+{
+  "rows": [
+    {
+      "feature": "half_scissor",
+      "level": "bigram",
+      "n_pairs": 870,
+      "fires": 48,
+      "n_distinct_values": 2,
+      "swap_asym": 0,
+      "r2_vs_served": 0.6856692469790673,
+      "r2_vs_wide": 0.6856695179855128
+    },
+    {
+      "feature": "row_skip_anyfinger",
+      "level": "bigram",
+      "n_pairs": 870,
+      "fires": 100,
+      "n_distinct_values": 2,
+      "swap_asym": 0,
+      "r2_vs_served": 0.5477075661506581,
+      "r2_vs_wide": 0.5479968409604599
+    },
+    {
+      "feature": "pinky_off_home",
+      "level": "bigram",
+      "n_pairs": 870,
+      "fires": 116,
+      "n_distinct_values": 2,
+      "swap_asym": 208,
+      "r2_vs_served": 0.6924072988775309,
+      "r2_vs_wide": 0.692407599700712
+    },
+    {
+      "feature": "lsb_magnitude",
+      "level": "bigram",
+      "n_pairs": 870,
+      "fires": 32,
+      "n_distinct_values": 6,
+      "swap_asym": 0,
+      "r2_vs_served": 0.9768185413958717,
+      "r2_vs_wide": 0.9768195358201957
+    },
+    {
+      "feature": "weak_finger_pair",
+      "level": "bigram",
+      "n_pairs": 870,
+      "fires": 60,
+      "n_distinct_values": 2,
+      "swap_asym": 0,
+      "r2_vs_served": 0.39863508489898236,
+      "r2_vs_wide": 0.4487168492631116
+    },
+    {
+      "feature": "finger_dist_ordered",
+      "level": "bigram",
+      "n_pairs": 870,
+      "fires": 324,
+      "n_distinct_values": 7,
+      "swap_asym": 324,
+      "r2_vs_served": 0.35604001109832384,
+      "r2_vs_wide": 0.8515509863615297
+    },
+    {
+      "feature": "onehand",
+      "level": "trigram",
+      "n_triples": 24360,
+      "fires": 756,
+      "n_distinct_values": 2,
+      "swap_asym": 0,
+      "r2_vs_served": 0.5127988769522969,
+      "r2_vs_wide": 0.5337585050693832
+    },
+    {
+      "feature": "onehand_in",
+      "level": "trigram",
+      "n_triples": 24360,
+      "fires": 378,
+      "n_distinct_values": 2,
+      "swap_asym": 756,
+      "r2_vs_served": 0.31995297587634874,
+      "r2_vs_wide": 0.435751304824057
+    },
+    {
+      "feature": "red_weak",
+      "level": "trigram",
+      "n_triples": 24360,
+      "fires": 432,
+      "n_distinct_values": 2,
+      "swap_asym": 0,
+      "r2_vs_served": 0.6853176133558441,
+      "r2_vs_wide": 1.0
+    },
+    {
+      "feature": "red_sfs",
+      "level": "trigram",
+      "n_triples": 24360,
+      "fires": 972,
+      "n_distinct_values": 2,
+      "swap_asym": 0,
+      "r2_vs_served": 0.5236636808203765,
+      "r2_vs_wide": 0.5818687843562571
+    },
+    {
+      "feature": "alt_sfs",
+      "level": "trigram",
+      "n_triples": 24360,
+      "fires": 1440,
+      "n_distinct_values": 2,
+      "swap_asym": 0,
+      "r2_vs_served": 0.6413132296288928,
+      "r2_vs_wide": 0.6730709261238539
+    },
+    {
+      "feature": "sg_full_scissor",
+      "level": "trigram",
+      "n_triples": 24360,
+      "fires": 672,
+      "n_distinct_values": 2,
+      "swap_asym": 0,
+      "r2_vs_served": 0.18360204415359016,
+      "r2_vs_wide": 0.18489003136135063
+    },
+    {
+      "feature": "sg_half_scissor",
+      "level": "trigram",
+      "n_triples": 24360,
+      "fires": 1344,
+      "n_distinct_values": 2,
+      "swap_asym": 0,
+      "r2_vs_served": 0.18972931892882794,
+      "r2_vs_wide": 0.19289056811870942
+    },
+    {
+      "feature": "sg_lsb",
+      "level": "trigram",
+      "n_triples": 24360,
+      "fires": 896,
+      "n_distinct_values": 2,
+      "swap_asym": 0,
+      "r2_vs_served": 0.1489179291106244,
+      "r2_vs_wide": 0.1553983957286812
+    }
+  ]
+}
