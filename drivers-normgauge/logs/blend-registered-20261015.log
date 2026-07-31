@@ -1,0 +1,7 @@
+[     0.1s] cell registered seed=20261015: aalto-n=0.5411, comm-n=0.3977, pool-n=0.0612 [rule: held-out predictive skill (rho/ceiling on the plain-mean aggregation that matches the bootstrap interval; AMENDMENT 2), POOL at its measured unique variance share]
+[    22.8s]     island 1/40 best=0.941578 unique=127,561
+[   253.2s]     island 11/40 best=0.950704 unique=1,378,804
+[   484.2s]     island 21/40 best=0.950704 unique=2,625,377
+[   713.8s]     island 31/40 best=0.950704 unique=3,877,587
+[   919.6s]     island 40/40 best=0.950704 unique=5,004,181
+[   920.1s] wrote /tmp/normgauge/drivers-normgauge/runs/blend-registered-20261015.json

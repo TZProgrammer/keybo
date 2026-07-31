@@ -1,0 +1,86 @@
+{
+ "design": "leave-one-layout-out over AALTO; bucket-centered rho / split-half ceiling",
+ "held_out_units": [
+  "azerty",
+  "dvorak",
+  "qwerty",
+  "qwertz"
+ ],
+ "ceilings": {
+  "azerty": 0.8099555887119936,
+  "dvorak": 0.7175984395085713,
+  "qwerty": 0.9758714341715645,
+  "qwertz": 0.8539151401465699
+ },
+ "per_fold": {
+  "ms/char (shipped)": {
+   "azerty": 0.7010477684713495,
+   "dvorak": 0.8066068784431966,
+   "qwerty": 0.4553319335904272,
+   "qwertz": 0.6138571445193353
+  },
+  "drop-pool 50/50": {
+   "azerty": 0.5789820570779854,
+   "dvorak": 0.550891097592284,
+   "qwerty": 0.425482916080276,
+   "qwertz": 0.5465256073203107
+  },
+  "registered (c)": {
+   "azerty": 0.6106285940206139,
+   "dvorak": 0.6151702086567651,
+   "qwerty": 0.4352118255376861,
+   "qwertz": 0.5652240761536644
+  }
+ },
+ "means_of_ratios_REORDERABLE": {
+  "ms/char (shipped)": 0.6442109312560771,
+  "drop-pool 50/50": 0.525470419517714,
+  "registered (c)": 0.5565586760921823
+ },
+ "paired_per_fold": {
+  "drop-pool 50/50": {
+   "per_fold_deltas": [
+    -0.12206571139336408,
+    -0.2557157808509125,
+    -0.029849017510151177,
+    -0.06733153719902452
+   ],
+   "n_folds": 4,
+   "wins": 0,
+   "losses": 4,
+   "mean_paired_delta": -0.11874051173836307,
+   "all_same_sign": true
+  },
+  "registered (c)": {
+   "per_fold_deltas": [
+    -0.09041917445073566,
+    -0.19143666978643148,
+    -0.02012010805274106,
+    -0.04863306836567083
+   ],
+   "n_folds": 4,
+   "wins": 0,
+   "losses": 4,
+   "mean_paired_delta": -0.08765225516389476,
+   "all_same_sign": true
+  }
+ },
+ "bound_doc_conformant": 0.06992692603328392,
+ "bound_raw_ceilings": 0.15251112445344636,
+ "reweighting_margin_bound_DEPRECATED_raw": 0.15251112445344636,
+ "verdicts": {
+  "drop-pool 50/50": {
+   "mean": 0.525470419517714,
+   "delta_vs_ms_per_char": -0.11874051173836309,
+   "relative": -0.18431930595596047,
+   "clears_gate": false
+  },
+  "registered (c)": {
+   "mean": 0.5565586760921823,
+   "delta_vs_ms_per_char": -0.08765225516389474,
+   "relative": -0.1360614216728535,
+   "clears_gate": false
+  }
+ },
+ "limit": "the three .standardized surfaces share AALTO's bigram tensor, which biases this test TOWARD ms/char; a narrow loss reads as 'not demonstrated'"
+}

@@ -1,0 +1,24 @@
+geometry slots: 31
+rows loaded: 8829
+held-out units (layouts): ['azerty', 'dvorak', 'qwerty', 'qwertz']
+  azerty: 1827 cells, 860 scoreable, ceiling 0.8100
+  dvorak: 677 cells, 235 scoreable, ceiling 0.7176
+  qwerty: 17184 cells, 12596 scoreable, ceiling 0.9759
+  qwertz: 4391 cells, 2590 scoreable, ceiling 0.8539
+
+=== rho/ceiling per fold (higher is better) ===
+objective                  azerty     dvorak     qwerty     qwertz       MEAN
+ms/char (shipped)         +0.7010    +0.8066    +0.4553    +0.6139    +0.6442
+drop-pool 50/50           +0.5790    +0.5509    +0.4255    +0.5465    +0.5255
+registered (c)            +0.6106    +0.6152    +0.4352    +0.5652    +0.5566
+
+=== PAIRED PER-FOLD DELTAS (non-reorderable; the threshold-free verdict) ===
+drop-pool 50/50        wins 0/4  mean paired delta -0.1187  sign-consistent: True
+registered (c)         wins 0/4  mean paired delta -0.0877  sign-consistent: True
+bound: doc-conformant 0.069927  |  raw-ceilings (as GATE-1 registered) 0.152511
+
+=== VERDICT ===
+drop-pool 50/50        mean +0.5255 vs ms/char +0.6442 -> delta -0.1187 (-18.43%)  GATE NOT CLEARED
+registered (c)         mean +0.5566 vs ms/char +0.6442 -> delta -0.0877 (-13.61%)  GATE NOT CLEARED
+
+wrote /tmp/ng-mor/drivers-normgauge/gate-accuracy.json

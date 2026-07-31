@@ -1,0 +1,49 @@
+{
+ "AALTO": {
+  "path": "/local/home/zegertho/keybo-e2e/tristrokes31_cond_v1.tsv",
+  "samples": 26368247,
+  "rows_kept": 8620,
+  "rows_seen": 16643,
+  "cells_covered": 5219,
+  "labels_kept": [
+   "azerty",
+   "dvorak",
+   "qwerty",
+   "qwertz"
+  ],
+  "labels_in_file": {
+   "qwerty": 7057,
+   "qwertz": 3706,
+   "azerty": 3089,
+   "dvorak": 2791
+  }
+ },
+ "COMMUNITY": {
+  "path": "/local/home/zegertho/repos/keybo/data/community/processed/tristrokes_last_community.tsv",
+  "samples": 29047,
+  "rows_kept": 1327,
+  "rows_seen": 38516,
+  "cells_covered": 1044,
+  "labels_kept": [
+   "colemak@rowStagger#alite",
+   "custom-aa426873@rowStagger#vg",
+   "custom-d42a1f92@rowStagger#ddn",
+   "mtgap-variant@rowStagger#richarddavison"
+  ],
+  "labels_in_file": {
+   "colemak-dh@ortholinear#grzegorzkulesza": 6820,
+   "colemak-dh@ortholinear#grzegorzkulesza+pseudo": 9146,
+   "colemak-dh@ortholinear#grzegorzkulesza+rareboost": 5028,
+   "colemak@rowStagger#alite": 2365,
+   "custom-0f8904ec@rowStagger#octahedron": 1390,
+   "custom-aa426873@rowStagger#vg": 2813,
+   "custom-abcaff22@ortholinear#andrewcastro": 2107,
+   "custom-d42a1f92@rowStagger#ddn": 1955,
+   "mtgap-variant@rowStagger#richarddavison": 1798,
+   "qwerty@ortholinear#grzegorzkulesza": 234,
+   "qwerty@rowStagger#grzegorzkulesza": 34,
+   "recurva-variant@angleMod#vg": 4826
+  }
+ },
+ "ratio_whole_surface": 907.7786690536028
+}

@@ -1,0 +1,33 @@
+geometry slots: 31
+rows loaded: 11729
+held-out units (layouts): ['colemak-dh@ortholinear#grzegorzkulesza', 'colemak-dh@ortholinear#grzegorzkulesza+pseudo', 'colemak-dh@ortholinear#grzegorzkulesza+rareboost', 'colemak@rowStagger#alite', 'custom-0f8904ec@rowStagger#octahedron', 'custom-aa426873@rowStagger#vg', 'custom-abcaff22@ortholinear#andrewcastro', 'custom-d42a1f92@rowStagger#ddn', 'mtgap-variant@rowStagger#richarddavison', 'recurva-variant@angleMod#vg']
+  colemak-dh@ortholinear#grzegorzkulesza: 3511 cells, 2135 scoreable, ceiling 1.0000
+  colemak-dh@ortholinear#grzegorzkulesza+pseudo: 3241 cells, 1928 scoreable, ceiling 1.0000
+  colemak-dh@ortholinear#grzegorzkulesza+rareboost: 1089 cells, 697 scoreable, ceiling 1.0000
+  colemak@rowStagger#alite: 366 cells, 137 scoreable, ceiling 1.0000
+  custom-0f8904ec@rowStagger#octahedron: no cells
+  custom-aa426873@rowStagger#vg: 216 cells, 63 scoreable, ceiling 1.0000
+  custom-abcaff22@ortholinear#andrewcastro: 487 cells, 213 scoreable, ceiling 1.0000
+  custom-d42a1f92@rowStagger#ddn: 150 cells, 43 scoreable, ceiling 1.0000
+  mtgap-variant@rowStagger#richarddavison: 134 cells, 35 scoreable, ceiling 1.0000
+  recurva-variant@angleMod#vg: 2559 cells, 1743 scoreable, ceiling 1.0000
+
+=== rho/ceiling per fold (higher is better) ===
+objective              colemak-dh@ortholinear#grzegorzkulesza colemak-dh@ortholinear#grzegorzkulesza+pseudo colemak-dh@ortholinear#grzegorzkulesza+rareboost colemak@rowStagger#alite custom-aa426873@rowStagger#vg custom-abcaff22@ortholinear#andrewcastro custom-d42a1f92@rowStagger#ddn mtgap-variant@rowStagger#richarddavison recurva-variant@angleMod#vg       MEAN
+ms/char (shipped)         +0.1413    +0.2516    +0.0819    +0.1097    -0.1789    +0.3487    -0.0392    +0.6387    +0.0998    +0.1615
+drop-pool 50/50           +0.2493    +0.2757    +0.1897    +0.5838    +0.2180    +0.4028    +0.5761    +0.8056    +0.3070    +0.4009
+registered (c)            +0.2400    +0.2747    +0.1793    +0.5531    +0.1811    +0.4091    +0.5430    +0.7815    +0.2907    +0.3836
+solo-COMMUNITY (control)    +0.2816    +0.2620    +0.2350    +0.7327    +0.4216    +0.3701    +0.7473    +0.7322    +0.3826    +0.4628
+
+=== PAIRED PER-FOLD DELTAS (non-reorderable; the threshold-free verdict) ===
+drop-pool 50/50        wins 9/9  mean paired delta +0.2394  sign-consistent: True
+registered (c)         wins 9/9  mean paired delta +0.2221  sign-consistent: True
+solo-COMMUNITY (control) wins 9/9  mean paired delta +0.3013  sign-consistent: True
+bound (from GATE-1 ceilings; this frame's are all 1.0 so its own bound is vacuous): doc-conformant 0.069934 | raw 0.152524
+
+=== VERDICT ===
+drop-pool 50/50        mean +0.4009 vs ms/char +0.1615 -> delta +0.2394 (+148.21%)  GATE CLEARED
+registered (c)         mean +0.3836 vs ms/char +0.1615 -> delta +0.2221 (+137.52%)  GATE CLEARED
+solo-COMMUNITY (control) mean +0.4628 vs ms/char +0.1615 -> delta +0.3013 (+186.54%)  GATE CLEARED
+
+wrote /tmp/ng-mor/drivers-normgauge/gate3-accuracy.json

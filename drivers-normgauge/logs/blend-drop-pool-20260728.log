@@ -1,0 +1,7 @@
+[     0.1s] cell drop-pool seed=20260728: aalto-n=0.5000, comm-n=0.5000 [rule: drop POOL entirely (it is a measured union of the other two), 50/50]
+[    23.3s]     island 1/40 best=0.941917 unique=127,408
+[   251.7s]     island 11/40 best=0.948481 unique=1,376,204
+[   484.3s]     island 21/40 best=0.948481 unique=2,626,071
+[   712.5s]     island 31/40 best=0.948481 unique=3,875,049
+[   917.3s]     island 40/40 best=0.948481 unique=5,002,772
+[   917.7s] wrote /tmp/normgauge/drivers-normgauge/runs/blend-drop-pool-20260728.json

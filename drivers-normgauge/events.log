@@ -1,0 +1,9 @@
+2026-07-29T00:26:27Z	started	normgauge subagent started: 3 normalized per-model gauges + weighted combined objective
+2026-07-29T00:53:59Z	finding	F5: the 643x is scissor-neighbourhood COVERED-PAIR-filtered (whole-table is 46.2x); AALTO count identical across both artifacts while COMMUNITY drops 92.1% — wrong constant, true conclusion
+2026-07-29T01:31:26Z	finding	R3: POOL = 0.4988*AALTO + 0.5080*COMMUNITY at fit level, R2=0.93881, unique variance 0.0612 — POOL is not an independent third vote, MEASURED not asserted
+2026-07-29T01:44:03Z	finding	R6: size-preserving mutant + same-second mtime => CPython treats a MUTATED .pyc as valid; testkit's restore-to-green check is what caught it
+2026-07-29T02:10:15Z	finding	R7: killed 2 defects in my OWN prereg pre-result — 'n=7' was actually n=4, and my participant bootstrap was a no-op on AALTO (0.999992 of cells survive every resample)
+2026-07-29T02:31:45Z	finding	R10/R11: (c) held-out fired (weights 0.5276/0.4112/0.0612, P6 refuted) but its CI is broken — point estimate outside its own interval; blast radius measured: same branch, weights move <=0.0136, refuting needs 41.8x SE widening
+2026-07-29T05:40:02Z	finding	R13: parent's brief-correction #2 has its own wrong constant — COMMUNITY has 7 participants not 9 (9 = naive rsplit over label-variants; +pseudo/+rareboost are corpus tags, same person). Direction is dangerous: 7<9 strengthens 'too few units'.
+2026-07-29T05:41:51Z	completed	NORMGAUGE-1 complete: weights 0.5411/0.3977/0.0612 from held-out skill; gauges+blend wired into shipped optimizer; full suite rc=0; 11 commits on branch normgauge, unpushed
+2026-07-29T05:56:35Z	note	STATE FLUSH complete: branch normgauge @ f2d76f8 (base dd04219, 15 commits) verified recoverable from the SHARED clone; recovery recipe RUN -> 36 passed from detached checkout of 477bd64; no children to cascade; reflection-proposal.md written, no KB write

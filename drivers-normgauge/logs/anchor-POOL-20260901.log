@@ -1,0 +1,10 @@
+[     0.1s] gate: evaluator bit-stable across batch lengths (padded tile)
+[     0.1s] control: MODELNORM AALTO champion rescores 223236317224.4177 vs 223236317224.4177 rel=-1.367e-16
+[    23.0s]   POOL seed=20260901 island 1/40 best=227268377105.3342 unique=125,255
+[   207.3s]   POOL seed=20260901 island 9/40 best=227268377105.3342 unique=1,127,397
+[   391.1s]   POOL seed=20260901 island 17/40 best=227268377105.3342 unique=2,125,945
+[   572.6s]   POOL seed=20260901 island 25/40 best=227268377105.3342 unique=3,125,234
+[   754.2s]   POOL seed=20260901 island 33/40 best=227268377105.3342 unique=4,126,528
+[   918.2s]   POOL seed=20260901 island 40/40 best=227268377105.3342 unique=5,002,004
+[   918.2s]   POOL seed=20260901 budget reached at island 40
+[   919.1s] wrote /tmp/normgauge/drivers-normgauge/runs/anchor-POOL-20260901.json

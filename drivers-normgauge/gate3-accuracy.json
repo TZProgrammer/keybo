@@ -1,0 +1,157 @@
+{
+ "design": "GATE-3: leave-one-label-out over COMMUNITY, RAW bucket-centered rho, NO ceiling (it cannot change a within-fold ordering)",
+ "held_out_units": [
+  "colemak-dh@ortholinear#grzegorzkulesza",
+  "colemak-dh@ortholinear#grzegorzkulesza+pseudo",
+  "colemak-dh@ortholinear#grzegorzkulesza+rareboost",
+  "colemak@rowStagger#alite",
+  "custom-aa426873@rowStagger#vg",
+  "custom-abcaff22@ortholinear#andrewcastro",
+  "custom-d42a1f92@rowStagger#ddn",
+  "mtgap-variant@rowStagger#richarddavison",
+  "recurva-variant@angleMod#vg"
+ ],
+ "ceilings": {
+  "colemak-dh@ortholinear#grzegorzkulesza": 1.0,
+  "colemak-dh@ortholinear#grzegorzkulesza+pseudo": 1.0,
+  "colemak-dh@ortholinear#grzegorzkulesza+rareboost": 1.0,
+  "colemak@rowStagger#alite": 1.0,
+  "custom-aa426873@rowStagger#vg": 1.0,
+  "custom-abcaff22@ortholinear#andrewcastro": 1.0,
+  "custom-d42a1f92@rowStagger#ddn": 1.0,
+  "mtgap-variant@rowStagger#richarddavison": 1.0,
+  "recurva-variant@angleMod#vg": 1.0
+ },
+ "per_fold": {
+  "ms/char (shipped)": {
+   "colemak-dh@ortholinear#grzegorzkulesza": 0.14134702015606523,
+   "colemak-dh@ortholinear#grzegorzkulesza+pseudo": 0.25155282194632406,
+   "colemak-dh@ortholinear#grzegorzkulesza+rareboost": 0.08190491404021612,
+   "colemak@rowStagger#alite": 0.10973173782366008,
+   "custom-aa426873@rowStagger#vg": -0.17890745007680492,
+   "custom-abcaff22@ortholinear#andrewcastro": 0.34872923003779,
+   "custom-d42a1f92@rowStagger#ddn": -0.03919051574416673,
+   "mtgap-variant@rowStagger#richarddavison": 0.638655462184874,
+   "recurva-variant@angleMod#vg": 0.09976638408446921
+  },
+  "drop-pool 50/50": {
+   "colemak-dh@ortholinear#grzegorzkulesza": 0.24928836973009424,
+   "colemak-dh@ortholinear#grzegorzkulesza+pseudo": 0.27570992858684557,
+   "colemak-dh@ortholinear#grzegorzkulesza+rareboost": 0.18968301800636078,
+   "colemak@rowStagger#alite": 0.5838202624750313,
+   "custom-aa426873@rowStagger#vg": 0.21798195084485406,
+   "custom-abcaff22@ortholinear#andrewcastro": 0.4027725777202202,
+   "custom-d42a1f92@rowStagger#ddn": 0.5760779279619422,
+   "mtgap-variant@rowStagger#richarddavison": 0.8056022408963587,
+   "recurva-variant@angleMod#vg": 0.30698450587126513
+  },
+  "registered (c)": {
+   "colemak-dh@ortholinear#grzegorzkulesza": 0.24004397999318328,
+   "colemak-dh@ortholinear#grzegorzkulesza+pseudo": 0.2746564696477684,
+   "colemak-dh@ortholinear#grzegorzkulesza+rareboost": 0.17932681367116188,
+   "colemak@rowStagger#alite": 0.55306905370844,
+   "custom-aa426873@rowStagger#vg": 0.18111559139784947,
+   "custom-abcaff22@ortholinear#andrewcastro": 0.40909957350243487,
+   "custom-d42a1f92@rowStagger#ddn": 0.5430038510911425,
+   "mtgap-variant@rowStagger#richarddavison": 0.7815126050420168,
+   "recurva-variant@angleMod#vg": 0.2907033931351359
+  },
+  "solo-COMMUNITY (control)": {
+   "colemak-dh@ortholinear#grzegorzkulesza": 0.2815988623928211,
+   "colemak-dh@ortholinear#grzegorzkulesza+pseudo": 0.2619977386200092,
+   "colemak-dh@ortholinear#grzegorzkulesza+rareboost": 0.23499595926601172,
+   "colemak@rowStagger#alite": 0.7326619000504041,
+   "custom-aa426873@rowStagger#vg": 0.421562980030722,
+   "custom-abcaff22@ortholinear#andrewcastro": 0.37013732499117363,
+   "custom-d42a1f92@rowStagger#ddn": 0.74733821641622,
+   "mtgap-variant@rowStagger#richarddavison": 0.7322128851540617,
+   "recurva-variant@angleMod#vg": 0.3825514109361859
+  }
+ },
+ "means_of_ratios_REORDERABLE": {
+  "ms/char (shipped)": 0.16150995605026963,
+  "drop-pool 50/50": 0.4008800868992191,
+  "registered (c)": 0.3836145923543481,
+  "solo-COMMUNITY (control)": 0.4627841419841788
+ },
+ "paired_per_fold": {
+  "drop-pool 50/50": {
+   "per_fold_deltas": [
+    0.10794134957402901,
+    0.02415710664052151,
+    0.10777810396614466,
+    0.4740885246513712,
+    0.396889400921659,
+    0.05404334768243019,
+    0.615268443706109,
+    0.16694677871148467,
+    0.20721812178679594
+   ],
+   "n_folds": 9,
+   "wins": 9,
+   "losses": 0,
+   "mean_paired_delta": 0.23937013084894943,
+   "all_same_sign": true
+  },
+  "registered (c)": {
+   "per_fold_deltas": [
+    0.09869695983711804,
+    0.023103647701444352,
+    0.09742189963094576,
+    0.44333731588477987,
+    0.36002304147465436,
+    0.06037034346464487,
+    0.5821943668353092,
+    0.1428571428571428,
+    0.19093700905066668
+   ],
+   "n_folds": 9,
+   "wins": 9,
+   "losses": 0,
+   "mean_paired_delta": 0.22210463630407842,
+   "all_same_sign": true
+  },
+  "solo-COMMUNITY (control)": {
+   "per_fold_deltas": [
+    0.14025184223675588,
+    0.010444916673685134,
+    0.15309104522579559,
+    0.622930162226744,
+    0.600470430107527,
+    0.02140809495338364,
+    0.7865287321603868,
+    0.09355742296918768,
+    0.2827850268517167
+   ],
+   "n_folds": 9,
+   "wins": 9,
+   "losses": 0,
+   "mean_paired_delta": 0.30127418593390914,
+   "all_same_sign": true
+  }
+ },
+ "bound_doc_conformant": 0.069934,
+ "bound_raw_ceilings": 0.152524,
+ "reweighting_margin_bound_DEPRECATED_raw": 0.152524,
+ "verdicts": {
+  "drop-pool 50/50": {
+   "mean": 0.4008800868992191,
+   "delta_vs_ms_per_char": 0.23937013084894948,
+   "relative": 1.4820766267464405,
+   "clears_gate": true
+  },
+  "registered (c)": {
+   "mean": 0.3836145923543481,
+   "delta_vs_ms_per_char": 0.22210463630407845,
+   "relative": 1.3751761299157859,
+   "clears_gate": true
+  },
+  "solo-COMMUNITY (control)": {
+   "mean": 0.4627841419841788,
+   "delta_vs_ms_per_char": 0.30127418593390914,
+   "relative": 1.8653598409756127,
+   "clears_gate": true
+  }
+ },
+ "limit": "the three .standardized surfaces share AALTO's bigram tensor, which biases this test TOWARD ms/char; a narrow loss reads as 'not demonstrated'"
+}

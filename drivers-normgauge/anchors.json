@@ -1,0 +1,123 @@
+{
+ "one": {
+  "AALTO": 223241709941.11667,
+  "COMMUNITY": 222447818165.889,
+  "POOL": 227268377105.3342
+ },
+ "provenance": {
+  "baked_wpm": 90.0,
+  "corpus_trigram_path": "/tmp/normgauge/data/corpus/blend-v1/trigrams.txt",
+  "corpus_trigram_sha256": "19806532ee3567f5afe4311e51f346b6c36375030f473fe3f68a6a3dc21beb61",
+  "evaluator": {
+   "numpy": "2.5.0",
+   "python": "3.13.14",
+   "tile": 16
+  },
+  "family": "TRI_PS_FREQ_PRIOR",
+  "frame": "standardized",
+  "frame_caveat": "the shipped .standardized surfaces share AALTO's bigram tensor (standardization substitutes it), so the three sources differ only in their conditional trigram increment and are LESS independent than the .native arrays; POOL is additionally fitted on the union of AALTO's and COMMUNITY's sources",
+  "frame_note": "geometry-only (g); the layout-independent b(ngram) term is excluded",
+  "interpretation": "0 = the mean of a random-layout pool, 1 = that model's own searched optimum; higher is better. A searched optimum bounds the true optimum from one side only, so every value is an UPPER bound on the true normalized score. Because the zero is the random pool's MEAN, realistic layouts occupy only the top fraction of the range -- the scale is well-posed but low-resolution where it is actually used, and qwerty sits near 0.5, NOT near 0",
+  "one_provenance": {
+   "aalto_control": {
+    "anchor_gap_pct": 0.0024156986488687473,
+    "bar_met": true,
+    "bar_pct": 0.05,
+    "rescore_rel": -1.3670525703181586e-16,
+    "rescored_here": 223236317224.41766,
+    "target_fit": 223236317224.4177,
+    "target_layout": "lnfdg-,yehcrstmaoiupxqbwv.k'jz",
+    "target_provenance": "MODELNORM-1's 10M-unique-eval AALTO champion; valid on this frame because AALTO .native == .standardized bit-exactly"
+   },
+   "best_fit_seen": {
+    "AALTO": 223236317224.41766,
+    "COMMUNITY": 222447818165.889,
+    "POOL": 227268377105.3342
+   },
+   "is_a_lower_bound_not_the_optimum": "an optimizer output bounds the true optimum from one side only, so every normalized score is an UPPER bound on the true normalized score",
+   "islands": 40,
+   "kind": "per-model memetic islands (full 435-swap steepest descent + perturbation)",
+   "layout_of_record": {
+    "AALTO": "lnfdg-,yehcrstmaoiupxzbwv.kq'j",
+    "COMMUNITY": "cstr,kdeaigflnmypo.uwzqbxvh-j'",
+    "POOL": "cyea,krstpguoi-mlndfwj'.qhvxzb"
+   },
+   "seed_spread_ms": {
+    "AALTO": 5392716.699005127,
+    "COMMUNITY": 0.0,
+    "POOL": 0.0
+   },
+   "seeds": [
+    20260728,
+    20260901,
+    20261015
+   ],
+   "statistic": "the SLOWER of the per-seed bests (conservative: cannot flatter a model whose search converged better)",
+   "unique_evals_achieved": {
+    "AALTO": [
+     5000281,
+     5000820,
+     5000635
+    ],
+    "COMMUNITY": [
+     5003863,
+     5001089,
+     5000349
+    ],
+    "POOL": [
+     5001282,
+     5002004,
+     5000263
+    ]
+   },
+   "unique_evals_requested": 5000000
+  },
+  "probe_fits": {
+   "AALTO": 231887489331.27072,
+   "COMMUNITY": 236990836278.3594,
+   "POOL": 236686250724.78787
+  },
+  "probe_layout": "qwertyuiopasdfghjkl'zxcvbnm,.-",
+  "surface_sha256": {
+   "AALTO": "5353b783059ac4f85fee3749e77f09a31046d8247becd33832748d8583ec0957",
+   "COMMUNITY": "aa09df63b370b5855dfb6c3ee27b1564e343a429498692f373730c33bb3cf0f1",
+   "POOL": "50e2f655611394de3a7b3298735e9e4fba5e0a66402b12392534560b7376fae2"
+  },
+  "zero_n": 100,
+  "zero_sd": {
+   "AALTO": 3357543573.1759133,
+   "COMMUNITY": 4495563429.238997,
+   "POOL": 3434639407.8187685
+  },
+  "zero_se": {
+   "AALTO": 335754357.3175913,
+   "COMMUNITY": 449556342.92389977,
+   "POOL": 343463940.78187686
+  },
+  "zero_seed": 20260728,
+  "zero_stability_n1000": {
+   "AALTO": {
+    "delta_in_SE": -0.9791609824825225,
+    "delta_ms": -328757566.3838806,
+    "zero_n1000": 242789769209.58737
+   },
+   "COMMUNITY": {
+    "delta_in_SE": -0.16190548762889143,
+    "delta_ms": -72785638.91775513,
+    "zero_n1000": 249410532335.7441
+   },
+   "POOL": {
+    "delta_in_SE": -0.6024472978406846,
+    "delta_ms": -206918923.02975464,
+    "zero_n1000": 247772945475.56284
+   }
+  },
+  "zero_statistic": "mean"
+ },
+ "schema": "normgauge-anchors-1",
+ "zero": {
+  "AALTO": 243118526775.97125,
+  "COMMUNITY": 249483317974.66187,
+  "POOL": 247979864398.5926
+ }
+}

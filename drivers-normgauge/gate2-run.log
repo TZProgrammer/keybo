@@ -1,0 +1,33 @@
+geometry slots: 31
+rows loaded: 11729
+held-out units (layouts): ['colemak-dh@ortholinear#grzegorzkulesza', 'colemak-dh@ortholinear#grzegorzkulesza+pseudo', 'colemak-dh@ortholinear#grzegorzkulesza+rareboost', 'colemak@rowStagger#alite', 'custom-0f8904ec@rowStagger#octahedron', 'custom-aa426873@rowStagger#vg', 'custom-abcaff22@ortholinear#andrewcastro', 'custom-d42a1f92@rowStagger#ddn', 'mtgap-variant@rowStagger#richarddavison', 'recurva-variant@angleMod#vg']
+  colemak-dh@ortholinear#grzegorzkulesza: 3511 cells, 2135 scoreable, ceiling nan
+  colemak-dh@ortholinear#grzegorzkulesza+pseudo: 3241 cells, 1928 scoreable, ceiling nan
+  colemak-dh@ortholinear#grzegorzkulesza+rareboost: 1089 cells, 697 scoreable, ceiling nan
+  colemak@rowStagger#alite: 366 cells, 137 scoreable, ceiling nan
+  custom-0f8904ec@rowStagger#octahedron: no cells
+  custom-aa426873@rowStagger#vg: 216 cells, 63 scoreable, ceiling nan
+  custom-abcaff22@ortholinear#andrewcastro: 487 cells, 213 scoreable, ceiling nan
+  custom-d42a1f92@rowStagger#ddn: 150 cells, 43 scoreable, ceiling nan
+  mtgap-variant@rowStagger#richarddavison: 134 cells, 35 scoreable, ceiling nan
+  recurva-variant@angleMod#vg: 2559 cells, 1743 scoreable, ceiling nan
+
+=== rho/ceiling per fold (higher is better) ===
+objective              colemak-dh@ortholinear#grzegorzkulesza colemak-dh@ortholinear#grzegorzkulesza+pseudo colemak-dh@ortholinear#grzegorzkulesza+rareboost colemak@rowStagger#alite custom-aa426873@rowStagger#vg custom-abcaff22@ortholinear#andrewcastro custom-d42a1f92@rowStagger#ddn mtgap-variant@rowStagger#richarddavison recurva-variant@angleMod#vg       MEAN
+ms/char (shipped)            +nan       +nan       +nan       +nan       +nan       +nan       +nan       +nan       +nan       +nan
+drop-pool 50/50              +nan       +nan       +nan       +nan       +nan       +nan       +nan       +nan       +nan       +nan
+registered (c)               +nan       +nan       +nan       +nan       +nan       +nan       +nan       +nan       +nan       +nan
+solo-COMMUNITY (control)       +nan       +nan       +nan       +nan       +nan       +nan       +nan       +nan       +nan       +nan
+Traceback (most recent call last):
+  File "/tmp/ng-gate2/drivers-normgauge/gate2_accuracy.py", line 181, in <module>
+    raise SystemExit(main())
+                     ~~~~^^
+  File "/tmp/ng-gate2/drivers-normgauge/gate2_accuracy.py", line 153, in main
+    bound = reweighting_margin_bound(obs_ceils)
+  File "/tmp/ng-gate2/src/keybo/verdicts.py", line 119, in reweighting_margin_bound
+    w = require_finite(weights, "reweighting weights")
+  File "/tmp/ng-gate2/src/keybo/verdicts.py", line 54, in require_finite
+    raise EmptyComparison(
+    ...<4 lines>...
+    )
+keybo.verdicts.EmptyComparison: reweighting weights: 9 of 9 values are not finite ([0]=nan, [1]=nan, [2]=nan, [3]=nan, ...). A comparison over non-finite operands returns the answer that means 'no difference' — fix the operands, do not read the verdict.

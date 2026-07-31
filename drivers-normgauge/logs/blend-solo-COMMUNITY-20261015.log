@@ -1,0 +1,7 @@
+[     0.1s] cell solo-COMMUNITY seed=20261015: comm-n=1.0000 [rule: solo COMMUNITY]
+[    23.3s]     island 1/40 best=0.988674 unique=125,053
+[   256.7s]     island 11/40 best=0.993728 unique=1,376,337
+[   489.0s]     island 21/40 best=1.000000 unique=2,625,455
+[   720.8s]     island 31/40 best=1.000000 unique=3,875,921
+[   926.4s]     island 40/40 best=1.000000 unique=5,000,349
+[   927.9s] wrote /tmp/normgauge/drivers-normgauge/runs/blend-solo-COMMUNITY-20261015.json
