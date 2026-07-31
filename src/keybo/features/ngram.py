@@ -176,6 +176,43 @@ def _trigram_row_from_positions(
     return row
 
 
+def trigram_direction_row(
+    geometry: Geometry, a: Position, b: Position, c: Position
+) -> dict[str, float]:
+    """The same-finger-GATED ``redirect`` pair — the widened trigram channel, opt-in.
+
+    ``redirect``/``bad_redirect`` in :func:`_trigram_level_from_positions` derive their direction
+    step from ``abs(b[0]) < abs(a[0])`` with NO same-finger gate, so a finger REPOSITIONING reads as
+    a change of direction. The parity-gated ``_v1_pattern`` port excludes those as Sfb, and
+    :mod:`keybo.scoring.oxey` records having fixed exactly this in its own trigram path — this
+    served column never got the same treatment.
+
+    Measured on ``ROW_STAGGERED_30`` over the 24,360 all-distinct ordered triples: ``redirect``
+    fires 3,600 times of which **1,116** have a same-finger constituent bigram, and
+    ``bad_redirect`` 648 of which **216** do. (On the wider ``a != b and b != c`` frame the totals
+    are 3,960/1,152 and 756/216 — only the 216 is shared between the two frames, which is what
+    makes a mixed-frame quotation look self-consistent. Both are pinned in
+    ``tests/features/test_redirect_samefinger_gate.py``.)
+
+    Returned SEPARATELY rather than added to the served row, for the same reason
+    :data:`~keybo.features.schema.FEATURE_VERSION_DIRECTION` exists: those two columns belong to the
+    version-locked trigram frame all three ``trigram_cond31`` models carry, and ``models/base.py``
+    errors on a version MISMATCH — not on a column whose MEANING changed. Redefining them in place
+    would leave every model loading fine while scoring a frame that no longer matches its training
+    data. A retraining round can adopt these under the widened stamp.
+
+    The gate can only ever REMOVE a firing (asserted exhaustively), so it is a strict subset of the
+    ungated column rather than a differently-shaped feature.
+    """
+    ungated = _trigram_level_from_positions(geometry, a, b, c)
+    step_is_real = not (C.same_finger(geometry, a, b) or C.same_finger(geometry, b, c))
+    gated = ungated["redirect"] > 0.0 and step_is_real
+    return {
+        "redirect_sfgated": float(gated),
+        "bad_redirect_sfgated": float(gated and ungated["bad_redirect"] > 0.0),
+    }
+
+
 def _trigram_column_names(direction: bool) -> list[str]:
     return TRIGRAM_DIRECTION_FEATURE_NAMES if direction else TRIGRAM_FEATURE_NAMES
 
