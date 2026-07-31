@@ -238,3 +238,90 @@ def is_outwards_ordered(geometry: Geometry, a: Position, b: Position) -> bool:
     if not _roll_eligible(geometry, a, b):
         return False
     return abs(b[0]) > abs(a[0])
+
+
+# --- the KITCHEN-SINK predicates: external-project channels, reimplemented from DEFINITIONS ---
+#
+# Sources are keycraft (github.com/rbscholtus/keycraft, BSD-3-Clause) and cyanophage's
+# keyboard_svg.js, read via the KEYCRAFT-1 / CYANO-1 audits. Nothing is vendored: each predicate is
+# re-expressed in this module's vocabulary (signed columns, ``Geometry.finger``), and the audit in
+# ``agent-artifacts/kitchensink_audit.py`` is what decides whether it carries information the served
+# frame lacks. Two candidates were rejected BY that measurement — see
+# ``keybo.features.schema``'s kitchen-sink block for which and why.
+
+
+def finger_kind(geometry: Geometry, x: int) -> int:
+    """Finger dexterity rank of column ``x``: pinky 0, ring 1, middle 2, index 3.
+
+    keycraft's ``FingerKind`` ordering, hand-independent, so a left and a right pinky share a
+    rank. It exists here because a RANK supports the comparisons a one-hot cannot: "is this the
+    weaker of the two fingers", "did the stroke move toward the index", "are BOTH keys on weak
+    fingers". Derived from :meth:`keybo.geometry.Geometry.finger`, so the K31 quote-slot column
+    (``|x| == 6``, right pinky) ranks as a pinky without a special case here.
+    """
+    name = geometry.finger(x).name  # LP/LR/LM/LI/RI/RM/RR/RP, or THUMB
+    return {"P": 0, "R": 1, "M": 2, "I": 3}.get(name[1:], -1) if len(name) == 2 else -1
+
+
+def is_half_scissor(geometry: Geometry, a: Position, b: Position) -> bool:
+    """A ONE-row adjacent-finger reach — keycraft's HSB, invisible to the served frame.
+
+    :func:`is_scissor` gates on ``abs(dy) == 2``, so it sees only the full (two-row) scissor.
+    keycraft splits HSB from FSB and prices them separately, and the two are disjoint by
+    construction: a pair cannot span both one row and two. Fires on 48 of the 870 ordered pairs
+    of ``ROW_STAGGERED_30``.
+    """
+    if not is_adjacent(geometry, a, b):
+        return False
+    return abs(a[1] - b[1]) == 1
+
+
+def is_row_skip(geometry: Geometry, a: Position, b: Position) -> bool:
+    """A two-row jump on the same hand, on ANY two fingers.
+
+    :func:`is_scissor` additionally requires adjacent fingers, so a pinky-to-index two-row jump —
+    a real hand contortion — is unflagged today. This is a strict SUPERSET of ``is_scissor``
+    (100 pairs vs 24), which is why it is added rather than replacing it: the subset distinction
+    is the information, and the model gets both columns.
+    """
+    if not same_hand(geometry, a, b):
+        return False
+    return abs(a[1] - b[1]) == 2
+
+
+def is_pinky_off_home(geometry: Geometry, a: Position, b: Position) -> bool:
+    """The LANDING key is a pinky away from the home row — keycraft's POH.
+
+    An INTERACTION the served frame can only build by spending tree depth: it carries a ``pinky``
+    one-hot and a ``home`` one-hot, but their conjunction is what keycraft actually prices. Reads
+    the second key only, so it is order-aware in the same way the served row/finger one-hots are
+    (208 of 870 pairs change under reversal).
+    """
+    del a  # the landing key alone defines this, by keycraft's definition
+    return finger_kind(geometry, b[0]) == 0 and b[1] != 2
+
+
+def is_weak_finger_pair(geometry: Geometry, a: Position, b: Position) -> bool:
+    """Both keys on the two least-dextrous fingers (pinky or ring), same hand.
+
+    keycraft's RED-WEAK gate, applied at bigram level. The served finger one-hot describes only
+    the landing key, so a pinky-to-ring bigram and an index-to-ring bigram are identical in that
+    block; this is the column that separates them.
+    """
+    if not same_hand(geometry, a, b):
+        return False
+    return finger_kind(geometry, a[0]) <= 1 and finger_kind(geometry, b[0]) <= 1
+
+
+def finger_step(geometry: Geometry, a: Position, b: Position) -> float:
+    """SIGNED finger-rank step: positive toward the index, negative toward the pinky.
+
+    The graded form of :func:`is_inwards_ordered`, which is binary — as is keycraft's own IN/OUT
+    pair, so this is ours rather than theirs. It shares that function's roll-eligibility gate, so
+    a same-finger reach is 0 (the index finger's two columns are one finger and not a step), and
+    it is exactly antisymmetric on the eligible set: ``finger_step(g, a, b) == -finger_step(g, b,
+    a)`` on all 324 eligible pairs. Magnitude 1-3.
+    """
+    if not _roll_eligible(geometry, a, b):
+        return 0.0
+    return float(finger_kind(geometry, b[0]) - finger_kind(geometry, a[0]))

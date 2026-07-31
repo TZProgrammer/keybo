@@ -19,15 +19,21 @@ from keybo.features import classify as C
 from keybo.features.schema import (
     BIGRAM_DIRECTION_FEATURE_NAMES,
     BIGRAM_FEATURE_NAMES,
+    BIGRAM_KITCHENSINK_FEATURE_NAMES,
     TRIGRAM_DIRECTION_FEATURE_NAMES,
     TRIGRAM_FEATURE_NAMES,
+    TRIGRAM_KITCHENSINK_FEATURE_NAMES,
 )
 from keybo.geometry import Geometry, Position
 from keybo.layout import Layout
 
 
 def _placement_row_from_positions(
-    geometry: Geometry, a: Position, b: Position, direction: bool = False
+    geometry: Geometry,
+    a: Position,
+    b: Position,
+    direction: bool = False,
+    kitchensink: bool = False,
 ) -> dict[str, float]:
     """The placement/relational/geometry features for one bigram, from key positions.
 
@@ -44,6 +50,12 @@ def _placement_row_from_positions(
     models are stamped with the current ``FEATURE_VERSION`` and would keep loading while
     scoring on a frame whose columns had silently changed meaning. See
     :mod:`keybo.features.schema`.
+
+    ``kitchensink=True`` appends the five external-project bigram columns on top of that
+    (:data:`~keybo.features.schema.BIGRAM_KITCHENSINK_FEATURE_NAMES`). It IMPLIES ``direction``:
+    the kitchen-sink frame is defined as the widened frame plus this block, so the two flags
+    compose into three legal frames (narrow, widened, kitchen-sink) rather than four — there is
+    no "kitchen-sink without direction" model population and no stamp for one.
     """
     g = geometry
     bx, by = b
@@ -77,39 +89,65 @@ def _placement_row_from_positions(
         "inwards": float(C.is_inwards(g, a, b)),
         "outwards": float(C.is_outwards(g, a, b)),
     }
-    if direction:
+    if direction or kitchensink:
         row["inwards_ordered"] = float(C.is_inwards_ordered(g, a, b))
         row["outwards_ordered"] = float(C.is_outwards_ordered(g, a, b))
+    if kitchensink:
+        # Key ORDER matters: the schema puts this block straight after the direction columns and
+        # before wpm, and a test pins list(row) == the name list.
+        row["half_scissor"] = float(C.is_half_scissor(g, a, b))
+        row["row_skip"] = float(C.is_row_skip(g, a, b))
+        row["pinky_off_home"] = float(C.is_pinky_off_home(g, a, b))
+        row["weak_finger_pair"] = float(C.is_weak_finger_pair(g, a, b))
+        row["finger_step"] = C.finger_step(g, a, b)
     return row
 
 
-def _placement_row(layout: Layout, bigram: str, direction: bool = False) -> dict[str, float]:
+def _placement_row(
+    layout: Layout, bigram: str, direction: bool = False, kitchensink: bool = False
+) -> dict[str, float]:
     """Placement features for a bigram on a layout (looks up positions, then delegates)."""
     return _placement_row_from_positions(
-        layout.geometry, layout.pos(bigram[0]), layout.pos(bigram[1]), direction=direction
+        layout.geometry,
+        layout.pos(bigram[0]),
+        layout.pos(bigram[1]),
+        direction=direction,
+        kitchensink=kitchensink,
     )
 
 
-def _bigram_column_names(direction: bool) -> list[str]:
-    """The canonical column order for the frame ``direction`` selects."""
+def _bigram_column_names(direction: bool, kitchensink: bool = False) -> list[str]:
+    """The canonical column order for the frame these flags select."""
+    if kitchensink:
+        return BIGRAM_KITCHENSINK_FEATURE_NAMES
     return BIGRAM_DIRECTION_FEATURE_NAMES if direction else BIGRAM_FEATURE_NAMES
 
 
 def bigram_model_row(
-    layout: Layout, bigram: str, wpm: float, direction: bool = False
+    layout: Layout,
+    bigram: str,
+    wpm: float,
+    direction: bool = False,
+    kitchensink: bool = False,
 ) -> dict[str, float]:
     """Full ordered bigram feature row (placement features + wpm)."""
-    row = _placement_row(layout, bigram, direction=direction)
+    row = _placement_row(layout, bigram, direction=direction, kitchensink=kitchensink)
     row["wpm"] = float(wpm)
     return row
 
 
 def bigram_features(
-    layout: Layout, bigram: str, wpm: float = 0.0, direction: bool = False
+    layout: Layout,
+    bigram: str,
+    wpm: float = 0.0,
+    direction: bool = False,
+    kitchensink: bool = False,
 ) -> np.ndarray:
     """Bigram feature vector in canonical column order."""
-    row = bigram_model_row(layout, bigram, wpm, direction=direction)
-    return np.array([row[name] for name in _bigram_column_names(direction)], dtype=np.float64)
+    row = bigram_model_row(layout, bigram, wpm, direction=direction, kitchensink=kitchensink)
+    return np.array(
+        [row[name] for name in _bigram_column_names(direction, kitchensink)], dtype=np.float64
+    )
 
 
 def bigram_features_from_positions(
@@ -117,11 +155,16 @@ def bigram_features_from_positions(
     positions: tuple[Position, Position],
     wpm: float = 0.0,
     direction: bool = False,
+    kitchensink: bool = False,
 ) -> np.ndarray:
     """Bigram feature vector from recorded key positions (training path)."""
-    row = _placement_row_from_positions(geometry, positions[0], positions[1], direction=direction)
+    row = _placement_row_from_positions(
+        geometry, positions[0], positions[1], direction=direction, kitchensink=kitchensink
+    )
     row["wpm"] = float(wpm)
-    return np.array([row[name] for name in _bigram_column_names(direction)], dtype=np.float64)
+    return np.array(
+        [row[name] for name in _bigram_column_names(direction, kitchensink)], dtype=np.float64
+    )
 
 
 def _trigram_level_from_positions(
@@ -160,15 +203,21 @@ def _trigram_row_from_positions(
     c: Position,
     wpm: float,
     direction: bool = False,
+    kitchensink: bool = False,
 ) -> dict[str, float]:
     """Assemble the full trigram row from the three positions (the shared core).
 
     ``direction=True`` widens both constituent bigrams' placement blocks, so the trigram
     frame gains ``bg1_/bg2_inwards_ordered`` and ``..._outwards_ordered``. Same opt-in
     contract as the bigram frame: the default is byte-identical to the served columns.
+
+    ``kitchensink=True`` adds the seven trigram-level external columns
+    (:func:`trigram_kitchensink_row`) AND widens both constituent bigrams by the five
+    bigram-level ones — which is why 12 candidate definitions become 17 new trigram columns.
+    It implies ``direction``, so the three legal frames stay narrow / widened / kitchen-sink.
     """
     row = _trigram_level_from_positions(geometry, a, b, c)
-    if direction:
+    if direction or kitchensink:
         # The same-finger-gated redirect pair (REDIRGATE-1), declared in
         # TRIGRAM_DIRECTION_FEATURE_NAMES. Emitted here and NOT in
         # _trigram_level_from_positions, because that function feeds the version-locked served
@@ -176,9 +225,15 @@ def _trigram_row_from_positions(
         # trigram_cond31 models. Key ORDER matters -- the schema puts these straight after the
         # trigram-level block, and a test pins list(row) == the name list.
         row.update(trigram_direction_row(geometry, a, b, c))
-    for name, value in _placement_row_from_positions(geometry, a, b, direction=direction).items():
+    if kitchensink:
+        row.update(trigram_kitchensink_row(geometry, a, b, c))
+    for name, value in _placement_row_from_positions(
+        geometry, a, b, direction=direction, kitchensink=kitchensink
+    ).items():
         row[f"bg1_{name}"] = value
-    for name, value in _placement_row_from_positions(geometry, b, c, direction=direction).items():
+    for name, value in _placement_row_from_positions(
+        geometry, b, c, direction=direction, kitchensink=kitchensink
+    ).items():
         row[f"bg2_{name}"] = value
     row["wpm"] = float(wpm)
     return row
@@ -221,12 +276,72 @@ def trigram_direction_row(
     }
 
 
-def _trigram_column_names(direction: bool) -> list[str]:
+def trigram_kitchensink_row(
+    geometry: Geometry, a: Position, b: Position, c: Position
+) -> dict[str, float]:
+    """The seven trigram-level KITCHEN-SINK columns — external channels the served frame lacks.
+
+    Reimplemented from keycraft's definitions (BSD-3-Clause; read, not vendored) and expressed in
+    this module's vocabulary. Returned SEPARATELY, never merged into
+    :func:`_trigram_level_from_positions`, for the same reason
+    :func:`trigram_direction_row` is: that function feeds the version-locked served frame all three
+    shipped ``trigram_cond31`` models carry, and ``models/base.py`` errors on a version MISMATCH,
+    not on a column whose MEANING changed.
+
+    Two families, both measured over the 24,360 ordered triples of ``ROW_STAGGERED_30``:
+
+    * **one-hand flow** — ``onehand`` is keycraft's 3RL, the MONOTONIC one-hand roll. The served
+      frame names ``redirect`` (the non-monotonic case) and so can only express the smoothest
+      trigram class as a conjunction of negatives. ``onehand_in`` splits it by direction of travel
+      and is order-aware (756 of 24,360 triples change under reversal), unlike ``onehand`` itself.
+    * **the SFS splits and the skipgram predicates** — ``red_sfs``/``alt_sfs`` are keycraft's
+      separately-priced redirect and alternation whose OUTER two keys share a finger.
+      ``sg_full_scissor``/``sg_half_scissor``/``sg_lsb`` are the scissor and lateral-stretch
+      predicates across the SKIPGRAM (keys 1 and 3): the served frame carries ``sg_dx``, ``sg_dy``,
+      ``sg_distance`` and ``sg_same_finger`` but no sg_scissor and no sg_lsb, and the audit found
+      these three the LEAST recoverable of all candidates (R2 0.149-0.190 against the served frame).
+
+    keycraft's own RED-WEAK is deliberately absent: the audit found it bit-identical to
+    ``bad_redirect_sfgated`` on all 24,360 triples, so it is a column REDIRGATE-1 already built and
+    ``sfgated-eval`` already measured NULL.
+    """
+    g = geometry
+    ha, hb, hc = g.hand(a[0]), g.hand(b[0]), g.hand(c[0])
+    ka, kb, kc = (C.finger_kind(g, p[0]) for p in (a, b, c))
+
+    one_hand = ha != 0 and ha == hb == hc
+    # A same-finger constituent is neither a roll nor a redirect (keycraft routes it to 3RL-SFB),
+    # and it is the same exclusion _roll_eligible makes at bigram level: the index finger's two
+    # columns are ONE finger, so a reposition is not a direction step.
+    distinct_fingers = one_hand and not C.same_finger(g, a, b) and not C.same_finger(g, b, c)
+    monotonic = distinct_fingers and (ka < kb) == (kb < kc)
+    # An alternation: outer two keys on one hand, middle key on the other.
+    alternating = ha != 0 and hc != 0 and ha == hc and ha != hb
+    outer_sfs = C.same_finger(g, a, c) and a != c
+
+    return {
+        "onehand": float(monotonic),
+        "onehand_in": float(monotonic and kc > ka),
+        "red_sfs": float(distinct_fingers and not monotonic and outer_sfs),
+        "alt_sfs": float(alternating and outer_sfs),
+        "sg_full_scissor": float(C.is_adjacent(g, a, c) and abs(a[1] - c[1]) == 2),
+        "sg_half_scissor": float(C.is_half_scissor(g, a, c)),
+        "sg_lsb": float(C.is_lsb(g, a, c)),
+    }
+
+
+def _trigram_column_names(direction: bool, kitchensink: bool = False) -> list[str]:
+    if kitchensink:
+        return TRIGRAM_KITCHENSINK_FEATURE_NAMES
     return TRIGRAM_DIRECTION_FEATURE_NAMES if direction else TRIGRAM_FEATURE_NAMES
 
 
 def trigram_model_row(
-    layout: Layout, trigram: str, wpm: float, direction: bool = False
+    layout: Layout,
+    trigram: str,
+    wpm: float,
+    direction: bool = False,
+    kitchensink: bool = False,
 ) -> dict[str, float]:
     """Full ordered trigram feature row: trigram-level + both bigrams + wpm."""
     return _trigram_row_from_positions(
@@ -236,15 +351,22 @@ def trigram_model_row(
         layout.pos(trigram[2]),
         wpm,
         direction=direction,
+        kitchensink=kitchensink,
     )
 
 
 def trigram_features(
-    layout: Layout, trigram: str, wpm: float = 0.0, direction: bool = False
+    layout: Layout,
+    trigram: str,
+    wpm: float = 0.0,
+    direction: bool = False,
+    kitchensink: bool = False,
 ) -> np.ndarray:
     """Trigram feature vector in canonical column order."""
-    row = trigram_model_row(layout, trigram, wpm, direction=direction)
-    return np.array([row[name] for name in _trigram_column_names(direction)], dtype=np.float64)
+    row = trigram_model_row(layout, trigram, wpm, direction=direction, kitchensink=kitchensink)
+    return np.array(
+        [row[name] for name in _trigram_column_names(direction, kitchensink)], dtype=np.float64
+    )
 
 
 def trigram_features_from_positions(
@@ -252,8 +374,13 @@ def trigram_features_from_positions(
     positions: tuple[Position, Position, Position],
     wpm: float = 0.0,
     direction: bool = False,
+    kitchensink: bool = False,
 ) -> np.ndarray:
     """Trigram feature vector from recorded key positions (training path)."""
     a, b, c = positions
-    row = _trigram_row_from_positions(geometry, a, b, c, wpm, direction=direction)
-    return np.array([row[name] for name in _trigram_column_names(direction)], dtype=np.float64)
+    row = _trigram_row_from_positions(
+        geometry, a, b, c, wpm, direction=direction, kitchensink=kitchensink
+    )
+    return np.array(
+        [row[name] for name in _trigram_column_names(direction, kitchensink)], dtype=np.float64
+    )

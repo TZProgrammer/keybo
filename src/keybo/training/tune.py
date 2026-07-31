@@ -249,6 +249,8 @@ def tune_lolo(
     allow_unevaluated_objective: bool = False,
     min_margin: float = LOLO_MIN_MARGIN,
     allow_unresolvable_margin: bool = False,
+    direction: bool = False,
+    kitchensink: bool = False,
 ) -> tuple[dict, list[tuple[dict, float]]]:
     """Hyperparameter selection scored by TRANSFER, not fit (backlog C1).
 
@@ -269,6 +271,14 @@ def tune_lolo(
     Pass ``allow_unevaluated_objective=True`` to downgrade the refusal to a warning; the
     returned leaderboard then carries ``-inf`` scores and the caller MUST treat the
     champion as unselected.
+
+    ``direction`` / ``kitchensink`` select the FRAME every candidate is trained and scored on,
+    forwarded verbatim to :func:`keybo.training.validate.validate`. Without them this selector
+    could tune only the NARROW served frame (KITCHEN-SINK, 2026-07-31): it called ``validate``
+    with no frame argument, so a widened-frame arm had no way to ask for its own hyperparameters
+    and would have been compared against a narrow arm tuned on a different frame — a confound in
+    the selection step rather than in the measurement. The frame is a property of the ARM, not of
+    a candidate, so it is one argument here and not a key in every candidate dict.
     """
     from keybo.training.validate import validate
 
@@ -286,6 +296,8 @@ def tune_lolo(
             min_cell_samples=min_cell_samples,
             n_boot=10,  # ceilings are shared context here, not the contest
             train_params=params,
+            direction=direction,
+            kitchensink=kitchensink,
         )
         # A fold contributes only if its rho/ceiling is present AND finite. `None` means the
         # harness could not form the ratio; a non-finite float means it formed one from a nan

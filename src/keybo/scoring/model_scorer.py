@@ -59,12 +59,14 @@ class BigramModelScorer(_ModelScorerBase):
         bigram_freqs: Mapping[str, int],
         target_wpm: float = 0.0,
         direction: bool = False,
+        kitchensink: bool = False,
     ) -> None:
         super().__init__(model, target_wpm)
         # Freeze the corpus into parallel lists so feature order is stable across calls.
         self._bigrams = list(bigram_freqs.keys())
         self._freqs = np.array([bigram_freqs[b] for b in self._bigrams], dtype=np.float64)
         self._direction = direction
+        self._kitchensink = kitchensink
 
     def fitness(self, layout: Layout) -> float:
         # Score every bigram whose characters are all typable on this board. Space counts:
@@ -78,7 +80,13 @@ class BigramModelScorer(_ModelScorerBase):
         for bg, freq in zip(self._bigrams, self._freqs, strict=True):
             if all(layout.has_key(c) for c in bg):
                 vectors.append(
-                    bigram_features(layout, bg, wpm=self.target_wpm, direction=self._direction)
+                    bigram_features(
+                        layout,
+                        bg,
+                        wpm=self.target_wpm,
+                        direction=self._direction,
+                        kitchensink=self._kitchensink,
+                    )
                 )
                 freqs.append(freq)
                 positions.append((layout.pos(bg[0]), layout.pos(bg[1])))
@@ -112,6 +120,7 @@ class TrigramModelScorer(_ModelScorerBase):
         trigram_freqs: Mapping[str, int],
         target_wpm: float = 0.0,
         direction: bool = False,
+        kitchensink: bool = False,
     ) -> None:
         from keybo.models.base import reject_calibrated_trigram_model
 
@@ -120,6 +129,7 @@ class TrigramModelScorer(_ModelScorerBase):
         self._trigrams = list(trigram_freqs.keys())
         self._freqs = np.array([trigram_freqs[t] for t in self._trigrams], dtype=np.float64)
         self._direction = direction
+        self._kitchensink = kitchensink
 
     def fitness(self, layout: Layout) -> float:
         # As with bigrams: score trigrams typable on this board (space included), skip those
@@ -130,7 +140,13 @@ class TrigramModelScorer(_ModelScorerBase):
             if not all(layout.has_key(c) for c in tg):
                 continue
             rows.append(
-                trigram_features(layout, tg, wpm=self.target_wpm, direction=self._direction)
+                trigram_features(
+                    layout,
+                    tg,
+                    wpm=self.target_wpm,
+                    direction=self._direction,
+                    kitchensink=self._kitchensink,
+                )
             )
             freqs.append(freq)
         if not rows:
