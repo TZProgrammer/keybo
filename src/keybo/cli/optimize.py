@@ -12,7 +12,7 @@ from keybo.geometry import ROW_STAGGERED_30
 from keybo.layout import Layout
 from keybo.layouts import NAMED_LAYOUTS
 from keybo.optimize.annealing import SimulatedAnnealing
-from keybo.optimize.local_search import two_opt
+from keybo.optimize.local_search import three_opt, two_opt
 from keybo.scoring import model_norm as MN
 from keybo.scoring.inspect import layout_diagnostics
 
@@ -32,6 +32,31 @@ def add_arguments(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--alpha", type=float, default=0.999, help="Geometric cooling rate")
     parser.add_argument("--max-outer", type=int, default=None, help="Cap on cooling iterations")
     parser.add_argument("--no-local-search", action="store_true", help="Skip the 2-opt polish")
+    parser.add_argument(
+        "--three-opt",
+        action="store_true",
+        help="Extend the local-search polish from 2-opt (swap pairs) to 3-opt (reorder "
+        "triples, keybo.optimize.local_search.three_opt). Off by default because it is "
+        "~4-6x the evaluations; a 2-opt optimum is NOT a 3-opt optimum (measured: the "
+        "campaign incumbents graphite/semimak each admit a 3-opt-only improvement of "
+        # `%%`, not `%`: argparse runs every help string through `% params`, so a bare
+        # percent sign raises ValueError and takes out `optimize --help` entirely -- a
+        # crash in the one invocation that carries no other output to notice it by.
+        "-0.27%% ms/char, above the 0.135 model-seed floor). Incompatible with "
+        "--no-local-search",
+    )
+    parser.add_argument(
+        "--polish-incumbent",
+        action="append",
+        metavar="LAYOUT",
+        default=None,
+        help="Apply the SAME polish the searched layout gets to this incumbent (name or "
+        "30-char string) and report both, so the comparison is symmetric. Repeatable. "
+        "Without this, a searched layout gets SA + local search while an incumbent is "
+        "scored as-is, and the reported gap includes the polish the incumbent never got "
+        "(measured: 71-91%% of the gap vs the campaign's arm B is polish, not layout). "
+        "Requires the incumbent to be a permutation of --start's charset",
+    )
     parser.add_argument(
         "--attempts",
         type=int,
@@ -112,8 +137,30 @@ def add_arguments(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--no-progress", action="store_true", help="Disable the progress bar")
 
 
+def _polish(args: argparse.Namespace, layout: Layout, scorer) -> Layout:
+    """THE polish, in one place — so a searched layout and an incumbent get the same one.
+
+    Factored out (rather than inlined in :func:`_one_attempt`) precisely because the defect
+    A6 names is an ASYMMETRIC comparison: a searched layout got SA + 2-opt while an incumbent
+    it was reported against got scored as-is. A second copy of these two lines is a second
+    place for the two roles to diverge, which is how the asymmetry arose in the first place.
+
+    ``--three-opt`` runs 3-opt AFTER 2-opt rather than instead of it: both reach the same 3-opt
+    optimum from these boards, but the cheap moves first is measurably fewer evaluations on 5
+    of 7 campaign boards (e.g. semimak 56,686 vs 95,325), because every improving swap 2-opt
+    takes is one the 3-opt scan would have re-derived over C(n,3) triples instead of C(n,2)
+    pairs.
+    """
+    if args.no_local_search:
+        return layout
+    polished = two_opt(layout, scorer)
+    if args.three_opt:
+        polished = three_opt(polished, scorer)
+    return polished
+
+
 def _one_attempt(args: argparse.Namespace, scorer, seed: int) -> Layout:
-    """Run a single SA (+ optional 2-opt polish) from a fresh starting layout."""
+    """Run a single SA (+ optional local-search polish) from a fresh starting layout."""
     # A fresh Layout per attempt: SA mutates the layout it searches, so reusing one would
     # start later attempts from a different (mutated) board and break seed determinism.
     layout = Layout(args.start, ROW_STAGGERED_30)
@@ -121,9 +168,43 @@ def _one_attempt(args: argparse.Namespace, scorer, seed: int) -> Layout:
         seed=seed, alpha=args.alpha, max_outer=args.max_outer, progress=not args.no_progress
     )
     best = sa.optimize(layout, scorer)
-    if not args.no_local_search:
-        best = two_opt(best, scorer)
-    return best
+    return _polish(args, best, scorer)
+
+
+def _resolve_incumbents(specs: list[str], start: str) -> list[tuple[str, str]]:
+    """``["graphite", "<30 chars>"] -> [(label, layout), ...]``, refusing anything unscorable.
+
+    REFUSES rather than skipping, and does so here — before the (long) search — for the same
+    reason ``--model-weight``'s two gates run up front: a comparison silently missing the arm
+    the user asked for reads exactly like one where that arm lost.
+
+    A non-permutation of ``--start``'s charset is refused rather than scored, because the
+    reported quantity is a corpus-restricted mean: a board with a different charset covers
+    different corpus rows, so its number would be a different denominator's mean printed in the
+    same column. That is the cross-charset comparison ``analyze`` renders as N/A.
+    """
+    resolved: list[tuple[str, str]] = []
+    seen: set[str] = set()
+    for spec in specs:
+        layout = NAMED_LAYOUTS.get(spec, spec)
+        label = spec if spec in NAMED_LAYOUTS else "(literal)"
+        if len(layout) != len(start) or sorted(layout) != sorted(start):
+            raise SystemExit(
+                f"--polish-incumbent {spec!r} is not a permutation of --start's charset, so it "
+                f"cannot be polished or compared on the same objective: the search explores "
+                f"permutations of --start (the table fixes that charset), and a different "
+                f"charset covers different corpus n-grams — its score would be a different "
+                f"denominator's mean printed in the same column. Give an incumbent over "
+                f"{''.join(sorted(start))!r}, or run a separate search from it"
+            )
+        if layout in seen:
+            raise SystemExit(
+                f"--polish-incumbent {spec!r} given more than once (as {spec!r} and by "
+                f"another name); each incumbent is polished once"
+            )
+        seen.add(layout)
+        resolved.append((label, layout))
+    return resolved
 
 
 def _parse_model_weights(specs: list[str]) -> dict[str, float]:
@@ -258,6 +339,31 @@ def run(args: argparse.Namespace) -> int:
     if args.out:
         # Validate before the (long) search, not when writing the result at the end.
         ensure_writable_output(args.out, "--out")
+    # `getattr` with a default, not `args.three_opt` / `args.polish_incumbent`: callers
+    # legitimately hand-build a namespace holding only the fields their own path needs (shipped
+    # tests construct a `SimpleNamespace` for the comfort/oxey branches), and a new flag must
+    # not make those callers raise AttributeError just for existing. Normalized ONCE here so
+    # every path below — including `_polish`, which both roles call — reads a real attribute.
+    args.three_opt = bool(getattr(args, "three_opt", False))
+    args.polish_incumbent = list(getattr(args, "polish_incumbent", None) or [])
+    # BOTH gates before the (long) search, and REFUSING rather than falling back: an
+    # unsupported combination that silently degrades to the default polish produces a number
+    # labelled "3-opt" that no 3-opt ever touched.
+    if args.three_opt and args.no_local_search:
+        raise SystemExit(
+            "--three-opt extends the local-search polish, but --no-local-search disables it; "
+            "they cannot be combined. Drop one — passing both would report a '3-opt' result "
+            "that ran no local search at all"
+        )
+    incumbents = (
+        _resolve_incumbents(args.polish_incumbent, args.start) if (args.polish_incumbent) else []
+    )
+    if incumbents and args.no_local_search:
+        raise SystemExit(
+            "--polish-incumbent applies the searched layout's polish to an incumbent, but "
+            "--no-local-search means there is no polish to apply; the comparison would be "
+            "as-is vs as-is. Drop --no-local-search, or score the incumbent with `keybo score`"
+        )
     # `getattr` with a default, not `args.model_weight`: callers legitimately hand-build a
     # namespace holding only the fields their own path needs (two shipped tests construct a
     # `SimpleNamespace` for the comfort/oxey branches), and a new flag must not make those
@@ -280,7 +386,7 @@ def run(args: argparse.Namespace) -> int:
         # search and the final scoring are the same evaluator (and must be, or the reported
         # fitness could differ from the one the search optimized).
         blend = _build_model_blend(args)
-        return _run_search(args, blend, blend)
+        return _run_search(args, blend, blend, incumbents)
     scorer = build_scorer(args)
     if args.comfort_weight or args.finger_load_weight or args.oxey_weight:
         if args.ngram != "bigram":
@@ -355,15 +461,20 @@ def run(args: argparse.Namespace) -> int:
             model, load_freqs(args), target_wpm=args.target_wpm, chars=args.start
         )
 
-    return _run_search(args, scorer, search_scorer)
+    return _run_search(args, scorer, search_scorer, incumbents)
 
 
-def _run_search(args: argparse.Namespace, scorer, search_scorer) -> int:
+def _run_search(
+    args: argparse.Namespace,
+    scorer,
+    search_scorer,
+    incumbents: list[tuple[str, str]] | None = None,
+) -> int:
     """The best-of-N loop, postflight, and result file — shared by every objective.
 
-    Factored out so ``--model-weight`` runs the SAME search, the SAME 2-opt polish and the SAME
-    Goodhart postflight as the speed objective. A second copy of this loop would be a second
-    place for the two paths to drift apart.
+    Factored out so ``--model-weight`` runs the SAME search, the SAME local-search polish and
+    the SAME Goodhart postflight as the speed objective. A second copy of this loop would be a
+    second place for the two paths to drift apart.
     """
     best_layout: Layout | None = None
     best_fitness = float("inf")
@@ -408,6 +519,8 @@ def _run_search(args: argparse.Namespace, scorer, search_scorer) -> int:
             f"max finger load {max_f} {loads.get(max_f, 0):.1%}"
         )
 
+    incumbent_rows = _report_incumbents(args, scorer, search_scorer, incumbents, best_fitness)
+
     if args.out:
         result = {
             "layout": "".join(best_layout.chars),
@@ -441,7 +554,82 @@ def _run_search(args: argparse.Namespace, scorer, search_scorer) -> int:
             result["gauge_parity_rel_dev"] = scorer.parity_rel_dev(best_layout)
             result["gauge_parity_tolerance"] = _GAUGE_PARITY_TOLERANCE
             result["corpus"] = getattr(args, "corpus", None)
+        if args.three_opt or incumbent_rows:
+            # Recorded ONLY when a new flag was passed, so the default artifact keeps exactly the
+            # key set `tests/cli/test_optimize_attempts.py` pins (that test asserts the whole set
+            # with `==`, and rightly: a result file that silently grows keys is one a consumer
+            # cannot validate). A default run's polish is already implied by --no-local-search's
+            # absence; a NON-default one is not, which is why it is named here.
+            #
+            # This is also where an unconditional `result["polish"] = ...` first draft was caught:
+            # adding a key to the default artifact IS a default-behaviour change, however small.
+            result["polish"] = _polish_label(args)
+        if incumbent_rows:
+            # A result file carrying only the searched layout's fitness cannot distinguish "beat a
+            # polished incumbent" from "beat an unpolished one" — the asymmetry this flag removes.
+            result["incumbents"] = incumbent_rows
         with open(args.out, "w") as f:
             json.dump(result, f, indent=2)
 
     return 0
+
+
+def _polish_label(args: argparse.Namespace) -> str:
+    """Name the polish that actually ran — the label every reported number is scoped to."""
+    if args.no_local_search:
+        return "none"
+    return "2-opt+3-opt" if args.three_opt else "2-opt"
+
+
+def _report_incumbents(
+    args: argparse.Namespace,
+    scorer,
+    search_scorer,
+    incumbents: list[tuple[str, str]] | None,
+    best_fitness: float,
+) -> list[dict]:
+    """Score each incumbent AS-IS and AFTER the searched layout's own polish, and print both.
+
+    The three columns are the point. ``as-is`` is what the campaign reported (and what the gap
+    was computed against); ``polished`` is the symmetric number; ``polish`` is the difference
+    between them — i.e. exactly how much of the reported gap was the polish the incumbent never
+    got rather than the layout. Measured on the campaign gauge, that term is 71-91% of the gap
+    against arm B, so printing the as-is column alone is what made the comparison misread.
+
+    The incumbent is polished with ``search_scorer`` (the fast table) and reported with
+    ``scorer``, the same split the searched layout gets — otherwise "the same polish" would be
+    the same NAME for a different objective.
+    """
+    if not incumbents:
+        return []
+    rows: list[dict] = []
+    print(
+        f"\n== incumbents, polished the SAME way as the searched layout ({_polish_label(args)}) =="
+    )
+    print(f"{'incumbent':<14}{'as-is':>14}{'polished':>14}{'polish':>12}{'gap vs best':>14}")
+    for label, layout_str in incumbents:
+        as_is = scorer.fitness(Layout(layout_str, ROW_STAGGERED_30))
+        polished_layout = _polish(args, Layout(layout_str, ROW_STAGGERED_30), search_scorer)
+        polished = scorer.fitness(polished_layout)
+        precision = ".6f" if abs(as_is) < 1000 else ".0f"
+        shown = label if label != "(literal)" else layout_str
+        print(
+            f"{shown[:13]:<14}{as_is:>14{precision}}{polished:>14{precision}}"
+            f"{polished - as_is:>+12{precision}}{polished - best_fitness:>+14{precision}}"
+        )
+        rows.append(
+            {
+                "incumbent": label,
+                "layout": layout_str,
+                "polished_layout": "".join(polished_layout.chars),
+                "fitness_as_is": as_is,
+                "fitness_polished": polished,
+                "polish_gain": polished - as_is,
+                "gap_vs_best_polished": polished - best_fitness,
+            }
+        )
+    print(
+        "`polish` is how much of an as-is gap was the polish the incumbent never got, not the "
+        "layout — compare `gap vs best` (both polished), never `as-is` against a searched result"
+    )
+    return rows
