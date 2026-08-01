@@ -175,6 +175,30 @@ def test_the_text_report_labels_the_raw_total_block_as_not_rankable(capsys):
 
 
 @pytest.mark.slow
+def test_the_cohort_entry_point_wires_the_reference_rate_through():
+    """``TimeSurface.cards()`` must be mixed-charset-safe without the caller's help.
+
+    ``card(ref_total_ms=...)`` alone cannot distinguish the two conventions at unequal
+    coverage — a bare total is only a well-defined reference when coverage matches. So the
+    cohort entry point threads BOTH reference quantities, and this pins that it does:
+    ``cards()`` must agree with the coverage-normalized comparison, not the raw-total one.
+    """
+    from keybo.analysis.timecard import default_surface
+    from keybo.layouts import NAMED_LAYOUTS
+
+    surf = default_surface(90.0)
+    cohort = {n: NAMED_LAYOUTS[n] for n in MIXED_CHARSET_COHORT}
+    cards = surf.cards(cohort, NAMED_LAYOUTS["qwerty"])
+    ref_rate = cards["qwerty"].ms_per_char
+
+    for name, card in cards.items():
+        expected = 100.0 * (ref_rate - card.ms_per_char) / ref_rate
+        assert card.saved_vs_ref_pct == pytest.approx(expected, rel=1e-12), name
+    # and the cohort genuinely spans charsets, else the check is vacuous
+    assert len({c.coverage_pct for c in cards.values()}) > 1
+
+
+@pytest.mark.slow
 def test_same_charset_layouts_are_unaffected_by_the_normalization(capsys):
     """CONTROL: when coverage is equal, both conventions agree identically.
 

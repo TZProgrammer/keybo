@@ -144,10 +144,16 @@ class TimeSurface:
         """Score one layout. ``ref_*`` supply the reference for the saved-percentages.
 
         ``ref_ms_per_char`` drives the rankable ``saved_vs_ref_pct``; ``ref_total_ms``
-        drives the frozen-artifact ``raw_total_saved_vs_ref_pct``. Passing only
-        ``ref_total_ms`` still yields both: the reference's per-character rate is
-        recovered from this layout's own covered mass, which is exact when coverage is
-        equal (the frozen-artifact case) and is why the legacy call sites keep working.
+        drives the frozen-artifact ``raw_total_saved_vs_ref_pct``.
+
+        Passing ``ref_total_ms`` alone yields both, and is exact: the reference's
+        per-character rate is recovered as ``ref_total_ms / covered`` — correct whenever
+        the reference covers the same mass as this layout, which is the only case where
+        a bare total is a well-defined reference at all. When coverage differs, the two
+        saved-percentages are *supposed* to differ, so the caller must say which
+        reference rate it means; ``ref_ms_per_char`` is how. Every in-tree caller that
+        can face a mixed-charset cohort passes it (:mod:`keybo.cli.analyze`), and
+        :meth:`cards` does it for you.
         """
         slot_of = {ch: i for i, ch in enumerate(lay30)}
         slot_of[" "] = self._n - 1
@@ -201,6 +207,20 @@ class TimeSurface:
             per_finger_ms=per_finger,
             top_bigrams=sorted(big.items(), key=lambda kv: -kv[1])[:12],
         )
+
+    def cards(self, layouts: dict[str, str], ref_lay30: str) -> dict[str, TimeCard]:
+        """Score a whole cohort against one reference — the mixed-charset-safe entry point.
+
+        Wires BOTH reference quantities through for you, so the rankable saved-percent is
+        the per-character comparison even when the cohort spans charsets. Prefer this over
+        calling :meth:`card` per layout and threading the reference by hand: that is how
+        the raw-total convention came to be reported as the headline in the first place.
+        """
+        ref = self.card(ref_lay30)
+        return {
+            name: self.card(lay30, ref_total_ms=ref.total_ms, ref_ms_per_char=ref.ms_per_char)
+            for name, lay30 in layouts.items()
+        }
 
 
 @lru_cache(maxsize=4)
