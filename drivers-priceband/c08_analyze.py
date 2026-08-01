@@ -126,19 +126,29 @@ print(f"F2 RISE vs NOISE: rise {rise:+.4f} ms/char over the interval; replicate 
 
 # F3 PLACEBO: inert caps must be FLAT
 in_caps = [c for c in INERT if c < 1e8]
-pl = []
-for r in range(R):
-    a, b = CAPS.index(in_caps[0]), CAPS.index(in_caps[-1])
-    s = -(pool[r, b] - pool[r, a]) / (in_caps[-1] - in_caps[0])
-    pl.append(s)
-pl = np.array([p for p in pl if np.isfinite(p)])
+a, b = CAPS.index(in_caps[0]), CAPS.index(in_caps[-1])
+span = in_caps[-1] - in_caps[0]
+# NOTE: F_pool is monotone BY CONSTRUCTION, so its inert slope is forced to ~0 -- a
+# DEGENERATE placebo that cannot fail. The honest placebo uses the effort-symmetric
+# F_own, whose inert slope is free to be nonzero. Both are reported; F_own is PRIMARY.
+pl = np.array([v for v in (-(own[r, b] - own[r, a]) / span for r in range(R)) if np.isfinite(v)])
+plp = np.array([v for v in (-(pool[r, b] - pool[r, a]) / span for r in range(R)) if np.isfinite(v)])
 p_lo, p_hi = np.percentile(pl, [2.5, 97.5]) if len(pl) > 1 else (np.nan, np.nan)
 flat = bool(abs(pl.mean()) < abs(head.mean()) / 3 and p_lo <= 0 <= p_hi)
-G["F3_placebo"] = dict(inert_interval=[in_caps[0], in_caps[-1]], slope=float(pl.mean()),
-                       ci=[float(p_lo), float(p_hi)], inband=float(head.mean()), passed=flat)
-print(f"F3 PLACEBO (inert caps [{in_caps[0]},{in_caps[-1]}], constraint cannot bind):")
-print(f"   slope {pl.mean():+.4f}  CI [{p_lo:+.4f},{p_hi:+.4f}]   |slope| vs in-band/3 = "
-      f"{abs(pl.mean()):.4f} vs {abs(head.mean())/3:.4f}  => {'PASS (flat)' if flat else 'FAIL'}")
+# in-band price on the SAME effort-symmetric estimator, for an apples-to-apples ratio
+head_own = np.array([v for v in (slope(own[r], *HEAD) for r in range(R)) if np.isfinite(v)])
+ho_lo, ho_hi = np.percentile(head_own, [2.5, 97.5]) if len(head_own) > 1 else (np.nan, np.nan)
+G["F3_placebo"] = dict(inert_interval=[in_caps[0], in_caps[-1]],
+                       slope_own=float(pl.mean()), ci_own=[float(p_lo), float(p_hi)],
+                       slope_pool_degenerate=float(plp.mean()),
+                       inband_own=float(head_own.mean()), inband_own_ci=[float(ho_lo), float(ho_hi)],
+                       inband_pool=float(head.mean()), passed=flat)
+print(f"F3 PLACEBO (inert caps [{in_caps[0]},{in_caps[-1]}], constraint provably cannot bind):")
+print(f"   F_own  (PRIMARY, free to be nonzero) slope {pl.mean():+.4f}  CI [{p_lo:+.4f},{p_hi:+.4f}]")
+print(f"   F_pool (degenerate: monotone by construction) slope {plp.mean():+.4f}  -- reported, not used")
+print(f"   in-band price on the SAME F_own estimator = {head_own.mean():+.4f} CI [{ho_lo:+.4f},{ho_hi:+.4f}]")
+print(f"   |inert slope| {abs(pl.mean()):.4f} vs in-band/3 {abs(head_own.mean())/3:.4f}"
+      f"  => {'PASS (flat where it cannot bind)' if flat else 'FAIL'}")
 
 # F4 monotonicity of F_own over the priced range
 viol = []
@@ -153,6 +163,18 @@ G["F4_monotone"] = dict(n_violations=len(viol), worst=worst_v, sd_cell=sd_cell,
                         passed=bool(worst_v <= 2 * sd_cell), violations=viol[:12])
 print(f"F4 MONOTONICITY of F_own: {len(viol)} violations, worst {worst_v:+.4f}; per-cap replicate sd {sd_cell:.4f}"
       f"  (need worst <= 2sd = {2*sd_cell:.4f}) => {'PASS' if G['F4_monotone']['passed'] else 'FAIL'}")
+if viol:
+    from collections import defaultdict
+    per = defaultdict(list)
+    for r, c1, c2, dv in viol:
+        per[(c1, c2)].append(dv)
+    print("   violations by cap transition (looser cap gave a WORSE value):")
+    for (c1, c2), vs in sorted(per.items()):
+        print(f"     {c1:>5} -> {c2:<5}  n={len(vs)}  worst {max(vs):+.4f}  mean {np.mean(vs):+.4f}")
+    print(f"   mean n_feasible per cap: " + " ".join(f"{c}:{nfeas[:,CAPS.index(c)].mean():.0f}" for c in PRICED))
+    print("   => diagnostic: a violation means the search did WORSE with MORE freedom, i.e. the")
+    print("      per-cap searches are not equally converged. This is the pre-named residual threat")
+    print("      (differential search quality), and F5 (c09) is the pre-registered remedy.")
 
 # F6 best-of-N saturation: N vs N/2 (recompute own-cap best from first half of the restarts)
 half = {}
