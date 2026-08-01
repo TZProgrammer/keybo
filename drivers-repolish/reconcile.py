@@ -66,8 +66,11 @@ def check(corpus: str | None) -> dict:
     for name, published in sorted(LEDGER_FIGURES.items()):
         lay = CAMPAIGN_FIELD[name]
         layout = Layout(lay, ROW_STAGGERED_30)
-        mine = scorer.ms_per_char(layout)
-        structural = scorer.parity_rel_dev(layout)
+        # `float(...)` on the way out: these come back as numpy scalars, whose `bool` is
+        # `np.bool_` and is NOT JSON-serializable. Casting at the boundary rather than with a
+        # custom encoder keeps the artifact a plain-JSON file any reader can load.
+        mine = float(scorer.ms_per_char(layout))
+        structural = float(scorer.parity_rel_dev(layout))
         rows.append(
             {
                 "board": name,
@@ -76,14 +79,14 @@ def check(corpus: str | None) -> dict:
                 "measured_ms_per_char": mine,
                 "ledger_abs_diff": abs(mine - published),
                 "structural_rel_dev": structural,
-                "structural_ok": structural <= STRUCTURAL_TOL,
-                "ledger_ok": abs(mine - published) <= LEDGER_TOL,
+                "structural_ok": bool(structural <= STRUCTURAL_TOL),
+                "ledger_ok": bool(abs(mine - published) <= LEDGER_TOL),
             }
         )
     return {
         "corpus": corpus,
         "charset": SF.C30M,
-        "coverage_pct": 100.0 * scorer._covered / max(surface.total_mass, 1),
+        "coverage_pct": float(100.0 * scorer._covered / max(surface.total_mass, 1)),
         "structural_tol": STRUCTURAL_TOL,
         "ledger_tol": LEDGER_TOL,
         "rows": rows,
