@@ -4,7 +4,7 @@ All artifacts are CPU-local (no hardware/pod involved — this is a pure-CPU opt
 `/local/home/zegertho/repos/keybo`). Durable location for everything below is the git branch plus
 this state dir; nothing lives only in a temp worktree.
 
-**Durable code + full results:** branch `normopt-layouts` @ `184536f`, dir `drivers-normopt/`
+**Durable code + full results:** branch `normopt-layouts` (resolve the SHA with `git rev-parse normopt-layouts`; it was `70ab42b` at writing), dir `drivers-normopt/`
 in the shared clone `/local/home/zegertho/repos/keybo` (objects live in the shared clone, so the
 `/tmp/normopt` worktree can be removed without loss).
 

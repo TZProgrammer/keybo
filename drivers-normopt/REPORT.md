@@ -1,7 +1,7 @@
 # NORMOPT-1 — what does the normgauge objective actually PRODUCE?
 
 **Branch:** `normopt-layouts` (worktree `/tmp/normopt`, base `main` @ `96e6138`)
-**Final SHA:** `184536f` (2 commits: `1911061` then the amendment `184536f`)
+**Final SHA:** resolve it — `git -C /local/home/zegertho/repos/keybo rev-parse normopt-layouts` (was `70ab42b` when written; committing this report MOVES HEAD, so the branch name is the durable handle, not any SHA quoted here — HANDOFF-1 DEFECT 2). 3 commits: `1911061` (sweep) → `184536f` (amendment: the corrected control) → the report commit.
 **Nothing pushed, no CR, `PREREGISTRATIONS.md` untouched, `data/models/k31/` untouched, no layout adopted.**
 Prereg (registered before any cross-arm comparison): `/local/home/zegertho/agent/state/normopt/PREREGISTRATION.md`
 
@@ -333,5 +333,5 @@ on that scale would have made every difference look 2.14× smaller than the floo
 
 **Artifacts:** `/local/home/zegertho/agent/state/normopt/artifacts/` (40 run JSONs + `verdict.json`,
 `final.json`, `armA2.json`, `sgdist.json`, `crossscore.json`, `names.json`; 236 KB)
-**Drivers + full results, committed:** `drivers-normopt/` on `normopt-layouts` @ `184536f`
+**Drivers + full results, committed:** `drivers-normopt/` on branch `normopt-layouts` (resolve the SHA with `git rev-parse normopt-layouts`)
 **Recover the branch:** `git -C /local/home/zegertho/repos/keybo worktree add --detach $(git -C /local/home/zegertho/repos/keybo rev-parse normopt-layouts) <path>`
