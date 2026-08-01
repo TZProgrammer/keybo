@@ -27,6 +27,20 @@ graphite       256.19   +2.38       92.5
    layout's corpus **coverage** (n-grams typable on its charset) so a charset
    that ducks corpus mass is visible. `--attribution` breaks the total into
    per-finger shares and the costliest bigrams.
+
+   `saved%` is the **ms/char** comparison — per character typed. That is the
+   rankable one, and the only one to rank or gate on. Raw corpus *totals* are
+   each summed over that layout's own typable subset, so they only compare at
+   equal coverage: a layout that types more of the corpus accumulates a larger
+   total for that reason alone and is charged for its own coverage. On a
+   mixed-charset cohort that convention reported `graphite` as **slower** than
+   qwerty (`-0.26`) while it was in fact 5.5 ms/char **faster**. It is retained,
+   because the frozen campaign boards were computed with it, but only inside a
+   labelled `saved%: frozen-artifact reconciliation` block (and
+   `time.raw_total_reconciliation` under `--json`) that carries the exact delta.
+   That block prints only when coverage actually differs — at equal coverage the
+   two conventions are the same number, which is why the example above (one
+   charset, so equal coverage) shows none.
 2. **Community scores** — exact ports of genkey `Score`, oxeylyzer-1 and
    oxeylyzer-2 (+ its weighted-finger-distance term), each on its own native
    corpus (vendored) because those numbers are only meaningful in their home

@@ -254,6 +254,43 @@ def _wfd_reconciliation(o2, lay30: str) -> dict | None:
     }
 
 
+def _raw_total_reconciliation(card, ref_card) -> dict | None:
+    """How the frozen artifacts' raw-TOTALS saved% differs from the rankable one.
+
+    Same contract as :func:`_wfd_reconciliation`, for the same reason: the raw-total
+    number is not a second way of measuring the layout, it is the same measurement taken
+    on a frame that only holds when both layouts cover the same corpus mass. A layout
+    that can type MORE of the corpus accumulates a larger total for that reason alone,
+    so the raw-total comparison charges it for its own coverage — which is how
+    ``graphite`` came to be reported as slower than qwerty while being 5.5 ms/char
+    faster. Reporting it as ``rankable + delta``, with the non-comparability named, is
+    what stops a reader (or a ``--json`` consumer) ranking on it.
+
+    ``None`` when there is no reference comparison to reconcile.
+    """
+    if card.saved_vs_ref_pct is None or card.raw_total_saved_vs_ref_pct is None:
+        return None
+    equal_coverage = card.coverage_pct == ref_card.coverage_pct
+    return {
+        "raw_total_saved_vs_ref_pct": card.raw_total_saved_vs_ref_pct,
+        "delta": card.raw_total_saved_vs_ref_pct - card.saved_vs_ref_pct,
+        "coverage_pct": card.coverage_pct,
+        "ref_coverage_pct": ref_card.coverage_pct,
+        "equal_coverage": equal_coverage,
+        "comparable_across_charsets": False,
+        "why_not_comparable": (
+            "raw corpus TOTALS are accumulated over each layout's OWN typable subset, so "
+            "they only compare at equal coverage; a wider charset covers more corpus mass "
+            "and is charged for it, which can report a faster layout as slower"
+        ),
+        "rank_on": "saved_vs_ref_pct",
+        "use": (
+            "reconcile frozen artifacts only. It is exact at equal coverage (every frozen "
+            "board this repo pins compares same-charset layouts, where delta == 0)."
+        ),
+    }
+
+
 def run(args: argparse.Namespace) -> int:
     specs = [_resolve(s) for s in args.layouts]
     ref_name, ref_lay = _resolve(args.ref)
@@ -297,11 +334,20 @@ def run(args: argparse.Namespace) -> int:
         row: dict = {"layout": lay}
 
         if surf is not None:
-            card = surf.card(lay, ref_total_ms=ref_card.total_ms)
+            card = surf.card(
+                lay,
+                ref_total_ms=ref_card.total_ms,
+                ref_ms_per_char=ref_card.ms_per_char,
+            )
             row["time"] = {
                 "ms_per_char": card.ms_per_char,
                 "saved_vs_ref_pct": card.saved_vs_ref_pct,
                 "coverage_pct": card.coverage_pct,
+                # The raw-corpus-TOTALS convention is NOT a second saved% -- it is the
+                # frozen artifacts' number, valid only at equal coverage. It appears
+                # only inside a labelled reconciliation, never beside saved% as though
+                # the two were co-equal (same contract as wfd_legacy_reconciliation).
+                "raw_total_reconciliation": _raw_total_reconciliation(card, ref_card),
             }
         else:
             card = None
@@ -551,6 +597,9 @@ def _print_report(
             t = rows[n]["time"]
             saved = f"{t['saved_vs_ref_pct']:+.2f}" if t["saved_vs_ref_pct"] is not None else "-"
             print(f"{shown[n]:<{w}}{t['ms_per_char']:>9.2f}{saved:>8}{t['coverage_pct']:>11.1f}")
+        print("saved% is the ms/char comparison — per CHARACTER TYPED, so a charset that")
+        print("covers less of the corpus cannot be flattered by it. Rank and gate on it.")
+        _print_raw_total_reconciliation(rows, names, w, shown, ref_name)
         print()
 
     print("== community scores (exact ports, native corpora) ==")
@@ -707,6 +756,47 @@ def _print_report(
                 "costliest bigrams (ms/char): "
                 + "  ".join(f"{bg!r} {v:.4f}" for bg, v in a["top_bigrams_ms_per_char"][:8])
             )
+
+
+def _print_raw_total_reconciliation(
+    rows: dict[str, dict], names: list[str], w: int, shown: dict[str, str], ref_name: str
+) -> None:
+    """Reconcile the frozen artifacts' raw-TOTALS saved% against the rankable one.
+
+    Printed only when a coverage difference makes the two conventions actually diverge —
+    on an equal-coverage cohort they are the same number and a second block would be
+    noise. Deliberately NOT a second ``saved%`` column: see
+    :func:`_raw_total_reconciliation`.
+    """
+    live = [
+        n
+        for n in names
+        if (rec := rows[n]["time"] and rows[n]["time"].get("raw_total_reconciliation"))
+        and not rec["equal_coverage"]
+    ]
+    if not live:
+        return
+    print(
+        "\n-- saved%: frozen-artifact reconciliation "
+        "(raw corpus TOTALS — not comparable across charsets) --"
+    )
+    print(
+        f"{'layout':<{w}}{'saved% (rankable)':>19}{'raw totals':>13}{'delta':>9}{'coverage%':>11}"
+    )
+    for n in live:
+        t = rows[n]["time"]
+        rec = t["raw_total_reconciliation"]
+        print(
+            f"{shown[n]:<{w}}{t['saved_vs_ref_pct']:>+19.2f}"
+            f"{rec['raw_total_saved_vs_ref_pct']:>+13.2f}{rec['delta']:>+9.2f}"
+            f"{rec['coverage_pct']:>11.1f}"
+        )
+    print(
+        f"the raw-totals column divides each layout's total by {ref_name}'s, but each total is\n"
+        "summed over a DIFFERENT corpus subset — a layout that types more of the corpus is\n"
+        "charged for the extra mass, so the number can call a faster layout slower. Quote it\n"
+        "only to reconcile a frozen artifact; rank and gate on saved% above."
+    )
 
 
 def _print_wfd_reconciliation(

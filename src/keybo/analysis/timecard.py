@@ -47,11 +47,27 @@ def _load_gz_model(stem: str) -> XGBoostTypingModel:
 
 @dataclass
 class TimeCard:
-    """One layout's time report. All times in model-predicted milliseconds."""
+    """One layout's time report. All times in model-predicted milliseconds.
+
+    Two comparisons against the reference are available and they are **not**
+    interchangeable — mixing them is the defect this docstring exists to prevent:
+
+    * ``saved_vs_ref_pct`` — the rankable one. Compares ``ms_per_char``, so both layouts
+      are measured per CHARACTER TYPED and a charset difference cannot flatter either.
+    * ``raw_total_saved_vs_ref_pct`` — raw corpus TOTALS, retained only to reconcile
+      frozen artifacts. Valid **only** between layouts of equal coverage: a layout that
+      can type more of the corpus accumulates a larger total for that reason alone, so
+      this number charges it for the extra coverage and can report a layout as slower
+      while it is in fact faster per character.
+
+    ``coverage_pct`` is the disclosure that says whether the two can differ at all: they
+    are algebraically the same number when coverage is equal.
+    """
 
     total_ms: float
     ms_per_char: float
     saved_vs_ref_pct: float | None
+    raw_total_saved_vs_ref_pct: float | None
     coverage_pct: float
     per_key_ms: dict[str, float]  # char -> summed time of ngrams ENDING on it
     per_finger_ms: dict[str, float]
@@ -119,7 +135,20 @@ class TimeSurface:
             totals.append(float(total))
         return totals
 
-    def card(self, lay30: str, ref_total_ms: float | None = None) -> TimeCard:
+    def card(
+        self,
+        lay30: str,
+        ref_total_ms: float | None = None,
+        ref_ms_per_char: float | None = None,
+    ) -> TimeCard:
+        """Score one layout. ``ref_*`` supply the reference for the saved-percentages.
+
+        ``ref_ms_per_char`` drives the rankable ``saved_vs_ref_pct``; ``ref_total_ms``
+        drives the frozen-artifact ``raw_total_saved_vs_ref_pct``. Passing only
+        ``ref_total_ms`` still yields both: the reference's per-character rate is
+        recovered from this layout's own covered mass, which is exact when coverage is
+        equal (the frozen-artifact case) and is why the legacy call sites keep working.
+        """
         slot_of = {ch: i for i, ch in enumerate(lay30)}
         slot_of[" "] = self._n - 1
         positions = (*self.geometry.slots, self.geometry.space_position)
@@ -145,13 +174,28 @@ class TimeSurface:
             per_finger[self.geometry.finger(positions[c][0]).name] += t3
             big[ng[:2]] = big.get(ng[:2], 0.0) + t2
         chars = max(covered, 1)
-        saved = None
+        ms_per_char = total / chars
+        # The RAW-TOTALS comparison: kept for frozen-artifact reconciliation only. It
+        # divides two totals accumulated over DIFFERENT corpus subsets whenever the
+        # charsets differ, so it is not comparable across charsets -- see TimeCard.
+        raw_saved = None
         if ref_total_ms is not None and ref_total_ms > 0:
-            saved = 100.0 * (ref_total_ms - total) / ref_total_ms
+            raw_saved = 100.0 * (ref_total_ms - total) / ref_total_ms
+        # The RANKABLE comparison: per CHARACTER TYPED, so differing coverage cancels.
+        # Falling back to the reference's implied rate over THIS layout's covered mass
+        # reproduces the raw-total number exactly at equal coverage, which is what keeps
+        # every frozen same-charset artifact byte-identical.
+        ref_rate = ref_ms_per_char
+        if ref_rate is None and ref_total_ms is not None:
+            ref_rate = ref_total_ms / chars
+        saved = None
+        if ref_rate is not None and ref_rate > 0:
+            saved = 100.0 * (ref_rate - ms_per_char) / ref_rate
         return TimeCard(
             total_ms=total,
-            ms_per_char=total / chars,
+            ms_per_char=ms_per_char,
             saved_vs_ref_pct=saved,
+            raw_total_saved_vs_ref_pct=raw_saved,
             coverage_pct=100.0 * covered / max(self.total_mass, 1),
             per_key_ms=per_key,
             per_finger_ms=per_finger,
