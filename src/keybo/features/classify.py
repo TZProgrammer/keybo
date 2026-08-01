@@ -103,6 +103,88 @@ def is_scissor(geometry: Geometry, a: Position, b: Position) -> bool:
     return abs(a[1] - b[1]) == 2
 
 
+# --- the GRADED lateral stretch: additive, and why it is not just "is_lsb widened" ----------
+#
+# ``is_lsb`` above hardcodes the ('index','middle') finger pair, so of the 204 same-hand
+# two-finger pairs of ``ROW_STAGGERED_30`` with a stagger-adjusted span over 1.5 it can flag
+# only 32. The 172 it can NEVER flag are index-pinky (72), index-ring (64), middle-pinky (28),
+# middle-ring (4) and ring-pinky (4).
+#
+# That is the same defect shape ``is_row_skip`` was added for, and the argument that made that
+# one real applies here unchanged: the flagged subset captures a DIFFERENT FRACTION of the
+# phenomenon on each layout (11.2%-24.5% of positive-span corpus mass across the five
+# ``NAMED_LAYOUTS``, a 2.2x fold spread; measured against ``state/closeout-unknown``'s D7
+# census, which reports the same spread as 3.23x on qwerty rising to 13.50x on graphite
+# against its own wider phenomenon set). A subset whose coverage moves with the layout cannot
+# rank layouts consistently even in principle. ``lsb`` is simultaneously a
+# ``FEATURE_VERSION``-stamped model input, a weighted ``comfort.py`` term and a weighted
+# ``oxey.py`` term, so that blindness propagates into the speed model, the comfort axis and
+# the community crosswalk at once.
+#
+# TWO design corrections, both measured, because the obvious fix does not work:
+#
+# 1. **A raw span threshold applied to every finger pair is not a stretch measure.** The index
+#    and pinky sit about three columns apart AT REST, so ``stagger_adjusted_dx > 1.5`` fires on
+#    100% of index-pinky pairs (72 of 72) and 88.9% of index-ring ones unconditionally. Such a
+#    column says "these two fingers were used", not "the hand was stretched" — the same error
+#    DIST-1 caught in its own first widening convention. So the span is measured as the EXCESS
+#    over the pair's OWN neutral separation, which equalizes the per-class firing rate (44.4%
+#    for each index class, 11.1% for each narrow one).
+#
+# 2. **Grading beats banding, and that is the whole point.** Any THRESHOLDED form keeps a
+#    blind spot below its threshold, and that residual is itself layout-dependent (the banded
+#    reading still measures a 1.73x coverage fold spread). The continuous value has no
+#    threshold, so it prices every positive-span bigram on every layout: coverage is 100%
+#    everywhere and the fold spread is exactly 1.00x. A measure with no blind spot cannot have
+#    a layout-dependent one.
+#
+# ADDITIVE, and deliberately so: ``is_lsb`` keeps its exact behaviour (byte-identical), so no
+# trained model is invalidated and no shipped gauge value moves. On ``is_lsb``'s own
+# index-middle support the two agree on all 870 ordered pairs — index-middle neutral
+# separation is 1, so ``span > 0.5`` IS ``dx > 1.5`` — which makes this a strict
+# generalization rather than a rival metric, the same relationship
+# ``scoring.scissor_severity`` has to the flat scissor share. Whether anything should be
+# WEIGHTED by it is a scoring-policy decision and is not taken here.
+
+#: Absolute column -> that finger's HOME column. Columns 1 and 6 are the index's and pinky's
+#: off-home stretch columns (:func:`is_lateral`'s own reading of them), so they resolve to the
+#: home column of the finger that presses them. Neutral separation is read from this table
+#: rather than derived, so a column the table does not know about raises instead of scoring
+#: against an invented rest posture.
+_HOME_COLUMN = {1: 2, 2: 2, 3: 3, 4: 4, 5: 5, 6: 5}
+
+
+def lateral_span(geometry: Geometry, a: Position, b: Position) -> float:
+    """How far a same-hand two-finger bigram stretches the hand SIDEWAYS, in columns.
+
+    The stagger-adjusted horizontal span minus the two fingers' neutral (rest) separation,
+    floored at zero: 0.0 when the pair is cross-hand, single-finger, or no wider than the
+    fingers already rest, and otherwise the number of columns of genuine stretch.
+
+    Symmetric in ``a`` and ``b`` — a property of the two keys, like :func:`is_lsb` itself, with
+    direction priced by the corpus supplying both orderings.
+
+    See the module note above for why this is graded rather than thresholded, and why the
+    excess (not the raw span) is the quantity.
+    """
+    if not same_hand(geometry, a, b) or same_finger(geometry, a, b):
+        return 0.0
+    neutral = abs(_HOME_COLUMN[abs(a[0])] - _HOME_COLUMN[abs(b[0])])
+    return max(0.0, geometry.stagger_adjusted_dx(a, b) - neutral)
+
+
+def lateral_span_class(geometry: Geometry, a: Position, b: Position) -> int:
+    """:func:`lateral_span` rounded to whole columns of stretch — a REPORTING label.
+
+    0 means "no stretch beyond rest" (equivalently ``lateral_span <= 0.5``); 1 and 2 are one
+    and two columns of stretch. Provided because per-class tables read better than a
+    continuous axis, but the graded value is the measure: this banded form reintroduces a
+    threshold, and with it the layout-dependent residual the graded value does not have.
+    """
+    span = lateral_span(geometry, a, b)
+    return int(span + 0.5) if span > 0.5 else 0
+
+
 def rotation_angle(geometry: Geometry, a: Position, b: Position) -> float:
     """Signed roll angle (degrees) from the outer to the inner key.
 
