@@ -26,8 +26,10 @@ import numpy as np
 
 from keybo.features import trigram_features_from_positions
 from keybo.geometry import ROW_STAGGERED_30, Finger
+from keybo.layout import Layout
 from keybo.models.xgboost_model import XGBoostTypingModel
 from keybo.scoring.table_scorer import TableBigramScorer
+from keybo.scoring.table_trigram import TableTrigramScorer
 
 _MODELS = Path(__file__).resolve().parents[3] / "data" / "models" / "k31"
 _SEEDS = (0, 1, 2)
@@ -99,6 +101,35 @@ class TimeSurface:
         self._T2s, self._Tcs = (T2s, Tcs) if keep_seed_tables else (None, None)
         self.tri = {k: v for k, v in trigram_freqs.items() if len(k) == 3}
         self.total_mass = sum(self.tri.values())
+
+    def triple_ms_table(self) -> np.ndarray:
+        """The gauge as ONE ``(n, n, n)`` millisecond table: ``T2[a,b] + Tcond[a,b,c]``.
+
+        This is exactly the per-trigram quantity :meth:`card` accumulates, so it is what a
+        SEARCH on this ruler has to optimize. Exposing it — rather than leaving it implicit in
+        ``card``'s loop — is what lets the objective and the report share one definition.
+        ``card`` is ~50 ms per layout, so every previous attempt to search the reported gauge
+        re-implemented this sum by hand, and the plausible-looking re-implementations are
+        ~1.5e-2 wrong: they weight the bigram term by ``bigrams.txt`` instead of by this
+        corpus's first-two-character marginal, and they use one model seed instead of the mean
+        over :data:`_SEEDS`.
+
+        Returned as a fresh array (the broadcast allocates): ``default_surface`` is
+        ``lru_cache``d for the process, so handing out a view of ``_T2``/``_Tc`` would let one
+        caller's in-place edit change every later gauge number in the same run.
+        """
+        return self._T2[:, :, None] + self._Tc
+
+    def seed_tables(self) -> list[np.ndarray]:
+        """Per-seed ``(n, n, n)`` gauge tables — the per-seed rulers behind the seed-MEAN one.
+
+        The seed FLOOR the campaign quotes (0.135 ms/char) is an estimator spread over these
+        three tables, so a claim that a move survives it has to be checked on each seed
+        SEPARATELY rather than on their mean. Requires ``keep_seed_tables=True``.
+        """
+        if self._T2s is None:
+            raise ValueError("TimeSurface built without keep_seed_tables=True")
+        return [T2[:, :, None] + Tc for T2, Tc in zip(self._T2s, self._Tcs, strict=True)]
 
     def seed_totals(self, lay30: str) -> list[float]:
         """Per-seed corpus totals (ms) — the estimator spread behind ``card().total_ms``
@@ -172,3 +203,87 @@ def default_surface(target_wpm: float = 90.0, corpus: str | None = None) -> Time
 
     tri = load_frequencies(str(production_corpus_dir(corpus) / "trigrams.txt"))
     return TimeSurface(tri, target_wpm=target_wpm)
+
+
+class GaugeTrigramScorer(TableTrigramScorer):
+    """The reported ms/char gauge as a search objective: table-speed, parity-gated.
+
+    A thin subclass of the shipped trigram-table evaluator that adds the gauge's own
+    normalization. ``fitness`` is the corpus TOTAL (what the optimizer minimizes) and
+    :meth:`ms_per_char` divides by the COVERED mass, which is the denominator
+    :meth:`TimeCard.ms_per_char` uses — dividing by the corpus total instead would scale every
+    number by ~1.13 (coverage is 88.7% on C30M) while preserving ranking, so no comparison
+    test would catch it.
+    """
+
+    _covered: float
+
+    def ms_per_char(self, layout: Layout) -> float:
+        """Total ms over the corpus mass this board actually covers — ``analyze``'s ms/char."""
+        return self.fitness(layout) / self._covered
+
+    def parity_rel_dev(self, layout: Layout) -> float:
+        """Relative deviation of this objective from ``analyze``'s own number for ``layout``.
+
+        The runtime half of the parity gate: it re-derives the total through the ~50 ms
+        :meth:`TimeSurface.card` path and compares. Cheap enough to run once before a search
+        and worth recording in a result file, because "this objective IS the published gauge"
+        is the claim the whole opt-in path rests on — and the naive reading of it is 1.5e-2
+        off while looking entirely plausible.
+        """
+        mine = self.fitness(layout)
+        theirs = self._surface.card("".join(layout.chars)).total_ms
+        return abs(mine - theirs) / abs(theirs)
+
+
+def gauge_search_scorer(
+    chars: str,
+    target_wpm: float = 90.0,
+    corpus: str | None = None,
+) -> GaugeTrigramScorer:
+    """The REPORTED gauge (``analyze``'s ms/char) as a fast, searchable objective.
+
+    ``optimize``'s default objective is the bigram table, but every published number is this
+    gauge; the two rank layouts INVERTED (spearman 0.672, selection tax 4.97 resolution floors
+    at the argmin) because the cubic term carries most of the gauge's variance (sd 0.803 vs
+    0.274). Searching the ruler the report grades on is therefore not a tuning knob — it is
+    what makes a search result and its published score the same measurement.
+
+    Built by handing :meth:`TimeSurface.triple_ms_table` to the reviewed
+    :class:`~keybo.scoring.table_trigram.TableTrigramScorer` evaluator, so it reconciles to
+    :meth:`TimeSurface.card` structurally rather than coincidentally (measured worst relative
+    deviation 1.2e-14 over six boards) and evaluates in ~0.2 ms instead of ~50 ms.
+
+    ``chars`` fixes the assignable charset, exactly as the bigram table's does: the kept corpus
+    rows depend on it, so a board off this charset is refused rather than silently scored
+    against different corpus mass.
+    """
+    surface = default_surface(target_wpm, corpus)
+    return gauge_scorer_from_surface(surface, chars)
+
+
+def gauge_scorer_from_surface(
+    surface: TimeSurface,
+    chars: str,
+    table: np.ndarray | None = None,
+) -> GaugeTrigramScorer:
+    """A :class:`GaugeTrigramScorer` over ``surface``'s corpus, on ``table`` if given.
+
+    Factored out of :func:`gauge_search_scorer` so the PER-SEED rulers
+    (:meth:`TimeSurface.seed_tables`) go through the same construction as the seed-mean one.
+    A second copy of this wiring is a second place for the seed-mean and per-seed objectives
+    to drift apart, and a per-seed check is only evidence about the seed floor if it is the
+    same objective evaluated on a different table.
+
+    ``_covered`` is set from the indexed corpus rows rather than recomputed, so ``ms_per_char``
+    carries ``card``'s denominator on every seed.
+    """
+    scorer = GaugeTrigramScorer.from_table(
+        surface.triple_ms_table() if table is None else table,
+        surface.tri,
+        chars=chars,
+        geometry=surface.geometry,
+    )
+    scorer._covered = float(scorer._f.sum())
+    scorer._surface = surface
+    return scorer
