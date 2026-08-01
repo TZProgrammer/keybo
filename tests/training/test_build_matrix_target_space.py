@@ -11,10 +11,13 @@ and then ignored looks identical to a working one at the call site. So these tes
 check that the keyword is accepted — they check that the returned ``y`` actually changed, that it
 changed in the right direction (log scale), and that ``X`` did *not*.
 
-⚠ One test here documents a defect rather than a fix — see
-``test_an_UNKNOWN_target_space_is_silently_accepted_and_falls_back_to_MS``. The public function
-does no validation at all, so a typo is silent. It is pinned as the CURRENT behaviour, deliberately
-not asserted as correct.
+Two tests here were originally written to DOCUMENT a defect rather than a fix: the public function
+did no validation, so ``"BOGUS"`` and ``"lograt"`` both silently produced MS targets. They carried
+the instruction that adding validation should INVERT them to ``pytest.raises`` / the right-space
+assertion rather than delete them. Validation now exists on the public boundary, so both are
+inverted and both keep their history note — an inverted pin still guards the original defect (a
+reader who sees the silent fallback come back has found a regression, with the whole story in the
+docstring), where a deleted one would have guarded nothing.
 """
 
 from __future__ import annotations
@@ -124,38 +127,84 @@ def test_the_DEFAULT_is_still_MS_so_existing_callers_are_unaffected() -> None:
     assert np.array_equal(_y(), _y("MS"))
 
 
-# --- the validation gap: a typo in target_space is SILENT (defect, pinned as-is) ----------
+# --- the validation gap, now CLOSED: a typo raises and case normalizes -------------------
 
 
-def test_an_UNKNOWN_target_space_is_silently_accepted_and_falls_back_to_MS() -> None:
-    """⚠ DEFECT, documented not endorsed: the public function validates NOTHING.
+def test_an_UNKNOWN_target_space_RAISES_instead_of_falling_back_to_MS() -> None:
+    """The inverted defect pin. HISTORY: this test used to assert the SILENT fallback.
 
-    ``_train`` upper-cases its ``target_space`` and rejects anything outside ``_TARGET_SPACES``
-    (``train.py``, ``unknown target_space ... (known: ['LOGRAT', 'MS'])``). ``build_training_matrix``
-    does neither: it forwards the string to ``_build_matrix_full``, whose ``_group_target`` tests
-    ``target_space == "LOGRAT"`` exactly and falls through to MS for anything else.
+    ``_train`` always upper-cased its ``target_space`` and rejected anything outside
+    ``_TARGET_SPACES``, but ``build_training_matrix`` did NEITHER: it forwarded the string to
+    ``_build_matrix_full``, whose ``_group_target`` tested ``target_space == "LOGRAT"`` exactly
+    and fell through to MS for anything else. So the parameter was reachable but MISSPELLING it
+    was invisible — the caller got a plausible matrix in the wrong space, the same
+    present-!=-effective failure that reaching the parameter was meant to remove, one level down.
 
-    So the parameter is now reachable but MISSPELLING it is invisible — the caller gets a
-    plausible matrix in the wrong space, which is the same present-!=-effective failure the fix
-    was meant to remove, one level down. Pinned as the CURRENT behaviour so the next reader sees
-    it; if validation is added, this test should be INVERTED to a ``pytest.raises``, not deleted.
+    It was pinned here as the CURRENT behaviour with the instruction that adding validation should
+    INVERT this test rather than delete it. Validation now lives on the public boundary
+    (``normalize_target_space``), so the assertion is inverted and the history is kept: a reader
+    who sees a silent MS fallback return has found a REGRESSION, not a new bug.
     """
-    assert np.array_equal(_y("BOGUS"), _y("MS")), "current behaviour: unknown space -> MS targets"
     assert "BOGUS" not in _TARGET_SPACES
+    with pytest.raises(ValueError, match="unknown target_space"):
+        _y("BOGUS")
 
 
-def test_a_LOWERCASE_lograt_silently_yields_MS_targets_not_LOGRAT_ones() -> None:
-    """⚠ Same defect, in its most likely form: the case that a human would actually type.
+def test_a_LOWERCASE_lograt_now_yields_LOGRAT_targets_instead_of_MS_ones() -> None:
+    """The inverted defect pin, in the form a human would actually type. HISTORY: this used to
+    assert that ``"lograt"`` silently produced MS targets.
 
-    ``_train`` normalizes case, so ``target_space="lograt"`` works there. Through the public
-    function it silently produces MS targets — the WORST version of this bug, because the caller
-    asked for the right space by name and got the other one.
+    That was the WORST version of the bug — the caller asked for the right space BY NAME and got
+    the other one, with no error. ``_train`` normalized case all along, so the public function was
+    the only reader that did not.
+
+    Case NORMALIZES rather than raising, matching the two other readers of this field:
+    ``_train``'s long-standing ``.upper()`` and
+    :attr:`keybo.models.base.TypingModel.target_space` (``test_target_space_reads_sidecar_case_insensitively``).
+    The assertion is therefore on the VALUES, not on the call merely succeeding — accepting
+    ``"lograt"`` and still computing MS would be the original defect wearing a passing test.
     """
     lowercase = _y("lograt")
-    assert np.array_equal(lowercase, _y("MS")), "current behaviour: case is NOT normalized"
-    assert not np.allclose(lowercase, _y("LOGRAT")), (
-        "and it is NOT the space the caller asked for — the defect, stated plainly"
+    assert np.allclose(lowercase, _y("LOGRAT")), "lowercase must mean the space it names"
+    assert not np.allclose(lowercase, _y("MS")), (
+        "and it must NOT be the silent MS fallback this test was written to document"
     )
+
+
+def test_the_public_boundary_and_the_trainer_share_ONE_target_space_gate() -> None:
+    """The two entry points must agree, since disagreeing is how the original defect arose.
+
+    ``_train`` validated and ``build_training_matrix`` did not, so the same string meant different
+    things depending on which door the caller used. Both now route through
+    ``normalize_target_space``; this pins the AGREEMENT rather than each side separately, because
+    two independently-correct checks can still drift apart.
+    """
+    from keybo.training.train import normalize_target_space
+
+    for good, expected in [("MS", "MS"), ("ms", "MS"), ("LOGRAT", "LOGRAT"), ("LogRat", "LOGRAT")]:
+        assert normalize_target_space(good) == expected
+
+    for bad in ["BOGUS", "", "LOGRATIO", "MS "]:
+        with pytest.raises(ValueError, match="unknown target_space"):
+            normalize_target_space(bad)
+        with pytest.raises(ValueError, match="unknown target_space"):
+            _y(bad)
+
+
+def test_group_target_refuses_an_unnormalized_space_instead_of_defaulting_to_MS() -> None:
+    """Defence in depth at the row that computes the number.
+
+    ``_group_target`` used to be ``if LOGRAT ... else MS``, so a space added to
+    ``_TARGET_SPACES`` and wired only into ``_train`` would have produced a plausible MS matrix
+    for it. This is unreachable through the public API by design — the callers normalize — and
+    that is precisely why it is worth pinning: it is the backstop, not the gate.
+    """
+    from keybo.training.train import _group_target
+
+    assert _group_target([120], 90, "MS") == pytest.approx(120.0)
+    assert _group_target([120], 90, "LOGRAT") == pytest.approx(math.log(120 * 90 / 12000.0))
+    with pytest.raises(ValueError, match="unknown target_space"):
+        _group_target([120], 90, "lograt")
 
 
 def test_every_documented_target_space_is_reachable_and_produces_distinct_targets() -> None:
