@@ -63,6 +63,7 @@ from keybo.analysis.community import (
 from keybo.analysis.kmstats import STAT_NAMES, KmStats
 from keybo.analysis.redirects import REDIRECT_CLASSES, RedirectFamily
 from keybo.analysis.scissor_fingers import FINGER_NAMES, ScissorByFinger
+from keybo.analysis.skipgram_span import sg_dist as sg_dist_gauge
 from keybo.analysis.timecard import default_surface
 from keybo.data.corpus import (
     CORPUS_ENV_VAR,
@@ -102,7 +103,16 @@ _EXTRA_NAMED = {
 }
 
 #: The 15 corpus-sensitive gauges of the frozen all-gauge frame, in board order.
-GAUGE_NAMES = (*STAT_NAMES, "scissor", "imbalance", "oxey-style", "comfort")
+_FROZEN_GAUGE_NAMES = (*STAT_NAMES, "scissor", "imbalance", "oxey-style", "comfort")
+
+#: ``sg_dist`` (BUILDMETRIC-1) is APPENDED to the frame, not inserted: the 15 frozen gauges keep
+#: their board order and their frozen values byte-for-byte (the frozen-board controls in
+#: ``tests/cli/test_analyze_allgauge.py`` iterate the frozen dict's own keys, so a new trailing
+#: gauge cannot perturb them). It is the corpus-weighted first-to-third-key span — a genuinely
+#: trigram-level axis the 15 gauges are blind to, because they meter that span only for the
+#: same-finger skip (``sfs``). UNIT: key-widths, not a percent share (every other gauge here is a
+#: percentage); the printed frame notes this so the column is not misread.
+GAUGE_NAMES = (*_FROZEN_GAUGE_NAMES, "sg_dist")
 
 #: Sentinel rendered for a cell a layout's charset cannot support.
 NA = "N/A"
@@ -317,6 +327,12 @@ def run(args: argparse.Namespace) -> int:
         # corpus bigram mass is the frozen board's convention (board_three_corpora.py).
         # Note this denominator differs from every other gauge's here -- stated, not hidden.
         gauges["comfort"] = comfort.fitness(layout) / bigram_mass
+        # sg_dist (BUILDMETRIC-1): the corpus-weighted first-to-third-key span, in KEY-WIDTHS
+        # (not a percent share). Assembled here on the ROW_STAGGERED_30 `layout` -- NOT in
+        # kmstats, whose keymeow board would give a different distance -- and over the TRIGRAM
+        # table with the space-inclusive layout-restricted mass, which is byte-identically the
+        # ms/char denominator. Additive: a trailing gauge that leaves the 15 above untouched.
+        gauges["sg_dist"] = sg_dist_gauge(layout, trigrams)
         row["gauges"] = gauges
         # `kmstats` is the 11 keymeow-class statistics ALONE -- a named external convention,
         # and the historical JSON key, so it stays. `gauges` is the campaign's 15-gauge frame
@@ -577,11 +593,19 @@ def _print_report(
 
     _print_wfd_reconciliation(rows, names, w, shown)
 
-    print(f"\n== all-gauge frame, shared corpus (1-skip31); {len(GAUGE_NAMES)} gauges ==")
+    print(
+        f"\n== all-gauge frame, shared corpus (1-skip31); {len(_FROZEN_GAUGE_NAMES)} gauges "
+        f"+ sg_dist =="
+    )
     print(f"{'layout':<{w}}" + "".join(f"{s:>11}" for s in GAUGE_NAMES))
     for n in names:
         g = rows[n]["gauges"]
         print(f"{shown[n]:<{w}}" + "".join(_cell(g[s], 11) for s in GAUGE_NAMES))
+    print(
+        "sg_dist is the freq-weighted first-to-third-key span in KEY-WIDTHS (not a % share like "
+        "the other columns): the trigram-level reach the 15 gauges miss, metering the a→c span "
+        "for ALL trigrams where sfs meters it only for same-finger skips (BUILDMETRIC-1)"
+    )
 
     print("\n== scissor by finger (% of layout-covered bigram mass; sums to `scissor`) ==")
     print(f"{'layout':<{w}}" + "".join(f"{f:>9}" for f in FINGER_NAMES) + f"{'total':>10}")
