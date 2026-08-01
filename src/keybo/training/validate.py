@@ -815,7 +815,10 @@ def validate(
             )
         fold = report["folds"].setdefault(holdout, {"n_cells": len(test_cells), "seeds": []})
 
-        params = {**(train_params or {}), "random_state": seed, "n_jobs": 1}
+        # n_jobs defaults to 1 (folds may run in an outer parallel loop and must not
+        # oversubscribe), but an explicit train_params["n_jobs"] wins — a single sequential
+        # validate() run (QUADGRAM-1) wants per-fit threads.
+        params = {"n_jobs": 1, **(train_params or {}), "random_state": seed}
         # The quadgram trainer takes quad_context (full 4-key frame vs trigram-context control),
         # not direction/kitchensink; the bigram/trigram trainers take the reverse. Thread the
         # right frame flag for each so the fold model matches the frame _predict_cells will score.

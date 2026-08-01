@@ -33,6 +33,7 @@ from keybo.training.validate import require_no_high_wpm_regression_in_report, va
 QUAD_TSV = "/tmp/quadstrokes31_cond_v1.tsv"
 TRI_TSV = "/local/home/zegertho/keybo-e2e/tristrokes31_cond_v1.tsv"
 SEEDS = [0, 1, 2]
+N_JOBS = 16  # XGBoost thread count per fit; validate() sets random_state per fold.
 CAND4 = dict(
     n_estimators=427,
     max_depth=5,
@@ -43,6 +44,7 @@ CAND4 = dict(
     gamma=0.0,
     reg_alpha=0.0,
     reg_lambda=1.0,
+    n_jobs=N_JOBS,
 )
 FOLDS = ["azerty", "dvorak", "qwerty", "qwertz"]
 t0 = time.time()
