@@ -1,0 +1,23 @@
+{
+  "layout": "cnthk,aespfmlrduioygwzvbx.-'qj",
+  "fitness": -0.9241460286304952,
+  "ngram": "bigram",
+  "target_wpm": 90.0,
+  "seed": 4,
+  "attempts": 1,
+  "model": "/tmp/normopt-scratch/models/bigram_reg31_seed0.json",
+  "objective": "normalized model blend",
+  "model_weights": {
+    "AALTO": 0.5,
+    "COMMUNITY": 0.5
+  },
+  "model_anchors": "/tmp/normopt/drivers-normgauge/anchors.json",
+  "normalized_gauges": {
+    "aalto-n": 0.8988640347620052,
+    "comm-n": 0.9494280224989852,
+    "pool-n": 0.983781006691616
+  },
+  "blend_higher_is_better": 0.9241460286304952,
+  "frame_caveat": "the shipped .standardized surfaces share AALTO's bigram tensor (standardization substitutes it), so the three sources differ only in their conditional trigram increment and are LESS independent than the .native arrays; POOL is additionally fitted on the union of AALTO's and COMMUNITY's sources",
+  "interpretation": "0 = the mean of a random-layout pool, 1 = that model's own searched optimum; higher is better. A searched optimum bounds the true optimum from one side only, so every value is an UPPER bound on the true normalized score. Because the zero is the random pool's MEAN, realistic layouts occupy only the top fraction of the range -- the scale is well-posed but low-resolution where it is actually used, and qwerty sits near 0.5, NOT near 0"
+}

@@ -1,0 +1,9 @@
+{
+  "layout": "snrtg,eahcfmldk.ioupwxzbvy-q'j",
+  "fitness": 117395521432.27126,
+  "ngram": "bigram",
+  "target_wpm": 90.0,
+  "seed": 0,
+  "attempts": 1,
+  "model": "/tmp/normopt-scratch/models/bigram_reg31_seed0.json"
+}
