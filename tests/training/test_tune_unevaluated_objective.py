@@ -295,3 +295,67 @@ def test_the_shipped_threshold_is_the_derived_one_not_a_round_number() -> None:
     bound = reweighting_margin_bound([(1 + c) / 2 for c in (0.709, 0.815)])
     assert pytest.approx(0.03, abs=1e-9) == LOLO_MIN_MARGIN
     assert bound >= LOLO_MIN_MARGIN, "the gate must not be looser than the bound it derives from"
+
+
+# --- an EMPTY candidate list is a caller bug, not an internal error -----------------------
+
+
+def test_tune_lolo_REFUSES_an_EMPTY_candidate_list_naming_the_actual_problem() -> None:
+    """Was an ``UnboundLocalError`` about a local variable, which named the wrong thing.
+
+    ``report`` is bound only inside the candidates loop and read after it, so zero candidates
+    fell straight through to ``len(report["folds"])``. The error a caller saw was "cannot access
+    local variable 'report'", which describes ``tune_lolo``'s internals rather than the empty
+    list that caused it.
+
+    Refusing beats initialising ``report``: with zero candidates there is no champion to return,
+    so initialising it merely moves the crash twenty lines down to ``leaderboard[0][0]`` on the
+    empty leaderboard — a different internal error for the same caller mistake.
+    ``test_an_empty_candidate_list_no_longer_reaches_either_crash_site`` pins that second site
+    directly.
+    """
+    with pytest.raises(ValueError, match="at least one candidate"):
+        tune_lolo(_rows(n_participants=6), [], seeds=[0])
+
+
+def test_the_empty_candidate_refusal_is_not_bypassed_by_allow_unevaluated_objective() -> None:
+    """The flag that EXPOSED this bug must not also be a way around the new guard.
+
+    The defect was latent because the ``ObjectiveNotEvaluated`` refusal pre-empted it on the
+    default path; ``allow_unevaluated_objective=True`` downgraded that refusal to a warning and
+    let execution reach the unbound read. So this is the reproduction case, and it must now hit a
+    clear ValueError rather than either crash.
+    """
+    with pytest.raises(ValueError, match="at least one candidate"):
+        tune_lolo(_rows(n_participants=1), [], seeds=[0], allow_unevaluated_objective=True)
+
+
+def test_an_empty_candidate_list_no_longer_reaches_either_crash_site() -> None:
+    """Pins WHY refusing was chosen over initialising: the second crash site is real.
+
+    ``apply_tau_gate([])`` returns an empty gated list, so the final ``leaderboard[0][0]`` raises
+    ``IndexError`` independently of ``report``. Asserting that here means a future reader who
+    "simplifies" the guard into ``report = {"folds": {}}`` sees the test above fail with the
+    IndexError this documents, rather than believing the fix was equivalent.
+    """
+    from keybo.training.tune import apply_tau_gate
+
+    gated, saturated = apply_tau_gate([], n_groups=None)
+    assert gated == [] and saturated is False
+    with pytest.raises(IndexError):
+        _ = sorted(gated, key=lambda pf: -pf[1])[0][0]
+
+
+def test_a_SINGLE_candidate_still_works_so_the_guard_is_not_off_by_one() -> None:
+    """One candidate is the smallest legitimate input and must be unaffected.
+
+    A guard written as ``len(candidates) < 2`` would pass every test above and break the real
+    single-candidate call, so the boundary is pinned rather than assumed. One candidate also
+    cannot trip the margin gate, which needs two finite scores — that is expected, not a bug.
+    """
+    best, leaderboard = tune_lolo(
+        _rows(n_participants=6), _PARAMS[:1], seeds=[0], min_cell_samples=4
+    )
+    assert best == _PARAMS[0]
+    assert len(leaderboard) == 1
+    assert math.isfinite(leaderboard[0][1])
