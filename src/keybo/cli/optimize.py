@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import sys
 
 from keybo.cli._paths import ensure_writable_output
 from keybo.cli._scorer import add_scorer_arguments, build_scorer, freq_path, load_freqs
@@ -90,6 +91,26 @@ def add_arguments(parser: argparse.ArgumentParser) -> None:
         "anchors were built from, and REFUSES to score if today's surfaces disagree with it — a "
         "gauge whose anchors are not reproducible is not a gauge",
     )
+    parser.add_argument(
+        "--wpm-band",
+        help="Optimize over a BAND of paces instead of the single --target-wpm point: a "
+        "comma-separated list of WPMs (e.g. 90,100,110,120). Aggregated by --wpm-aggregation. "
+        "Bigram objective only; --target-wpm is then unused for the search",
+    )
+    parser.add_argument(
+        "--wpm-aggregation",
+        choices=["mean", "minimax"],
+        default="mean",
+        help="How --wpm-band is reduced to one number: mean = equal weight across the band; "
+        "minimax = worst case, which requires --wpm-reference (total_ms falls with wpm, so an "
+        "un-normalized max collapses to the band's lowest pace — see keybo.scoring.range_scorer)",
+    )
+    parser.add_argument(
+        "--wpm-reference",
+        help="Fixed 30-char board (or a NAMED_LAYOUTS name) whose per-pace total divides each "
+        "band point for --wpm-aggregation minimax. Removes the 1/wpm scale so the max can be "
+        "attained anywhere in the band; constant within a pace, so it cannot reorder layouts there",
+    )
     parser.add_argument("--no-progress", action="store_true", help="Disable the progress bar")
 
 
@@ -105,6 +126,68 @@ def _one_attempt(args: argparse.Namespace, scorer, seed: int) -> Layout:
     if not args.no_local_search:
         best = two_opt(best, scorer)
     return best
+
+
+def _build_range_scorer(args: argparse.Namespace):
+    """The band objective for ``--wpm-band``, with its gates run before the (long) search."""
+    from keybo.layouts import NAMED_LAYOUTS
+    from keybo.models.xgboost_model import XGBoostTypingModel
+    from keybo.scoring.range_scorer import RangeBigramScorer
+
+    if args.ngram != "bigram":
+        raise SystemExit("--wpm-band supports the bigram objective only")
+    if args.comfort_weight or args.finger_load_weight or args.oxey_weight:
+        raise SystemExit(
+            "--wpm-band cannot be combined with --comfort-weight/--finger-load-weight/"
+            "--oxey-weight: those add ms-equivalent terms at ONE pace, so the sum would mix a "
+            "band-aggregated objective with a single-point one"
+        )
+    try:
+        wpms = [float(part) for part in args.wpm_band.split(",") if part.strip()]
+    except ValueError:
+        raise SystemExit(f"--wpm-band {args.wpm_band!r}: expected comma-separated numbers") from None
+    if not wpms:
+        raise SystemExit("--wpm-band is empty; give at least one pace, e.g. 90,100,110,120")
+
+    reference = None
+    if args.wpm_aggregation == "minimax":
+        if not args.wpm_reference:
+            raise SystemExit(
+                "--wpm-aggregation minimax requires --wpm-reference: total_ms is monotone "
+                "decreasing in wpm, so an un-normalized max over the band collapses to the "
+                "band's LOWEST pace and would silently reproduce --target-wpm there"
+            )
+        reference = NAMED_LAYOUTS.get(args.wpm_reference, args.wpm_reference)
+        if sorted(reference) != sorted(args.start):
+            raise SystemExit(
+                "--wpm-reference must be a permutation of --start's charset (the table scorer "
+                f"fixes one charset); reference {reference!r} vs start {args.start!r}"
+            )
+    elif args.wpm_reference:
+        raise SystemExit("--wpm-reference only applies to --wpm-aggregation minimax")
+
+    model = XGBoostTypingModel.load(args.model)
+    lo, hi = model.metadata.wpm_range
+    outside = [w for w in wpms if not lo <= w <= hi]
+    if outside:
+        # Warn, don't refuse — matching build_scorer's --target-wpm behaviour. NOTE the stamp is
+        # a hardcoded training default, not a measured envelope (MULTIWPM-1), so it understates
+        # where the trees still respond; a power user may legitimately sample above it.
+        print(
+            f"WARNING: --wpm-band paces {outside} fall outside the model's stamped wpm_range "
+            f"{model.metadata.wpm_range}; predictions there are less supported by training mass.",
+            file=sys.stderr,
+        )
+    scorer = RangeBigramScorer(
+        model,
+        load_freqs(args),
+        wpms,
+        aggregation=args.wpm_aggregation,
+        chars=args.start,
+        reference=reference,
+    )
+    print(f"objective: {scorer.describe()}")
+    return scorer
 
 
 def _parse_model_weights(specs: list[str]) -> dict[str, float]:
@@ -186,6 +269,12 @@ def run(args: argparse.Namespace) -> int:
         # fitness could differ from the one the search optimized).
         blend = _build_model_blend(args)
         return _run_search(args, blend, blend)
+    if getattr(args, "wpm_band", None):
+        # One scorer for both roles, as with --model-weight: the band objective is already the
+        # table fast path at every pace, so search and final scoring are the same evaluator (and
+        # must be, or the reported fitness would not be the one the search minimized).
+        band = _build_range_scorer(args)
+        return _run_search(args, band, band)
     scorer = build_scorer(args)
     if args.comfort_weight or args.finger_load_weight or args.oxey_weight:
         if args.ngram != "bigram":
@@ -318,6 +407,18 @@ def _run_search(args: argparse.Namespace, scorer, search_scorer) -> int:
             "attempts": args.attempts,
             "model": args.model,
         }
+        from keybo.scoring.range_scorer import RangeBigramScorer
+
+        if isinstance(scorer, RangeBigramScorer):
+            # Same principle as the blend below: --target-wpm alone does not describe a band, so
+            # the objective, its band and its per-pace curve are recorded or the file is not
+            # reproducible. `target_wpm` above is retained but is NOT what was optimized here.
+            result["objective"] = scorer.describe()
+            result["wpm_band"] = list(scorer.wpms)
+            result["wpm_aggregation"] = scorer.aggregation
+            result["wpm_reference"] = scorer.reference
+            result["target_wpm_unused_for_band_search"] = True
+            result["per_wpm_total_ms"] = [float(v) for v in scorer.per_wpm(best_layout)]
         if isinstance(scorer, MN.ModelBlendScorer):
             # The objective is not reconstructible from --ngram/--target-wpm, so it is recorded:
             # a result file that cannot name its own objective is not reproducible.
