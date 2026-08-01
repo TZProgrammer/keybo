@@ -17,12 +17,14 @@ doctor:
     keybo --help >/dev/null && echo "keybo CLI OK"
 
 # Run the test suite
+# NOTE: no -q here. pyproject.toml's addopts already sets it; a second -q means -qq,
+# which suppresses the "N passed" summary line and makes a green run look inconclusive.
 test:
-    pytest -q
+    pytest
 
 # Include the slow end-to-end tests
 test-all:
-    pytest -q -m slow
+    pytest -m slow
 
 # Lint + format check
 lint:
