@@ -56,9 +56,11 @@ from keybo.features.schema import (
     FEATURE_VERSION,
     FEATURE_VERSION_DIRECTION,
     FEATURE_VERSION_KITCHENSINK,
+    FEATURE_VERSION_SRROLL,
     TRIGRAM_DIRECTION_FEATURE_NAMES,
     TRIGRAM_FEATURE_NAMES,
     TRIGRAM_KITCHENSINK_FEATURE_NAMES,
+    TRIGRAM_SRROLL_FEATURE_NAMES,
 )
 from keybo.geometry import ROW_STAGGERED_30, Geometry
 from keybo.models.base import ModelMetadata
@@ -101,6 +103,7 @@ def _rows_to_examples(
     target_space: str = "MS",
     direction: bool = False,
     kitchensink: bool = False,
+    srroll: bool = False,
 ):
     """Yield (feature_vector, target) per WPM group in a stroke row.
 
@@ -113,6 +116,11 @@ def _rows_to_examples(
     external-project channels; :data:`BIGRAM_KITCHENSINK_FEATURE_NAMES` /
     :data:`TRIGRAM_KITCHENSINK_FEATURE_NAMES`). It implies ``direction``, so the three trainable
     frames are narrow / widened / kitchen-sink and each has its own version stamp.
+
+    ``srroll=True`` builds the SAME-ROW ROLL frame (:data:`TRIGRAM_SRROLL_FEATURE_NAMES`): the
+    SERVED frame plus ``roll``/``sr_roll``. Trigram-only, and mutually exclusive with the other two
+    flags rather than composing with them (the frame it tests against is the shipped one), so the
+    four trainable frames are narrow / widened / kitchen-sink / srroll, one stamp each.
     """
     by_wpm: dict[int, list[int]] = defaultdict(list)
     for wpm, duration, _pid, _hold in row.samples:
@@ -121,12 +129,19 @@ def _rows_to_examples(
     for wpm, durations in by_wpm.items():
         target = _group_target(durations, wpm, target_space)
         if ngram == "bigram":
+            if srroll:
+                raise ValueError("srroll is a TRIGRAM-only frame; there is no bigram sr-roll")
             vec = bigram_features_from_positions(
                 geometry, row.positions, wpm=wpm, direction=direction, kitchensink=kitchensink
             )
         else:
             vec = trigram_features_from_positions(
-                geometry, row.positions, wpm=wpm, direction=direction, kitchensink=kitchensink
+                geometry,
+                row.positions,
+                wpm=wpm,
+                direction=direction,
+                kitchensink=kitchensink,
+                srroll=srroll,
             )
         yield vec, target, len(durations)
 
@@ -141,6 +156,7 @@ def build_training_matrix(
     with_layouts: bool = False,
     direction: bool = False,
     kitchensink: bool = False,
+    srroll: bool = False,
 ) -> tuple[np.ndarray, ...]:
     """Turn stroke rows into (X, y) using the shared feature pipeline.
 
@@ -167,6 +183,7 @@ def build_training_matrix(
         target_space=target_space,
         direction=direction,
         kitchensink=kitchensink,
+        srroll=srroll,
     )
     if with_layouts:
         return X, y, layouts
@@ -181,6 +198,7 @@ def _build_matrix_full(
     target_space="MS",
     direction=False,
     kitchensink=False,
+    srroll=False,
 ):
     """(X, y, example ngram ids, example layouts, example raw-sample counts).
 
@@ -198,7 +216,7 @@ def _build_matrix_full(
     counts: list[float] = []
     for row in iterator:
         for vec, target, n in _rows_to_examples(
-            row, geometry, ngram, target_space, direction, kitchensink
+            row, geometry, ngram, target_space, direction, kitchensink, srroll
         ):
             features.append(vec)
             targets.append(target)
@@ -265,6 +283,7 @@ def _train(
     calibration=False,
     direction=False,
     kitchensink=False,
+    srroll=False,
     **params,
 ) -> XGBoostTypingModel:
     target_space = str(target_space).upper()
@@ -281,6 +300,7 @@ def _train(
         target_space=target_space,
         direction=direction,
         kitchensink=kitchensink,
+        srroll=srroll,
     )
     # The version stamp and the name list move TOGETHER with the frame: a widened model records
     # FEATURE_VERSION_DIRECTION so it can never load where a served model is expected (base.py
@@ -289,7 +309,12 @@ def _train(
     # skew DIRECTION-1 refused to create. The kitchen-sink frame is the third population and gets
     # the third stamp on the same principle — and it is checked FIRST because it implies
     # ``direction``, so an `if direction` test would otherwise claim a kitchen-sink model.
-    if kitchensink:
+    if srroll:
+        # Trigram-only and mutually exclusive with the other two flags (enforced in
+        # features/ngram.py), so it is checked first and needs no bigram branch.
+        names = TRIGRAM_SRROLL_FEATURE_NAMES
+        stamp = FEATURE_VERSION_SRROLL
+    elif kitchensink:
         names = (
             BIGRAM_KITCHENSINK_FEATURE_NAMES
             if ngram == "bigram"
@@ -456,6 +481,7 @@ def train_trigram_model(
     target_space: str = "LOGRAT",
     direction: bool = False,
     kitchensink: bool = False,
+    srroll: bool = False,
     **params,
 ) -> XGBoostTypingModel:
     """Fit a trigram typing-time model from tristroke rows. See train_bigram_model.
@@ -469,6 +495,11 @@ def train_trigram_model(
     ``kitchensink=True`` trains on the KITCHEN-SINK frame (the widened frame plus the twelve
     external-project channels) and stamps ``FEATURE_VERSION_KITCHENSINK``. It implies
     ``direction`` and takes precedence over it, so the three model populations stay disjoint.
+
+    ``srroll=True`` trains on the SAME-ROW ROLL frame (the SERVED frame plus ``roll``/``sr_roll``)
+    and stamps ``FEATURE_VERSION_SRROLL``. Unlike ``kitchensink`` it does NOT imply ``direction`` —
+    it is built on the shipped frame so that the two columns are the single variable under test —
+    and it takes precedence, keeping the four model populations disjoint.
     """
     return _train(
         rows,
@@ -482,5 +513,6 @@ def train_trigram_model(
         target_space=target_space,
         direction=direction,
         kitchensink=kitchensink,
+        srroll=srroll,
         **params,
     )

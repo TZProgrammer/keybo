@@ -23,6 +23,7 @@ from keybo.features.schema import (
     TRIGRAM_DIRECTION_FEATURE_NAMES,
     TRIGRAM_FEATURE_NAMES,
     TRIGRAM_KITCHENSINK_FEATURE_NAMES,
+    TRIGRAM_SRROLL_FEATURE_NAMES,
 )
 from keybo.geometry import Geometry, Position
 from keybo.layout import Layout
@@ -204,6 +205,7 @@ def _trigram_row_from_positions(
     wpm: float,
     direction: bool = False,
     kitchensink: bool = False,
+    srroll: bool = False,
 ) -> dict[str, float]:
     """Assemble the full trigram row from the three positions (the shared core).
 
@@ -215,8 +217,24 @@ def _trigram_row_from_positions(
     (:func:`trigram_kitchensink_row`) AND widens both constituent bigrams by the five
     bigram-level ones — which is why 12 candidate definitions become 17 new trigram columns.
     It implies ``direction``, so the three legal frames stay narrow / widened / kitchen-sink.
+
+    ``srroll=True`` adds the two same-row-roll columns (:func:`trigram_srroll_row`) to the SERVED
+    frame. Unlike ``kitchensink`` it does NOT imply ``direction``: the A/B it exists for tests those
+    two columns against the frame that is actually shipped, so mixing in two prior arms' columns
+    would confound the single variable under test. It is therefore mutually exclusive with both
+    other flags rather than composing with them (asserted below), keeping the trainable frames a
+    flat set of four populations, one stamp each.
     """
+    if srroll and (direction or kitchensink):
+        raise ValueError(
+            "srroll builds on the SERVED frame and does not compose with direction/kitchensink "
+            "(each frame is one model population with one FEATURE_VERSION stamp)"
+        )
     row = _trigram_level_from_positions(geometry, a, b, c)
+    if srroll:
+        # Key ORDER matters: the schema puts this block straight after the trigram-level block and
+        # before the bigram blocks, and a test pins list(row) == the name list.
+        row.update(trigram_srroll_row(geometry, a, b, c))
     if direction or kitchensink:
         # The same-finger-gated redirect pair (REDIRGATE-1), declared in
         # TRIGRAM_DIRECTION_FEATURE_NAMES. Emitted here and NOT in
@@ -330,7 +348,39 @@ def trigram_kitchensink_row(
     }
 
 
-def _trigram_column_names(direction: bool, kitchensink: bool = False) -> list[str]:
+def trigram_srroll_row(
+    geometry: Geometry, a: Position, b: Position, c: Position
+) -> dict[str, float]:
+    """The two SAME-ROW ROLL columns — keymeow's roll classes, which no keybo frame names.
+
+    Returned SEPARATELY, never merged into :func:`_trigram_level_from_positions`, for the same
+    reason :func:`trigram_direction_row` and :func:`trigram_kitchensink_row` are: that function
+    feeds the version-locked served frame all three shipped ``trigram_cond31`` models carry, and
+    ``models/base.py`` errors on a version MISMATCH, not on a column whose MEANING changed. A key
+    added there would silently widen the served frame for six shipped artifacts.
+
+    Both columns come from :mod:`keybo.features.classify`, which ports
+    ``keybo.analysis.kmstats._is_roll`` — so the feature and the ``roll``/``sr-roll`` GAUGES are
+    guaranteed to describe the same predicate (cross-checked over all 24,360 triples in
+    ``tests/features/test_srroll_frame.py``).
+
+    ``sr_roll`` is a strict subset of ``roll``, and that is why both are here: the pair makes the
+    SAME-ROW increment identifiable, where ``sr_roll`` alone would confound it with roll-ness. See
+    the ``_TRIGRAM_SRROLL_NAMES`` block in :mod:`keybo.features.schema` for the audit that decided
+    these two columns carry no new INFORMATION (they are deterministic from the served frame) but
+    are not linearly or shallowly recoverable from it.
+    """
+    return {
+        "roll": float(C.is_roll(geometry, a, b, c)),
+        "sr_roll": float(C.is_same_row_roll(geometry, a, b, c)),
+    }
+
+
+def _trigram_column_names(
+    direction: bool, kitchensink: bool = False, srroll: bool = False
+) -> list[str]:
+    if srroll:
+        return TRIGRAM_SRROLL_FEATURE_NAMES
     if kitchensink:
         return TRIGRAM_KITCHENSINK_FEATURE_NAMES
     return TRIGRAM_DIRECTION_FEATURE_NAMES if direction else TRIGRAM_FEATURE_NAMES
@@ -342,6 +392,7 @@ def trigram_model_row(
     wpm: float,
     direction: bool = False,
     kitchensink: bool = False,
+    srroll: bool = False,
 ) -> dict[str, float]:
     """Full ordered trigram feature row: trigram-level + both bigrams + wpm."""
     return _trigram_row_from_positions(
@@ -352,6 +403,7 @@ def trigram_model_row(
         wpm,
         direction=direction,
         kitchensink=kitchensink,
+        srroll=srroll,
     )
 
 
@@ -361,11 +413,15 @@ def trigram_features(
     wpm: float = 0.0,
     direction: bool = False,
     kitchensink: bool = False,
+    srroll: bool = False,
 ) -> np.ndarray:
     """Trigram feature vector in canonical column order."""
-    row = trigram_model_row(layout, trigram, wpm, direction=direction, kitchensink=kitchensink)
+    row = trigram_model_row(
+        layout, trigram, wpm, direction=direction, kitchensink=kitchensink, srroll=srroll
+    )
     return np.array(
-        [row[name] for name in _trigram_column_names(direction, kitchensink)], dtype=np.float64
+        [row[name] for name in _trigram_column_names(direction, kitchensink, srroll)],
+        dtype=np.float64,
     )
 
 
@@ -375,12 +431,14 @@ def trigram_features_from_positions(
     wpm: float = 0.0,
     direction: bool = False,
     kitchensink: bool = False,
+    srroll: bool = False,
 ) -> np.ndarray:
     """Trigram feature vector from recorded key positions (training path)."""
     a, b, c = positions
     row = _trigram_row_from_positions(
-        geometry, a, b, c, wpm, direction=direction, kitchensink=kitchensink
+        geometry, a, b, c, wpm, direction=direction, kitchensink=kitchensink, srroll=srroll
     )
     return np.array(
-        [row[name] for name in _trigram_column_names(direction, kitchensink)], dtype=np.float64
+        [row[name] for name in _trigram_column_names(direction, kitchensink, srroll)],
+        dtype=np.float64,
     )

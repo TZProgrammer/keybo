@@ -313,6 +313,47 @@ def is_weak_finger_pair(geometry: Geometry, a: Position, b: Position) -> bool:
     return finger_kind(geometry, a[0]) <= 1 and finger_kind(geometry, b[0]) <= 1
 
 
+def is_roll(geometry: Geometry, a: Position, b: Position, c: Position) -> bool:
+    """keymeow's ``roll``: outer keys on OPPOSITE hands, neither step repeating a finger.
+
+    A port of ``keybo.analysis.kmstats._is_roll`` into this module's vocabulary, so the feature and
+    the ``roll``/``sr-roll`` GAUGES can never disagree about what a roll is (a cross-check over all
+    24,360 triples of ``ROW_STAGGERED_30`` is pinned in ``tests/features/test_srroll_frame.py``).
+
+    Note what the OUTER-hand condition means: this is NOT the one-hand roll. keycraft's ``onehand``
+    (the kitchen-sink 3RL column) requires ``ha == hb == hc``, so the two are DISJOINT — as is
+    kmstats' ``alt``, which requires ``a.hand == c.hand``. That disjointness is why the served frame
+    has no column for this class: every trigram-level column it carries
+    (``same_hand_trigram``/``redirect``/``bad_redirect``) is single-hand by construction.
+
+    ``same_finger`` counts the index finger's two columns as ONE finger, exactly as kmstats'
+    ``_COL_FINGER`` does, so a reposition inside the index columns is not a roll step.
+    """
+    ha, hc = geometry.hand(a[0]), geometry.hand(c[0])
+    if ha == hc:
+        return False
+    if geometry.same_finger(a[0], b[0]) or geometry.same_finger(b[0], c[0]):
+        return False
+    return True
+
+
+def is_same_row_roll(geometry: Geometry, a: Position, b: Position, c: Position) -> bool:
+    """keymeow's ``sr-roll``: a :func:`is_roll` whose three keys all sit on ONE row.
+
+    A strict SUBSET of ``is_roll`` (1,080 of its 9,720 firing triples on ``ROW_STAGGERED_30``),
+    which is why the two are served together: alone, the conjunction could not be told apart from
+    roll-ness itself.
+
+    In served-column terms this is a FIVE-way conjunction whose leading term is an XOR of two
+    served columns — see the ``_TRIGRAM_SRROLL_NAMES`` block in :mod:`keybo.features.schema` for the
+    measured consequences (deterministic from the served frame, yet OLS R2 0.3321 and exact only at
+    single-tree depth 11).
+    """
+    if not is_roll(geometry, a, b, c):
+        return False
+    return a[1] == b[1] and b[1] == c[1]
+
+
 def finger_step(geometry: Geometry, a: Position, b: Position) -> float:
     """SIGNED finger-rank step: positive toward the index, negative toward the pinky.
 

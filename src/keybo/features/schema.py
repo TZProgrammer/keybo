@@ -230,3 +230,58 @@ TRIGRAM_KITCHENSINK_FEATURE_NAMES = [
 #: :data:`FEATURE_VERSION` nor :data:`FEATURE_VERSION_DIRECTION`, or the load-time guard in
 #: ``keybo.models.base`` could not tell the three model populations apart.
 FEATURE_VERSION_KITCHENSINK = f"{FEATURE_VERSION}+kitchensink.1"
+
+# --- the SAME-ROW ROLL block: keymeow's roll classes, made EXPLICIT (opt-in, additive) --------
+#
+# SR-ROLL-1. ``sr-roll`` is one of the 15 analyze GAUGES (``analysis/kmstats.py``, keymeow's base
+# metric set) and one of BALL-1's largest gauge advantages over keybo-lsb (17.81 vs 12.69). No
+# keybo frame has ever carried a column for its class. The audit that justifies these two columns
+# is ``state/srroll/drivers/srroll_audit.py``; over the full 24,360-triple enumeration of
+# ``ROW_STAGGERED_30`` it found:
+#
+# * ``sr_roll`` is bit-identical to NONE of the 46 served columns, and its overlap with every
+#   existing trigram-class column is exactly ZERO — ``same_hand_trigram``, ``redirect``,
+#   ``bad_redirect``, and even kitchen-sink's ``onehand``/``onehand_in``/``red_sfs``/``alt_sfs``.
+#   That is structural, not incidental: keymeow's roll requires the OUTER keys on OPPOSITE hands
+#   (``a.hand != c.hand``) while every one of those columns requires a single hand, and kmstats'
+#   ``alt`` requires ``a.hand == c.hand``. So this class is unnamed in every frame we have.
+# * It is nonetheless a DETERMINISTIC FUNCTION of the served frame (0 ambiguous groups over 23,250
+#   distinct served rows), so it adds no INFORMATION — only explicitness. In served-column terms it
+#   is a five-way conjunction whose first term is an XOR:
+#       XOR(bg1_same_hand, bg2_same_hand) AND NOT bg1_same_finger AND NOT bg2_same_finger
+#       AND bg1_dy == 0 AND bg2_dy == 0
+#   OLS R2 against the served frame is 0.3321, and the shallowest single tree that fits it exactly
+#   needs depth 11 — 5 once the outer-hand XOR is supplied, which identifies the XOR as the
+#   obstruction rather than the same-row gate.
+#
+# ``roll`` accompanies ``sr_roll`` because sr_roll is a strict SUBSET of it (1,080 of 9,720 firing
+# triples). Without the superset column the model cannot separate "flat roll" from "roll at all",
+# so the increment attributable to SAME-ROW would not be identifiable — the same reason
+# ``is_row_skip`` was added alongside ``is_scissor`` in the kitchen-sink block.
+#
+# Fourth stamp, fourth population. Kept OUT of every list above for the reason
+# ``_BIGRAM_DIRECTION_NAMES`` is: ``_TRIGRAM_LEVEL_NAMES`` is the SHARED PREFIX of the
+# version-locked served frames, so a name added there would silently widen the served frame for all
+# six shipped ``data/models/k31`` artifacts.
+_TRIGRAM_SRROLL_NAMES = [
+    # keymeow's ``roll``: outer keys on opposite hands, no repeated finger across either step.
+    "roll",
+    # keymeow's ``sr-roll``: that roll with all three keys on ONE row.
+    "sr_roll",
+]
+
+#: The served trigram frame plus the same-row-roll block. Built on the SERVED (narrow) frame, not
+#: the widened one, because the A/B this exists for tests the two new columns against the incumbent
+#: that is actually shipped — adding the direction/kitchen-sink columns too would confound the
+#: single variable under test with two prior arms' worth of columns.
+TRIGRAM_SRROLL_FEATURE_NAMES = [
+    *_TRIGRAM_LEVEL_NAMES,
+    *_TRIGRAM_SRROLL_NAMES,
+    *(f"bg1_{n}" for n in _BIGRAM_PLACEMENT_NAMES),
+    *(f"bg2_{n}" for n in _BIGRAM_PLACEMENT_NAMES),
+    "wpm",
+]
+
+#: Stamped by anything trained on the same-row-roll frame. Must equal none of the three stamps
+#: above, or ``keybo.models.base``'s load-time guard could not tell the populations apart.
+FEATURE_VERSION_SRROLL = f"{FEATURE_VERSION}+srroll.1"

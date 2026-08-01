@@ -542,6 +542,7 @@ def _predict_cells(
     geometry: Geometry,
     direction: bool = False,
     kitchensink: bool = False,
+    srroll: bool = False,
 ) -> np.ndarray:
     """g(geometry, wpm) + b(ngram) per cell, in MILLISECONDS — the model's full prediction.
 
@@ -555,9 +556,10 @@ def _predict_cells(
     the reverse order would apply a log-space offset to a millisecond value.
 
     ``direction`` MUST match the frame the model was trained on: a widened model expects the
-    22-/52-column matrix, and a ``kitchensink`` model the 27-/69-column one. Featurizing a widened
-    model with the narrow frame relocates the exact train/serve skew the version stamp exists to
-    prevent into this harness — so the caller threads it explicitly rather than inferring it.
+    22-/52-column matrix, and a ``kitchensink`` model the 27-/69-column one, and an ``srroll`` model
+    the 48-column one. Featurizing a widened model with the narrow frame relocates the exact
+    train/serve skew the version stamp exists to prevent into this harness — so the caller threads it
+    explicitly rather than inferring it.
     """
     featurize = (
         trigram_features_from_positions
@@ -566,7 +568,14 @@ def _predict_cells(
     )
     X = np.vstack(
         [
-            featurize(geometry, c.positions, wpm=c.wpm, direction=direction, kitchensink=kitchensink)
+            featurize(
+                geometry,
+                c.positions,
+                wpm=c.wpm,
+                direction=direction,
+                kitchensink=kitchensink,
+                **({"srroll": True} if srroll else {}),
+            )
             for c in cells
         ]
     )
@@ -692,6 +701,7 @@ def validate(
     baseline_buckets: Mapping[int, float] | None = None,
     direction: bool = False,
     kitchensink: bool = False,
+    srroll: bool = False,
 ) -> dict:
     """Run the full leave-one-layout-out experiment; returns the report dict.
 
@@ -753,6 +763,7 @@ def validate(
             "train_params": dict(train_params or {}),
             "direction": bool(direction),
             "kitchensink": bool(kitchensink),
+            "srroll": bool(srroll),
         },
         "ceilings": {},
         "folds": {},
@@ -789,12 +800,13 @@ def validate(
             target_wpm=(wpm_lo + wpm_hi) / 2,
             direction=direction,
             kitchensink=kitchensink,
+            **({"srroll": True} if srroll else {}),
             **params,
         )
 
         obs = np.array([c.obs for c in test_cells])
         pred = _predict_cells(
-            model, test_cells, geometry, direction=direction, kitchensink=kitchensink
+            model, test_cells, geometry, direction=direction, kitchensink=kitchensink, srroll=srroll
         )
         rho = _centered_spearman(test_cells, pred, obs)
         ceiling = report["ceilings"][holdout]
@@ -805,7 +817,7 @@ def validate(
         mae_baseline = float(np.mean(np.abs(base_pred - obs)))
 
         pred_all = _predict_cells(
-            model, all_cells, geometry, direction=direction, kitchensink=kitchensink
+            model, all_cells, geometry, direction=direction, kitchensink=kitchensink, srroll=srroll
         )
         tau_all4 = layout_ranking_tau(obs_table, aggregate_layout_table(all_cells, pred_all))
 
