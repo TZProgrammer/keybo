@@ -36,7 +36,7 @@ correctly-disclosed local references that already exist.
 FIRST-RUN RESULT, AND AN HONEST LIMIT (2026-08-01)
 --------------------------------------------------
 Run over the 10,700-line ledger: 112 SHAs reachable, 54 local-and-correctly-
-disclosed, 5 unresolvable, 11 flagged. **Every one of the 11 was audited by hand
+disclosed, 3 upstream third-party revs, 2 genuinely dangling, 11 flagged. **Every one of the 11 was audited by hand
 and NONE is a real defect** — they are *provenance* references ("the defect lives
 in ``79cb175``", "pinned at ``011dd41``", "the prerequisite was cherry-picked
 ``f6c4ba7``"), which name a commit without claiming it is on mainline.
@@ -51,8 +51,12 @@ this tool does not read briefs.
 Kept anyway, with the limit stated, because:
 
 * the **wiring check** is precise (symbol-in-tree is unambiguous) and cheap;
-* the **unresolvable** list is genuinely useful — 5 SHAs name commits that exist
-  in no clone here, so those citations are unverifiable by anyone;
+* the **unresolvable** list is genuinely useful, once corrected: of the first
+  run's five, THREE were upstream third-party revisions (genkey ``f1f4173``,
+  keymeow ``a8e9591``, oxeylyzer-2 ``52b271a3``) that legitimately do not exist
+  here and are now classified separately, and TWO are real dangling citations
+  (``b980e79``, ``7f53e5d``) naming a corpus-build branch no longer in any clone
+  — so those two entries are unverifiable by any reader;
 * the disclosure-vocabulary audit it forced is itself the finding: this ledger
   discloses locality in at least a dozen different phrasings.
 
@@ -115,6 +119,14 @@ _WIRING = re.compile(r"\bwired\b|\bis now WIRED\b|\bwire[sd]? into\b", re.IGNORE
 
 _SHA = re.compile(r"`([0-9a-f]{7,40})`")
 
+#: Names of THIRD-PARTY projects whose revisions the ledger legitimately cites. A hex token that
+#: does not resolve here is expected when one of these is named nearby -- it is an upstream rev,
+#: not a claim about this repo. Found by auditing the first run's five "unresolvable" hits.
+_FOREIGN = re.compile(
+    r"\bgenkey\b|\bkeymeow\b|\boxeylyzer\b|\bcyanophage\b|\bkeycraft\b|upstream|third-party|vendored",
+    re.IGNORECASE,
+)
+
 #: Symbols worth cross-checking when a line claims wiring. Extend as the ledger grows.
 _WIRING_SYMBOLS = {
     "gauge_objective": "gauge-objective",
@@ -155,6 +167,7 @@ def check(ledger: Path, ref: str) -> int:
     unresolved: list[tuple[int, str]] = []
     undisclosed: list[tuple[int, str]] = []
     disclosed_local = 0
+    foreign = 0
     reachable = 0
     wiring_bad: list[tuple[int, str, str]] = []
 
@@ -164,7 +177,15 @@ def check(ledger: Path, ref: str) -> int:
 
         for sha in _SHA.findall(line):
             if not _resolves(sha):
-                unresolved.append((i, sha))
+                # An unresolvable hex token is NOT automatically a bad citation. Auditing the
+                # first run's five, three were UPSTREAM THIRD-PARTY revisions (genkey, keymeow,
+                # oxeylyzer-2) that of course do not exist in this repo, and the ledger names the
+                # project right beside them. Only an unresolvable token presented as OUR commit
+                # is a real problem, so a foreign-project mention is classified separately.
+                if _FOREIGN.search(context):
+                    foreign += 1
+                else:
+                    unresolved.append((i, sha))
             elif _reachable(sha, ref):
                 reachable += 1
             elif _disclosed(context):
@@ -184,6 +205,7 @@ def check(ledger: Path, ref: str) -> int:
     print(f"ledger: {ledger}   ref: {ref}")
     print(f"  SHAs reachable from {ref}      : {reachable}")
     print(f"  SHAs local + CORRECTLY disclosed: {disclosed_local}")
+    print(f"  hex tokens naming a THIRD-PARTY rev: {foreign}   (expected; not ours)")
     print(f"  SHAs that do not resolve at all : {len(unresolved)}")
     print(f"  SHAs UNREACHABLE + UNDISCLOSED  : {len(undisclosed)}   <- defects")
     print(f"  wiring claims not in {ref} src/ : {len(wiring_bad)}   <- defects")
