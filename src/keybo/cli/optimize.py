@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import json
 
+from keybo.analysis.timecard import GaugeTrigramScorer
 from keybo.cli._paths import ensure_writable_output
 from keybo.cli._scorer import add_scorer_arguments, build_scorer, freq_path, load_freqs
 from keybo.geometry import ROW_STAGGERED_30
@@ -14,6 +15,12 @@ from keybo.optimize.annealing import SimulatedAnnealing
 from keybo.optimize.local_search import two_opt
 from keybo.scoring import model_norm as MN
 from keybo.scoring.inspect import layout_diagnostics
+
+#: Parity tolerance for ``--gauge-objective``: how far the search objective may sit from
+#: ``analyze``'s own ms/char before the run is refused. The table path reconciles to ~1.2e-14
+#: (float noise over a 10^11-magnitude sum), so 1e-12 is ~100x of headroom while still
+#: rejecting the plausible-but-wrong constructions of this objective by 10 orders of magnitude.
+_GAUGE_PARITY_TOLERANCE = 1e-12
 
 
 def add_arguments(parser: argparse.ArgumentParser) -> None:
@@ -90,6 +97,18 @@ def add_arguments(parser: argparse.ArgumentParser) -> None:
         "anchors were built from, and REFUSES to score if today's surfaces disagree with it — a "
         "gauge whose anchors are not reproducible is not a gauge",
     )
+    parser.add_argument(
+        "--gauge-objective",
+        action="store_true",
+        help="Search the REPORTED gauge (`analyze`'s ms/char: the K31 seed-averaged "
+        "T2 + Tcond surface over the trigram corpus) instead of the default bigram objective. "
+        "The default objective and this gauge rank layouts INVERTED (spearman 0.672; the "
+        "selection tax at the argmin is 4.97 resolution floors) because the cubic term carries "
+        "most of the gauge's variance, so no restart budget closes the gap — see "
+        "SEARCHPARAMS-1 / NORMOPT-1. Opt-in: it does NOT change the default. Parity-gated "
+        "against `analyze` before the search starts. C30M charset only; cannot be combined "
+        "with --no-table, --ngram trigram, --model-weight or the comfort/finger-load/oxey terms",
+    )
     parser.add_argument("--no-progress", action="store_true", help="Disable the progress bar")
 
 
@@ -163,6 +182,76 @@ def _build_model_blend(args: argparse.Namespace):
     return MN.ModelBlendScorer(anchors, spec, fits)
 
 
+def _build_gauge_objective(args: argparse.Namespace):
+    """The reported-gauge search objective for ``--gauge-objective``, gates run up front.
+
+    Every gate REFUSES rather than falling back to the default objective: a run that silently
+    searched the bigram table while its output was labelled with the gauge is exactly the
+    ``present != effective`` defect this flag exists to fix (the shipped ``--compiler-opt-level``
+    no-op, the ``1-skip.txt`` divergence, and ``target_space='lograt'`` are the same shape).
+    """
+    from keybo.analysis import surfaces as SF
+    from keybo.analysis.timecard import gauge_search_scorer
+
+    if args.no_table:
+        raise SystemExit(
+            "--gauge-objective cannot be combined with --no-table: the gauge's no-table path is "
+            "the analyzer's own ~50 ms-per-layout loop, which a multi-million-evaluation search "
+            "cannot use. The table path is exact (parity-gated below), not an approximation"
+        )
+    if args.ngram != "bigram":
+        raise SystemExit(
+            f"--gauge-objective replaces the objective with the reported gauge, so --ngram "
+            f"{args.ngram!r} is redundant and ambiguous: the gauge already contains both the "
+            f"bigram and the trigram term. Drop --ngram (it selects the DEFAULT objective's "
+            f"order, and the gauge is neither)"
+        )
+    if args.comfort_weight or args.finger_load_weight or args.oxey_weight:
+        raise SystemExit(
+            "--gauge-objective cannot be combined with --comfort-weight/--finger-load-weight/"
+            "--oxey-weight: those terms are added to the DEFAULT bigram objective's scale, and "
+            "adding them here would mean the search no longer optimizes the published gauge — "
+            "which is the one property this flag provides"
+        )
+    if getattr(args, "model_weight", None):
+        raise SystemExit(
+            "--gauge-objective and --model-weight are two different replacement objectives "
+            "(the measured ms/char gauge vs the normalized model blend); pass exactly one"
+        )
+    if not SF.is_c30m(args.start):
+        raise SystemExit(
+            f"--gauge-objective needs a C30M start layout (the K31 surface's charset is "
+            f"{SF.C30M!r}, and which corpus rows the objective keeps depends on it, so another "
+            f"charset's total is not comparable to any published ms/char); --start is "
+            f"{args.start!r}"
+        )
+
+    scorer = gauge_search_scorer(
+        chars=args.start, target_wpm=args.target_wpm, corpus=getattr(args, "corpus", None)
+    )
+    # PARITY GATE, before the (long) search rather than after it — the same order
+    # `--model-weight` runs its anchor gates in. An objective that cannot be tied to the
+    # published gauge must not consume an hour of search first: the naive way to build this
+    # objective is 1.5e-2 off (~11 resolution floors) and looks entirely plausible.
+    deviation = scorer.parity_rel_dev(Layout(args.start, ROW_STAGGERED_30))
+    if deviation > _GAUGE_PARITY_TOLERANCE:
+        raise SystemExit(
+            f"--gauge-objective failed its parity gate: the search objective deviates from "
+            f"`analyze`'s ms/char by rel {deviation:.3e} on --start, above the "
+            f"{_GAUGE_PARITY_TOLERANCE:.0e} tolerance. Refusing to search an objective that is "
+            f"not the gauge it will be reported on"
+        )
+    print("objective: the REPORTED gauge — analyze's ms/char (K31 T2+Tcond, seed-averaged)")
+    print(
+        f"  parity vs analyze on --start: rel dev {deviation:.3e} (tolerance "
+        f"{_GAUGE_PARITY_TOLERANCE:.0e})"
+    )
+    print(
+        "  NOTE this is NOT the default objective; the two rank layouts inverted (SEARCHPARAMS-1)"
+    )
+    return scorer
+
+
 def run(args: argparse.Namespace) -> int:
     if args.attempts < 1:
         raise SystemExit(f"--attempts must be >= 1 (got {args.attempts})")
@@ -173,6 +262,12 @@ def run(args: argparse.Namespace) -> int:
     # namespace holding only the fields their own path needs (two shipped tests construct a
     # `SimpleNamespace` for the comfort/oxey branches), and a new flag must not make those
     # callers raise AttributeError just for existing.
+    if getattr(args, "gauge_objective", False):
+        # One scorer for both roles, as `--model-weight` does: best-of-N must SELECT on the
+        # gauge too. Searching the gauge but ranking attempts by the bigram objective would
+        # reintroduce the 4.97-floor selection tax the flag exists to remove.
+        gauge = _build_gauge_objective(args)
+        return _run_search(args, gauge, gauge)
     if getattr(args, "model_weight", None):
         if args.comfort_weight or args.finger_load_weight or args.oxey_weight:
             raise SystemExit(
@@ -294,6 +389,11 @@ def _run_search(args: argparse.Namespace, scorer, search_scorer) -> int:
             + "  ".join(f"{MN.GAUGE_OF_POOL[p]}={v:.6f}" for p, v in normalized.items())
         )
         print(f"blend (higher is better): {scorer.blend(best_layout):.6f}")
+    if isinstance(scorer, GaugeTrigramScorer):
+        # The gauge's fitness is a corpus TOTAL (~2e11 ms); every published number is the
+        # normalized ms/char, so print it here rather than leaving the reader to divide by a
+        # coverage-dependent denominator they would have to look up.
+        print(f"ms/char (analyze's gauge): {scorer.ms_per_char(best_layout):.6f}")
     print(best_layout.render())
 
     # Auto-E5 structural postflight (Goodhart gate): every search ends with the numbers
@@ -330,6 +430,17 @@ def _run_search(args: argparse.Namespace, scorer, search_scorer) -> int:
             result["blend_higher_is_better"] = scorer.blend(best_layout)
             result["frame_caveat"] = MN.frame_caveat()
             result["interpretation"] = MN.interpretation_note()
+        if isinstance(scorer, GaugeTrigramScorer):
+            # `"ngram": "bigram"` is recorded for every run, so without this a gauge result
+            # file would be indistinguishable from a default one — the same
+            # unreproducible-artifact failure the blend branch above guards against. The parity
+            # deviation travels with the result so a reader can see the objective was TIED to
+            # the gauge at run time, not merely labelled with its name.
+            result["objective"] = "reported gauge — analyze's ms/char (K31 T2+Tcond, seed-mean)"
+            result["ms_per_char"] = scorer.ms_per_char(best_layout)
+            result["gauge_parity_rel_dev"] = scorer.parity_rel_dev(best_layout)
+            result["gauge_parity_tolerance"] = _GAUGE_PARITY_TOLERANCE
+            result["corpus"] = getattr(args, "corpus", None)
         with open(args.out, "w") as f:
             json.dump(result, f, indent=2)
 
