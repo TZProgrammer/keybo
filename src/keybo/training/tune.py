@@ -266,6 +266,10 @@ def tune_lolo(
     (params, gated_score) pairs. Candidates are explicit — reproducible and testable;
     callers wanting a random search generate the candidate list themselves.
 
+    Raises ``ValueError`` on an empty ``candidates`` list: there is nothing to select, and the
+    two crashes further down (``UnboundLocalError`` on ``report``, then ``IndexError`` on
+    ``leaderboard[0]``) named internals instead of the caller's mistake.
+
     Raises ``ObjectiveNotEvaluated`` if NO candidate produced a finite rho/ceiling — see
     that exception's docstring for why refusing beats returning a tie-broken champion.
     Pass ``allow_unevaluated_objective=True`` to downgrade the refusal to a warning; the
@@ -281,6 +285,22 @@ def tune_lolo(
     a candidate, so it is one argument here and not a key in every candidate dict.
     """
     from keybo.training.validate import validate
+
+    # Refuse an empty candidate list up front. There is no champion to return from zero
+    # candidates, so every path below this point is unreachable-but-crashing: `report` is bound
+    # only inside the loop and read after it (UnboundLocalError), and merely initialising it
+    # would just move the failure twenty lines down to `leaderboard[0][0]` (IndexError on the
+    # empty list — verified, not assumed). Both are internal errors that name a local variable
+    # rather than the caller's mistake. This was latent only because the default
+    # ObjectiveNotEvaluated refusal happens to pre-empt it; passing
+    # allow_unevaluated_objective=True exposed it.
+    if not candidates:
+        raise ValueError(
+            "tune_lolo needs at least one candidate; got an empty candidate list. Candidates "
+            "are deliberately explicit here (a caller wanting a random search generates the "
+            "list itself), so an empty list is a caller bug — there is no champion to select "
+            "and no leaderboard to rank."
+        )
 
     results: list[tuple[dict, float, float]] = []  # (params, mean_frac, min_tau)
     n_folds_seen = 0

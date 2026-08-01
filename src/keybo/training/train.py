@@ -79,6 +79,31 @@ LAYOUT_WEIGHT_CAP = 50.0
 _TARGET_SPACES = ("MS", "LOGRAT")
 
 
+def normalize_target_space(target_space: str) -> str:
+    """Upper-case ``target_space`` and reject anything outside :data:`_TARGET_SPACES`.
+
+    The single gate for every entry point that accepts a target space. It exists because the
+    check used to live only in ``_train``: the public :func:`build_training_matrix` forwarded
+    its raw string to ``_build_matrix_full``, and ``_group_target`` compared it to ``"LOGRAT"``
+    exactly, so ``"BOGUS"`` *and* ``"lograt"`` both fell through to MS targets with no error —
+    the caller named the right space and got the other one (CBTESTS-1).
+
+    Case is NORMALIZED rather than rejected, because case-insensitivity is already this
+    codebase's convention for this field in both other places that read it: ``_train`` has
+    always applied ``.upper()``, and :attr:`keybo.models.base.TypingModel.target_space`
+    upper-cases the value it reads back out of a model sidecar (pinned by
+    ``test_target_space_reads_sidecar_case_insensitively``). Making the matrix builder the one
+    case-SENSITIVE reader would trade a silent wrong answer for a spurious failure on a string
+    the rest of the pipeline accepts.
+    """
+    normalized = str(target_space).upper()
+    if normalized not in _TARGET_SPACES:
+        raise ValueError(
+            f"unknown target_space {target_space!r} (known: {sorted(_TARGET_SPACES)})"
+        )
+    return normalized
+
+
 def _group_target(durations: list[int], wpm: int, target_space: str) -> float:
     """The per-(row, wpm-group) training target in the given space.
 
@@ -87,11 +112,22 @@ def _group_target(durations: list[int], wpm: int, target_space: str) -> float:
     FAILED replication on the production v5 frame (+0.4%, PS-V5 2026-07-11) — the win
     was frame-specific (BUF2-BOTH cleaning already removes the tail the per-sample
     robustness bought); reverted per the registered rule (0cb4b9d).
+
+    Every space is dispatched EXPLICITLY: this used to be ``if LOGRAT ... else MS``, so any
+    string that reached here unrecognized silently became an MS target. The callers all
+    normalize now, so the final ``raise`` is unreachable by design — which is the point. It
+    turns "a space was added to ``_TARGET_SPACES`` and wired only into ``_train``" from a
+    plausible-looking wrong matrix into an error at the row that produces it.
     """
     if target_space == "LOGRAT":
         w = max(float(wpm), 1.0)
         return float(np.log(max(iqr_average(durations), 1.0) * w / 12000.0))
-    return iqr_average(durations)
+    if target_space == "MS":
+        return iqr_average(durations)
+    raise ValueError(
+        f"unknown target_space {target_space!r} reached _group_target "
+        f"(known: {sorted(_TARGET_SPACES)}); callers must normalize via normalize_target_space"
+    )
 
 
 def _rows_to_examples(
@@ -155,6 +191,12 @@ def build_training_matrix(
     stays ``"MS"`` so existing callers are unaffected, but it is now a *choice* rather than a
     hardwired mismatch (KAGGLE-1 FINAL, ledger ``cf6ee07``).
 
+    ``target_space`` is validated and case-normalized HERE, on the public boundary, so an
+    unknown space raises instead of silently producing MS targets and ``"lograt"`` means what
+    it says (CBTESTS-1; see :func:`normalize_target_space` for why case normalizes rather than
+    raises). Before that gate this function did no checking at all — the raw string went to
+    ``_group_target``, which tested ``== "LOGRAT"`` exactly.
+
     ``with_layouts=True`` additionally returns the per-example layout label, which is exactly
     what a grouped cross-validation needs for its ``groups`` argument. The labels were always
     computed here and simply discarded.
@@ -164,7 +206,7 @@ def build_training_matrix(
         ngram=ngram,
         geometry=geometry,
         progress=progress,
-        target_space=target_space,
+        target_space=normalize_target_space(target_space),
         direction=direction,
         kitchensink=kitchensink,
     )
@@ -267,9 +309,7 @@ def _train(
     kitchensink=False,
     **params,
 ) -> XGBoostTypingModel:
-    target_space = str(target_space).upper()
-    if target_space not in _TARGET_SPACES:
-        raise ValueError(f"unknown target_space {target_space!r} (known: {sorted(_TARGET_SPACES)})")
+    target_space = normalize_target_space(target_space)
 
     # Targets are built directly in the model's target space (per-sample log aggregation
     # for LOGRAT — PACE-2 ANCHOR-PS).

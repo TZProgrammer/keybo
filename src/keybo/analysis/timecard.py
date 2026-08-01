@@ -119,14 +119,46 @@ class TimeSurface:
         caller's in-place edit change every later gauge number in the same run.
         """
         return self._T2[:, :, None] + self._Tc
+    def _slot_of(self, lay30: str) -> dict[str, int]:
+        """``char -> slot index``, REFUSING a layout that does not fill the geometry exactly.
+
+        The guard exists because building this map from whatever it was handed fails
+        SILENTLY and PLAUSIBLY. A driver passed the literal 6-character string ``"qwerty"``;
+        every corpus n-gram touching one of the 24 missing keys hit the ``except KeyError:
+        continue`` in the scoring loops and was skipped, so ~95% of corpus mass vanished while
+        ``card()`` still returned a well-formed :class:`TimeCard` with a plausible
+        ``ms_per_char`` (the denominator is ``covered``, so the per-char RATE barely moves —
+        only ``total_ms`` collapses). It surfaced solely as a 19.6x ``total_ms`` discrepancy
+        between two runs. ``coverage_pct`` did report it, but nothing forced a caller to look.
+
+        The required size is ``len(self.geometry.slots)`` and NOT the literal 30: this class
+        supports ROW_STAGGERED_31, and the K31 tests legitimately pass a 31-character layout.
+        Duplicates are rejected for the same reason as short strings — two characters mapping
+        to one slot silently drops the shadowed key's mass — and are counted separately in the
+        message, since a 30-character string with a typo'd repeat is the likelier authoring
+        mistake and it is invisible in the length alone.
+        """
+        want = len(self.geometry.slots)
+        distinct = len(set(lay30))
+        if len(lay30) != want or distinct != want:
+            duplicates = len(lay30) - distinct
+            raise ValueError(
+                f"layout must be exactly {want} DISTINCT characters for this geometry, got "
+                f"{len(lay30)} characters with {distinct} distinct ({duplicates} duplicate) "
+                f"-- layout={lay30!r}. A short or repeating layout does not fail here: unknown "
+                f"characters are silently skipped as uncovered corpus mass, so the returned "
+                f"time is computed over a fraction of the corpus and still looks plausible."
+            )
+        slot_of = {ch: i for i, ch in enumerate(lay30)}
+        slot_of[" "] = self._n - 1
+        return slot_of
 
     def seed_totals(self, lay30: str) -> list[float]:
         """Per-seed corpus totals (ms) — the estimator spread behind ``card().total_ms``
         (which uses the seed-MEAN tables). Requires ``keep_seed_tables=True``."""
         if self._T2s is None:
             raise ValueError("TimeSurface built without keep_seed_tables=True")
-        slot_of = {ch: i for i, ch in enumerate(lay30)}
-        slot_of[" "] = self._n - 1
+        slot_of = self._slot_of(lay30)
         totals = []
         for T2, Tc in zip(self._T2s, self._Tcs, strict=False):
             total = 0.0
@@ -140,8 +172,9 @@ class TimeSurface:
         return totals
 
     def card(self, lay30: str, ref_total_ms: float | None = None) -> TimeCard:
-        slot_of = {ch: i for i, ch in enumerate(lay30)}
-        slot_of[" "] = self._n - 1
+        """One layout's time report. ``lay30`` must fill the geometry exactly — see
+        :meth:`_slot_of` for why a short or repeating layout is refused rather than scored."""
+        slot_of = self._slot_of(lay30)
         positions = (*self.geometry.slots, self.geometry.space_position)
         total = 0.0
         covered = 0

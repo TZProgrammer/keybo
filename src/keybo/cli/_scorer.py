@@ -87,8 +87,28 @@ def build_scorer(args: argparse.Namespace, freqs: Mapping[str, int] | None = Non
     the objective's own file is loaded via :func:`load_freqs`.
 
     Warns on stderr — without erroring — when ``--target-wpm`` falls outside the model's
-    trained ``wpm_range``: the trees clamp WPM at the boundary, so an out-of-range value is
-    unvalidated extrapolation, but a power user may still want it.
+    stamped ``wpm_range``: training SUPPORT THINS OUT there, so an out-of-range value is
+    unvalidated, but a power user may still want it.
+
+    The advice is right; the reason it used to give was not. This said "the trees clamp WPM at
+    the boundary", and they do not: ``wpm_range`` is a cosmetic metadata literal. It is passed
+    into :class:`~keybo.models.base.ModelMetadata` (``training/train.py``) and read NOWHERE
+    ELSE — it never filters ``X`` or ``y``, ``cli/train.py`` exposes no ``--wpm-range``, and
+    every shipped k31 model carries the same default ``(60, 120)``. WPM is an ordinary
+    continuous feature, so the trees clamp at the largest split threshold their DATA produced,
+    which is a different and much higher number: the shipped k31 models split on wpm at 50
+    distinct thresholds above 120 (max 213 — exactly the maximum wpm in the k31 stroke tables),
+    and a fixed bigram scored at rising wpm keeps moving right through the stamped boundary
+    (120 -> 125 moves the raw log-ratio by +0.003 on ``bigram_reg31_seed0``), freezing bit-exactly
+    only at ~213.
+
+    So crossing 120 costs you EVIDENCE, not resolution. ~3.8-3.9% of raw k31 stroke samples are
+    at or above 120 wpm (bigram 3.83%, trigram 3.93%; ~18-21% of TRAINING EXAMPLES, which are
+    one per row x wpm-group and so weight the sparse fast tail far more heavily — the two
+    denominators differ by 5x and only the raw-sample one describes how much measurement backs
+    a prediction up there). Thin support is a real reason to distrust an extrapolated number;
+    a boundary clamp would have been a reason to expect it to stop CHANGING, which is the
+    opposite of what it does.
     """
     model = XGBoostTypingModel.load(args.model)
     if model.metadata.ngram != args.ngram:
@@ -102,7 +122,8 @@ def build_scorer(args: argparse.Namespace, freqs: Mapping[str, int] | None = Non
         print(
             f"WARNING: --target-wpm {args.target_wpm:g} is outside the model's trained WPM "
             f"range {model.metadata.wpm_range}; predictions are unvalidated extrapolation "
-            f"(trees clamp at the boundary).",
+            f"(training support thins out beyond this range -- the trees do NOT clamp there, "
+            f"so the number keeps moving and simply has less measurement behind it).",
             file=sys.stderr,
         )
 
