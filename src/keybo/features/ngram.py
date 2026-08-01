@@ -20,6 +20,7 @@ from keybo.features.schema import (
     BIGRAM_DIRECTION_FEATURE_NAMES,
     BIGRAM_FEATURE_NAMES,
     BIGRAM_KITCHENSINK_FEATURE_NAMES,
+    TRIGRAM_ABSPOS_FEATURE_NAMES,
     TRIGRAM_DIRECTION_FEATURE_NAMES,
     TRIGRAM_FEATURE_NAMES,
     TRIGRAM_KITCHENSINK_FEATURE_NAMES,
@@ -204,6 +205,7 @@ def _trigram_row_from_positions(
     wpm: float,
     direction: bool = False,
     kitchensink: bool = False,
+    abspos: bool = False,
 ) -> dict[str, float]:
     """Assemble the full trigram row from the three positions (the shared core).
 
@@ -215,8 +217,28 @@ def _trigram_row_from_positions(
     (:func:`trigram_kitchensink_row`) AND widens both constituent bigrams by the five
     bigram-level ones — which is why 12 candidate definitions become 17 new trigram columns.
     It implies ``direction``, so the three legal frames stay narrow / widened / kitchen-sink.
+
+    ``abspos=True`` adds key A's absolute row/finger block (:func:`first_key_placement_row`,
+    ABSPOS-1) — the nine ``bg0_`` columns. It is INDEPENDENT of the other two flags rather than
+    implying them: the arm it exists for is a single-variable matched A/B against the SERVED frame,
+    so combining it with ``direction``/``kitchensink`` would change two things at once. Only
+    ``abspos`` alone on top of the narrow frame has a declared name list and version stamp, and
+    :func:`_trigram_column_names` rejects the mixed request rather than silently returning the
+    wrong column order.
     """
     row = _trigram_level_from_positions(geometry, a, b, c)
+    if abspos:
+        if direction or kitchensink:
+            raise ValueError(
+                "abspos=True cannot be combined with direction/kitchensink: no name list or "
+                "FEATURE_VERSION stamp exists for a mixed frame, and ABSPOS-1 is a "
+                "single-variable A/B against the served frame."
+            )
+        # Key ORDER matters -- the schema puts bg0_ straight after the trigram-level block and
+        # before bg1_, so the three keys read in stroke order, and a test pins
+        # list(row) == the name list.
+        for name, value in first_key_placement_row(geometry, a).items():
+            row[f"bg0_{name}"] = value
     if direction or kitchensink:
         # The same-finger-gated redirect pair (REDIRGATE-1), declared in
         # TRIGRAM_DIRECTION_FEATURE_NAMES. Emitted here and NOT in
@@ -276,6 +298,51 @@ def trigram_direction_row(
     }
 
 
+def first_key_placement_row(geometry: Geometry, a: Position) -> dict[str, float]:
+    """Key A's ABSOLUTE row + finger one-hot — the ``bg0_`` block, opt-in (ABSPOS-1).
+
+    The served trigram frame never encodes the FIRST key's absolute position. That is an artifact
+    of reusing the bigram builder twice: :func:`_placement_row_from_positions` encodes the SECOND
+    key of the pair it is handed (``bx, by = b``), and the trigram row calls it on (a, b) and
+    (b, c) — so B's absolute position lands in ``bg1_*`` and C's in ``bg2_*``, while A's appears
+    nowhere. A enters only through relations (``bg1_dx/dy/distance/angle``, ``sg_*``).
+
+    The nine definitions are :data:`~keybo.features.schema._BIGRAM_PLACEMENT_NAMES`' placement head
+    verbatim, applied to ``a``, so the block is commensurable with ``bg1_``/``bg2_`` column for
+    column. ``geometry`` is unused today (the row/finger cuts are pure column/row arithmetic, as in
+    the second-key block) but is kept in the signature to match every other row builder here and to
+    stay a geometry-scoped question.
+
+    Returned SEPARATELY, never merged into :func:`_placement_row_from_positions`, for the same
+    reason :func:`trigram_direction_row` and :func:`trigram_kitchensink_row` are: that function
+    feeds the version-locked served frame all three shipped ``trigram_cond31`` models carry, and
+    ``models/base.py`` errors on a version MISMATCH, not on a column whose MEANING changed.
+
+    ⚠ This block is NOT new information — measured, not assumed. Bucketing trigrams by their exact
+    46-column served row never yields two trigrams disagreeing on A's absolute row or finger (0
+    collisions over all four universes tested, including the 16,643 real recorded triples), so A's
+    absolute position is a deterministic function of the served columns. What it buys is CHEAPNESS
+    at the shipped tree depth: A's row is recoverable 1.0000 at unlimited depth but only 0.6946 at
+    ``max_depth=3``, and A's finger 0.5153 — and dropping the continuous geometry columns collapses
+    that to baseline, because the recovery is arithmetic on continuous spans. See
+    :mod:`keybo.features.schema` for the full measurement.
+    """
+    ax, ay = a
+    abs_ax = abs(ax)
+    return {
+        # first-key row one-hot (same by == 1/2/3 cuts as the second-key block)
+        "bottom": float(ay == 1),
+        "home": float(ay == 2),
+        "top": float(ay == 3),
+        # first-key finger one-hot (index = columns 1 and 2; K31 pinky = 5 and 6)
+        "pinky": float(abs_ax in (5, 6)),
+        "ring": float(abs_ax == 4),
+        "middle": float(abs_ax == 3),
+        "index": float(abs_ax in (1, 2)),
+        "lateral": float(C.is_lateral(ax)),
+    }
+
+
 def trigram_kitchensink_row(
     geometry: Geometry, a: Position, b: Position, c: Position
 ) -> dict[str, float]:
@@ -330,7 +397,16 @@ def trigram_kitchensink_row(
     }
 
 
-def _trigram_column_names(direction: bool, kitchensink: bool = False) -> list[str]:
+def _trigram_column_names(
+    direction: bool, kitchensink: bool = False, abspos: bool = False
+) -> list[str]:
+    if abspos:
+        if direction or kitchensink:
+            raise ValueError(
+                "abspos=True cannot be combined with direction/kitchensink: no name list or "
+                "FEATURE_VERSION stamp exists for a mixed frame."
+            )
+        return TRIGRAM_ABSPOS_FEATURE_NAMES
     if kitchensink:
         return TRIGRAM_KITCHENSINK_FEATURE_NAMES
     return TRIGRAM_DIRECTION_FEATURE_NAMES if direction else TRIGRAM_FEATURE_NAMES
@@ -342,6 +418,7 @@ def trigram_model_row(
     wpm: float,
     direction: bool = False,
     kitchensink: bool = False,
+    abspos: bool = False,
 ) -> dict[str, float]:
     """Full ordered trigram feature row: trigram-level + both bigrams + wpm."""
     return _trigram_row_from_positions(
@@ -352,6 +429,7 @@ def trigram_model_row(
         wpm,
         direction=direction,
         kitchensink=kitchensink,
+        abspos=abspos,
     )
 
 
@@ -361,11 +439,15 @@ def trigram_features(
     wpm: float = 0.0,
     direction: bool = False,
     kitchensink: bool = False,
+    abspos: bool = False,
 ) -> np.ndarray:
     """Trigram feature vector in canonical column order."""
-    row = trigram_model_row(layout, trigram, wpm, direction=direction, kitchensink=kitchensink)
+    row = trigram_model_row(
+        layout, trigram, wpm, direction=direction, kitchensink=kitchensink, abspos=abspos
+    )
     return np.array(
-        [row[name] for name in _trigram_column_names(direction, kitchensink)], dtype=np.float64
+        [row[name] for name in _trigram_column_names(direction, kitchensink, abspos)],
+        dtype=np.float64,
     )
 
 
@@ -375,12 +457,14 @@ def trigram_features_from_positions(
     wpm: float = 0.0,
     direction: bool = False,
     kitchensink: bool = False,
+    abspos: bool = False,
 ) -> np.ndarray:
     """Trigram feature vector from recorded key positions (training path)."""
     a, b, c = positions
     row = _trigram_row_from_positions(
-        geometry, a, b, c, wpm, direction=direction, kitchensink=kitchensink
+        geometry, a, b, c, wpm, direction=direction, kitchensink=kitchensink, abspos=abspos
     )
     return np.array(
-        [row[name] for name in _trigram_column_names(direction, kitchensink)], dtype=np.float64
+        [row[name] for name in _trigram_column_names(direction, kitchensink, abspos)],
+        dtype=np.float64,
     )

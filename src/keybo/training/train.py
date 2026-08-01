@@ -54,8 +54,10 @@ from keybo.features.schema import (
     BIGRAM_FEATURE_NAMES,
     BIGRAM_KITCHENSINK_FEATURE_NAMES,
     FEATURE_VERSION,
+    FEATURE_VERSION_ABSPOS,
     FEATURE_VERSION_DIRECTION,
     FEATURE_VERSION_KITCHENSINK,
+    TRIGRAM_ABSPOS_FEATURE_NAMES,
     TRIGRAM_DIRECTION_FEATURE_NAMES,
     TRIGRAM_FEATURE_NAMES,
     TRIGRAM_KITCHENSINK_FEATURE_NAMES,
@@ -101,6 +103,7 @@ def _rows_to_examples(
     target_space: str = "MS",
     direction: bool = False,
     kitchensink: bool = False,
+    abspos: bool = False,
 ):
     """Yield (feature_vector, target) per WPM group in a stroke row.
 
@@ -113,6 +116,11 @@ def _rows_to_examples(
     external-project channels; :data:`BIGRAM_KITCHENSINK_FEATURE_NAMES` /
     :data:`TRIGRAM_KITCHENSINK_FEATURE_NAMES`). It implies ``direction``, so the three trainable
     frames are narrow / widened / kitchen-sink and each has its own version stamp.
+
+    ``abspos=True`` builds the first-key-absolute-position frame
+    (:data:`TRIGRAM_ABSPOS_FEATURE_NAMES`, ABSPOS-1) — the fourth stamp. It is trigram-only and
+    does NOT compose with the other two; ``_train`` validates that before any row is featurized,
+    because the bigram builder does not accept the flag at all.
     """
     by_wpm: dict[int, list[int]] = defaultdict(list)
     for wpm, duration, _pid, _hold in row.samples:
@@ -126,7 +134,12 @@ def _rows_to_examples(
             )
         else:
             vec = trigram_features_from_positions(
-                geometry, row.positions, wpm=wpm, direction=direction, kitchensink=kitchensink
+                geometry,
+                row.positions,
+                wpm=wpm,
+                direction=direction,
+                kitchensink=kitchensink,
+                abspos=abspos,
             )
         yield vec, target, len(durations)
 
@@ -141,6 +154,7 @@ def build_training_matrix(
     with_layouts: bool = False,
     direction: bool = False,
     kitchensink: bool = False,
+    abspos: bool = False,
 ) -> tuple[np.ndarray, ...]:
     """Turn stroke rows into (X, y) using the shared feature pipeline.
 
@@ -167,6 +181,7 @@ def build_training_matrix(
         target_space=target_space,
         direction=direction,
         kitchensink=kitchensink,
+        abspos=abspos,
     )
     if with_layouts:
         return X, y, layouts
@@ -181,6 +196,7 @@ def _build_matrix_full(
     target_space="MS",
     direction=False,
     kitchensink=False,
+    abspos=False,
 ):
     """(X, y, example ngram ids, example layouts, example raw-sample counts).
 
@@ -198,7 +214,7 @@ def _build_matrix_full(
     counts: list[float] = []
     for row in iterator:
         for vec, target, n in _rows_to_examples(
-            row, geometry, ngram, target_space, direction, kitchensink
+            row, geometry, ngram, target_space, direction, kitchensink, abspos
         ):
             features.append(vec)
             targets.append(target)
@@ -265,11 +281,30 @@ def _train(
     calibration=False,
     direction=False,
     kitchensink=False,
+    abspos=False,
     **params,
 ) -> XGBoostTypingModel:
     target_space = str(target_space).upper()
     if target_space not in _TARGET_SPACES:
         raise ValueError(f"unknown target_space {target_space!r} (known: {sorted(_TARGET_SPACES)})")
+
+    # ABSPOS-1's frame is the one that does NOT compose with the other two (no mixed name list, no
+    # mixed stamp) and is trigram-only. Validated HERE, before the matrix is built: the bigram
+    # feature builder does not accept ``abspos`` at all, so an unvalidated bigram+abspos request
+    # dies deep inside the feature loop with an unrelated traceback after minutes of work.
+    if abspos:
+        if direction or kitchensink:
+            raise ValueError(
+                "abspos=True cannot be combined with direction/kitchensink: no name list or "
+                "FEATURE_VERSION stamp exists for a mixed frame."
+            )
+        if ngram != "trigram":
+            raise ValueError(
+                "abspos=True is trigram-only: the first-key absolute-position gap it closes "
+                "exists because the trigram frame reuses the bigram builder twice. A bigram's "
+                "own first key has the same asymmetry, but no name list or stamp is declared "
+                "for it."
+            )
 
     # Targets are built directly in the model's target space (per-sample log aggregation
     # for LOGRAT — PACE-2 ANCHOR-PS).
@@ -281,6 +316,7 @@ def _train(
         target_space=target_space,
         direction=direction,
         kitchensink=kitchensink,
+        abspos=abspos,
     )
     # The version stamp and the name list move TOGETHER with the frame: a widened model records
     # FEATURE_VERSION_DIRECTION so it can never load where a served model is expected (base.py
@@ -289,7 +325,12 @@ def _train(
     # skew DIRECTION-1 refused to create. The kitchen-sink frame is the third population and gets
     # the third stamp on the same principle — and it is checked FIRST because it implies
     # ``direction``, so an `if direction` test would otherwise claim a kitchen-sink model.
-    if kitchensink:
+    # ABSPOS is checked FIRST for the same reason kitchensink is (it must not fall through to a
+    # narrower branch). Its legality was already validated above, before the matrix was built.
+    if abspos:
+        names = TRIGRAM_ABSPOS_FEATURE_NAMES
+        stamp = FEATURE_VERSION_ABSPOS
+    elif kitchensink:
         names = (
             BIGRAM_KITCHENSINK_FEATURE_NAMES
             if ngram == "bigram"
@@ -298,9 +339,7 @@ def _train(
         stamp = FEATURE_VERSION_KITCHENSINK
     elif direction:
         names = (
-            BIGRAM_DIRECTION_FEATURE_NAMES
-            if ngram == "bigram"
-            else TRIGRAM_DIRECTION_FEATURE_NAMES
+            BIGRAM_DIRECTION_FEATURE_NAMES if ngram == "bigram" else TRIGRAM_DIRECTION_FEATURE_NAMES
         )
         stamp = FEATURE_VERSION_DIRECTION
     else:
@@ -456,6 +495,7 @@ def train_trigram_model(
     target_space: str = "LOGRAT",
     direction: bool = False,
     kitchensink: bool = False,
+    abspos: bool = False,
     **params,
 ) -> XGBoostTypingModel:
     """Fit a trigram typing-time model from tristroke rows. See train_bigram_model.
@@ -469,6 +509,11 @@ def train_trigram_model(
     ``kitchensink=True`` trains on the KITCHEN-SINK frame (the widened frame plus the twelve
     external-project channels) and stamps ``FEATURE_VERSION_KITCHENSINK``. It implies
     ``direction`` and takes precedence over it, so the three model populations stay disjoint.
+
+    ``abspos=True`` trains on the served frame plus key A's absolute row/finger block (the nine
+    ``bg0_`` columns, ABSPOS-1) and stamps ``FEATURE_VERSION_ABSPOS``. Unlike ``kitchensink`` it
+    does NOT compose with the other flags -- it exists for a single-variable matched A/B against
+    the served frame, so combining them raises.
     """
     return _train(
         rows,
@@ -482,5 +527,6 @@ def train_trigram_model(
         target_space=target_space,
         direction=direction,
         kitchensink=kitchensink,
+        abspos=abspos,
         **params,
     )

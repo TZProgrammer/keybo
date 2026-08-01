@@ -230,3 +230,71 @@ TRIGRAM_KITCHENSINK_FEATURE_NAMES = [
 #: :data:`FEATURE_VERSION` nor :data:`FEATURE_VERSION_DIRECTION`, or the load-time guard in
 #: ``keybo.models.base`` could not tell the three model populations apart.
 FEATURE_VERSION_KITCHENSINK = f"{FEATURE_VERSION}+kitchensink.1"
+
+# --- the FIRST-KEY ABSOLUTE POSITION block (ABSPOS-1; opt-in, additive) --------------------
+#
+# The served trigram frame is ASYMMETRIC in the three keys, and it is an artifact of reusing the
+# bigram builder twice rather than a design decision. ``_placement_row_from_positions`` encodes the
+# SECOND key of whatever pair it is handed (``bx, by = b``), and the trigram row calls it on (a, b)
+# -> ``bg1_`` and (b, c) -> ``bg2_``. So key B's absolute row/finger is served (as ``bg1_*``) and
+# key C's is served (as ``bg2_*``), but key A's is served NOWHERE: A enters only through relations
+# (``bg1_dx/dy/distance/angle``, ``sg_dx/sg_dy/sg_distance/sg_same_finger``).
+#
+# This block closes that gap with the SAME nine definitions, applied to key ``a``.
+#
+# ⚠ What this block does and does NOT buy, measured before it was written
+# (``agent-artifacts/firstkey_identifiability2.py`` / ``firstkey_recoverability.py``):
+#
+# * It is NOT new information. Bucketing trigrams by their exact 46-column served row NEVER
+#   produces two trigrams that disagree on A's absolute row or finger — 0 collisions across all
+#   four universes tested (32,768 enumerated triples with repeats; 30,752 without; the 16,643 REAL
+#   recorded triples; 9,778 deduped). A's absolute position is a deterministic FUNCTION of the
+#   served columns. (The reflection ambiguity one might expect from ``dy`` being ``abs()`` is
+#   closed by ``angle``, which is SIGNED in the vertical — ``atan2(oy - iy, …)`` in
+#   :func:`keybo.features.classify.rotation_angle` — and by ``sg_dy`` triangulating A against C.)
+# * What it buys is CHEAPNESS at the served tree depth. Recovering A's row from the 46 columns is
+#   1.0000 accurate at unlimited depth but only 0.6946 at depth 3 (the shipped ``max_depth``), and
+#   A's finger only 0.5153 (majority baselines 0.3438 / 0.3750). Dropping the eleven continuous
+#   geometry columns collapses row recovery to 0.3730 at depth 3 — i.e. the recovery is arithmetic
+#   on continuous spans, exactly what a shallow tree cannot do without spending depth.
+#
+# So this is a REPRESENTATION experiment, not an information one. Fourth stamp, fourth population,
+# kept out of all three lists above for the same reason ``_BIGRAM_DIRECTION_NAMES`` is:
+# ``_BIGRAM_PLACEMENT_NAMES`` and ``_TRIGRAM_LEVEL_NAMES`` are the SHARED PREFIXES of the
+# version-locked served frames, so a name added there would silently widen the served frame for all
+# six shipped ``data/models/k31`` artifacts.
+#
+# The nine names are ``_BIGRAM_PLACEMENT_NAMES``' own placement head, verbatim and in order, so the
+# ``bg0_`` block is commensurable with ``bg1_``/``bg2_`` column for column. ``lateral`` is included
+# deliberately: :func:`keybo.features.classify.is_lateral` is documented as the column that
+# "disambiguates the stretch column from the finger's home column (which the finger one-hot alone
+# cannot)", so omitting it would make ``bg0_`` a DIFFERENT encoding of position than the two blocks
+# it is meant to be compared against.
+_FIRST_KEY_PLACEMENT_NAMES = [
+    # first-key row (one-hot) — the same by == 1/2/3 definition as the second-key block
+    "bottom",
+    "home",
+    "top",
+    # first-key finger (one-hot; index covers columns 1 and 2, K31 pinky 5 and 6)
+    "pinky",
+    "ring",
+    "middle",
+    "index",
+    "lateral",
+]
+
+#: The served trigram frame plus key A's absolute row/finger block. ``wpm`` stays last (the
+#: convention ``tests/features/test_schema.py`` pins), and the ``bg0_`` block is placed BEFORE
+#: ``bg1_`` so the three keys read in stroke order.
+TRIGRAM_ABSPOS_FEATURE_NAMES = [
+    *_TRIGRAM_LEVEL_NAMES,
+    *(f"bg0_{n}" for n in _FIRST_KEY_PLACEMENT_NAMES),
+    *(f"bg1_{n}" for n in _BIGRAM_PLACEMENT_NAMES),
+    *(f"bg2_{n}" for n in _BIGRAM_PLACEMENT_NAMES),
+    "wpm",
+]
+
+#: Stamped by anything trained on the first-key-absolute-position frame. Must equal none of the
+#: three stamps above, or the load-time guard in ``keybo.models.base`` could not tell the four
+#: model populations apart.
+FEATURE_VERSION_ABSPOS = f"{FEATURE_VERSION}+abspos.1"

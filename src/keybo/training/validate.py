@@ -536,12 +536,38 @@ def layout_ranking_tau(
 # --- prediction + baseline --------------------------------------------------------------
 
 
+def _featurize_cell(featurize, geometry: Geometry, cell: Cell, direction, kitchensink, abspos):
+    """One cell's feature row, forwarding ``abspos`` only where the frame exists.
+
+    ``abspos`` (ABSPOS-1's ``bg0_`` block) is TRIGRAM-ONLY — no bigram name list or version stamp
+    is declared for it, and ``trigram_features_from_positions`` is the only builder that accepts
+    the flag. Passing it to the bigram builder would be a TypeError, so it is forwarded only for
+    3-key cells. A ``True`` on a bigram cell is a caller error, not something to swallow: it means
+    a bigram model is about to be scored on a frame that cannot exist.
+    """
+    if len(cell.positions) == 3:
+        return featurize(
+            geometry,
+            cell.positions,
+            wpm=cell.wpm,
+            direction=direction,
+            kitchensink=kitchensink,
+            abspos=abspos,
+        )
+    if abspos:
+        raise ValueError("abspos=True is trigram-only; got a bigram cell")
+    return featurize(
+        geometry, cell.positions, wpm=cell.wpm, direction=direction, kitchensink=kitchensink
+    )
+
+
 def _predict_cells(
     model,
     cells: list[Cell],
     geometry: Geometry,
     direction: bool = False,
     kitchensink: bool = False,
+    abspos: bool = False,
 ) -> np.ndarray:
     """g(geometry, wpm) + b(ngram) per cell, in MILLISECONDS — the model's full prediction.
 
@@ -558,6 +584,8 @@ def _predict_cells(
     22-/52-column matrix, and a ``kitchensink`` model the 27-/69-column one. Featurizing a widened
     model with the narrow frame relocates the exact train/serve skew the version stamp exists to
     prevent into this harness — so the caller threads it explicitly rather than inferring it.
+    ``abspos`` is the same contract for the 55-column first-key frame (ABSPOS-1), and is
+    trigram-only.
     """
     featurize = (
         trigram_features_from_positions
@@ -565,10 +593,7 @@ def _predict_cells(
         else bigram_features_from_positions
     )
     X = np.vstack(
-        [
-            featurize(geometry, c.positions, wpm=c.wpm, direction=direction, kitchensink=kitchensink)
-            for c in cells
-        ]
+        [_featurize_cell(featurize, geometry, c, direction, kitchensink, abspos) for c in cells]
     )
     pred = model.predict(X)
     practice = (model.metadata.extra.get("training") or {}).get("practice_term")
@@ -692,6 +717,7 @@ def validate(
     baseline_buckets: Mapping[int, float] | None = None,
     direction: bool = False,
     kitchensink: bool = False,
+    abspos: bool = False,
 ) -> dict:
     """Run the full leave-one-layout-out experiment; returns the report dict.
 
@@ -753,6 +779,7 @@ def validate(
             "train_params": dict(train_params or {}),
             "direction": bool(direction),
             "kitchensink": bool(kitchensink),
+            "abspos": bool(abspos),
         },
         "ceilings": {},
         "folds": {},
@@ -789,12 +816,13 @@ def validate(
             target_wpm=(wpm_lo + wpm_hi) / 2,
             direction=direction,
             kitchensink=kitchensink,
+            **({"abspos": True} if abspos else {}),
             **params,
         )
 
         obs = np.array([c.obs for c in test_cells])
         pred = _predict_cells(
-            model, test_cells, geometry, direction=direction, kitchensink=kitchensink
+            model, test_cells, geometry, direction=direction, kitchensink=kitchensink, abspos=abspos
         )
         rho = _centered_spearman(test_cells, pred, obs)
         ceiling = report["ceilings"][holdout]
@@ -805,7 +833,7 @@ def validate(
         mae_baseline = float(np.mean(np.abs(base_pred - obs)))
 
         pred_all = _predict_cells(
-            model, all_cells, geometry, direction=direction, kitchensink=kitchensink
+            model, all_cells, geometry, direction=direction, kitchensink=kitchensink, abspos=abspos
         )
         tau_all4 = layout_ranking_tau(obs_table, aggregate_layout_table(all_cells, pred_all))
 
