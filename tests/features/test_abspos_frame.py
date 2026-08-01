@@ -169,6 +169,56 @@ def test_abspos_is_trigram_only_in_training():
         _train([], "bigram", 90.0, (60, 120), G, abspos=True)
 
 
+# --- the scorer must be told which frame it is scoring -------------------------------------
+
+
+class _StubMeta:
+    def __init__(self, stamp):
+        self.feature_version = stamp
+        self.extra = {}
+        self.ngram = "trigram"
+
+
+class _StubModel:
+    def __init__(self, stamp):
+        self.metadata = _StubMeta(stamp)
+
+
+@pytest.mark.parametrize(
+    ("stamp", "flags"),
+    [
+        (FEATURE_VERSION_ABSPOS, {}),  # abspos model, served flags -> 54 vs 46
+        (FEATURE_VERSION_ABSPOS, {"direction": True}),
+        (FEATURE_VERSION, {"abspos": True}),  # served model, abspos flags -> 46 vs 54
+        (FEATURE_VERSION_DIRECTION, {"abspos": True}),
+        (FEATURE_VERSION_KITCHENSINK, {"abspos": True}),
+    ],
+)
+def test_scorer_refuses_a_frame_that_contradicts_the_model_stamp(stamp, flags):
+    """ABSPOS-1 hit this for real: a scorer constructed WITHOUT ``abspos`` against a 54-column model
+    featurized 46 columns and died with XGBoost's ``Feature shape mismatch, expected: 54, got 46``
+    only after the whole corpus had been built. The stamp is checked at construction instead."""
+    from keybo.scoring.model_scorer import TrigramModelScorer
+
+    with pytest.raises(ValueError, match="do not match the model's feature_version"):
+        TrigramModelScorer(_StubModel(stamp), trigram_freqs={"the": 1}, **flags)
+
+
+@pytest.mark.parametrize(
+    ("stamp", "flags"),
+    [
+        (FEATURE_VERSION, {}),
+        (FEATURE_VERSION_ABSPOS, {"abspos": True}),
+        (FEATURE_VERSION_DIRECTION, {"direction": True}),
+        (FEATURE_VERSION_KITCHENSINK, {"kitchensink": True}),
+    ],
+)
+def test_scorer_accepts_matching_frames(stamp, flags):
+    from keybo.scoring.model_scorer import TrigramModelScorer
+
+    TrigramModelScorer(_StubModel(stamp), trigram_freqs={"the": 1}, **flags)
+
+
 # --- the registered justification: recoverable, but not at the served depth ----------------
 
 

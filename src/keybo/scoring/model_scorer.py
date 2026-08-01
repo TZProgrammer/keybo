@@ -112,7 +112,14 @@ class BigramModelScorer(_ModelScorerBase):
 
 
 class TrigramModelScorer(_ModelScorerBase):
-    """Scores a layout using a trigram typing-time model."""
+    """Scores a layout using a trigram typing-time model.
+
+    ``direction``/``kitchensink``/``abspos`` MUST match the frame the model was trained on — the
+    same contract :class:`BigramModelScorer` documents. A mismatch is caught at CONSTRUCTION
+    against the model's own ``feature_version`` stamp, because otherwise the failure surfaces as an
+    XGBoost ``Feature shape mismatch, expected: 54, got 46`` raised deep inside ``fitness()`` after
+    the whole corpus has been featurized (ABSPOS-1 hit exactly that).
+    """
 
     def __init__(
         self,
@@ -121,6 +128,7 @@ class TrigramModelScorer(_ModelScorerBase):
         target_wpm: float = 0.0,
         direction: bool = False,
         kitchensink: bool = False,
+        abspos: bool = False,
     ) -> None:
         from keybo.models.base import reject_calibrated_trigram_model
 
@@ -130,6 +138,39 @@ class TrigramModelScorer(_ModelScorerBase):
         self._freqs = np.array([trigram_freqs[t] for t in self._trigrams], dtype=np.float64)
         self._direction = direction
         self._kitchensink = kitchensink
+        self._abspos = abspos
+        self._check_frame_matches_stamp()
+
+    def _check_frame_matches_stamp(self) -> None:
+        """Fail fast when the requested frame contradicts the model's version stamp.
+
+        The stamp is the model's own record of which frame it was trained on, so it is the one
+        authority available here. Models with no metadata (test stubs) are left alone, as is an
+        unrecognised stamp — neither is this class's to adjudicate.
+        """
+        from keybo.features.schema import (
+            FEATURE_VERSION,
+            FEATURE_VERSION_ABSPOS,
+            FEATURE_VERSION_DIRECTION,
+            FEATURE_VERSION_KITCHENSINK,
+        )
+
+        stamp = getattr(getattr(self.model, "metadata", None), "feature_version", None)
+        expected = {
+            FEATURE_VERSION_ABSPOS: (False, False, True),
+            FEATURE_VERSION_KITCHENSINK: (False, True, False),
+            FEATURE_VERSION_DIRECTION: (True, False, False),
+            FEATURE_VERSION: (False, False, False),
+        }.get(stamp)
+        if expected is None:
+            return
+        got = (bool(self._direction), bool(self._kitchensink), bool(self._abspos))
+        if got != expected:
+            raise ValueError(
+                f"frame flags (direction, kitchensink, abspos) = {got} do not match the model's "
+                f"feature_version {stamp!r}, which was trained on {expected}; scoring would "
+                f"featurize the wrong number of columns"
+            )
 
     def fitness(self, layout: Layout) -> float:
         # As with bigrams: score trigrams typable on this board (space included), skip those
@@ -146,6 +187,7 @@ class TrigramModelScorer(_ModelScorerBase):
                     wpm=self.target_wpm,
                     direction=self._direction,
                     kitchensink=self._kitchensink,
+                    abspos=self._abspos,
                 )
             )
             freqs.append(freq)
