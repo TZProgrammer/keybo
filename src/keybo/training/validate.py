@@ -714,8 +714,16 @@ def validate(
     direction: bool = False,
     kitchensink: bool = False,
     quad_context: bool = True,
+    bootstrap_ci: bool = True,
 ) -> dict:
     """Run the full leave-one-layout-out experiment; returns the report dict.
+
+    ``bootstrap_ci=False`` skips the participant-cluster rho CI (``rho_ci95`` becomes
+    ``[nan, nan]``). The CI prebins every cell's (duration, participant) pairs into a sparse
+    matrix, which is the memory hot-spot on a large table (the quadgram frame OOM'd a shared
+    host with it on). The point verdict — paired per-fold deltas, ranking tau, the high-wpm
+    gate — does not use the CI, so a memory-bounded run can drop it without affecting any
+    conclusion.
 
     ``kitchensink=True`` does the same for the KITCHEN-SINK frame (the widened frame plus the
     twelve external-project channels, ``FEATURE_VERSION_KITCHENSINK``); it implies ``direction``.
@@ -864,7 +872,12 @@ def validate(
         worst_bucket, worst_rho = (
             min(bucket_rhos.items(), key=lambda kv: kv[1]) if bucket_rhos else (None, float("nan"))
         )
-        ci_lo, ci_hi = _bootstrap_rho_ci(test_cells, pred, obs, n_boot=max(100, n_boot), seed=seed)
+        if bootstrap_ci:
+            ci_lo, ci_hi = _bootstrap_rho_ci(
+                test_cells, pred, obs, n_boot=max(100, n_boot), seed=seed
+            )
+        else:
+            ci_lo, ci_hi = float("nan"), float("nan")
         fold["seeds"].append(
             {
                 "seed": seed,

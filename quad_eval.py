@@ -32,8 +32,12 @@ from keybo.training.validate import require_no_high_wpm_regression_in_report, va
 
 QUAD_TSV = "/tmp/quadstrokes31_cond_v1.tsv"
 TRI_TSV = "/local/home/zegertho/keybo-e2e/tristrokes31_cond_v1.tsv"
+CKPT_DIR = "/tmp/quad_eval_ckpt"  # per-arm checkpoints so an OOM-kill only loses the live arm
 SEEDS = [0, 1, 2]
-N_JOBS = 16  # XGBoost thread count per fit; validate() sets random_state per fold.
+# n_jobs=8: the shared host is memory-pressured (a big KaenaCompiler build runs alongside); a
+# leaner thread count is a better citizen and the run is not the bottleneck.
+N_JOBS = 8
+CEILING_N_BOOT = 30  # split-half ceiling replicate count (cheap; not the CI)
 CAND4 = dict(
     n_estimators=427,
     max_depth=5,
@@ -129,57 +133,57 @@ def pooled_tau(report):
     return [round(float(p["tau_heldout"]), 4) for p in report["pooled"]]
 
 
+def _run_arm(name, tsv, ngram_len, ngram, quad_context, rows_cache):
+    """Run one validate() arm with per-arm disk checkpoint (resume-safe against OOM kills).
+
+    Returns the validate() report dict. If a checkpoint exists it is loaded and the arm is
+    skipped — so a killed run resumes at the first unfinished arm rather than from scratch.
+    """
+    import os
+
+    os.makedirs(CKPT_DIR, exist_ok=True)
+    ckpt = f"{CKPT_DIR}/{name}.json"
+    if os.path.exists(ckpt):
+        log(f"{name}: checkpoint found, loading (skip compute)")
+        return json.load(open(ckpt))
+    if tsv not in rows_cache:
+        log(f"loading rows from {tsv}")
+        rows_cache[tsv] = load_strokes(tsv, ngram_len=ngram_len, wpm_threshold=0, min_samples=1)
+        log(f"  {len(rows_cache[tsv])} rows; layouts {sorted({r.layout for r in rows_cache[tsv]})}")
+    rows = rows_cache[tsv]
+    log(f"{name}: running validate (ngram={ngram}, quad_context={quad_context}, bootstrap_ci=False)")
+    kw = dict(
+        seeds=SEEDS,
+        ngram=ngram,
+        holdouts=FOLDS,
+        n_boot=CEILING_N_BOOT,
+        geometry=ROW_STAGGERED_31,
+        train_params=CAND4,
+        bootstrap_ci=False,
+    )
+    if ngram == "quadgram":
+        kw["quad_context"] = quad_context
+    rep = validate(rows, **kw)
+    json.dump(rep, open(ckpt, "w"))
+    log(f"  {name} mean rho/ceiling = {mean_frac_ceiling(rep)}, pooled tau {pooled_tau(rep)}")
+    return rep
+
+
 def main():
-    result = {"config": {"seeds": SEEDS, "cand4": CAND4, "folds": FOLDS}}
+    result = {"config": {"seeds": SEEDS, "cand4": CAND4, "folds": FOLDS, "bootstrap_ci": False}}
+    rows_cache = {}
 
-    # --- baseline bucket rhos for the high-wpm gate ---------------------------------------
-    # The gate needs an incumbent's per-bucket rho as the reference. The honest reference for
-    # "does adding the 4th key regress high-wpm accuracy" is the MATCHED trigram-context arm
-    # (arm B) on the SAME cells — so the gate asks exactly: does the quadgram model give up
-    # high-wpm accuracy that the trigram-context model on identical cells had. We compute B
-    # first, harvest its per-fold/seed bucket rhos, then gate arm A against them.
-
-    log("loading quadgram rows")
-    quad_rows = load_strokes(QUAD_TSV, ngram_len=4, wpm_threshold=0, min_samples=1)
-    log(f"{len(quad_rows)} quad rows; layouts {sorted({r.layout for r in quad_rows})}")
+    # The gate reference for "does the 4th key regress high-wpm accuracy" is the MATCHED
+    # trigram-context arm (B) on the SAME cells; we gate A against B's own (fold,seed) bucket
+    # rhos below. Arms are checkpointed so an OOM-kill resumes at the first unfinished arm.
 
     # --- Arm B: trigram-context on quad cells (matched control) ---------------------------
-    log("Arm B: QUAD-TRICTX (trigram-context sub-frame on quad cells)")
-    rep_b = validate(
-        quad_rows,
-        seeds=SEEDS,
-        ngram="quadgram",
-        holdouts=FOLDS,
-        n_boot=50,
-        geometry=ROW_STAGGERED_31,
-        train_params=CAND4,
-        quad_context=False,
-    )
+    rep_b = _run_arm("arm_B_quad_trictx", QUAD_TSV, 4, "quadgram", False, rows_cache)
     rho_b, buckets_b = per_fold_seed_rho(rep_b)
-    log(f"  arm B mean rho/ceiling = {mean_frac_ceiling(rep_b)}, pooled tau {pooled_tau(rep_b)}")
-
-    # Build a single baseline_buckets map for the gate: per holdout, the MIN across seeds of
-    # arm B's bucket rho (the strongest reference — arm A must not regress below B's best seed).
-    # validate() applies one baseline_buckets to every fold/seed, so instead re-run arm A per
-    # fold with that fold's own baseline. Simpler + faithful: run arm A with the pooled-mean
-    # baseline per bucket (mean over all folds/seeds of B) — but that mixes folds. The gate is
-    # per fold/seed, so the RIGHT reference is B's own (fold,seed) bucket rho. We therefore
-    # gate manually after running A (below), rather than via validate's single-map argument.
 
     # --- Arm A: full quadgram frame on quad cells -----------------------------------------
-    log("Arm A: QUAD-FULL (full 4-key frame on quad cells)")
-    rep_a = validate(
-        quad_rows,
-        seeds=SEEDS,
-        ngram="quadgram",
-        holdouts=FOLDS,
-        n_boot=50,
-        geometry=ROW_STAGGERED_31,
-        train_params=CAND4,
-        quad_context=True,
-    )
+    rep_a = _run_arm("arm_A_quad_full", QUAD_TSV, 4, "quadgram", True, rows_cache)
     rho_a, buckets_a = per_fold_seed_rho(rep_a)
-    log(f"  arm A mean rho/ceiling = {mean_frac_ceiling(rep_a)}, pooled tau {pooled_tau(rep_a)}")
 
     # --- high-wpm gate: arm A vs arm B, per (fold,seed), bucket >= 80 ---------------------
     from keybo.verdicts import HIGH_WPM_FLOOR, HIGH_WPM_TOLERANCE
@@ -221,20 +225,9 @@ def main():
     )
 
     # --- Arm C: incumbent trigram on trigram cells (standing baseline, different frame) ---
-    log("loading trigram rows (incumbent frame)")
-    tri_rows = load_strokes(TRI_TSV, ngram_len=3, wpm_threshold=0, min_samples=1)
-    log(f"{len(tri_rows)} tri rows; layouts {sorted({r.layout for r in tri_rows})}")
-    log("Arm C: TRI-INCUMBENT (served trigram frame on trigram cells)")
-    rep_c = validate(
-        tri_rows,
-        seeds=SEEDS,
-        ngram="trigram",
-        holdouts=FOLDS,
-        n_boot=50,
-        geometry=ROW_STAGGERED_31,
-        train_params=CAND4,
-    )
-    log(f"  arm C mean rho/ceiling = {mean_frac_ceiling(rep_c)}, pooled tau {pooled_tau(rep_c)}")
+    # Free the quad rows before loading the trigram table (memory-pressured host).
+    rows_cache.pop(QUAD_TSV, None)
+    rep_c = _run_arm("arm_C_tri_incumbent", TRI_TSV, 3, "trigram", None, rows_cache)
 
     # --- assemble ------------------------------------------------------------------------
     def arm_summary(rep):
