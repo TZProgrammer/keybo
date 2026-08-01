@@ -92,6 +92,22 @@ def test_grouped_cv_refuses_a_single_group() -> None:
         grouped_cv(5, labels)
 
 
+def test_grouped_cv_refusal_MESSAGE_names_the_count_and_the_defect_it_prevents() -> None:
+    """The count and the reason, not just the refusal: an operator has to know what to change.
+
+    ``grouped_cv`` is reached with whatever layouts the frame happens to contain, so this error is
+    a data diagnosis. "At least 2 groups" alone does not say how many were found, and the ZERO
+    case (an empty ``groups`` array — a filtered-to-nothing frame, not a one-layout one) reports a
+    different number and must not be mistaken for the single-group case.
+    """
+    for labels, expected_count in ((np.array(["qwerty"] * 12), 1), (np.array([]), 0)):
+        with pytest.raises(ValueError) as exc:
+            grouped_cv(5, labels)
+        message = str(exc.value)
+        assert f"got {expected_count}" in message, "must report how many groups were found"
+        assert "train and test on the same layout" in message, "must name the defect prevented"
+
+
 def test_grouped_cv_at_n_splits_equal_groups_IS_leave_one_group_out() -> None:
     """Registered caveat: at n_splits == n_groups the estimator is LOGO by definition.
 
@@ -105,6 +121,49 @@ def test_grouped_cv_at_n_splits_equal_groups_IS_leave_one_group_out() -> None:
     ]
     assert all(len(h) == 1 for h in held_out), held_out
     assert sorted(h[0] for h in held_out) == sorted(_LAYOUTS)
+
+
+def test_grouped_cv_isolates_layouts_even_when_the_groups_are_WILDLY_unbalanced() -> None:
+    """The real frame is unbalanced (2202 rows over 4 layouts), and the clamp ignores sizes.
+
+    ``min(cv, n_groups)`` counts DISTINCT groups, so a 3-row layout costs a whole fold just like a
+    40-row one. The property that has to survive that is isolation, and a balanced fixture cannot
+    demonstrate it: a splitter that silently rebalanced by moving rows across the boundary would
+    pass every equal-block test above and leak here.
+    """
+    labels = np.array(["azerty"] * 3 + ["dvorak"] * 40 + ["qwerty"] * 7 + ["qwertz"] * 25)
+    splitter = grouped_cv(5, labels)
+    assert splitter.get_n_splits(groups=labels) == 4, "clamped by group COUNT, not by group size"
+    folds = list(splitter.split(np.zeros(len(labels)), groups=labels))
+    assert [sorted(set(labels[tr]) & set(labels[te])) for tr, te in folds] == [[], [], [], []]
+    # and every layout is held out exactly once, so no layout is silently never tested
+    assert sorted(str(next(iter(set(labels[te])))) for _tr, te in folds) == sorted(set(labels))
+
+
+def test_grouped_cv_accepts_a_plain_SEQUENCE_not_only_an_ndarray() -> None:
+    """Its annotation is ``Sequence[str] | np.ndarray``, and a list is what a caller hand-rolls.
+
+    ``build_training_matrix(with_layouts=True)`` returns an ndarray, but the CLI and any ad-hoc
+    caller may pass a list. ``len(set(np.asarray(groups).tolist()))`` handles both; nothing pinned
+    that the non-array half of the annotation actually works.
+    """
+    labels = ["qwerty"] * 5 + ["dvorak"] * 5 + ["azerty"] * 5
+    assert grouped_cv(5, labels).get_n_splits(groups=labels) == 3
+    assert grouped_cv(5, np.array([1, 1, 1, 2, 2, 2, 3, 3, 3])).get_n_splits() == 3
+
+
+def test_a_cv_BELOW_two_still_raises_from_sklearn_rather_than_returning_a_no_op_splitter() -> None:
+    """The clamp is ``min(cv, n_groups)``, so a nonsensical ``cv`` is NOT clamped upward.
+
+    ``grouped_cv(1, ...)`` on four layouts yields ``GroupKFold(n_splits=1)``, which sklearn
+    refuses. That refusal is the desired outcome — a 1-fold "split" trains and tests on everything,
+    the exact defect this function exists to prevent — so it is pinned here to record that the
+    ceiling deliberately has no floor of its own and does not need one.
+    """
+    labels = _layout_blocked_labels()
+    for cv in (1, 0, -1):
+        with pytest.raises(ValueError, match="at least one train/test split"):
+            grouped_cv(cv, labels)
 
 
 def test_tune_hyperparameters_accepts_groups_and_stays_group_isolated() -> None:
