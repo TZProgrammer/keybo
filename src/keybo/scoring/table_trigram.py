@@ -66,7 +66,54 @@ class TableTrigramScorer(IScorer):
         from keybo.scoring.model_scorer import predict_ms
 
         self._T3 = predict_ms(model, vectors).reshape(n, n, n)
+        self._index_corpus(trigram_freqs)
 
+    @classmethod
+    def from_table(
+        cls,
+        table: np.ndarray,
+        trigram_freqs: Mapping[str, int],
+        chars: str,
+        geometry: Geometry = ROW_STAGGERED_30,
+    ) -> TableTrigramScorer:
+        """This evaluator over an ALREADY-BUILT millisecond table, skipping the model predict.
+
+        The table is the whole objective, so a caller that already has one — notably
+        :meth:`keybo.analysis.timecard.TimeSurface.triple_ms_table`, the seed-averaged
+        ``T2 + Tcond`` surface ``analyze`` reports on — can search it through this reviewed
+        evaluator instead of re-implementing the corpus indexing, the pinned-space slot and
+        the charset guard. Two agent drivers re-derived that loop by hand, and a
+        re-implementation that is 1.5e-2 off still ranks boards in nearly the right order.
+
+        ``table`` must be ``(n, n, n)`` MILLISECONDS over ``[*geometry.slots, space]`` in slot
+        order — the same convention :attr:`_T3` carries — and is stored by reference, so
+        callers hand over a table they will not mutate.
+        """
+        n = len(geometry.slots) + 1
+        if table.shape != (n, n, n):
+            raise ValueError(
+                f"table must be {(n, n, n)} (positions are {len(geometry.slots)} slots + "
+                f"space, in slot order); got {table.shape}"
+            )
+        scorer = cls.__new__(cls)
+        scorer._chars = tuple(chars)
+        scorer._geometry = geometry
+        if len(scorer._chars) != len(geometry.slots):
+            raise ValueError(
+                f"charset has {len(scorer._chars)} characters but geometry has "
+                f"{len(geometry.slots)} slots"
+            )
+        scorer._T3 = table
+        scorer._index_corpus(trigram_freqs)
+        return scorer
+
+    def _index_corpus(self, trigram_freqs: Mapping[str, int]) -> None:
+        """Freeze the corpus rows this charset can type into index + frequency arrays.
+
+        Shared by both constructors so the two cannot drift into different objectives: a row
+        is kept iff it is length 3 and every character is on the board (space included), which
+        is exactly the filter :class:`TrigramModelScorer`'s ``has_key`` loop applies.
+        """
         charset = set(self._chars) | {" "}
         char_idx = {c: i for i, c in enumerate(self._chars)}
         char_idx[" "] = len(self._chars)
@@ -81,8 +128,8 @@ class TableTrigramScorer(IScorer):
         self._j = np.array(ks_j, dtype=np.intp)
         self._l = np.array(ks_l, dtype=np.intp)
         self._f = np.array(fs, dtype=np.float64)
-        self._slot_index = {pos: i for i, pos in enumerate(geometry.slots)}
-        self._space_slot = len(geometry.slots)
+        self._slot_index = {pos: i for i, pos in enumerate(self._geometry.slots)}
+        self._space_slot = len(self._geometry.slots)
 
     def permutation(self, layout: Layout) -> np.ndarray:
         """char-index -> position-index vector for ``layout`` (space pinned last)."""
