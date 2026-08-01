@@ -47,6 +47,7 @@ import numpy as np
 from keybo.data.strokes import StrokeRow, iqr_average
 from keybo.features import (
     bigram_features_from_positions,
+    quadgram_features_from_positions,
     trigram_features_from_positions,
 )
 from keybo.features.schema import (
@@ -56,6 +57,10 @@ from keybo.features.schema import (
     FEATURE_VERSION,
     FEATURE_VERSION_DIRECTION,
     FEATURE_VERSION_KITCHENSINK,
+    FEATURE_VERSION_QUADGRAM,
+    FEATURE_VERSION_QUADGRAM_TRICTX,
+    QUADGRAM_FEATURE_NAMES,
+    QUADGRAM_TRICTX_FEATURE_NAMES,
     TRIGRAM_DIRECTION_FEATURE_NAMES,
     TRIGRAM_FEATURE_NAMES,
     TRIGRAM_KITCHENSINK_FEATURE_NAMES,
@@ -101,6 +106,7 @@ def _rows_to_examples(
     target_space: str = "MS",
     direction: bool = False,
     kitchensink: bool = False,
+    quad_context: bool = True,
 ):
     """Yield (feature_vector, target) per WPM group in a stroke row.
 
@@ -123,6 +129,13 @@ def _rows_to_examples(
         if ngram == "bigram":
             vec = bigram_features_from_positions(
                 geometry, row.positions, wpm=wpm, direction=direction, kitchensink=kitchensink
+            )
+        elif ngram == "quadgram":
+            # The quadgram frame has no direction/kitchensink variant (QUADGRAM-1 is a
+            # depth arm, not a feature-richness arm); it reuses only served primitives.
+            # ``quad_context=False`` selects the trigram-context sub-frame (the A/B control).
+            vec = quadgram_features_from_positions(
+                geometry, row.positions, wpm=wpm, quad_context=quad_context
             )
         else:
             vec = trigram_features_from_positions(
@@ -181,6 +194,7 @@ def _build_matrix_full(
     target_space="MS",
     direction=False,
     kitchensink=False,
+    quad_context=True,
 ):
     """(X, y, example ngram ids, example layouts, example raw-sample counts).
 
@@ -198,7 +212,7 @@ def _build_matrix_full(
     counts: list[float] = []
     for row in iterator:
         for vec, target, n in _rows_to_examples(
-            row, geometry, ngram, target_space, direction, kitchensink
+            row, geometry, ngram, target_space, direction, kitchensink, quad_context
         ):
             features.append(vec)
             targets.append(target)
@@ -265,6 +279,7 @@ def _train(
     calibration=False,
     direction=False,
     kitchensink=False,
+    quad_context=True,
     **params,
 ) -> XGBoostTypingModel:
     target_space = str(target_space).upper()
@@ -281,6 +296,7 @@ def _train(
         target_space=target_space,
         direction=direction,
         kitchensink=kitchensink,
+        quad_context=quad_context,
     )
     # The version stamp and the name list move TOGETHER with the frame: a widened model records
     # FEATURE_VERSION_DIRECTION so it can never load where a served model is expected (base.py
@@ -289,7 +305,19 @@ def _train(
     # skew DIRECTION-1 refused to create. The kitchen-sink frame is the third population and gets
     # the third stamp on the same principle — and it is checked FIRST because it implies
     # ``direction``, so an `if direction` test would otherwise claim a kitchen-sink model.
-    if kitchensink:
+    if ngram == "quadgram":
+        # The quadgram frame is its own population: no direction/kitchensink variant, its
+        # own version stamp, and it never overlaps a served list (QUADGRAM-1 measurement).
+        # ``quad_context=False`` is the matched trigram-context control (its own stamp too).
+        if direction or kitchensink:
+            raise ValueError("quadgram frame has no direction/kitchensink variant")
+        if quad_context:
+            names = QUADGRAM_FEATURE_NAMES
+            stamp = FEATURE_VERSION_QUADGRAM
+        else:
+            names = QUADGRAM_TRICTX_FEATURE_NAMES
+            stamp = FEATURE_VERSION_QUADGRAM_TRICTX
+    elif kitchensink:
         names = (
             BIGRAM_KITCHENSINK_FEATURE_NAMES
             if ngram == "bigram"
@@ -482,5 +510,44 @@ def train_trigram_model(
         target_space=target_space,
         direction=direction,
         kitchensink=kitchensink,
+        **params,
+    )
+
+
+def train_quadgram_model(
+    rows: list[StrokeRow],
+    target_wpm: float,
+    wpm_range: tuple[int, int] = (60, 120),
+    geometry: Geometry = ROW_STAGGERED_30,
+    progress: bool = False,
+    practice_term: bool = True,
+    layout_weights: bool = True,
+    target_space: str = "LOGRAT",
+    quad_context: bool = True,
+    **params,
+) -> XGBoostTypingModel:
+    """Fit a quadgram (4-key) typing-time model from quadstroke rows (QUADGRAM-1).
+
+    Same recipe as :func:`train_trigram_model` (LOGRAT, practice term keyed by the 4-gram
+    identity, layout-balance weights); the only difference is the feature frame
+    (:data:`~keybo.features.schema.QUADGRAM_FEATURE_NAMES`, stamped
+    ``FEATURE_VERSION_QUADGRAM``). There is no direction/kitchensink variant — the quadgram
+    arm measures the value of one extra CONTEXT key, not added feature richness.
+
+    ``quad_context=False`` fits the matched trigram-context control on the SAME rows/cells/target
+    (:data:`~keybo.features.schema.QUADGRAM_TRICTX_FEATURE_NAMES`, its own stamp) — the A/B whose
+    only difference is whether the model may see the fourth (leading) context key.
+    """
+    return _train(
+        rows,
+        "quadgram",
+        target_wpm,
+        wpm_range,
+        geometry,
+        progress=progress,
+        practice_term=practice_term,
+        layout_weights=layout_weights,
+        target_space=target_space,
+        quad_context=quad_context,
         **params,
     )

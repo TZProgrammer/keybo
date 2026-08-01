@@ -115,6 +115,55 @@ TRIGRAM_FEATURE_NAMES = [
     "wpm",
 ]
 
+# --- the QUADGRAM frame (4-key, opt-in, additive; QUADGRAM-1 evaluation) -----------------
+#
+# A quadgram (a,b,c,d) is described by the SAME verified primitives the trigram frame uses,
+# composed on its two overlapping constituent trigrams and three constituent bigrams — no
+# new geometric predicate is introduced (deliberately: a new definition would be a degree of
+# freedom the evaluation could not attribute, and the point of this frame is to isolate "one
+# extra context key", not "new features"):
+#
+#   tg1_<trigram-level of (a,b,c)>  +  tg2_<trigram-level of (b,c,d)>
+#   + bg1_<placement (a,b)>  + bg2_<placement (b,c)>  + bg3_<placement (c,d)>  + wpm
+#
+# Crucially the (b,c,d) trigram-level block + bg2_(b,c) + bg3_(c,d) is column-for-column the
+# SAME information a trigram model receives for the last three keys, so a trigram-context arm
+# is a strict sub-frame of this one and a matched A/B isolates the added leading key exactly.
+# This frame is NEVER equal to any served list, is stamped FEATURE_VERSION_QUADGRAM, and does
+# not touch any shipped data/models/k31 artifact.
+QUADGRAM_FEATURE_NAMES = [
+    *(f"tg1_{n}" for n in _TRIGRAM_LEVEL_NAMES),
+    *(f"tg2_{n}" for n in _TRIGRAM_LEVEL_NAMES),
+    *(f"bg1_{n}" for n in _BIGRAM_PLACEMENT_NAMES),
+    *(f"bg2_{n}" for n in _BIGRAM_PLACEMENT_NAMES),
+    *(f"bg3_{n}" for n in _BIGRAM_PLACEMENT_NAMES),
+    "wpm",
+]
+
+#: The TRIGRAM-CONTEXT sub-frame of the quadgram frame: it drops the leading key's context
+#: (``tg1_`` = trigram-level of (a,b,c), and ``bg1_`` = placement of (a,b)), keeping exactly the
+#: last-three-key information ``tg2_``/``bg2_``/``bg3_``. This is COLUMN-FOR-COLUMN the trigram
+#: served frame computed on keys (b,c,d) — verified bit-identical — so training on it over the
+#: SAME quadgram rows, cells and target (the c->d conditioned interval) yields a genuine trigram
+#: model on the identical evaluation units. The quadgram-vs-trigram A/B is then a single-variable
+#: change: whether the model may see the fourth (leading) context key. Same width as the served
+#: trigram frame (46 cols), but a DISTINCT stamp so it can never be confused with a served model.
+QUADGRAM_TRICTX_FEATURE_NAMES = [
+    *(f"tg2_{n}" for n in _TRIGRAM_LEVEL_NAMES),
+    *(f"bg2_{n}" for n in _BIGRAM_PLACEMENT_NAMES),
+    *(f"bg3_{n}" for n in _BIGRAM_PLACEMENT_NAMES),
+    "wpm",
+]
+
+#: Stamped by anything trained on the quadgram frame. Must equal none of the other version
+#: stamps, or the load-time guard in ``keybo.models.base`` could not tell the populations
+#: apart. The quadgram evaluation is a MEASUREMENT arm (QUADGRAM-1); nothing is served on it.
+FEATURE_VERSION_QUADGRAM = f"{FEATURE_VERSION}+quadgram.1"
+
+#: Stamped by the trigram-context arm of the quadgram A/B (the sub-frame above). Distinct from
+#: every other stamp so the matched control can never be mistaken for a served trigram model.
+FEATURE_VERSION_QUADGRAM_TRICTX = f"{FEATURE_VERSION}+quadgram_trictx.1"
+
 #: The trigram frame with the ordered-direction channel on BOTH constituent bigrams. The
 #: trigram-level ``redirect``/``bad_redirect`` columns are already order-aware (they compare
 #: ``|column|`` between successive keys), so what this adds is per-bigram direction, not a

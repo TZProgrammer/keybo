@@ -35,7 +35,11 @@ from scipy.sparse import csr_matrix
 from scipy.stats import kendalltau, spearmanr
 
 from keybo.data.strokes import StrokeRow, iqr_average
-from keybo.features import bigram_features_from_positions, trigram_features_from_positions
+from keybo.features import (
+    bigram_features_from_positions,
+    quadgram_features_from_positions,
+    trigram_features_from_positions,
+)
 from keybo.geometry import ROW_STAGGERED_30, Geometry
 from keybo.verdicts import HighWpmRegression, bucket_regression_report
 
@@ -542,6 +546,7 @@ def _predict_cells(
     geometry: Geometry,
     direction: bool = False,
     kitchensink: bool = False,
+    quad_context: bool = True,
 ) -> np.ndarray:
     """g(geometry, wpm) + b(ngram) per cell, in MILLISECONDS — the model's full prediction.
 
@@ -559,17 +564,33 @@ def _predict_cells(
     model with the narrow frame relocates the exact train/serve skew the version stamp exists to
     prevent into this harness — so the caller threads it explicitly rather than inferring it.
     """
-    featurize = (
-        trigram_features_from_positions
-        if len(cells[0].positions) == 3
-        else bigram_features_from_positions
-    )
-    X = np.vstack(
-        [
-            featurize(geometry, c.positions, wpm=c.wpm, direction=direction, kitchensink=kitchensink)
-            for c in cells
-        ]
-    )
+    n_pos = len(cells[0].positions)
+    if n_pos == 4:
+        # The quadgram frame has no direction/kitchensink variant (QUADGRAM-1): featurize
+        # without those kwargs so a stray flag cannot silently pick a different frame.
+        # ``quad_context`` MUST match training (full 4-key frame vs trigram-context sub-frame),
+        # exactly as ``direction`` must for a widened model — else the harness re-creates the
+        # train/serve skew the version stamp exists to prevent.
+        X = np.vstack(
+            [
+                quadgram_features_from_positions(
+                    geometry, c.positions, wpm=c.wpm, quad_context=quad_context
+                )
+                for c in cells
+            ]
+        )
+    else:
+        featurize = (
+            trigram_features_from_positions if n_pos == 3 else bigram_features_from_positions
+        )
+        X = np.vstack(
+            [
+                featurize(
+                    geometry, c.positions, wpm=c.wpm, direction=direction, kitchensink=kitchensink
+                )
+                for c in cells
+            ]
+        )
     pred = model.predict(X)
     practice = (model.metadata.extra.get("training") or {}).get("practice_term")
     if practice:
@@ -692,6 +713,7 @@ def validate(
     baseline_buckets: Mapping[int, float] | None = None,
     direction: bool = False,
     kitchensink: bool = False,
+    quad_context: bool = True,
 ) -> dict:
     """Run the full leave-one-layout-out experiment; returns the report dict.
 
@@ -725,12 +747,20 @@ def validate(
     ``pooled`` is the strictest number: every layout scored only by the fold that held it
     out, so the ranking is fully out-of-sample.
     """
-    from keybo.training.train import train_bigram_model, train_trigram_model
+    from keybo.training.train import (
+        train_bigram_model,
+        train_quadgram_model,
+        train_trigram_model,
+    )
 
-    n_expected = {"bigram": 2, "trigram": 3}[ngram]
+    n_expected = {"bigram": 2, "trigram": 3, "quadgram": 4}[ngram]
     if any(len(r.ngram) != n_expected for r in rows):
         raise ValueError(f"row ngram length does not match ngram={ngram!r} (expected {n_expected})")
-    train_fn = train_bigram_model if ngram == "bigram" else train_trigram_model
+    train_fn = {
+        "bigram": train_bigram_model,
+        "trigram": train_trigram_model,
+        "quadgram": train_quadgram_model,
+    }[ngram]
 
     all_layouts = sorted({r.layout for r in rows})
     holdouts = list(holdouts) if holdouts is not None else all_layouts
@@ -751,8 +781,10 @@ def validate(
             **cell_kw,
             "n_boot": n_boot,
             "train_params": dict(train_params or {}),
+            "ngram": ngram,
             "direction": bool(direction),
             "kitchensink": bool(kitchensink),
+            "quad_context": bool(quad_context),
         },
         "ceilings": {},
         "folds": {},
@@ -784,17 +816,27 @@ def validate(
         fold = report["folds"].setdefault(holdout, {"n_cells": len(test_cells), "seeds": []})
 
         params = {**(train_params or {}), "random_state": seed, "n_jobs": 1}
+        # The quadgram trainer takes quad_context (full 4-key frame vs trigram-context control),
+        # not direction/kitchensink; the bigram/trigram trainers take the reverse. Thread the
+        # right frame flag for each so the fold model matches the frame _predict_cells will score.
+        if ngram == "quadgram":
+            params = {"quad_context": quad_context, **params}
+        else:
+            params = {"direction": direction, "kitchensink": kitchensink, **params}
         model = train_fn(
             train_rows,
             target_wpm=(wpm_lo + wpm_hi) / 2,
-            direction=direction,
-            kitchensink=kitchensink,
             **params,
         )
 
         obs = np.array([c.obs for c in test_cells])
         pred = _predict_cells(
-            model, test_cells, geometry, direction=direction, kitchensink=kitchensink
+            model,
+            test_cells,
+            geometry,
+            direction=direction,
+            kitchensink=kitchensink,
+            quad_context=quad_context,
         )
         rho = _centered_spearman(test_cells, pred, obs)
         ceiling = report["ceilings"][holdout]
@@ -805,7 +847,12 @@ def validate(
         mae_baseline = float(np.mean(np.abs(base_pred - obs)))
 
         pred_all = _predict_cells(
-            model, all_cells, geometry, direction=direction, kitchensink=kitchensink
+            model,
+            all_cells,
+            geometry,
+            direction=direction,
+            kitchensink=kitchensink,
+            quad_context=quad_context,
         )
         tau_all4 = layout_ranking_tau(obs_table, aggregate_layout_table(all_cells, pred_all))
 

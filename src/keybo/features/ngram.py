@@ -20,6 +20,8 @@ from keybo.features.schema import (
     BIGRAM_DIRECTION_FEATURE_NAMES,
     BIGRAM_FEATURE_NAMES,
     BIGRAM_KITCHENSINK_FEATURE_NAMES,
+    QUADGRAM_FEATURE_NAMES,
+    QUADGRAM_TRICTX_FEATURE_NAMES,
     TRIGRAM_DIRECTION_FEATURE_NAMES,
     TRIGRAM_FEATURE_NAMES,
     TRIGRAM_KITCHENSINK_FEATURE_NAMES,
@@ -334,6 +336,92 @@ def _trigram_column_names(direction: bool, kitchensink: bool = False) -> list[st
     if kitchensink:
         return TRIGRAM_KITCHENSINK_FEATURE_NAMES
     return TRIGRAM_DIRECTION_FEATURE_NAMES if direction else TRIGRAM_FEATURE_NAMES
+
+
+# --- the QUADGRAM frame (4-key; QUADGRAM-1 evaluation, opt-in) -----------------------------
+
+
+def _quadgram_row_from_positions(
+    geometry: Geometry,
+    a: Position,
+    b: Position,
+    c: Position,
+    d: Position,
+    wpm: float,
+) -> dict[str, float]:
+    """Assemble the full quadgram row from the four positions.
+
+    Reuses ONLY the served primitives, composed on the two overlapping constituent trigrams
+    ((a,b,c) and (b,c,d)) and the three constituent bigrams ((a,b), (b,c), (c,d)): the
+    trigram-level block twice (``tg1_``/``tg2_``) and the placement block three times
+    (``bg1_``/``bg2_``/``bg3_``), then wpm. No new geometric predicate is introduced, so the
+    frame adds context depth, not feature richness. See
+    :data:`keybo.features.schema.QUADGRAM_FEATURE_NAMES`.
+    """
+    row: dict[str, float] = {}
+    for name, value in _trigram_level_from_positions(geometry, a, b, c).items():
+        row[f"tg1_{name}"] = value
+    for name, value in _trigram_level_from_positions(geometry, b, c, d).items():
+        row[f"tg2_{name}"] = value
+    for name, value in _placement_row_from_positions(geometry, a, b).items():
+        row[f"bg1_{name}"] = value
+    for name, value in _placement_row_from_positions(geometry, b, c).items():
+        row[f"bg2_{name}"] = value
+    for name, value in _placement_row_from_positions(geometry, c, d).items():
+        row[f"bg3_{name}"] = value
+    row["wpm"] = float(wpm)
+    return row
+
+
+def _quadgram_column_names(quad_context: bool) -> list[str]:
+    """Column order for the quadgram A/B arm.
+
+    ``quad_context=True`` (default) is the full 4-key frame; ``False`` is the trigram-context
+    sub-frame (last three keys only), the matched control that measures the value of the added
+    leading key. Both are read out of the SAME assembled row, so the two arms are guaranteed to
+    agree on every shared column.
+    """
+    return QUADGRAM_FEATURE_NAMES if quad_context else QUADGRAM_TRICTX_FEATURE_NAMES
+
+
+def quadgram_model_row(layout: Layout, quadgram: str, wpm: float) -> dict[str, float]:
+    """Full ordered quadgram feature row: tg1 + tg2 + bg1 + bg2 + bg3 + wpm."""
+    return _quadgram_row_from_positions(
+        layout.geometry,
+        layout.pos(quadgram[0]),
+        layout.pos(quadgram[1]),
+        layout.pos(quadgram[2]),
+        layout.pos(quadgram[3]),
+        wpm,
+    )
+
+
+def quadgram_features(
+    layout: Layout, quadgram: str, wpm: float = 0.0, quad_context: bool = True
+) -> np.ndarray:
+    """Quadgram feature vector in canonical column order (or the trigram-context sub-frame)."""
+    row = quadgram_model_row(layout, quadgram, wpm)
+    return np.array(
+        [row[name] for name in _quadgram_column_names(quad_context)], dtype=np.float64
+    )
+
+
+def quadgram_features_from_positions(
+    geometry: Geometry,
+    positions: tuple[Position, Position, Position, Position],
+    wpm: float = 0.0,
+    quad_context: bool = True,
+) -> np.ndarray:
+    """Quadgram feature vector from recorded key positions (training path).
+
+    ``quad_context=False`` returns the trigram-context sub-frame (drops the ``tg1_``/``bg1_``
+    blocks that carry the leading key), the matched control for the quadgram-vs-trigram A/B.
+    """
+    a, b, c, d = positions
+    row = _quadgram_row_from_positions(geometry, a, b, c, d, wpm)
+    return np.array(
+        [row[name] for name in _quadgram_column_names(quad_context)], dtype=np.float64
+    )
 
 
 def trigram_model_row(
