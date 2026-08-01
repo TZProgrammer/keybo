@@ -60,6 +60,8 @@ from keybo.analysis.community import (
     legacy_board_of,
     pinned_char,
 )
+from keybo.analysis.discrimination import format_report as format_discrimination
+from keybo.analysis.discrimination import require_declared_invariants_hold
 from keybo.analysis.kmstats import STAT_NAMES, KmStats
 from keybo.analysis.redirects import REDIRECT_CLASSES, RedirectFamily
 from keybo.analysis.scissor_fingers import FINGER_NAMES, ScissorByFinger
@@ -455,6 +457,17 @@ def run(args: argparse.Namespace) -> int:
             "refusing to emit a table with a dropped row"
         )
 
+    # A11: the gauge columns become a COMPARISON here, which is the boundary where a tie starts
+    # reading as agreement. `sfr`, `alt` and `imbalance` are exactly constant under within-hand
+    # permutation, so layouts sharing a hand partition MUST tie on them -- and four of this
+    # campaign's own boards do (keybo-lsb / keybo-lsb+lm / flagship-c3 / archive-1843 share the
+    # left-hand charset "',-.aehijkopuyz"). Run BEFORE either output path: a guard on the text
+    # renderer alone would be bypassed by --json, which is the path a downstream consumer reads.
+    discrimination = require_declared_invariants_hold(
+        {name: rows[name]["layout"] for name in rows},
+        {name: rows[name]["gauges"] for name in rows},
+    )
+
     if args.json:
         print(
             _json.dumps(
@@ -477,6 +490,11 @@ def run(args: argparse.Namespace) -> int:
                     "corpus_sensitive": "gauges, time, redirects, scissor_*, bad_scissor",
                     "corpus_invariant": "community, community_primed (vendored corpora)",
                     "model_family": args.model_family,
+                    # Which gauge columns can tell THESE layouts apart, and which ties are
+                    # structurally forced by a shared hand partition. A consumer reading `rows`
+                    # cannot derive this from the numbers -- a forced tie and an agreement are the
+                    # same two floats -- so the distinction ships with them or is lost.
+                    "discrimination": discrimination,
                     "rows": rows,
                 },
                 indent=1,
@@ -484,7 +502,7 @@ def run(args: argparse.Namespace) -> int:
         )
         return 0
 
-    _print_report(rows, ref_name, args, corpus_block)
+    _print_report(rows, ref_name, args, corpus_block, discrimination)
     return 0
 
 
@@ -519,6 +537,7 @@ def _print_report(
     ref_name: str,
     args: argparse.Namespace,
     corpus_block: dict,
+    discrimination: dict | None = None,
 ) -> None:
     names = list(rows)
     # Truncate raw 30-char layouts for column width HERE, never in the row key (see _display).
@@ -582,6 +601,15 @@ def _print_report(
     for n in names:
         g = rows[n]["gauges"]
         print(f"{shown[n]:<{w}}" + "".join(_cell(g[s], 11) for s in GAUGE_NAMES))
+
+    # Immediately under the table it explains, not in a trailing section: the whole point is that a
+    # repeated number in the row above is not the agreement it looks like.
+    if discrimination is not None:
+        lines = format_discrimination(discrimination)
+        if lines:
+            print()
+            for line in lines:
+                print(line)
 
     print("\n== scissor by finger (% of layout-covered bigram mass; sums to `scissor`) ==")
     print(f"{'layout':<{w}}" + "".join(f"{f:>9}" for f in FINGER_NAMES) + f"{'total':>10}")
