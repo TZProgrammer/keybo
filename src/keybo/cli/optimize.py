@@ -373,7 +373,13 @@ def run(args: argparse.Namespace) -> int:
         # gauge too. Searching the gauge but ranking attempts by the bigram objective would
         # reintroduce the 4.97-floor selection tax the flag exists to remove.
         gauge = _build_gauge_objective(args)
-        return _run_search(args, gauge, gauge)
+        # `incumbents` must be forwarded here too. Combining the two branches that added
+        # --gauge-objective and --polish-incumbent independently, this call was the one path
+        # that dropped the argument, so --polish-incumbent was SILENTLY INERT under
+        # --gauge-objective: it parsed, refused a wrong charset, and then reported nothing.
+        # Symmetric polish on the reported gauge is exactly the comparison REPOLISH-1 needed,
+        # so the gauge path is the LAST place it should have gone missing.
+        return _run_search(args, gauge, gauge, incumbents)
     if getattr(args, "model_weight", None):
         if args.comfort_weight or args.finger_load_weight or args.oxey_weight:
             raise SystemExit(

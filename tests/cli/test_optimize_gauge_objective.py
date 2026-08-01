@@ -102,10 +102,17 @@ def _capture_search_scorer(monkeypatch, args):
 
     seen = {}
 
-    def fake_run_search(inner_args, scorer, search_scorer):
+    # `incumbents` is accepted (and recorded) because the gauge path forwards it, exactly as the
+    # blend and default paths do. It was ORIGINALLY omitted here, and that spy signature is what
+    # hid a real defect once the --gauge-objective and --polish-incumbent branches were combined:
+    # the production call dropped the argument, so --polish-incumbent was SILENTLY INERT under
+    # --gauge-objective. A spy that accepts fewer arguments than the real callee can only ever pin
+    # the narrower behaviour.
+    def fake_run_search(inner_args, scorer, search_scorer, incumbents=()):
         seen["scorer"] = scorer
         seen["search_scorer"] = search_scorer
         seen["args"] = inner_args
+        seen["incumbents"] = incumbents
         return 0
 
     monkeypatch.setattr(optimize, "_run_search", fake_run_search)

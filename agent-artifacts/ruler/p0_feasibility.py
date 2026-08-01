@@ -2,7 +2,7 @@
 and does the NAIVE 'wire TableTrigramScorer + TableBigramScorer' reading of the brief
 actually reconcile to analyze? Measures parity + eval speed."""
 import os, sys, time
-MY = "/local/home/zegertho/repos/keybo-wt-ruler"
+MY = "/local/home/zegertho/repos/keybo-wt-both"
 import keybo
 assert keybo.__file__.startswith(MY + "/"), keybo.__file__
 import numpy as np
