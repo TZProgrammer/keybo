@@ -1,0 +1,17 @@
+{
+ "serve_bucket": 80,
+ "min_samples_per_pair": 30,
+ "n_same_finger_pairs": 55,
+ "n_other_pairs": 431,
+ "raw_penalty_ms": 63.0,
+ "model_penalty_ms": 41.02823625090224,
+ "raw_penalty_ci95": [
+  53.0,
+  73.0
+ ],
+ "verdict": "MODEL UNDERPRICES sfb",
+ "raw_median_same": 189.0,
+ "raw_median_other": 126.0,
+ "model_median_same": 172.41688454069427,
+ "model_median_other": 131.38864828979203
+}
