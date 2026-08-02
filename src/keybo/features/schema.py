@@ -230,3 +230,48 @@ TRIGRAM_KITCHENSINK_FEATURE_NAMES = [
 #: :data:`FEATURE_VERSION` nor :data:`FEATURE_VERSION_DIRECTION`, or the load-time guard in
 #: ``keybo.models.base`` could not tell the three model populations apart.
 FEATURE_VERSION_KITCHENSINK = f"{FEATURE_VERSION}+kitchensink.1"
+
+# --- the MIRROR-SYMMETRIC frame (MIRROR-1, 2026-08-02): same columns, same width -----------
+#
+# An EXPRESSIVITY-REMOVING frame, and the only one here that is not additive: it keeps all 20
+# bigram column names but forces three of them (``dx``, ``angle``, ``lsb``) to mirror-invariant
+# values, so a bigram and its left/right mirror image get an IDENTICAL row and the model
+# provably cannot price them differently. The thesis it tests: "there should be no
+# biomechanical reason for 'sd' to be any faster than 'lk'".
+#
+# ⚠ READ THIS BEFORE USING IT — the constraint is TRUE on only 330 of the 870 ordered pairs.
+# ``ROW_STAGGERED_30.row_offsets = {1: 0.5, 2: 0.0, 3: -0.25}`` applies to BOTH hands
+# identically, so the physical coordinate ``x + off(y)`` is not antisymmetric and x-negation is
+# NOT an isometry of the board: it changes ``stagger_adjusted_dx`` on 540 of 900 ordered
+# position pairs, and ALL 540 are CROSS-row (same-row pairs share the offset, so it cancels).
+# An exhaustive search over vertical-axis reflections finds NONE that maps the board onto
+# itself — the row-staggered board's mirror symmetry group is trivial. So on the 270 same-row
+# plus 60 same-column pairs mirroring IS an exact board symmetry and the served frame already
+# satisfies it (measured: the shipped seed-averaged T2 has exactly 0.0 ms mirror asymmetry on
+# all 330 — ``sd``/``lk``, the motivating example, included); on the other 540 the difference is
+# real geometry of a staggered board, and forcing it away imposes a FALSE constraint.
+#
+# A separate STAMP rather than a flag on the served frame, for the reason
+# :data:`FEATURE_VERSION_DIRECTION` exists: the six models under ``data/models/k31`` carry
+# :data:`FEATURE_VERSION`, and ``keybo.models.base`` hard-errors on a version MISMATCH but not
+# on a column whose MEANING changed. Symmetrizing these three in place would leave all six
+# loading fine while scoring a frame whose ``dx``/``angle``/``lsb`` no longer mean what they
+# meant at training time — the exact train/serve skew the stamp prevents. Column NAMES and
+# ORDER are deliberately unchanged, so no widening/narrowing confound can enter an A/B: the
+# served and mirror frames are both 20 columns and differ only in three columns' VALUES.
+FEATURE_VERSION_MIRROR = f"{FEATURE_VERSION}+mirror.1"
+
+#: The BIGRAM-level columns the mirror frame symmetrizes. All three are mirror-variant purely
+#: through the row stagger; ``lsb`` inherits it from ``stagger_adjusted_dx``, which it
+#: thresholds at 1.5. NOTE ``dx`` is ALREADY non-negative (``stagger_adjusted_dx`` returns
+#: ``abs(...)``), so the obvious recipe "replace dx with |dx|" is a NO-OP — the stagger, not a
+#: sign, is what breaks the symmetry.
+MIRROR_SYMMETRIZED_COLUMNS = ("dx", "angle", "lsb")
+
+#: The TRIGRAM-LEVEL columns the mirror frame symmetrizes, on top of the two constituent
+#: bigrams' :data:`MIRROR_SYMMETRIZED_COLUMNS`. Only the SKIPGRAM span is mirror-variant, for
+#: the same stagger reason: ``sg_dx`` is ``stagger_adjusted_dx`` across keys 1 and 3.
+#: ``redirect``/``bad_redirect``/``sg_same_finger``/``sg_dy``/``sg_distance`` are already
+#: mirror-invariant (they read ``abs(x)``, a row difference, or a hand-independent finger map),
+#: so symmetrizing the trigram frame means these plus ``bg1_``/``bg2_``-prefixed bigram columns.
+MIRROR_SYMMETRIZED_TRIGRAM_COLUMNS = ("sg_dx",)

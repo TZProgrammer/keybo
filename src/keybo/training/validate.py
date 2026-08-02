@@ -542,6 +542,7 @@ def _predict_cells(
     geometry: Geometry,
     direction: bool = False,
     kitchensink: bool = False,
+    mirror: bool = False,
 ) -> np.ndarray:
     """g(geometry, wpm) + b(ngram) per cell, in MILLISECONDS — the model's full prediction.
 
@@ -566,7 +567,14 @@ def _predict_cells(
     )
     X = np.vstack(
         [
-            featurize(geometry, c.positions, wpm=c.wpm, direction=direction, kitchensink=kitchensink)
+            featurize(
+                geometry,
+                c.positions,
+                wpm=c.wpm,
+                direction=direction,
+                kitchensink=kitchensink,
+                mirror=mirror,
+            )
             for c in cells
         ]
     )
@@ -692,11 +700,19 @@ def validate(
     baseline_buckets: Mapping[int, float] | None = None,
     direction: bool = False,
     kitchensink: bool = False,
+    mirror: bool = False,
 ) -> dict:
     """Run the full leave-one-layout-out experiment; returns the report dict.
 
     ``kitchensink=True`` does the same for the KITCHEN-SINK frame (the widened frame plus the
     twelve external-project channels, ``FEATURE_VERSION_KITCHENSINK``); it implies ``direction``.
+
+    ``mirror=True`` trains AND evaluates every fold on the MIRROR-SYMMETRIC frame
+    (``FEATURE_VERSION_MIRROR``): same 20/45 column names and width as the served frame, with
+    ``dx``/``angle``/``lsb`` (and ``sg_dx``) forced mirror-invariant, so a bigram and its
+    left/right mirror image cannot be priced differently. Mutually exclusive with
+    ``direction``/``kitchensink`` (``train_*`` raises). Because the width is unchanged, a
+    served-vs-mirror A/B is a clean single-variable change with no capacity confound.
 
     ``direction=True`` trains AND evaluates every fold on the widened order-aware frame
     (``FEATURE_VERSION_DIRECTION``). It is threaded into both the fold model and
@@ -753,6 +769,7 @@ def validate(
             "train_params": dict(train_params or {}),
             "direction": bool(direction),
             "kitchensink": bool(kitchensink),
+            "mirror": bool(mirror),
         },
         "ceilings": {},
         "folds": {},
@@ -789,12 +806,13 @@ def validate(
             target_wpm=(wpm_lo + wpm_hi) / 2,
             direction=direction,
             kitchensink=kitchensink,
+            mirror=mirror,
             **params,
         )
 
         obs = np.array([c.obs for c in test_cells])
         pred = _predict_cells(
-            model, test_cells, geometry, direction=direction, kitchensink=kitchensink
+            model, test_cells, geometry, direction=direction, kitchensink=kitchensink, mirror=mirror
         )
         rho = _centered_spearman(test_cells, pred, obs)
         ceiling = report["ceilings"][holdout]
@@ -805,7 +823,7 @@ def validate(
         mae_baseline = float(np.mean(np.abs(base_pred - obs)))
 
         pred_all = _predict_cells(
-            model, all_cells, geometry, direction=direction, kitchensink=kitchensink
+            model, all_cells, geometry, direction=direction, kitchensink=kitchensink, mirror=mirror
         )
         tau_all4 = layout_ranking_tau(obs_table, aggregate_layout_table(all_cells, pred_all))
 

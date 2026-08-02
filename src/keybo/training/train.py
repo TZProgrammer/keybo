@@ -56,6 +56,7 @@ from keybo.features.schema import (
     FEATURE_VERSION,
     FEATURE_VERSION_DIRECTION,
     FEATURE_VERSION_KITCHENSINK,
+    FEATURE_VERSION_MIRROR,
     TRIGRAM_DIRECTION_FEATURE_NAMES,
     TRIGRAM_FEATURE_NAMES,
     TRIGRAM_KITCHENSINK_FEATURE_NAMES,
@@ -137,6 +138,7 @@ def _rows_to_examples(
     target_space: str = "MS",
     direction: bool = False,
     kitchensink: bool = False,
+    mirror: bool = False,
 ):
     """Yield (feature_vector, target) per WPM group in a stroke row.
 
@@ -158,11 +160,13 @@ def _rows_to_examples(
         target = _group_target(durations, wpm, target_space)
         if ngram == "bigram":
             vec = bigram_features_from_positions(
-                geometry, row.positions, wpm=wpm, direction=direction, kitchensink=kitchensink
+                geometry, row.positions, wpm=wpm, direction=direction,
+                kitchensink=kitchensink, mirror=mirror
             )
         else:
             vec = trigram_features_from_positions(
-                geometry, row.positions, wpm=wpm, direction=direction, kitchensink=kitchensink
+                geometry, row.positions, wpm=wpm, direction=direction,
+                kitchensink=kitchensink, mirror=mirror
             )
         yield vec, target, len(durations)
 
@@ -177,6 +181,7 @@ def build_training_matrix(
     with_layouts: bool = False,
     direction: bool = False,
     kitchensink: bool = False,
+    mirror: bool = False,
 ) -> tuple[np.ndarray, ...]:
     """Turn stroke rows into (X, y) using the shared feature pipeline.
 
@@ -209,6 +214,7 @@ def build_training_matrix(
         target_space=normalize_target_space(target_space),
         direction=direction,
         kitchensink=kitchensink,
+        mirror=mirror,
     )
     if with_layouts:
         return X, y, layouts
@@ -223,6 +229,7 @@ def _build_matrix_full(
     target_space="MS",
     direction=False,
     kitchensink=False,
+    mirror=False,
 ):
     """(X, y, example ngram ids, example layouts, example raw-sample counts).
 
@@ -240,7 +247,7 @@ def _build_matrix_full(
     counts: list[float] = []
     for row in iterator:
         for vec, target, n in _rows_to_examples(
-            row, geometry, ngram, target_space, direction, kitchensink
+            row, geometry, ngram, target_space, direction, kitchensink, mirror
         ):
             features.append(vec)
             targets.append(target)
@@ -307,6 +314,7 @@ def _train(
     calibration=False,
     direction=False,
     kitchensink=False,
+    mirror=False,
     **params,
 ) -> XGBoostTypingModel:
     target_space = normalize_target_space(target_space)
@@ -321,6 +329,7 @@ def _train(
         target_space=target_space,
         direction=direction,
         kitchensink=kitchensink,
+        mirror=mirror,
     )
     # The version stamp and the name list move TOGETHER with the frame: a widened model records
     # FEATURE_VERSION_DIRECTION so it can never load where a served model is expected (base.py
@@ -329,7 +338,20 @@ def _train(
     # skew DIRECTION-1 refused to create. The kitchen-sink frame is the third population and gets
     # the third stamp on the same principle — and it is checked FIRST because it implies
     # ``direction``, so an `if direction` test would otherwise claim a kitchen-sink model.
-    if kitchensink:
+    if mirror:
+        # The mirror frame has the SAME names and width as the served frame — only three
+        # columns' VALUES differ — so the stamp is the ONLY thing that can tell a mirror model
+        # apart from a served one. It is checked FIRST and rejects the other flags outright:
+        # a "mirror + direction" population does not exist, and silently letting one flag win
+        # would stamp a frame that is not the frame that was built.
+        if direction or kitchensink:
+            raise ValueError(
+                "mirror=True cannot be combined with direction/kitchensink: there is no "
+                "mirror+widened model population and no stamp for one"
+            )
+        names = BIGRAM_FEATURE_NAMES if ngram == "bigram" else TRIGRAM_FEATURE_NAMES
+        stamp = FEATURE_VERSION_MIRROR
+    elif kitchensink:
         names = (
             BIGRAM_KITCHENSINK_FEATURE_NAMES
             if ngram == "bigram"
@@ -449,6 +471,7 @@ def train_bigram_model(
     calibration: bool = False,
     direction: bool = False,
     kitchensink: bool = False,
+    mirror: bool = False,
     **params,
 ) -> XGBoostTypingModel:
     """Fit a bigram typing-time model from bistroke rows (R1W + LOGRAT recipe).
@@ -481,6 +504,7 @@ def train_bigram_model(
         calibration=calibration,
         direction=direction,
         kitchensink=kitchensink,
+        mirror=mirror,
         **params,
     )
 
@@ -496,6 +520,7 @@ def train_trigram_model(
     target_space: str = "LOGRAT",
     direction: bool = False,
     kitchensink: bool = False,
+    mirror: bool = False,
     **params,
 ) -> XGBoostTypingModel:
     """Fit a trigram typing-time model from tristroke rows. See train_bigram_model.
@@ -522,5 +547,6 @@ def train_trigram_model(
         target_space=target_space,
         direction=direction,
         kitchensink=kitchensink,
+        mirror=mirror,
         **params,
     )

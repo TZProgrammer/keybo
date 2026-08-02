@@ -20,6 +20,8 @@ from keybo.features.schema import (
     BIGRAM_DIRECTION_FEATURE_NAMES,
     BIGRAM_FEATURE_NAMES,
     BIGRAM_KITCHENSINK_FEATURE_NAMES,
+    MIRROR_SYMMETRIZED_COLUMNS,
+    MIRROR_SYMMETRIZED_TRIGRAM_COLUMNS,
     TRIGRAM_DIRECTION_FEATURE_NAMES,
     TRIGRAM_FEATURE_NAMES,
     TRIGRAM_KITCHENSINK_FEATURE_NAMES,
@@ -103,16 +105,96 @@ def _placement_row_from_positions(
     return row
 
 
+def mirror_position(position: Position) -> Position:
+    """The left/right mirror image of a key: negate the signed column, keep the row.
+
+    ⚠ A mirror of the COLUMN INDEX, not an isometry of the physical board. The row stagger
+    (``Geometry.row_offsets``) applies identically to both hands, so the physical coordinate
+    ``x + off(y)`` is not antisymmetric: this map preserves ``stagger_adjusted_dx`` on the 330
+    same-row-or-same-column pairs of ``ROW_STAGGERED_30`` and CHANGES it on the other 540 (all
+    cross-row). No vertical-axis reflection maps the staggered board onto itself, so there is no
+    better definition to choose — see :data:`~keybo.features.schema.FEATURE_VERSION_MIRROR`.
+
+    On ``ROW_STAGGERED_31`` it is not even a permutation of the slots: the quote slot ``(6, 2)``
+    maps to ``(-6, 2)``, which is not a key. The image's feature row is still COMPUTABLE
+    (``Geometry.finger(-6)`` resolves to the left pinky), so a symmetrized frame is well
+    defined on K31 — but for that column it symmetrizes against a hypothetical key.
+    """
+    x, y = position
+    return (-x, y)
+
+
+def _mirror_symmetrized_row(
+    geometry: Geometry,
+    a: Position,
+    b: Position,
+    direction: bool = False,
+    kitchensink: bool = False,
+) -> dict[str, float]:
+    """The placement row with :data:`MIRROR_SYMMETRIZED_COLUMNS` forced mirror-invariant.
+
+    Averages each of ``dx``/``angle``/``lsb`` with its value on the mirrored pair. The mean is
+    the symmetrization (any symmetric function of the two would do; the mean is the one that
+    keeps the column's scale and leaves the 330 already-symmetric pairs BIT-IDENTICAL, so the
+    frame change is confined to the 540 pairs whose two hands' geometry genuinely differs).
+
+    The other 17 placement columns are untouched because they are already mirror-invariant:
+    each is built from ``abs(x)``, from a row/column difference, or is hand-normalized. That is
+    also why this frame carries no hand-identity channel — and hence why a model trained on it
+    cannot represent handedness even in principle.
+    """
+    row = _placement_row_from_positions(
+        geometry, a, b, direction=direction, kitchensink=kitchensink
+    )
+    mirrored = _placement_row_from_positions(
+        geometry,
+        mirror_position(a),
+        mirror_position(b),
+        direction=direction,
+        kitchensink=kitchensink,
+    )
+    for name in MIRROR_SYMMETRIZED_COLUMNS:
+        row[name] = 0.5 * (row[name] + mirrored[name])
+    return row
+
+
+def placement_row_from_positions(
+    geometry: Geometry,
+    a: Position,
+    b: Position,
+    direction: bool = False,
+    kitchensink: bool = False,
+    mirror: bool = False,
+) -> dict[str, float]:
+    """The placement row for one bigram, in whichever frame the flags select.
+
+    The single dispatch point for the ``mirror`` frame, so the training, scoring and trigram
+    paths cannot disagree about what it means.
+    """
+    if mirror:
+        return _mirror_symmetrized_row(
+            geometry, a, b, direction=direction, kitchensink=kitchensink
+        )
+    return _placement_row_from_positions(
+        geometry, a, b, direction=direction, kitchensink=kitchensink
+    )
+
+
 def _placement_row(
-    layout: Layout, bigram: str, direction: bool = False, kitchensink: bool = False
+    layout: Layout,
+    bigram: str,
+    direction: bool = False,
+    kitchensink: bool = False,
+    mirror: bool = False,
 ) -> dict[str, float]:
     """Placement features for a bigram on a layout (looks up positions, then delegates)."""
-    return _placement_row_from_positions(
+    return placement_row_from_positions(
         layout.geometry,
         layout.pos(bigram[0]),
         layout.pos(bigram[1]),
         direction=direction,
         kitchensink=kitchensink,
+        mirror=mirror,
     )
 
 
@@ -129,9 +211,12 @@ def bigram_model_row(
     wpm: float,
     direction: bool = False,
     kitchensink: bool = False,
+    mirror: bool = False,
 ) -> dict[str, float]:
     """Full ordered bigram feature row (placement features + wpm)."""
-    row = _placement_row(layout, bigram, direction=direction, kitchensink=kitchensink)
+    row = _placement_row(
+        layout, bigram, direction=direction, kitchensink=kitchensink, mirror=mirror
+    )
     row["wpm"] = float(wpm)
     return row
 
@@ -142,9 +227,12 @@ def bigram_features(
     wpm: float = 0.0,
     direction: bool = False,
     kitchensink: bool = False,
+    mirror: bool = False,
 ) -> np.ndarray:
     """Bigram feature vector in canonical column order."""
-    row = bigram_model_row(layout, bigram, wpm, direction=direction, kitchensink=kitchensink)
+    row = bigram_model_row(
+        layout, bigram, wpm, direction=direction, kitchensink=kitchensink, mirror=mirror
+    )
     return np.array(
         [row[name] for name in _bigram_column_names(direction, kitchensink)], dtype=np.float64
     )
@@ -156,10 +244,16 @@ def bigram_features_from_positions(
     wpm: float = 0.0,
     direction: bool = False,
     kitchensink: bool = False,
+    mirror: bool = False,
 ) -> np.ndarray:
     """Bigram feature vector from recorded key positions (training path)."""
-    row = _placement_row_from_positions(
-        geometry, positions[0], positions[1], direction=direction, kitchensink=kitchensink
+    row = placement_row_from_positions(
+        geometry,
+        positions[0],
+        positions[1],
+        direction=direction,
+        kitchensink=kitchensink,
+        mirror=mirror,
     )
     row["wpm"] = float(wpm)
     return np.array(
@@ -204,6 +298,7 @@ def _trigram_row_from_positions(
     wpm: float,
     direction: bool = False,
     kitchensink: bool = False,
+    mirror: bool = False,
 ) -> dict[str, float]:
     """Assemble the full trigram row from the three positions (the shared core).
 
@@ -215,8 +310,23 @@ def _trigram_row_from_positions(
     (:func:`trigram_kitchensink_row`) AND widens both constituent bigrams by the five
     bigram-level ones — which is why 12 candidate definitions become 17 new trigram columns.
     It implies ``direction``, so the three legal frames stay narrow / widened / kitchen-sink.
+
+    ``mirror=True`` forces the frame mirror-invariant: both constituent bigrams' placement
+    blocks are symmetrized (:data:`MIRROR_SYMMETRIZED_COLUMNS`) and so is the trigram-level
+    skipgram span (:data:`MIRROR_SYMMETRIZED_TRIGRAM_COLUMNS`). Column names and width are
+    unchanged; only three-per-bigram-plus-one values move. See
+    :data:`~keybo.features.schema.FEATURE_VERSION_MIRROR` for why the constraint is true on only
+    a subset of pairs.
     """
     row = _trigram_level_from_positions(geometry, a, b, c)
+    if mirror:
+        # Only the skipgram SPAN is mirror-variant at trigram level (stagger, via
+        # stagger_adjusted_dx across keys 1 and 3); the rest read abs(x) or a row difference.
+        mirrored_level = _trigram_level_from_positions(
+            geometry, mirror_position(a), mirror_position(b), mirror_position(c)
+        )
+        for name in MIRROR_SYMMETRIZED_TRIGRAM_COLUMNS:
+            row[name] = 0.5 * (row[name] + mirrored_level[name])
     if direction or kitchensink:
         # The same-finger-gated redirect pair (REDIRGATE-1), declared in
         # TRIGRAM_DIRECTION_FEATURE_NAMES. Emitted here and NOT in
@@ -227,12 +337,12 @@ def _trigram_row_from_positions(
         row.update(trigram_direction_row(geometry, a, b, c))
     if kitchensink:
         row.update(trigram_kitchensink_row(geometry, a, b, c))
-    for name, value in _placement_row_from_positions(
-        geometry, a, b, direction=direction, kitchensink=kitchensink
+    for name, value in placement_row_from_positions(
+        geometry, a, b, direction=direction, kitchensink=kitchensink, mirror=mirror
     ).items():
         row[f"bg1_{name}"] = value
-    for name, value in _placement_row_from_positions(
-        geometry, b, c, direction=direction, kitchensink=kitchensink
+    for name, value in placement_row_from_positions(
+        geometry, b, c, direction=direction, kitchensink=kitchensink, mirror=mirror
     ).items():
         row[f"bg2_{name}"] = value
     row["wpm"] = float(wpm)
@@ -342,6 +452,7 @@ def trigram_model_row(
     wpm: float,
     direction: bool = False,
     kitchensink: bool = False,
+    mirror: bool = False,
 ) -> dict[str, float]:
     """Full ordered trigram feature row: trigram-level + both bigrams + wpm."""
     return _trigram_row_from_positions(
@@ -352,6 +463,7 @@ def trigram_model_row(
         wpm,
         direction=direction,
         kitchensink=kitchensink,
+        mirror=mirror,
     )
 
 
@@ -361,9 +473,12 @@ def trigram_features(
     wpm: float = 0.0,
     direction: bool = False,
     kitchensink: bool = False,
+    mirror: bool = False,
 ) -> np.ndarray:
     """Trigram feature vector in canonical column order."""
-    row = trigram_model_row(layout, trigram, wpm, direction=direction, kitchensink=kitchensink)
+    row = trigram_model_row(
+        layout, trigram, wpm, direction=direction, kitchensink=kitchensink, mirror=mirror
+    )
     return np.array(
         [row[name] for name in _trigram_column_names(direction, kitchensink)], dtype=np.float64
     )
@@ -375,11 +490,12 @@ def trigram_features_from_positions(
     wpm: float = 0.0,
     direction: bool = False,
     kitchensink: bool = False,
+    mirror: bool = False,
 ) -> np.ndarray:
     """Trigram feature vector from recorded key positions (training path)."""
     a, b, c = positions
     row = _trigram_row_from_positions(
-        geometry, a, b, c, wpm, direction=direction, kitchensink=kitchensink
+        geometry, a, b, c, wpm, direction=direction, kitchensink=kitchensink, mirror=mirror
     )
     return np.array(
         [row[name] for name in _trigram_column_names(direction, kitchensink)], dtype=np.float64
