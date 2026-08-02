@@ -63,6 +63,8 @@ from keybo.analysis.community import (
 from keybo.analysis.discrimination import format_report as format_discrimination
 from keybo.analysis.discrimination import require_declared_invariants_hold
 from keybo.analysis.kmstats import STAT_NAMES, KmStats
+from keybo.analysis.lateral_span import LateralSpan
+from keybo.features import classify as _C
 from keybo.analysis.redirects import REDIRECT_CLASSES, RedirectFamily
 from keybo.analysis.scissor_fingers import FINGER_NAMES, ScissorByFinger
 from keybo.analysis.skipgram_span import sg_dist as sg_dist_gauge
@@ -114,7 +116,20 @@ _FROZEN_GAUGE_NAMES = (*STAT_NAMES, "scissor", "imbalance", "oxey-style", "comfo
 #: trigram-level axis the 15 gauges are blind to, because they meter that span only for the
 #: same-finger skip (``sfs``). UNIT: key-widths, not a percent share (every other gauge here is a
 #: percentage); the printed frame notes this so the column is not misread.
-GAUGE_NAMES = (*_FROZEN_GAUGE_NAMES, "sg_dist")
+#: The TWO lateral-stretch conventions, named apart because they DISAGREE and both ship.
+#:
+#: ``lsb`` (in :data:`STAT_NAMES`, frozen) is keymeow's: ANY adjacent finger-kind pair with a
+#: horizontal gap >= 2 (``kmstats._is_lsb``). ``lsb-narrow`` is what the MODEL trains on
+#: (``features.classify.is_lsb``): index/middle ONLY, stagger-adjusted dx > 1.5 -- so it is
+#: structurally blind to index-pinky, index-ring, middle-pinky, middle-ring and ring-pinky
+#: stretches (172 of 870 same-hand pairs it can never flag).
+#:
+#: Naming them apart is the point: a reader comparing a gauge column against a model feature was
+#: silently comparing two different predicates, and LSBWIDEN-1 measured that the narrow one's
+#: flagged share is LAYOUT-DEPENDENT (3.23x on qwerty rising to 13.50x on graphite), i.e. it
+#: "cannot rank layouts consistently even in principle". ``lat-span`` is the coverage-invariant
+#: replacement (fold spread 1.0000x) and is the one to rank on.
+GAUGE_NAMES = (*_FROZEN_GAUGE_NAMES, "sg_dist", "lsb-narrow", "lat-span")
 
 #: Sentinel rendered for a cell a layout's charset cannot support.
 NA = "N/A"
@@ -303,6 +318,25 @@ def _raw_total_reconciliation(card, ref_card) -> dict | None:
     }
 
 
+
+def _narrow_lsb_share(layout, bigram_freqs) -> float:
+    """Corpus mass of bigrams the MODEL's ``classify.is_lsb`` flags (index/middle only).
+
+    Separate from the frozen ``lsb`` column, which uses keymeow's any-adjacent-pair rule. The two
+    are reported side by side because they disagree and a reader cannot tell which a bare "lsb"
+    means -- exactly the two-conventions-printed-together defect X1-CHARSET-1 fixed elsewhere.
+    """
+    total = 0.0
+    for ng, f in bigram_freqs.items():
+        if len(ng) != 2:
+            continue
+        if not (layout.has_key(ng[0]) and layout.has_key(ng[1])):
+            continue
+        a, b = layout.pos(ng[0]), layout.pos(ng[1])
+        if _C.is_lsb(layout.geometry, a, b):
+            total += f
+    return total
+
 def run(args: argparse.Namespace) -> int:
     specs = [_resolve(s) for s in args.layouts]
     ref_name, ref_lay = _resolve(args.ref)
@@ -375,6 +409,13 @@ def run(args: argparse.Namespace) -> int:
         # corpus bigram mass is the frozen board's convention (board_three_corpora.py).
         # Note this denominator differs from every other gauge's here -- stated, not hidden.
         gauges["comfort"] = comfort.fitness(layout) / bigram_mass
+        # The MODEL's lateral-stretch predicate, corpus-weighted on the same denominator as the
+        # frozen `lsb` column beside it, so the two conventions are directly comparable. They are
+        # NOT the same number and the frame now says so by name.
+        gauges["lsb-narrow"] = 100.0 * _narrow_lsb_share(layout, bigrams) / bigram_mass
+        # The coverage-invariant graded span (LSBWIDEN-1): no structural blind spot, so unlike
+        # either `lsb` column this one can be ranked on.
+        gauges["lat-span"] = LateralSpan(bigrams).share(layout)
         # sg_dist (BUILDMETRIC-1): the corpus-weighted first-to-third-key span, in KEY-WIDTHS
         # (not a percent share). Assembled here on the ROW_STAGGERED_30 `layout` -- NOT in
         # kmstats, whose keymeow board would give a different distance -- and over the TRIGRAM
