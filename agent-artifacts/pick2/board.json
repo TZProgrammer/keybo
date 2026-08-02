@@ -1,0 +1,1424 @@
+{
+ "corpus": "blend-v1",
+ "axes_counted": {
+  "sfb": true,
+  "sfs-dist": true,
+  "scissor": true,
+  "badsciss": true,
+  "lsb-dist": true,
+  "lat-span": true,
+  "redir": true,
+  "badredir": true,
+  "sg_dist": true,
+  "roll": false
+ },
+ "axes_uncounted": {
+  "sfr": "within-hand invariant -> tie is FORCED",
+  "alt": "within-hand invariant -> tie is FORCED",
+  "imbalance": "within-hand invariant -> tie is FORCED",
+  "lsb-narrow": "not rankable across layouts (LSBWIDEN-1)",
+  "oxey-style": "scalarization of counted axes",
+  "comfort": "scalarization of counted axes"
+ },
+ "ruler": {
+  "within_median": 0.43137694792790987,
+  "paired_median": 0.14195895884247378,
+  "paired_p90": 0.2664410434747482
+ },
+ "rows": {
+  "qwerty": {
+   "layout": "qwertyuiopasdfghjkl;zxcvbnm,./",
+   "provenance": "real",
+   "ms_per_char": 263.71405094410767,
+   "per_seed_ms_per_char": [
+    263.9467156612756,
+    264.041076195143,
+    263.15436097590435
+   ],
+   "coverage_pct": 86.6253743,
+   "axes": {
+    "sfb": 7.223375535049789,
+    "sfs-dist": 15.97836527971437,
+    "scissor": 1.5707976437871116,
+    "badsciss": 13.30069825076132,
+    "lsb-dist": 7.078695961606446,
+    "lat-span": 13.370927693301194,
+    "redir": 13.53329390088865,
+    "badredir": 1.4064167799920966,
+    "sg_dist": 3.6652707380857805,
+    "roll": 37.4825256757688
+   },
+   "uncounted": {
+    "sfr": 2.664409719628846,
+    "alt": 26.361454300436378,
+    "imbalance": 16.093880727456188,
+    "lsb-narrow": 2.9067351,
+    "oxey-style": 89.75261591240624,
+    "comfort": 7.443647945
+   },
+   "home_row_pct": 31.513675453751766,
+   "pinky_pct": 10.533036069365215,
+   "left_hand_pct": 57.97112689945582,
+   "fingers_pct": {
+    "LP": 7.875385316825179,
+    "LR": 8.680241973985476,
+    "LM": 19.406931968180192,
+    "LI": 22.00856764046497,
+    "RI": 17.4275124024278,
+    "RM": 8.97649620368555,
+    "RR": 12.967213741890797,
+    "RP": 2.657650752540036
+   },
+   "switching": {
+    "unchanged_keys": 30,
+    "same_finger_keys": 30,
+    "same_hand_keys": 30,
+    "zxcv_preserved": 4
+   },
+   "switching_ref": "qwertyuiopasdfghjkl;zxcvbnm,./",
+   "support": {}
+  },
+  "qwerty30m": {
+   "layout": "qwertyuiopasdfghjkl'zxcvbnm,.-",
+   "provenance": "real",
+   "ms_per_char": 264.13891657883516,
+   "per_seed_ms_per_char": [
+    264.36867609418084,
+    264.450929280068,
+    263.5971443622565
+   ],
+   "coverage_pct": 88.7147352,
+   "axes": {
+    "sfb": 7.154593528477934,
+    "sfs-dist": 15.746184896599134,
+    "scissor": 1.5831338237041819,
+    "badsciss": 13.340369614728633,
+    "lsb-dist": 6.958789559608355,
+    "lat-span": 13.46186821169227,
+    "redir": 13.422189596580113,
+    "badredir": 1.4153345501781356,
+    "sg_dist": 3.679642609784967,
+    "roll": 37.691778239300696
+   },
+   "uncounted": {
+    "sfr": 2.6595771026964927,
+    "alt": 26.458303537682045,
+    "imbalance": 14.928795371517694,
+    "lsb-narrow": 2.9067351,
+    "oxey-style": 86.76798614811786,
+    "comfort": 7.581203825
+   },
+   "home_row_pct": 31.652723948582096,
+   "pinky_pct": 11.585582381689262,
+   "left_hand_pct": 57.28911766209532,
+   "fingers_pct": {
+    "LP": 7.782734271018126,
+    "LR": 8.578122082146043,
+    "LM": 19.178616467360595,
+    "LI": 21.749644841570554,
+    "RI": 17.222484053344903,
+    "RM": 8.870890988512434,
+    "RR": 12.814659185376206,
+    "RP": 3.8028481106711363
+   },
+   "switching": {
+    "unchanged_keys": 30,
+    "same_finger_keys": 30,
+    "same_hand_keys": 30,
+    "zxcv_preserved": 4
+   },
+   "switching_ref": "qwertyuiopasdfghjkl'zxcvbnm,.-",
+   "support": {}
+  },
+  "dvorak": {
+   "layout": "',.pyfgcrlaoeuidhtns;qjkxbmwvz",
+   "provenance": "real",
+   "ms_per_char": 255.024013506711,
+   "per_seed_ms_per_char": [
+    255.09536548935216,
+    255.4003674882814,
+    254.5763075424993
+   ],
+   "coverage_pct": 87.4944958,
+   "axes": {
+    "sfb": 3.179708192381828,
+    "sfs-dist": 9.441313963487193,
+    "scissor": 0.08751515898052772,
+    "badsciss": 5.824726646051481,
+    "lsb-dist": 2.2913818735899087,
+    "lat-span": 7.314320707002695,
+    "redir": 3.465846035477644,
+    "badredir": 0.9453425357639228,
+    "sg_dist": 3.9186165336770977,
+    "roll": 37.523585631441065
+   },
+   "uncounted": {
+    "sfr": 2.6506231461343184,
+    "alt": 45.82909844214439,
+    "imbalance": 8.685033545449961,
+    "lsb-narrow": 0.8068074,
+    "oxey-style": 19.566783440796808,
+    "comfort": 3.491100248
+   },
+   "home_row_pct": 65.78286551194581,
+   "pinky_pct": 19.568247550017006,
+   "left_hand_pct": 45.74516648641207,
+   "fingers_pct": {
+    "LP": 8.360568803757923,
+    "LR": 8.634577057037616,
+    "LM": 13.87388650997057,
+    "LI": 14.876134115645955,
+    "RI": 15.640415185591857,
+    "RM": 13.38652571279117,
+    "RR": 14.020213868945824,
+    "RP": 11.207678746259084
+   },
+   "switching": null,
+   "switching_ref": null,
+   "support": {}
+  },
+  "colemak": {
+   "layout": "qwfpgjluy;arstdhneiozxcvbkm,./",
+   "provenance": "real",
+   "ms_per_char": 258.23528878193866,
+   "per_seed_ms_per_char": [
+    258.3462043837276,
+    258.6632352154707,
+    257.6964267466179
+   ],
+   "coverage_pct": 86.6253743,
+   "axes": {
+    "sfb": 1.6928389328685944,
+    "sfs-dist": 10.984748322805057,
+    "scissor": 0.29154323860861386,
+    "badsciss": 9.355455530363846,
+    "lsb-dist": 5.202628064988363,
+    "lat-span": 8.847153858168657,
+    "redir": 10.689677236987732,
+    "badredir": 1.2440453609936448,
+    "sg_dist": 3.8321377246701305,
+    "roll": 45.58137703405669
+   },
+   "uncounted": {
+    "sfr": 2.664409719628846,
+    "alt": 32.031692329544256,
+    "imbalance": 3.9899295181100713,
+    "lsb-narrow": 1.6572068,
+    "oxey-style": 14.253940349662585,
+    "comfort": 3.499188527
+   },
+   "home_row_pct": 69.76167666571925,
+   "pinky_pct": 15.32338853541654,
+   "left_hand_pct": 47.9314614659766,
+   "fingers_pct": {
+    "LP": 7.875385316825179,
+    "LR": 8.440895279761609,
+    "LM": 12.484859867133231,
+    "LI": 19.130321002256576,
+    "RI": 18.107972577871937,
+    "RM": 16.594749812944915,
+    "RR": 9.917812924615191,
+    "RP": 7.44800321859136
+   },
+   "switching": {
+    "unchanged_keys": 13,
+    "same_finger_keys": 18,
+    "same_hand_keys": 28,
+    "zxcv_preserved": 4
+   },
+   "switching_ref": "qwertyuiopasdfghjkl;zxcvbnm,./",
+   "support": {}
+  },
+  "colemak-dh": {
+   "layout": "qwfpbjluy;arstgmneiozxcdvkh,./",
+   "provenance": "real",
+   "ms_per_char": 258.7580253520973,
+   "per_seed_ms_per_char": [
+    258.84947840653973,
+    259.1559278163004,
+    258.26866983345195
+   ],
+   "coverage_pct": 86.6253743,
+   "axes": {
+    "sfb": 1.6928389328685944,
+    "sfs-dist": 10.831910557805921,
+    "scissor": 0.14632141938383755,
+    "badsciss": 9.206329377113422,
+    "lsb-dist": 3.0596591073469797,
+    "lat-span": 8.268774152872686,
+    "redir": 10.689677236987732,
+    "badredir": 1.2440453609936448,
+    "sg_dist": 3.8334330942506956,
+    "roll": 45.58137703405669
+   },
+   "uncounted": {
+    "sfr": 2.664409719628846,
+    "alt": 32.031692329544256,
+    "imbalance": 3.9899295181100713,
+    "lsb-narrow": 1.1444551,
+    "oxey-style": 10.938166771319722,
+    "comfort": 3.852507457
+   },
+   "home_row_pct": 66.80159106307144,
+   "pinky_pct": 15.32338853541654,
+   "left_hand_pct": 47.9314614659766,
+   "fingers_pct": {
+    "LP": 7.875385316825179,
+    "LR": 8.440895279761609,
+    "LM": 12.484859867133231,
+    "LI": 19.130321002256576,
+    "RI": 18.107972577871937,
+    "RM": 16.594749812944915,
+    "RR": 9.917812924615191,
+    "RP": 7.44800321859136
+   },
+   "switching": {
+    "unchanged_keys": 10,
+    "same_finger_keys": 18,
+    "same_hand_keys": 28,
+    "zxcv_preserved": 3
+   },
+   "switching_ref": "qwertyuiopasdfghjkl;zxcvbnm,./",
+   "support": {}
+  },
+  "canary": {
+   "layout": "wlypbzfou;crstgmneiaqjvdkxh/,.",
+   "provenance": "real",
+   "ms_per_char": 257.4965227496043,
+   "per_seed_ms_per_char": [
+    257.505772384923,
+    257.99205125801467,
+    256.9917446058753
+   ],
+   "coverage_pct": 86.6253743,
+   "axes": {
+    "sfb": 1.2030931858324931,
+    "sfs-dist": 9.449058198089565,
+    "scissor": 0.3545123828327653,
+    "badsciss": 5.278996325106812,
+    "lsb-dist": 3.4274202834069696,
+    "lat-span": 8.100252048429203,
+    "redir": 7.61541834662534,
+    "badredir": 0.21370779477385776,
+    "sg_dist": 3.874282502029643,
+    "roll": 46.37942237254932
+   },
+   "uncounted": {
+    "sfr": 2.664409719628846,
+    "alt": 35.45674228004202,
+    "imbalance": 11.37808816201696,
+    "lsb-narrow": 1.577255,
+    "oxey-style": 11.579488717656963,
+    "comfort": 3.808379532
+   },
+   "home_row_pct": 63.00640667302329,
+   "pinky_pct": 14.084806847659495,
+   "left_hand_pct": 44.235933490047564,
+   "fingers_pct": {
+    "LP": 4.926273487388282,
+    "LR": 11.031291565611788,
+    "LM": 9.41675943600389,
+    "LI": 18.861609001043607,
+    "RI": 15.891303867737705,
+    "RM": 19.675014652333985,
+    "RR": 11.03921462960953,
+    "RP": 9.158533360271212
+   },
+   "switching": {
+    "unchanged_keys": 1,
+    "same_finger_keys": 8,
+    "same_hand_keys": 20,
+    "zxcv_preserved": 0
+   },
+   "switching_ref": "qwertyuiopasdfghjkl;zxcvbnm,./",
+   "support": {}
+  },
+  "recurva": {
+   "layout": "frdpvqjuoysntcb.heaizxkgwml,;/",
+   "provenance": "real",
+   "ms_per_char": 258.10811386263146,
+   "per_seed_ms_per_char": [
+    258.38476196104546,
+    258.31112580754404,
+    257.6284538193049
+   ],
+   "coverage_pct": 86.6253743,
+   "axes": {
+    "sfb": 1.1475727993411033,
+    "sfs-dist": 7.102713642811146,
+    "scissor": 0.4461857007109044,
+    "badsciss": 4.178647023157794,
+    "lsb-dist": 1.2748303812236843,
+    "lat-span": 4.9361270183359025,
+    "redir": 5.716486186837187,
+    "badredir": 1.1398645579464448,
+    "sg_dist": 4.186705658989737,
+    "roll": 47.17379349727668
+   },
+   "uncounted": {
+    "sfr": 2.664409719628846,
+    "alt": 37.26233038101252,
+    "imbalance": 4.778762884543376,
+    "lsb-narrow": 0.3928554,
+    "oxey-style": -15.403173542855525,
+    "comfort": 3.934480012
+   },
+   "home_row_pct": 58.682613669501485,
+   "pinky_pct": 17.947628948195486,
+   "left_hand_pct": 47.53710906903421,
+   "fingers_pct": {
+    "LP": 9.285528787267351,
+    "LR": 13.589975013377156,
+    "LM": 13.141008551491337,
+    "LI": 11.520596716898366,
+    "RI": 12.341876191480967,
+    "RM": 16.594749812944915,
+    "RR": 14.864164765611774,
+    "RP": 8.662100160928135
+   },
+   "switching": {
+    "unchanged_keys": 5,
+    "same_finger_keys": 12,
+    "same_hand_keys": 24,
+    "zxcv_preserved": 2
+   },
+   "switching_ref": "qwertyuiopasdfghjkl;zxcvbnm,./",
+   "support": {}
+  },
+  "sturdy": {
+   "layout": "vmlcpxfouj;strdy.naeizkqgwbh',",
+   "provenance": "real",
+   "ms_per_char": 264.9817727900071,
+   "per_seed_ms_per_char": [
+    264.85877022281244,
+    265.48918524473015,
+    264.5973629024786
+   ],
+   "coverage_pct": 87.4944958,
+   "axes": {
+    "sfb": 5.797477330741231,
+    "sfs-dist": 9.314805072568799,
+    "scissor": 0.7839179534249126,
+    "badsciss": 11.99219381480643,
+    "lsb-dist": 2.3225120233275507,
+    "lat-span": 5.8745576813344895,
+    "redir": 7.116054062668496,
+    "badredir": 2.631204007123519,
+    "sg_dist": 4.189600745153593,
+    "roll": 40.746000977789976
+   },
+   "uncounted": {
+    "sfr": 2.6506231461343184,
+    "alt": 32.71978800729284,
+    "imbalance": 1.853929592721619,
+    "lsb-narrow": 0.9756142,
+    "oxey-style": 33.75118428996969,
+    "comfort": 5.390281108
+   },
+   "home_row_pct": 55.086100364295376,
+   "pinky_pct": 21.80739895855575,
+   "left_hand_pct": 48.899477375069395,
+   "fingers_pct": {
+    "LP": 7.965099032966106,
+    "LR": 9.312535660605413,
+    "LM": 13.79215709133194,
+    "LI": 17.829685590165933,
+    "RI": 8.915572420191632,
+    "RM": 17.321904104033006,
+    "RR": 11.020746175116326,
+    "RP": 13.842299925589645
+   },
+   "switching": null,
+   "switching_ref": null,
+   "support": {}
+  },
+  "graphite": {
+   "layout": "bldwz'foujnrtsgyhaeixqmcvkp,.-",
+   "provenance": "real",
+   "ms_per_char": 258.16956313015805,
+   "per_seed_ms_per_char": [
+    258.03940287125397,
+    258.55423152163036,
+    257.9150549975899
+   ],
+   "coverage_pct": 88.7147352,
+   "axes": {
+    "sfb": 1.52566973366407,
+    "sfs-dist": 8.22520608200641,
+    "scissor": 0.5173238388852289,
+    "badsciss": 5.417253501760989,
+    "lsb-dist": 1.2424128784224684,
+    "lat-span": 5.80148928708376,
+    "redir": 3.213103459515324,
+    "badredir": 0.41733232732640874,
+    "sg_dist": 4.031203412877525,
+    "roll": 42.46568616536896
+   },
+   "uncounted": {
+    "sfr": 2.6595771026964927,
+    "alt": 44.07633884838469,
+    "imbalance": 2.49586541227071,
+    "lsb-narrow": 0.5758975,
+    "oxey-style": -7.579990732118606,
+    "comfort": 3.98099314
+   },
+   "home_row_pct": 61.793320307687516,
+   "pinky_pct": 16.191277916879955,
+   "left_hand_pct": 48.50434474719793,
+   "fingers_pct": {
+    "LP": 8.476574351914804,
+    "LR": 10.916906169720386,
+    "LM": 14.713984556638374,
+    "LI": 14.39687966892437,
+    "RI": 11.435038150652133,
+    "RM": 15.915024022469293,
+    "RR": 16.430889514715485,
+    "RP": 7.714703564965151
+   },
+   "switching": {
+    "unchanged_keys": 4,
+    "same_finger_keys": 8,
+    "same_hand_keys": 24,
+    "zxcv_preserved": 0
+   },
+   "switching_ref": "qwertyuiopasdfghjkl'zxcvbnm,.-",
+   "support": {}
+  },
+  "semimak": {
+   "layout": "flhvz'wuoysrntkcdeaixjbmqpg,.-",
+   "provenance": "real",
+   "ms_per_char": 257.39153780082034,
+   "per_seed_ms_per_char": [
+    257.41890049930504,
+    257.7172346902126,
+    257.03847821294363
+   ],
+   "coverage_pct": 88.7147352,
+   "axes": {
+    "sfb": 1.0666355920099653,
+    "sfs-dist": 7.372975626259579,
+    "scissor": 0.4279206997287121,
+    "badsciss": 4.263375924063836,
+    "lsb-dist": 2.9121479897863503,
+    "lat-span": 8.095695703312687,
+    "redir": 7.165357965391563,
+    "badredir": 0.39337344515609063,
+    "sg_dist": 4.065180997694806,
+    "roll": 42.51968745451457
+   },
+   "uncounted": {
+    "sfr": 2.6595771026964927,
+    "alt": 40.85257134788585,
+    "imbalance": 9.39225651499524,
+    "lsb-narrow": 1.0558504,
+    "oxey-style": -0.7226968772540981,
+    "comfort": 3.772047746
+   },
+   "home_row_pct": 62.292044368919484,
+   "pinky_pct": 18.794495554033215,
+   "left_hand_pct": 45.195480716309135,
+   "fingers_pct": {
+    "LP": 9.567633632194141,
+    "LR": 10.901512429856625,
+    "LM": 11.603785481009165,
+    "LI": 13.122549173249205,
+    "RI": 13.23174382466701,
+    "RM": 16.39951861304528,
+    "RR": 15.9463949241395,
+    "RP": 9.226861921839072
+   },
+   "switching": {
+    "unchanged_keys": 4,
+    "same_finger_keys": 6,
+    "same_hand_keys": 18,
+    "zxcv_preserved": 0
+   },
+   "switching_ref": "qwertyuiopasdfghjkl'zxcvbnm,.-",
+   "support": {}
+  },
+  "arm-B": {
+   "layout": "flmpg-yuo,sntdcireahkxbwv'.jzq",
+   "provenance": "campaign",
+   "ms_per_char": 253.90057910352604,
+   "per_seed_ms_per_char": [
+    254.06784209621037,
+    254.2565282396319,
+    253.37736697473574
+   ],
+   "coverage_pct": 88.7147352,
+   "axes": {
+    "sfb": 2.539124615505356,
+    "sfs-dist": 8.005623911481186,
+    "scissor": 0.25671106120493087,
+    "badsciss": 4.65927334377659,
+    "lsb-dist": 2.322675604674633,
+    "lat-span": 6.467577987540584,
+    "redir": 4.420586814037255,
+    "badredir": 0.6967846963944193,
+    "sg_dist": 4.036083602564867,
+    "roll": 45.442097658599806
+   },
+   "uncounted": {
+    "sfr": 2.6595771026964927,
+    "alt": 37.13733008655502,
+    "imbalance": 4.8753996439391,
+    "lsb-narrow": 0.781478,
+    "oxey-style": 7.928391346911058,
+    "comfort": 3.4140465
+   },
+   "home_row_pct": 65.19042047071366,
+   "pinky_pct": 14.978415531539698,
+   "left_hand_pct": 47.289658975185965,
+   "fingers_pct": {
+    "LP": 9.79646865949433,
+    "LR": 11.394144675168498,
+    "LM": 12.507984960262858,
+    "LI": 13.591060680260279,
+    "RI": 17.691657381231387,
+    "RM": 15.164062659418807,
+    "RR": 14.672674112118473,
+    "RP": 5.181946872045368
+   },
+   "switching": {
+    "unchanged_keys": 2,
+    "same_finger_keys": 5,
+    "same_hand_keys": 20,
+    "zxcv_preserved": 1
+   },
+   "switching_ref": "qwertyuiopasdfghjkl'zxcvbnm,.-",
+   "support": {}
+  },
+  "BALL-1": {
+   "layout": "flmpg-yuo,sntcdireahkxbwv'.jzq",
+   "provenance": "campaign",
+   "ms_per_char": 253.96642626168637,
+   "per_seed_ms_per_char": [
+    254.17407177782047,
+    254.27223220394526,
+    253.4529748032933
+   ],
+   "coverage_pct": 88.7147352,
+   "axes": {
+    "sfb": 2.539124615505356,
+    "sfs-dist": 7.88495277409988,
+    "scissor": 0.25671106120493087,
+    "badsciss": 4.65927334377659,
+    "lsb-dist": 1.2946289298366132,
+    "lat-span": 6.515626590897494,
+    "redir": 4.420586814037255,
+    "badredir": 0.6967846963944193,
+    "sg_dist": 4.033390470169856,
+    "roll": 45.442097658599806
+   },
+   "uncounted": {
+    "sfr": 2.6595771026964927,
+    "alt": 37.13733008655502,
+    "imbalance": 4.8753996439391,
+    "lsb-narrow": 0.4652237,
+    "oxey-style": 6.890308386129464,
+    "comfort": 3.38242107
+   },
+   "home_row_pct": 65.19042047071366,
+   "pinky_pct": 14.978415531539698,
+   "left_hand_pct": 47.289658975185965,
+   "fingers_pct": {
+    "LP": 9.79646865949433,
+    "LR": 11.394144675168498,
+    "LM": 12.507984960262858,
+    "LI": 13.591060680260279,
+    "RI": 17.691657381231387,
+    "RM": 15.164062659418807,
+    "RR": 14.672674112118473,
+    "RP": 5.181946872045368
+   },
+   "switching": {
+    "unchanged_keys": 2,
+    "same_finger_keys": 5,
+    "same_hand_keys": 20,
+    "zxcv_preserved": 1
+   },
+   "switching_ref": "qwertyuiopasdfghjkl'zxcvbnm,.-",
+   "support": {}
+  },
+  "MID": {
+   "layout": "flmpg.yuo,sntcdireahkxbwv'-jzq",
+   "provenance": "campaign",
+   "ms_per_char": 253.9885341089834,
+   "per_seed_ms_per_char": [
+    254.24098985046783,
+    254.29418160259593,
+    253.43043087388634
+   ],
+   "coverage_pct": 88.7147352,
+   "axes": {
+    "sfb": 2.539124615505356,
+    "sfs-dist": 7.86456050899435,
+    "scissor": 0.25552249289108026,
+    "badsciss": 4.7662511678156845,
+    "lsb-dist": 1.5468692455864268,
+    "lat-span": 6.614709655838653,
+    "redir": 4.420586814037255,
+    "badredir": 0.6967846963944193,
+    "sg_dist": 4.029340187765361,
+    "roll": 45.442097658599806
+   },
+   "uncounted": {
+    "sfr": 2.6595771026964927,
+    "alt": 37.13733008655502,
+    "imbalance": 4.8753996439391,
+    "lsb-narrow": 0.531971,
+    "oxey-style": 7.120406699252873,
+    "comfort": 3.335386815
+   },
+   "home_row_pct": 65.19042047071366,
+   "pinky_pct": 14.978415531539698,
+   "left_hand_pct": 47.289658975185965,
+   "fingers_pct": {
+    "LP": 9.79646865949433,
+    "LR": 11.394144675168498,
+    "LM": 12.507984960262858,
+    "LI": 13.591060680260279,
+    "RI": 17.691657381231387,
+    "RM": 15.164062659418807,
+    "RR": 14.672674112118473,
+    "RP": 5.181946872045368
+   },
+   "switching": {
+    "unchanged_keys": 2,
+    "same_finger_keys": 5,
+    "same_hand_keys": 20,
+    "zxcv_preserved": 1
+   },
+   "switching_ref": "qwertyuiopasdfghjkl'zxcvbnm,.-",
+   "support": {}
+  },
+  "armH-hdln": {
+   "layout": "flmpg-,uoysntcdireahkxvwb.'jzq",
+   "provenance": "campaign",
+   "ms_per_char": 254.03962704309416,
+   "per_seed_ms_per_char": [
+    254.31528772595598,
+    254.28509255861073,
+    253.5185008447159
+   ],
+   "coverage_pct": 88.7147352,
+   "axes": {
+    "sfb": 2.25157978588779,
+    "sfs-dist": 7.992464940876671,
+    "scissor": 0.10520651326857904,
+    "badsciss": 4.345016002920678,
+    "lsb-dist": 1.6076289342681354,
+    "lat-span": 7.0243373376207545,
+    "redir": 4.3589437684147185,
+    "badredir": 0.8982407209112597,
+    "sg_dist": 4.0384834138364125,
+    "roll": 45.90627047279364
+   },
+   "uncounted": {
+    "sfr": 2.6595771026964927,
+    "alt": 37.13733008655502,
+    "imbalance": 4.8753996439391,
+    "lsb-narrow": 0.5399844,
+    "oxey-style": 3.5927195246405175,
+    "comfort": 3.32498878
+   },
+   "home_row_pct": 65.19042047071366,
+   "pinky_pct": 15.255117934787148,
+   "left_hand_pct": 47.289658975185965,
+   "fingers_pct": {
+    "LP": 9.79646865949433,
+    "LR": 11.394144675168498,
+    "LM": 12.081328313348829,
+    "LI": 14.017717327174307,
+    "RI": 17.41495497798394,
+    "RM": 15.164062659418807,
+    "RR": 14.672674112118473,
+    "RP": 5.458649275292817
+   },
+   "switching": {
+    "unchanged_keys": 3,
+    "same_finger_keys": 4,
+    "same_hand_keys": 20,
+    "zxcv_preserved": 1
+   },
+   "switching_ref": "qwertyuiopasdfghjkl'zxcvbnm,.-",
+   "support": {}
+  },
+  "keybo-lsb": {
+   "layout": "pyuo,vgdnlhiea.cstrmkj-z'fwbxq",
+   "provenance": "campaign",
+   "ms_per_char": 254.63074959254058,
+   "per_seed_ms_per_char": [
+    254.85415162319057,
+    254.75992391685818,
+    254.27817323757284
+   ],
+   "coverage_pct": 88.7147352,
+   "axes": {
+    "sfb": 1.6231451290880634,
+    "sfs-dist": 8.990578227895021,
+    "scissor": 0.1428912298103323,
+    "badsciss": 3.8141612139861962,
+    "lsb-dist": 1.896001842444029,
+    "lat-span": 3.8743069029732022,
+    "redir": 3.3584021416404592,
+    "badredir": 0.8738963476363832,
+    "sg_dist": 3.8364460150570543,
+    "roll": 41.62490994630278
+   },
+   "uncounted": {
+    "sfr": 2.6595771026964927,
+    "alt": 45.156072890944024,
+    "imbalance": 2.077878600654005,
+    "lsb-narrow": 0.697994,
+    "oxey-style": -4.188010184053641,
+    "comfort": 3.710857346
+   },
+   "home_row_pct": 58.91942140830696,
+   "pinky_pct": 13.714476305898007,
+   "left_hand_pct": 49.220558261446584,
+   "fingers_pct": {
+    "LP": 6.715721835792653,
+    "LR": 8.534306605061548,
+    "LM": 15.85661797619633,
+    "LI": 18.113911844396053,
+    "RI": 16.67197666027985,
+    "RM": 13.678616711311298,
+    "RR": 13.430093896856915,
+    "RP": 6.998754470105354
+   },
+   "switching": {
+    "unchanged_keys": 0,
+    "same_finger_keys": 1,
+    "same_hand_keys": 6,
+    "zxcv_preserved": 0
+   },
+   "switching_ref": "qwertyuiopasdfghjkl'zxcvbnm,.-",
+   "support": {}
+  },
+  "keybo-lsb+lm": {
+   "layout": "pyuo,vgdnmhiea.cstrlkj-z'fwbxq",
+   "provenance": "campaign",
+   "ms_per_char": 254.68467763206144,
+   "per_seed_ms_per_char": [
+    254.85394713565793,
+    254.8584168249668,
+    254.34166893555957
+   ],
+   "coverage_pct": 88.7147352,
+   "axes": {
+    "sfb": 1.6231451290880634,
+    "sfs-dist": 8.986972324864816,
+    "scissor": 0.1431306284544182,
+    "badsciss": 4.176917237210742,
+    "lsb-dist": 1.896001842444029,
+    "lat-span": 4.101805382063891,
+    "redir": 3.3584021416404592,
+    "badredir": 0.8738963476363832,
+    "sg_dist": 3.8304229736389472,
+    "roll": 41.62490994630278
+   },
+   "uncounted": {
+    "sfr": 2.6595771026964927,
+    "alt": 45.156072890944024,
+    "imbalance": 2.077878600654005,
+    "lsb-narrow": 0.697994,
+    "oxey-style": -3.7968478988004892,
+    "comfort": 3.595268038
+   },
+   "home_row_pct": 60.80162388623358,
+   "pinky_pct": 13.714476305898007,
+   "left_hand_pct": 49.220558261446584,
+   "fingers_pct": {
+    "LP": 6.715721835792653,
+    "LR": 8.534306605061548,
+    "LM": 15.85661797619633,
+    "LI": 18.113911844396053,
+    "RI": 16.67197666027985,
+    "RM": 13.678616711311298,
+    "RR": 13.430093896856915,
+    "RP": 6.998754470105354
+   },
+   "switching": {
+    "unchanged_keys": 0,
+    "same_finger_keys": 1,
+    "same_hand_keys": 6,
+    "zxcv_preserved": 0
+   },
+   "switching_ref": "qwertyuiopasdfghjkl'zxcvbnm,.-",
+   "support": {}
+  },
+  "flagship-c3": {
+   "layout": "pyou'vgdnmheai.cstrlkjz,-wfbxq",
+   "provenance": "campaign",
+   "ms_per_char": 254.97611880609878,
+   "per_seed_ms_per_char": [
+    255.07479450253498,
+    255.23608176113157,
+    254.61748015462962
+   ],
+   "coverage_pct": 88.7147352,
+   "axes": {
+    "sfb": 1.6538458472490638,
+    "sfs-dist": 8.131026071225804,
+    "scissor": 0.08889392467316412,
+    "badsciss": 3.51351038995623,
+    "lsb-dist": 1.6852172426265222,
+    "lat-span": 4.192327207516496,
+    "redir": 2.493932453490948,
+    "badredir": 1.0004108466160775,
+    "sg_dist": 3.9678284571869047,
+    "roll": 41.76079973449445
+   },
+   "uncounted": {
+    "sfr": 2.6595771026964927,
+    "alt": 45.156072890944024,
+    "imbalance": 2.077878600654005,
+    "lsb-narrow": 0.5202822,
+    "oxey-style": -8.96889478030558,
+    "comfort": 3.605551773
+   },
+   "home_row_pct": 60.80162388623358,
+   "pinky_pct": 13.714476305898007,
+   "left_hand_pct": 49.220558261446584,
+   "fingers_pct": {
+    "LP": 6.715721835792653,
+    "LR": 14.024482936220618,
+    "LM": 14.672674112118473,
+    "LI": 13.807679377314843,
+    "RI": 16.67197666027985,
+    "RM": 13.678616711311298,
+    "RR": 13.430093896856915,
+    "RP": 6.998754470105354
+   },
+   "switching": {
+    "unchanged_keys": 0,
+    "same_finger_keys": 0,
+    "same_hand_keys": 6,
+    "zxcv_preserved": 0
+   },
+   "switching_ref": "qwertyuiopasdfghjkl'zxcvbnm,.-",
+   "support": {}
+  },
+  "archive-1843": {
+   "layout": "pyou,vgdnmheai.cstlrjz'k-fwbxq",
+   "provenance": "campaign",
+   "ms_per_char": 254.84363012604766,
+   "per_seed_ms_per_char": [
+    254.9928981327911,
+    255.07300300544495,
+    254.46498923990688
+   ],
+   "coverage_pct": 88.7147352,
+   "axes": {
+    "sfb": 1.8052559146408456,
+    "sfs-dist": 8.287426833260355,
+    "scissor": 0.12025689767835637,
+    "badsciss": 3.252822963933129,
+    "lsb-dist": 1.7414537309559228,
+    "lat-span": 4.825452122784417,
+    "redir": 2.3466558017393693,
+    "badredir": 0.821578077122168,
+    "sg_dist": 3.9674009763649916,
+    "roll": 41.4104277043283
+   },
+   "uncounted": {
+    "sfr": 2.6595771026964927,
+    "alt": 45.156072890944024,
+    "imbalance": 2.077878600654005,
+    "lsb-narrow": 0.5823044,
+    "oxey-style": -6.7240770158748635,
+    "comfort": 3.590696318
+   },
+   "home_row_pct": 60.80162388623358,
+   "pinky_pct": 15.137138740888089,
+   "left_hand_pct": 49.220558261446584,
+   "fingers_pct": {
+    "LP": 6.1024350490943196,
+    "LR": 14.01758897949627,
+    "LM": 15.19908870213462,
+    "LI": 13.901445530721375,
+    "RI": 16.67197666027985,
+    "RM": 13.678616711311298,
+    "RR": 11.394144675168498,
+    "RP": 9.03470369179377
+   },
+   "switching": {
+    "unchanged_keys": 1,
+    "same_finger_keys": 1,
+    "same_hand_keys": 6,
+    "zxcv_preserved": 0
+   },
+   "switching_ref": "qwertyuiopasdfghjkl'zxcvbnm,.-",
+   "support": {}
+  },
+  "archive-1846": {
+   "layout": "pyou,vgdnmheai.cstrlkq'z-fbwjx",
+   "provenance": "campaign",
+   "ms_per_char": 254.7960707351256,
+   "per_seed_ms_per_char": [
+    254.97411327818728,
+    255.00258530109883,
+    254.41151362609048
+   ],
+   "coverage_pct": 88.7147352,
+   "axes": {
+    "sfb": 1.6938917149209416,
+    "sfs-dist": 8.284662180156506,
+    "scissor": 0.11041091724691095,
+    "badsciss": 3.751081210312482,
+    "lsb-dist": 1.702398966115948,
+    "lat-span": 4.573389255350379,
+    "redir": 2.631199607178357,
+    "badredir": 0.9801409923119804,
+    "sg_dist": 3.9532040115281784,
+    "roll": 41.51365434535355
+   },
+   "uncounted": {
+    "sfr": 2.6595771026964927,
+    "alt": 45.14723121046257,
+    "imbalance": 2.053552696182213,
+    "lsb-narrow": 0.524966,
+    "oxey-style": -7.540874276635989,
+    "comfort": 3.563255538
+   },
+   "home_row_pct": 60.80162388623358,
+   "pinky_pct": 14.08353432543239,
+   "left_hand_pct": 49.235952001310345,
+   "fingers_pct": {
+    "LP": 6.715721835792653,
+    "LR": 14.039876676084377,
+    "LM": 15.19908870213462,
+    "LI": 13.281264787298694,
+    "RI": 16.69877931149591,
+    "RM": 13.651814060095234,
+    "RR": 13.045642137458769,
+    "RP": 7.367812489639738
+   },
+   "switching": {
+    "unchanged_keys": 0,
+    "same_finger_keys": 0,
+    "same_hand_keys": 8,
+    "zxcv_preserved": 0
+   },
+   "switching_ref": "qwertyuiopasdfghjkl'zxcvbnm,.-",
+   "support": {}
+  },
+  "lsb-sib": {
+   "layout": "fyou,vgdnlheaikcstrmzj'.-pwbxq",
+   "provenance": "campaign",
+   "ms_per_char": 254.70576136680032,
+   "per_seed_ms_per_char": [
+    254.78507176585202,
+    254.99883838160187,
+    254.3333739529471
+   ],
+   "coverage_pct": 88.7147352,
+   "axes": {
+    "sfb": 1.9116805725869495,
+    "sfs-dist": 8.132214478196763,
+    "scissor": 0.1066954240312486,
+    "badsciss": 2.7832757328086966,
+    "lsb-dist": 2.0721717561747455,
+    "lat-span": 5.102140375147042,
+    "redir": 2.3968148083653085,
+    "badredir": 0.5528839278749867,
+    "sg_dist": 3.983109448598165,
+    "roll": 41.92326871696193
+   },
+   "uncounted": {
+    "sfr": 2.6595771026964927,
+    "alt": 44.548633945168575,
+    "imbalance": 1.884207263632379,
+    "lsb-narrow": 0.644899,
+    "oxey-style": -7.425685371415334,
+    "comfort": 3.809628746
+   },
+   "home_row_pct": 58.26588133970861,
+   "pinky_pct": 13.19116072656727,
+   "left_hand_pct": 49.317423425538536,
+   "fingers_pct": {
+    "LP": 6.192406256461918,
+    "LR": 14.024482936220618,
+    "LM": 15.19908870213462,
+    "LI": 13.901445530721375,
+    "RI": 16.5751114961879,
+    "RM": 13.678616711311298,
+    "RR": 13.430093896856915,
+    "RP": 6.998754470105354
+   },
+   "switching": {
+    "unchanged_keys": 1,
+    "same_finger_keys": 1,
+    "same_hand_keys": 8,
+    "zxcv_preserved": 1
+   },
+   "switching_ref": "qwertyuiopasdfghjkl'zxcvbnm,.-",
+   "support": {}
+  },
+  "keybo-c30m": {
+   "layout": "fyu,.vgdnlhieaocstrmkj'q-bwpxz",
+   "provenance": "campaign",
+   "ms_per_char": 254.59041393091118,
+   "per_seed_ms_per_char": [
+    254.74631977128314,
+    254.8066849005301,
+    254.21823712092018
+   ],
+   "coverage_pct": 88.7147352,
+   "axes": {
+    "sfb": 1.6798744796052087,
+    "sfs-dist": 9.043962588119559,
+    "scissor": 0.22799930782718178,
+    "badsciss": 2.982497344016358,
+    "lsb-dist": 3.772082004568699,
+    "lat-span": 7.902445808559708,
+    "redir": 3.2800566932627846,
+    "badredir": 1.014237798233716,
+    "sg_dist": 3.79359531935407,
+    "roll": 41.686247980918104
+   },
+   "uncounted": {
+    "sfr": 2.6595771026964927,
+    "alt": 44.81964917466997,
+    "imbalance": 1.845580621965984,
+    "lsb-narrow": 1.2911683,
+    "oxey-style": -3.793818540092256,
+    "comfort": 3.447216105
+   },
+   "home_row_pct": 64.55792813397439,
+   "pinky_pct": 13.789053773401845,
+   "left_hand_pct": 49.33971112212664,
+   "fingers_pct": {
+    "LP": 6.812586999884599,
+    "LR": 8.534306605061548,
+    "LM": 15.683583292710606,
+    "LI": 18.309234224469886,
+    "RI": 15.709267761447816,
+    "RM": 14.544460446051385,
+    "RR": 13.430093896856915,
+    "RP": 6.976466773517246
+   },
+   "switching": {
+    "unchanged_keys": 0,
+    "same_finger_keys": 1,
+    "same_hand_keys": 8,
+    "zxcv_preserved": 0
+   },
+   "switching_ref": "qwertyuiopasdfghjkl'zxcvbnm,.-",
+   "support": {}
+  },
+  "p16-balance": {
+   "layout": "frlwg'uyoksntdc.ieahvxmpb,-jqz",
+   "provenance": "campaign",
+   "ms_per_char": 254.7520222914221,
+   "per_seed_ms_per_char": [
+    254.88413849591078,
+    255.10031211680527,
+    254.27161626155012
+   ],
+   "coverage_pct": 88.7147352,
+   "axes": {
+    "sfb": 1.4930772656971338,
+    "sfs-dist": 8.073746306802768,
+    "scissor": 0.48185859286234345,
+    "badsciss": 4.373486617472251,
+    "lsb-dist": 3.236404981254474,
+    "lat-span": 6.656580898274814,
+    "redir": 3.2385704873395667,
+    "badredir": 1.148380354950363,
+    "sg_dist": 3.995406213387966,
+    "roll": 41.48248136424484
+   },
+   "uncounted": {
+    "sfr": 2.6595771026964927,
+    "alt": 45.892834363350865,
+    "imbalance": 6.419324634890699,
+    "lsb-narrow": 1.1796589,
+    "oxey-style": 1.449402399432833,
+    "comfort": 3.825878624
+   },
+   "home_row_pct": 60.19823364526913,
+   "pinky_pct": 14.599509370210187,
+   "left_hand_pct": 52.93538586922884,
+   "fingers_pct": {
+    "LP": 10.062019361681065,
+    "LR": 13.430093896856915,
+    "LM": 15.425555283516552,
+    "LI": 14.017717327174307,
+    "RI": 13.807679377314843,
+    "RM": 14.024482936220618,
+    "RR": 14.694961808706582,
+    "RP": 4.537490008529121
+   },
+   "switching": {
+    "unchanged_keys": 4,
+    "same_finger_keys": 5,
+    "same_hand_keys": 22,
+    "zxcv_preserved": 1
+   },
+   "switching_ref": "qwertyuiopasdfghjkl'zxcvbnm,.-",
+   "support": {}
+  },
+  "p13stab-win": {
+   "layout": "rcgkmq.ouylsthd,naeixwbfvpjz;/",
+   "provenance": "campaign",
+   "ms_per_char": 254.32067750412227,
+   "per_seed_ms_per_char": [
+    254.59371211734415,
+    254.45333815342894,
+    253.91498224159375
+   ],
+   "coverage_pct": 86.6253743,
+   "axes": {
+    "sfb": 1.2736497357617225,
+    "sfs-dist": 7.386379069442207,
+    "scissor": 0.1282054065567278,
+    "badsciss": 2.8000324554194327,
+    "lsb-dist": 0.23359512922010187,
+    "lat-span": 4.809239442492954,
+    "redir": 5.231546661833636,
+    "badredir": 1.2219284443078757,
+    "sg_dist": 4.122359081291008,
+    "roll": 43.6407149381433
+   },
+   "uncounted": {
+    "sfr": 2.664409719628846,
+    "alt": 40.94876852642252,
+    "imbalance": 1.770826911166303,
+    "lsb-narrow": 0.1002161,
+    "oxey-style": -14.486602777912905,
+    "comfort": 3.431592789
+   },
+   "home_row_pct": 61.96411432997241,
+   "pinky_pct": 20.08242026529738,
+   "left_hand_pct": 49.09944057960124,
+   "fingers_pct": {
+    "LP": 11.420320104369244,
+    "LR": 11.483568487945712,
+    "LM": 12.066109742736945,
+    "LI": 14.129442244549345,
+    "RI": 12.036684382929735,
+    "RM": 14.847347762012474,
+    "RR": 15.35442711452841,
+    "RP": 8.662100160928135
+   },
+   "switching": {
+    "unchanged_keys": 2,
+    "same_finger_keys": 7,
+    "same_hand_keys": 22,
+    "zxcv_preserved": 0
+   },
+   "switching_ref": "qwertyuiopasdfghjkl;zxcvbnm,./",
+   "support": {}
+  },
+  "p10-w05": {
+   "layout": "clgmk.,ouysrthdpnaeiqxwbvfz/;j",
+   "provenance": "campaign",
+   "ms_per_char": 254.09556432807872,
+   "per_seed_ms_per_char": [
+    254.29097294012584,
+    254.40990684702425,
+    253.58581319708605
+   ],
+   "coverage_pct": 86.6253743,
+   "axes": {
+    "sfb": 1.635814979770986,
+    "sfs-dist": 7.409580000350935,
+    "scissor": 0.11975465199286106,
+    "badsciss": 3.4315357353714817,
+    "lsb-dist": 1.4975985542814982,
+    "lat-span": 6.582461368874294,
+    "redir": 5.9670339019996375,
+    "badredir": 1.2315687233767274,
+    "sg_dist": 4.071257197036695,
+    "roll": 43.61839322705353
+   },
+   "uncounted": {
+    "sfr": 2.664409719628846,
+    "alt": 39.62328311094829,
+    "imbalance": 6.3341047216296,
+    "lsb-narrow": 0.8156755,
+    "oxey-style": -0.6743102637952834,
+    "comfort": 3.207097496
+   },
+   "home_row_pct": 64.97132419966792,
+   "pinky_pct": 18.841136461258312,
+   "left_hand_pct": 46.81981228653641,
+   "fingers_pct": {
+    "LP": 10.205231574068398,
+    "LR": 11.420320104369244,
+    "LM": 12.038988014243012,
+    "LI": 13.155272593855758,
+    "RI": 14.309336648846381,
+    "RM": 14.880519062898882,
+    "RR": 15.35442711452841,
+    "RP": 8.635904887189914
+   },
+   "switching": {
+    "unchanged_keys": 1,
+    "same_finger_keys": 5,
+    "same_hand_keys": 22,
+    "zxcv_preserved": 1
+   },
+   "switching_ref": "qwertyuiopasdfghjkl;zxcvbnm,./",
+   "support": {}
+  },
+  "p11-w05": {
+   "layout": "uoy,.vlmdgaeinprhtcs;/jkbfwxzq",
+   "provenance": "campaign",
+   "ms_per_char": 254.04170799075948,
+   "per_seed_ms_per_char": [
+    254.30194275953892,
+    254.28472410572985,
+    253.53845710700946
+   ],
+   "coverage_pct": 86.6253743,
+   "axes": {
+    "sfb": 2.4773727649658137,
+    "sfs-dist": 11.008744692918379,
+    "scissor": 0.0671340635386516,
+    "badsciss": 2.3495750745694597,
+    "lsb-dist": 3.701794537996292,
+    "lat-span": 10.093160781339353,
+    "redir": 6.006103049028308,
+    "badredir": 0.3446905161029928,
+    "sg_dist": 4.049282204614447,
+    "roll": 41.1311952944047
+   },
+   "uncounted": {
+    "sfr": 2.664409719628846,
+    "alt": 40.16484081761661,
+    "imbalance": 5.650022239237283,
+    "lsb-narrow": 1.1735067,
+    "oxey-style": 16.14021568638284,
+    "comfort": 3.443096208
+   },
+   "home_row_pct": 64.61038227275304,
+   "pinky_pct": 19.350758353695788,
+   "left_hand_pct": 52.83358186624157,
+   "fingers_pct": {
+    "LP": 10.559931525093305,
+    "LR": 19.675014652333985,
+    "LM": 8.635904887189914,
+    "LI": 13.96273080162437,
+    "RI": 19.487606220587708,
+    "RM": 11.724881553729967,
+    "RR": 7.163103530838268,
+    "RP": 8.790826828602482
+   },
+   "switching": {
+    "unchanged_keys": 2,
+    "same_finger_keys": 3,
+    "same_hand_keys": 6,
+    "zxcv_preserved": 0
+   },
+   "switching_ref": "qwertyuiopasdfghjkl;zxcvbnm,./",
+   "support": {}
+  },
+  "tri-best": {
+   "layout": "fdnlmkioheswrtcpuabyjxqgv,.;z/",
+   "provenance": "campaign",
+   "ms_per_char": 257.0288280288855,
+   "per_seed_ms_per_char": [
+    257.3147647182011,
+    257.23908231725267,
+    256.53263705120287
+   ],
+   "coverage_pct": 86.6253743,
+   "axes": {
+    "sfb": 2.893321559677875,
+    "sfs-dist": 10.545967052306988,
+    "scissor": 0.809624151299014,
+    "badsciss": 3.4403064576784796,
+    "lsb-dist": 3.477921486368019,
+    "lat-span": 6.086399241150647,
+    "redir": 2.8406902133940113,
+    "badredir": 0.43286241753729193,
+    "sg_dist": 4.062182303571337,
+    "roll": 39.94417001310684
+   },
+   "uncounted": {
+    "sfr": 2.664409719628846,
+    "alt": 44.082027981419785,
+    "imbalance": 0.30559967848888925,
+    "lsb-narrow": 2.0804247,
+    "oxey-style": 9.534812248784952,
+    "comfort": 4.975947284
+   },
+   "home_row_pct": 42.524166729273794,
+   "pinky_pct": 23.51014015867906,
+   "left_hand_pct": 50.06291965627388,
+   "fingers_pct": {
+    "LP": 9.292504814415539,
+    "LR": 5.660666955482076,
+    "LM": 13.216523472198242,
+    "LI": 21.893224414178018,
+    "RI": 15.563324945708898,
+    "RM": 14.864164765611774,
+    "RR": 5.291955288141934,
+    "RP": 14.21763534426352
+   },
+   "switching": {
+    "unchanged_keys": 2,
+    "same_finger_keys": 7,
+    "same_hand_keys": 22,
+    "zxcv_preserved": 1
+   },
+   "switching_ref": "qwertyuiopasdfghjkl;zxcvbnm,./",
+   "support": {}
+  },
+  "bigram-d3": {
+   "layout": "wae,ylrstfgoiupmncdbq;.kzhvxj/",
+   "provenance": "campaign",
+   "ms_per_char": 256.22878076569685,
+   "per_seed_ms_per_char": [
+    256.51329890274366,
+    256.47073392692965,
+    255.70230946741722
+   ],
+   "coverage_pct": 86.6253743,
+   "axes": {
+    "sfb": 2.603038205927547,
+    "sfs-dist": 14.800518614231345,
+    "scissor": 0.4060902661948718,
+    "badsciss": 3.5677183503581427,
+    "lsb-dist": 4.209013506285659,
+    "lat-span": 8.242726921384124,
+    "redir": 4.35018208244091,
+    "badredir": 0.8025483982792347,
+    "sg_dist": 3.7741815755609034,
+    "roll": 38.68931889072803
+   },
+   "uncounted": {
+    "sfr": 2.664409719628846,
+    "alt": 44.77329435266686,
+    "imbalance": 3.725537172031198,
+    "lsb-narrow": 1.4752112,
+    "oxey-style": 19.589364806040198,
+    "comfort": 5.224323039
+   },
+   "home_row_pct": 38.62046911143374,
+   "pinky_pct": 7.578732471889944,
+   "left_hand_pct": 48.12382249662015,
+   "fingers_pct": {
+    "LP": 3.511868741922367,
+    "LR": 14.864164765611774,
+    "LM": 20.624505200113557,
+    "LI": 9.123283788972454,
+    "RI": 24.71020988299701,
+    "RM": 10.578683115247312,
+    "RR": 12.52042077516795,
+    "RP": 4.066863729967577
+   },
+   "switching": {
+    "unchanged_keys": 2,
+    "same_finger_keys": 6,
+    "same_hand_keys": 12,
+    "zxcv_preserved": 0
+   },
+   "switching_ref": "qwertyuiopasdfghjkl;zxcvbnm,./",
+   "support": {}
+  }
+ }
+}

@@ -1,0 +1,383 @@
+{
+ "env": {
+  "keybo_file": "/local/home/zegertho/repos/keybo/src/keybo/__init__.py",
+  "checkout": "/local/home/zegertho/repos/keybo",
+  "branch": "pick2-decision",
+  "head": "3179dd3b1381ec66c4d3f23f79234f95b1f9a0f7",
+  "dirty": "?? agent-artifacts/pick2/",
+  "python": "/local/home/zegertho/repos/keybo/.venv/bin/python"
+ },
+ "corpus": {
+  "corpus": "blend-v1",
+  "path": "/local/home/zegertho/repos/keybo/data/corpus/blend-v1",
+  "sha256": {
+   "bigrams.txt": "13abca624f3ecff211b11df797f0cb9119cbf1924bc2f56ab2a8daf0c590bc24",
+   "trigrams.txt": "19806532ee3567f5afe4311e51f346b6c36375030f473fe3f68a6a3dc21beb61",
+   "1-skip.txt": "df5f2f1aa48f954f5a809d65ad111f8aa4bfcdbc0da1d528776bbc31d5ebe3c8",
+   "1-skip31.txt": "df5f2f1aa48f954f5a809d65ad111f8aa4bfcdbc0da1d528776bbc31d5ebe3c8"
+  },
+  "declared_total": 1000000000,
+  "skipgram_table": "1-skip31.txt"
+ },
+ "target_wpm": 110.0,
+ "gauge": "K31 measured-keystroke surface: ms/char = sum_tri f*(T2[a,b]+Tcond[a,b,c]) / covered",
+ "seeds": [
+  0,
+  1,
+  2
+ ],
+ "rows": {
+  "qwerty": {
+   "layout": "qwertyuiopasdfghjkl;zxcvbnm,./",
+   "provenance": "real",
+   "covered_mass": 866253743.0,
+   "coverage_pct": 86.6253743,
+   "per_seed_ms_per_char": [
+    224.4482963418301,
+    224.77880317059928,
+    224.2290188013025
+   ],
+   "ms_per_char": 224.48537277124396,
+   "mean_of_seed_ms_per_char": 224.48537277124396
+  },
+  "qwerty30m": {
+   "layout": "qwertyuiopasdfghjkl'zxcvbnm,.-",
+   "provenance": "real",
+   "covered_mass": 887147352.0,
+   "coverage_pct": 88.7147352,
+   "per_seed_ms_per_char": [
+    224.75254283467152,
+    225.0842225117902,
+    224.55330287782988
+   ],
+   "ms_per_char": 224.79668940809722,
+   "mean_of_seed_ms_per_char": 224.7966894080972
+  },
+  "dvorak": {
+   "layout": "',.pyfgcrlaoeuidhtns;qjkxbmwvz",
+   "provenance": "real",
+   "covered_mass": 874944958.0,
+   "coverage_pct": 87.4944958,
+   "per_seed_ms_per_char": [
+    217.393272931957,
+    217.614238351343,
+    217.08628075087395
+   ],
+   "ms_per_char": 217.3645973447247,
+   "mean_of_seed_ms_per_char": 217.36459734472464
+  },
+  "colemak": {
+   "layout": "qwfpgjluy;arstdhneiozxcvbkm,./",
+   "provenance": "real",
+   "covered_mass": 866253743.0,
+   "coverage_pct": 86.6253743,
+   "per_seed_ms_per_char": [
+    219.15503503555436,
+    219.4474874005998,
+    218.84110771351683
+   ],
+   "ms_per_char": 219.14787671655696,
+   "mean_of_seed_ms_per_char": 219.147876716557
+  },
+  "colemak-dh": {
+   "layout": "qwfpbjluy;arstgmneiozxcdvkh,./",
+   "provenance": "real",
+   "covered_mass": 866253743.0,
+   "coverage_pct": 86.6253743,
+   "per_seed_ms_per_char": [
+    219.58923900992968,
+    219.69920107351342,
+    219.2651986637714
+   ],
+   "ms_per_char": 219.5178795824048,
+   "mean_of_seed_ms_per_char": 219.51787958240484
+  },
+  "canary": {
+   "layout": "wlypbzfou;crstgmneiaqjvdkxh/,.",
+   "provenance": "real",
+   "covered_mass": 866253743.0,
+   "coverage_pct": 86.6253743,
+   "per_seed_ms_per_char": [
+    218.53767482414847,
+    218.91615399072344,
+    218.25828827978918
+   ],
+   "ms_per_char": 218.5707056982204,
+   "mean_of_seed_ms_per_char": 218.5707056982204
+  },
+  "recurva": {
+   "layout": "frdpvqjuoysntcb.heaizxkgwml,;/",
+   "provenance": "real",
+   "covered_mass": 866253743.0,
+   "coverage_pct": 86.6253743,
+   "per_seed_ms_per_char": [
+    219.7370414489923,
+    219.68411063902767,
+    219.05558065113453
+   ],
+   "ms_per_char": 219.49224424638484,
+   "mean_of_seed_ms_per_char": 219.49224424638484
+  },
+  "sturdy": {
+   "layout": "vmlcpxfouj;strdy.naeizkqgwbh',",
+   "provenance": "real",
+   "covered_mass": 874944958.0,
+   "coverage_pct": 87.4944958,
+   "per_seed_ms_per_char": [
+    225.14227605472206,
+    225.56143745046853,
+    225.05512048238592
+   ],
+   "ms_per_char": 225.2529446625255,
+   "mean_of_seed_ms_per_char": 225.2529446625255
+  },
+  "graphite": {
+   "layout": "bldwz'foujnrtsgyhaeixqmcvkp,.-",
+   "provenance": "real",
+   "covered_mass": 887147352.0,
+   "coverage_pct": 88.7147352,
+   "per_seed_ms_per_char": [
+    219.456789399921,
+    219.79929528567516,
+    219.26802928841607
+   ],
+   "ms_per_char": 219.5080379913374,
+   "mean_of_seed_ms_per_char": 219.50803799133743
+  },
+  "semimak": {
+   "layout": "flhvz'wuoysrntkcdeaixjbmqpg,.-",
+   "provenance": "real",
+   "covered_mass": 887147352.0,
+   "coverage_pct": 88.7147352,
+   "per_seed_ms_per_char": [
+    218.74993693713492,
+    219.06191434245184,
+    218.585436094424
+   ],
+   "ms_per_char": 218.79909579133687,
+   "mean_of_seed_ms_per_char": 218.79909579133695
+  },
+  "arm-B": {
+   "layout": "flmpg-yuo,sntdcireahkxbwv'.jzq",
+   "provenance": "campaign",
+   "covered_mass": 887147352.0,
+   "coverage_pct": 88.7147352,
+   "per_seed_ms_per_char": [
+    216.09634122186804,
+    216.27924522239715,
+    215.73849215204828
+   ],
+   "ms_per_char": 216.03802619877118,
+   "mean_of_seed_ms_per_char": 216.03802619877115
+  },
+  "BALL-1": {
+   "layout": "flmpg-yuo,sntcdireahkxbwv'.jzq",
+   "provenance": "campaign",
+   "covered_mass": 887147352.0,
+   "coverage_pct": 88.7147352,
+   "per_seed_ms_per_char": [
+    216.14000459029188,
+    216.27135294618867,
+    215.80216989444125
+   ],
+   "ms_per_char": 216.0711758103073,
+   "mean_of_seed_ms_per_char": 216.07117581030727
+  },
+  "MID": {
+   "layout": "flmpg.yuo,sntcdireahkxbwv'-jzq",
+   "provenance": "campaign",
+   "covered_mass": 887147352.0,
+   "coverage_pct": 88.7147352,
+   "per_seed_ms_per_char": [
+    216.18108126178882,
+    216.29151693945155,
+    215.79421958130794
+   ],
+   "ms_per_char": 216.08893926084946,
+   "mean_of_seed_ms_per_char": 216.08893926084943
+  },
+  "armH-hdln": {
+   "layout": "flmpg-,uoysntcdireahkxvwb.'jzq",
+   "provenance": "campaign",
+   "covered_mass": 887147352.0,
+   "coverage_pct": 88.7147352,
+   "per_seed_ms_per_char": [
+    216.15092816656232,
+    216.24841648332173,
+    215.75905478829716
+   ],
+   "ms_per_char": 216.05279981272713,
+   "mean_of_seed_ms_per_char": 216.05279981272705
+  },
+  "keybo-lsb": {
+   "layout": "pyuo,vgdnlhiea.cstrmkj-z'fwbxq",
+   "provenance": "campaign",
+   "covered_mass": 887147352.0,
+   "coverage_pct": 88.7147352,
+   "per_seed_ms_per_char": [
+    216.62897903791884,
+    216.59440636421516,
+    216.29175000273736
+   ],
+   "ms_per_char": 216.5050451349571,
+   "mean_of_seed_ms_per_char": 216.5050451349571
+  },
+  "keybo-lsb+lm": {
+   "layout": "pyuo,vgdnmhiea.cstrlkj-z'fwbxq",
+   "provenance": "campaign",
+   "covered_mass": 887147352.0,
+   "coverage_pct": 88.7147352,
+   "per_seed_ms_per_char": [
+    216.6707362036078,
+    216.69481291289085,
+    216.38658530059686
+   ],
+   "ms_per_char": 216.5840448056985,
+   "mean_of_seed_ms_per_char": 216.58404480569848
+  },
+  "flagship-c3": {
+   "layout": "pyou'vgdnmheai.cstrlkjz,-wfbxq",
+   "provenance": "campaign",
+   "covered_mass": 887147352.0,
+   "coverage_pct": 88.7147352,
+   "per_seed_ms_per_char": [
+    217.05423444812547,
+    217.2033220719275,
+    216.71121602958044
+   ],
+   "ms_per_char": 216.9895908498778,
+   "mean_of_seed_ms_per_char": 216.9895908498778
+  },
+  "archive-1843": {
+   "layout": "pyou,vgdnmheai.cstlrjz'k-fwbxq",
+   "provenance": "campaign",
+   "covered_mass": 887147352.0,
+   "coverage_pct": 88.7147352,
+   "per_seed_ms_per_char": [
+    216.955167481604,
+    217.10738778869194,
+    216.6571253388201
+   ],
+   "ms_per_char": 216.90656020303868,
+   "mean_of_seed_ms_per_char": 216.90656020303868
+  },
+  "archive-1846": {
+   "layout": "pyou,vgdnmheai.cstrlkq'z-fbwjx",
+   "provenance": "campaign",
+   "covered_mass": 887147352.0,
+   "coverage_pct": 88.7147352,
+   "per_seed_ms_per_char": [
+    216.89144196433017,
+    217.01653770566259,
+    216.57020150872782
+   ],
+   "ms_per_char": 216.8260603929068,
+   "mean_of_seed_ms_per_char": 216.82606039290684
+  },
+  "lsb-sib": {
+   "layout": "fyou,vgdnlheaikcstrmzj'.-pwbxq",
+   "provenance": "campaign",
+   "covered_mass": 887147352.0,
+   "coverage_pct": 88.7147352,
+   "per_seed_ms_per_char": [
+    216.74611078706096,
+    217.01639761014013,
+    216.49772434077363
+   ],
+   "ms_per_char": 216.7534109126582,
+   "mean_of_seed_ms_per_char": 216.75341091265827
+  },
+  "keybo-c30m": {
+   "layout": "fyu,.vgdnlhieaocstrmkj'q-bwpxz",
+   "provenance": "campaign",
+   "covered_mass": 887147352.0,
+   "coverage_pct": 88.7147352,
+   "per_seed_ms_per_char": [
+    216.4647838596063,
+    216.61302785718306,
+    216.3243464923165
+   ],
+   "ms_per_char": 216.46738606970194,
+   "mean_of_seed_ms_per_char": 216.46738606970197
+  },
+  "p16-balance": {
+   "layout": "frlwg'uyoksntdc.ieahvxmpb,-jqz",
+   "provenance": "campaign",
+   "covered_mass": 887147352.0,
+   "coverage_pct": 88.7147352,
+   "per_seed_ms_per_char": [
+    216.90691588623122,
+    217.01792296422127,
+    216.46184932145846
+   ],
+   "ms_per_char": 216.79556272397033,
+   "mean_of_seed_ms_per_char": 216.7955627239703
+  },
+  "p13stab-win": {
+   "layout": "rcgkmq.ouylsthd,naeixwbfvpjz;/",
+   "provenance": "campaign",
+   "covered_mass": 866253743.0,
+   "coverage_pct": 86.6253743,
+   "per_seed_ms_per_char": [
+    216.4326439188555,
+    216.45530519276787,
+    215.99465489617052
+   ],
+   "ms_per_char": 216.29420133593126,
+   "mean_of_seed_ms_per_char": 216.29420133593126
+  },
+  "p10-w05": {
+   "layout": "clgmk.,ouysrthdpnaeiqxwbvfz/;j",
+   "provenance": "campaign",
+   "covered_mass": 866253743.0,
+   "coverage_pct": 86.6253743,
+   "per_seed_ms_per_char": [
+    216.31122010151185,
+    216.48707051453692,
+    215.760746820421
+   ],
+   "ms_per_char": 216.18634581215662,
+   "mean_of_seed_ms_per_char": 216.1863458121566
+  },
+  "p11-w05": {
+   "layout": "uoy,.vlmdgaeinprhtcs;/jkbfwxzq",
+   "provenance": "campaign",
+   "covered_mass": 866253743.0,
+   "coverage_pct": 86.6253743,
+   "per_seed_ms_per_char": [
+    216.48361250338746,
+    216.56293380726638,
+    216.08987316257787
+   ],
+   "ms_per_char": 216.37880649107723,
+   "mean_of_seed_ms_per_char": 216.37880649107726
+  },
+  "tri-best": {
+   "layout": "fdnlmkioheswrtcpuabyjxqgv,.;z/",
+   "provenance": "campaign",
+   "covered_mass": 866253743.0,
+   "coverage_pct": 86.6253743,
+   "per_seed_ms_per_char": [
+    218.70670083952132,
+    218.99974347857443,
+    218.44682453290687
+   ],
+   "ms_per_char": 218.7177562836676,
+   "mean_of_seed_ms_per_char": 218.71775628366754
+  },
+  "bigram-d3": {
+   "layout": "wae,ylrstfgoiupmncdbq;.kzhvxj/",
+   "provenance": "campaign",
+   "covered_mass": 866253743.0,
+   "coverage_pct": 86.6253743,
+   "per_seed_ms_per_char": [
+    218.29421011594843,
+    218.5538039249881,
+    217.9493369763571
+   ],
+   "ms_per_char": 218.26578367243118,
+   "mean_of_seed_ms_per_char": 218.2657836724312
+  }
+ },
+ "elapsed_s": 2.032435178756714
+}

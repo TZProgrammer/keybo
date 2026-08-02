@@ -1,0 +1,42 @@
+{
+ "fastest": "arm-B",
+ "gate_passers": [
+  "arm-B",
+  "BALL-1",
+  "MID",
+  "armH-hdln",
+  "p11-w05",
+  "p10-w05",
+  "p13stab-win"
+ ],
+ "nondominated": [
+  "arm-B",
+  "BALL-1",
+  "MID",
+  "armH-hdln",
+  "p11-w05",
+  "p10-w05",
+  "p13stab-win"
+ ],
+ "dominated_by": {
+  "arm-B": [],
+  "BALL-1": [],
+  "MID": [],
+  "armH-hdln": [],
+  "p11-w05": [],
+  "p10-w05": [],
+  "p13stab-win": []
+ },
+ "axes": [
+  "sfb",
+  "sfs-dist",
+  "scissor",
+  "badsciss",
+  "lsb-dist",
+  "lat-span",
+  "redir",
+  "badredir",
+  "sg_dist",
+  "roll"
+ ]
+}

@@ -1,0 +1,233 @@
+{
+ "convention": "serve bucket 80, min_cell 10, wpm [40,140) width 20 (RawSupport default)",
+ "stroke_tables": {
+  "bigram": "/home/zegertho/keybo-e2e/bistrokes31_v1.tsv",
+  "trigram": "/home/zegertho/keybo-e2e/tristrokes31_cond_v1.tsv"
+ },
+ "observed_sets": {
+  "bi_serve": 643,
+  "bi_any": 872,
+  "tri_serve": 3890,
+  "tri_any": 9715
+ },
+ "corpus": "blend-v1",
+ "rows": {
+  "qwerty": {
+   "layout": "qwertyuiopasdfghjkl;zxcvbnm,./",
+   "provenance": "real",
+   "bi_serve_pct": 98.70599073322988,
+   "bi_any_pct": 99.67301736975219,
+   "tri_serve_pct": 92.1502082329242,
+   "tri_any_pct": 95.68023234503934
+  },
+  "qwerty30m": {
+   "layout": "qwertyuiopasdfghjkl'zxcvbnm,.-",
+   "provenance": "real",
+   "bi_serve_pct": 97.48521801451338,
+   "bi_any_pct": 99.48732889783375,
+   "tri_serve_pct": 90.0282159665399,
+   "tri_any_pct": 94.3842287430961
+  },
+  "dvorak": {
+   "layout": "',.pyfgcrlaoeuidhtns;qjkxbmwvz",
+   "provenance": "real",
+   "bi_serve_pct": 95.43274212235143,
+   "bi_any_pct": 99.8054554105471,
+   "tri_serve_pct": 52.95876920751397,
+   "tri_any_pct": 94.36345720389876
+  },
+  "colemak": {
+   "layout": "qwfpgjluy;arstdhneiozxcvbkm,./",
+   "provenance": "real",
+   "bi_serve_pct": 83.17065708736338,
+   "bi_any_pct": 97.69621541474416,
+   "tri_serve_pct": 32.629301550966,
+   "tri_any_pct": 61.7902494881341
+  },
+  "colemak-dh": {
+   "layout": "qwfpbjluy;arstgmneiozxcdvkh,./",
+   "provenance": "real",
+   "bi_serve_pct": 81.80001662315753,
+   "bi_any_pct": 96.4651878736905,
+   "tri_serve_pct": 30.44111925990258,
+   "tri_any_pct": 59.86869923400724
+  },
+  "canary": {
+   "layout": "wlypbzfou;crstgmneiaqjvdkxh/,.",
+   "provenance": "real",
+   "bi_serve_pct": 80.42951689352044,
+   "bi_any_pct": 96.77124648017444,
+   "tri_serve_pct": 27.93040791513209,
+   "tri_any_pct": 59.54269960366567
+  },
+  "recurva": {
+   "layout": "frdpvqjuoysntcb.heaizxkgwml,;/",
+   "provenance": "real",
+   "bi_serve_pct": 83.20031366885055,
+   "bi_any_pct": 97.83389346025722,
+   "tri_serve_pct": 35.45921047754711,
+   "tri_any_pct": 63.58371694793358
+  },
+  "sturdy": {
+   "layout": "vmlcpxfouj;strdy.naeizkqgwbh',",
+   "provenance": "real",
+   "bi_serve_pct": 82.49586664971643,
+   "bi_any_pct": 97.1999819875063,
+   "tri_serve_pct": 27.893263429720797,
+   "tri_any_pct": 61.238565134973896
+  },
+  "graphite": {
+   "layout": "bldwz'foujnrtsgyhaeixqmcvkp,.-",
+   "provenance": "real",
+   "bi_serve_pct": 84.40297690594588,
+   "bi_any_pct": 97.3910289813482,
+   "tri_serve_pct": 35.362274744184774,
+   "tri_any_pct": 65.11536146703169
+  },
+  "semimak": {
+   "layout": "flhvz'wuoysrntkcdeaixjbmqpg,.-",
+   "provenance": "real",
+   "bi_serve_pct": 85.91033646339328,
+   "bi_any_pct": 97.53343780319611,
+   "tri_serve_pct": 34.889296383764666,
+   "tri_any_pct": 61.726052922942166
+  },
+  "arm-B": {
+   "layout": "flmpg-yuo,sntdcireahkxbwv'.jzq",
+   "provenance": "campaign",
+   "bi_serve_pct": 86.02940238564163,
+   "bi_any_pct": 97.83148823976809,
+   "tri_serve_pct": 37.35230029745949,
+   "tri_any_pct": 66.58679752222267
+  },
+  "BALL-1": {
+   "layout": "flmpg-yuo,sntcdireahkxbwv'.jzq",
+   "provenance": "campaign",
+   "bi_serve_pct": 85.9655223368443,
+   "bi_any_pct": 97.84605391851366,
+   "tri_serve_pct": 36.619541079349354,
+   "tri_any_pct": 66.58831485753001
+  },
+  "MID": {
+   "layout": "flmpg.yuo,sntcdireahkxbwv'-jzq",
+   "provenance": "campaign",
+   "bi_serve_pct": 86.17220783458497,
+   "bi_any_pct": 97.818321204929,
+   "tri_serve_pct": 36.79460140010653,
+   "tri_any_pct": 66.68360184656224
+  },
+  "armH-hdln": {
+   "layout": "flmpg-,uoysntcdireahkxvwb.'jzq",
+   "provenance": "campaign",
+   "bi_serve_pct": 85.93145135815304,
+   "bi_any_pct": 97.6100988729311,
+   "tri_serve_pct": 37.096581786336664,
+   "tri_any_pct": 66.6356317997554
+  },
+  "keybo-lsb": {
+   "layout": "pyuo,vgdnlhiea.cstrmkj-z'fwbxq",
+   "provenance": "campaign",
+   "bi_serve_pct": 87.72769724210201,
+   "bi_any_pct": 98.47717111051567,
+   "tri_serve_pct": 36.701863931168,
+   "tri_any_pct": 72.35428314731644
+  },
+  "keybo-lsb+lm": {
+   "layout": "pyuo,vgdnmhiea.cstrlkj-z'fwbxq",
+   "provenance": "campaign",
+   "bi_serve_pct": 87.7168046037961,
+   "bi_any_pct": 98.5350458421378,
+   "tri_serve_pct": 36.3399707245026,
+   "tri_any_pct": 71.81245275249381
+  },
+  "flagship-c3": {
+   "layout": "pyou'vgdnmheai.cstrlkjz,-wfbxq",
+   "provenance": "campaign",
+   "bi_serve_pct": 88.15119322466124,
+   "bi_any_pct": 98.41537649963254,
+   "tri_serve_pct": 35.89541999782692,
+   "tri_any_pct": 71.16423755047177
+  },
+  "archive-1843": {
+   "layout": "pyou,vgdnmheai.cstlrjz'k-fwbxq",
+   "provenance": "campaign",
+   "bi_serve_pct": 88.31987889247124,
+   "bi_any_pct": 98.4729595325412,
+   "tri_serve_pct": 34.955991617500764,
+   "tri_any_pct": 69.92525532556625
+  },
+  "archive-1846": {
+   "layout": "pyou,vgdnmheai.cstrlkq'z-fbwjx",
+   "provenance": "campaign",
+   "bi_serve_pct": 88.15681340324996,
+   "bi_any_pct": 98.4121700020715,
+   "tri_serve_pct": 37.434985659518716,
+   "tri_any_pct": 71.55074019766674
+  },
+  "lsb-sib": {
+   "layout": "fyou,vgdnlheaikcstrmzj'.-pwbxq",
+   "provenance": "campaign",
+   "bi_serve_pct": 87.9149900272849,
+   "bi_any_pct": 98.24248778816903,
+   "tri_serve_pct": 36.52475558536075,
+   "tri_any_pct": 71.22648583411429
+  },
+  "keybo-c30m": {
+   "layout": "fyu,.vgdnlhieaocstrmkj'q-bwpxz",
+   "provenance": "campaign",
+   "bi_serve_pct": 88.15717173531549,
+   "bi_any_pct": 98.07958423221707,
+   "tri_serve_pct": 34.771082087386986,
+   "tri_any_pct": 72.3910531381488
+  },
+  "p16-balance": {
+   "layout": "frlwg'uyoksntdc.ieahvxmpb,-jqz",
+   "provenance": "campaign",
+   "bi_serve_pct": 85.47792736733108,
+   "bi_any_pct": 97.28864929777276,
+   "tri_serve_pct": 39.41363891936635,
+   "tri_any_pct": 65.40821383187762
+  },
+  "p13stab-win": {
+   "layout": "rcgkmq.ouylsthd,naeixwbfvpjz;/",
+   "provenance": "campaign",
+   "bi_serve_pct": 88.06419678611903,
+   "bi_any_pct": 98.01506650404252,
+   "tri_serve_pct": 31.4878454730094,
+   "tri_any_pct": 68.54769469088458
+  },
+  "p10-w05": {
+   "layout": "clgmk.,ouysrthdpnaeiqxwbvfz/;j",
+   "provenance": "campaign",
+   "bi_serve_pct": 88.88035796906433,
+   "bi_any_pct": 98.14951845451621,
+   "tri_serve_pct": 34.88370531635325,
+   "tri_any_pct": 69.06064139223004
+  },
+  "p11-w05": {
+   "layout": "uoy,.vlmdgaeinprhtcs;/jkbfwxzq",
+   "provenance": "campaign",
+   "bi_serve_pct": 89.34605923444514,
+   "bi_any_pct": 98.89915638867302,
+   "tri_serve_pct": 38.16608905550207,
+   "tri_any_pct": 73.18869997656103
+  },
+  "tri-best": {
+   "layout": "fdnlmkioheswrtcpuabyjxqgv,.;z/",
+   "provenance": "campaign",
+   "bi_serve_pct": 88.92839032109137,
+   "bi_any_pct": 97.53036250897893,
+   "tri_serve_pct": 36.493058477901435,
+   "tri_any_pct": 67.49369635912788
+  },
+  "bigram-d3": {
+   "layout": "wae,ylrstfgoiupmncdbq;.kzhvxj/",
+   "provenance": "campaign",
+   "bi_serve_pct": 88.46572910054077,
+   "bi_any_pct": 97.78951174512925,
+   "tri_serve_pct": 40.76844687296202,
+   "tri_any_pct": 69.98107851177274
+  }
+ },
+ "elapsed_s": 483.2206165790558
+}

@@ -1,0 +1,383 @@
+{
+ "env": {
+  "keybo_file": "/local/home/zegertho/repos/keybo/src/keybo/__init__.py",
+  "checkout": "/local/home/zegertho/repos/keybo",
+  "branch": "pick2-decision",
+  "head": "3179dd3b1381ec66c4d3f23f79234f95b1f9a0f7",
+  "dirty": "?? agent-artifacts/pick2/",
+  "python": "/local/home/zegertho/repos/keybo/.venv/bin/python"
+ },
+ "corpus": {
+  "corpus": "blend-v1",
+  "path": "/local/home/zegertho/repos/keybo/data/corpus/blend-v1",
+  "sha256": {
+   "bigrams.txt": "13abca624f3ecff211b11df797f0cb9119cbf1924bc2f56ab2a8daf0c590bc24",
+   "trigrams.txt": "19806532ee3567f5afe4311e51f346b6c36375030f473fe3f68a6a3dc21beb61",
+   "1-skip.txt": "df5f2f1aa48f954f5a809d65ad111f8aa4bfcdbc0da1d528776bbc31d5ebe3c8",
+   "1-skip31.txt": "df5f2f1aa48f954f5a809d65ad111f8aa4bfcdbc0da1d528776bbc31d5ebe3c8"
+  },
+  "declared_total": 1000000000,
+  "skipgram_table": "1-skip31.txt"
+ },
+ "target_wpm": 90.0,
+ "gauge": "K31 measured-keystroke surface: ms/char = sum_tri f*(T2[a,b]+Tcond[a,b,c]) / covered",
+ "seeds": [
+  0,
+  1,
+  2
+ ],
+ "rows": {
+  "qwerty": {
+   "layout": "qwertyuiopasdfghjkl;zxcvbnm,./",
+   "provenance": "real",
+   "covered_mass": 866253743.0,
+   "coverage_pct": 86.6253743,
+   "per_seed_ms_per_char": [
+    263.9467156612756,
+    264.041076195143,
+    263.15436097590435
+   ],
+   "ms_per_char": 263.71405094410767,
+   "mean_of_seed_ms_per_char": 263.71405094410767
+  },
+  "qwerty30m": {
+   "layout": "qwertyuiopasdfghjkl'zxcvbnm,.-",
+   "provenance": "real",
+   "covered_mass": 887147352.0,
+   "coverage_pct": 88.7147352,
+   "per_seed_ms_per_char": [
+    264.36867609418084,
+    264.450929280068,
+    263.5971443622565
+   ],
+   "ms_per_char": 264.13891657883516,
+   "mean_of_seed_ms_per_char": 264.1389165788351
+  },
+  "dvorak": {
+   "layout": "',.pyfgcrlaoeuidhtns;qjkxbmwvz",
+   "provenance": "real",
+   "covered_mass": 874944958.0,
+   "coverage_pct": 87.4944958,
+   "per_seed_ms_per_char": [
+    255.09536548935216,
+    255.4003674882814,
+    254.5763075424993
+   ],
+   "ms_per_char": 255.024013506711,
+   "mean_of_seed_ms_per_char": 255.02401350671096
+  },
+  "colemak": {
+   "layout": "qwfpgjluy;arstdhneiozxcvbkm,./",
+   "provenance": "real",
+   "covered_mass": 866253743.0,
+   "coverage_pct": 86.6253743,
+   "per_seed_ms_per_char": [
+    258.3462043837276,
+    258.6632352154707,
+    257.6964267466179
+   ],
+   "ms_per_char": 258.23528878193866,
+   "mean_of_seed_ms_per_char": 258.23528878193866
+  },
+  "colemak-dh": {
+   "layout": "qwfpbjluy;arstgmneiozxcdvkh,./",
+   "provenance": "real",
+   "covered_mass": 866253743.0,
+   "coverage_pct": 86.6253743,
+   "per_seed_ms_per_char": [
+    258.84947840653973,
+    259.1559278163004,
+    258.26866983345195
+   ],
+   "ms_per_char": 258.7580253520973,
+   "mean_of_seed_ms_per_char": 258.7580253520973
+  },
+  "canary": {
+   "layout": "wlypbzfou;crstgmneiaqjvdkxh/,.",
+   "provenance": "real",
+   "covered_mass": 866253743.0,
+   "coverage_pct": 86.6253743,
+   "per_seed_ms_per_char": [
+    257.505772384923,
+    257.99205125801467,
+    256.9917446058753
+   ],
+   "ms_per_char": 257.4965227496043,
+   "mean_of_seed_ms_per_char": 257.4965227496043
+  },
+  "recurva": {
+   "layout": "frdpvqjuoysntcb.heaizxkgwml,;/",
+   "provenance": "real",
+   "covered_mass": 866253743.0,
+   "coverage_pct": 86.6253743,
+   "per_seed_ms_per_char": [
+    258.38476196104546,
+    258.31112580754404,
+    257.6284538193049
+   ],
+   "ms_per_char": 258.10811386263146,
+   "mean_of_seed_ms_per_char": 258.10811386263146
+  },
+  "sturdy": {
+   "layout": "vmlcpxfouj;strdy.naeizkqgwbh',",
+   "provenance": "real",
+   "covered_mass": 874944958.0,
+   "coverage_pct": 87.4944958,
+   "per_seed_ms_per_char": [
+    264.85877022281244,
+    265.48918524473015,
+    264.5973629024786
+   ],
+   "ms_per_char": 264.9817727900071,
+   "mean_of_seed_ms_per_char": 264.981772790007
+  },
+  "graphite": {
+   "layout": "bldwz'foujnrtsgyhaeixqmcvkp,.-",
+   "provenance": "real",
+   "covered_mass": 887147352.0,
+   "coverage_pct": 88.7147352,
+   "per_seed_ms_per_char": [
+    258.03940287125397,
+    258.55423152163036,
+    257.9150549975899
+   ],
+   "ms_per_char": 258.16956313015805,
+   "mean_of_seed_ms_per_char": 258.16956313015805
+  },
+  "semimak": {
+   "layout": "flhvz'wuoysrntkcdeaixjbmqpg,.-",
+   "provenance": "real",
+   "covered_mass": 887147352.0,
+   "coverage_pct": 88.7147352,
+   "per_seed_ms_per_char": [
+    257.41890049930504,
+    257.7172346902126,
+    257.03847821294363
+   ],
+   "ms_per_char": 257.39153780082034,
+   "mean_of_seed_ms_per_char": 257.39153780082046
+  },
+  "arm-B": {
+   "layout": "flmpg-yuo,sntdcireahkxbwv'.jzq",
+   "provenance": "campaign",
+   "covered_mass": 887147352.0,
+   "coverage_pct": 88.7147352,
+   "per_seed_ms_per_char": [
+    254.06784209621037,
+    254.2565282396319,
+    253.37736697473574
+   ],
+   "ms_per_char": 253.90057910352604,
+   "mean_of_seed_ms_per_char": 253.90057910352598
+  },
+  "BALL-1": {
+   "layout": "flmpg-yuo,sntcdireahkxbwv'.jzq",
+   "provenance": "campaign",
+   "covered_mass": 887147352.0,
+   "coverage_pct": 88.7147352,
+   "per_seed_ms_per_char": [
+    254.17407177782047,
+    254.27223220394526,
+    253.4529748032933
+   ],
+   "ms_per_char": 253.96642626168637,
+   "mean_of_seed_ms_per_char": 253.96642626168634
+  },
+  "MID": {
+   "layout": "flmpg.yuo,sntcdireahkxbwv'-jzq",
+   "provenance": "campaign",
+   "covered_mass": 887147352.0,
+   "coverage_pct": 88.7147352,
+   "per_seed_ms_per_char": [
+    254.24098985046783,
+    254.29418160259593,
+    253.43043087388634
+   ],
+   "ms_per_char": 253.9885341089834,
+   "mean_of_seed_ms_per_char": 253.98853410898337
+  },
+  "armH-hdln": {
+   "layout": "flmpg-,uoysntcdireahkxvwb.'jzq",
+   "provenance": "campaign",
+   "covered_mass": 887147352.0,
+   "coverage_pct": 88.7147352,
+   "per_seed_ms_per_char": [
+    254.31528772595598,
+    254.28509255861073,
+    253.5185008447159
+   ],
+   "ms_per_char": 254.03962704309416,
+   "mean_of_seed_ms_per_char": 254.0396270430942
+  },
+  "keybo-lsb": {
+   "layout": "pyuo,vgdnlhiea.cstrmkj-z'fwbxq",
+   "provenance": "campaign",
+   "covered_mass": 887147352.0,
+   "coverage_pct": 88.7147352,
+   "per_seed_ms_per_char": [
+    254.85415162319057,
+    254.75992391685818,
+    254.27817323757284
+   ],
+   "ms_per_char": 254.63074959254058,
+   "mean_of_seed_ms_per_char": 254.63074959254052
+  },
+  "keybo-lsb+lm": {
+   "layout": "pyuo,vgdnmhiea.cstrlkj-z'fwbxq",
+   "provenance": "campaign",
+   "covered_mass": 887147352.0,
+   "coverage_pct": 88.7147352,
+   "per_seed_ms_per_char": [
+    254.85394713565793,
+    254.8584168249668,
+    254.34166893555957
+   ],
+   "ms_per_char": 254.68467763206144,
+   "mean_of_seed_ms_per_char": 254.68467763206147
+  },
+  "flagship-c3": {
+   "layout": "pyou'vgdnmheai.cstrlkjz,-wfbxq",
+   "provenance": "campaign",
+   "covered_mass": 887147352.0,
+   "coverage_pct": 88.7147352,
+   "per_seed_ms_per_char": [
+    255.07479450253498,
+    255.23608176113157,
+    254.61748015462962
+   ],
+   "ms_per_char": 254.97611880609878,
+   "mean_of_seed_ms_per_char": 254.97611880609873
+  },
+  "archive-1843": {
+   "layout": "pyou,vgdnmheai.cstlrjz'k-fwbxq",
+   "provenance": "campaign",
+   "covered_mass": 887147352.0,
+   "coverage_pct": 88.7147352,
+   "per_seed_ms_per_char": [
+    254.9928981327911,
+    255.07300300544495,
+    254.46498923990688
+   ],
+   "ms_per_char": 254.84363012604766,
+   "mean_of_seed_ms_per_char": 254.84363012604766
+  },
+  "archive-1846": {
+   "layout": "pyou,vgdnmheai.cstrlkq'z-fbwjx",
+   "provenance": "campaign",
+   "covered_mass": 887147352.0,
+   "coverage_pct": 88.7147352,
+   "per_seed_ms_per_char": [
+    254.97411327818728,
+    255.00258530109883,
+    254.41151362609048
+   ],
+   "ms_per_char": 254.7960707351256,
+   "mean_of_seed_ms_per_char": 254.79607073512554
+  },
+  "lsb-sib": {
+   "layout": "fyou,vgdnlheaikcstrmzj'.-pwbxq",
+   "provenance": "campaign",
+   "covered_mass": 887147352.0,
+   "coverage_pct": 88.7147352,
+   "per_seed_ms_per_char": [
+    254.78507176585202,
+    254.99883838160187,
+    254.3333739529471
+   ],
+   "ms_per_char": 254.70576136680032,
+   "mean_of_seed_ms_per_char": 254.70576136680032
+  },
+  "keybo-c30m": {
+   "layout": "fyu,.vgdnlhieaocstrmkj'q-bwpxz",
+   "provenance": "campaign",
+   "covered_mass": 887147352.0,
+   "coverage_pct": 88.7147352,
+   "per_seed_ms_per_char": [
+    254.74631977128314,
+    254.8066849005301,
+    254.21823712092018
+   ],
+   "ms_per_char": 254.59041393091118,
+   "mean_of_seed_ms_per_char": 254.59041393091115
+  },
+  "p16-balance": {
+   "layout": "frlwg'uyoksntdc.ieahvxmpb,-jqz",
+   "provenance": "campaign",
+   "covered_mass": 887147352.0,
+   "coverage_pct": 88.7147352,
+   "per_seed_ms_per_char": [
+    254.88413849591078,
+    255.10031211680527,
+    254.27161626155012
+   ],
+   "ms_per_char": 254.7520222914221,
+   "mean_of_seed_ms_per_char": 254.75202229142204
+  },
+  "p13stab-win": {
+   "layout": "rcgkmq.ouylsthd,naeixwbfvpjz;/",
+   "provenance": "campaign",
+   "covered_mass": 866253743.0,
+   "coverage_pct": 86.6253743,
+   "per_seed_ms_per_char": [
+    254.59371211734415,
+    254.45333815342894,
+    253.91498224159375
+   ],
+   "ms_per_char": 254.32067750412227,
+   "mean_of_seed_ms_per_char": 254.32067750412227
+  },
+  "p10-w05": {
+   "layout": "clgmk.,ouysrthdpnaeiqxwbvfz/;j",
+   "provenance": "campaign",
+   "covered_mass": 866253743.0,
+   "coverage_pct": 86.6253743,
+   "per_seed_ms_per_char": [
+    254.29097294012584,
+    254.40990684702425,
+    253.58581319708605
+   ],
+   "ms_per_char": 254.09556432807872,
+   "mean_of_seed_ms_per_char": 254.09556432807872
+  },
+  "p11-w05": {
+   "layout": "uoy,.vlmdgaeinprhtcs;/jkbfwxzq",
+   "provenance": "campaign",
+   "covered_mass": 866253743.0,
+   "coverage_pct": 86.6253743,
+   "per_seed_ms_per_char": [
+    254.30194275953892,
+    254.28472410572985,
+    253.53845710700946
+   ],
+   "ms_per_char": 254.04170799075948,
+   "mean_of_seed_ms_per_char": 254.0417079907594
+  },
+  "tri-best": {
+   "layout": "fdnlmkioheswrtcpuabyjxqgv,.;z/",
+   "provenance": "campaign",
+   "covered_mass": 866253743.0,
+   "coverage_pct": 86.6253743,
+   "per_seed_ms_per_char": [
+    257.3147647182011,
+    257.23908231725267,
+    256.53263705120287
+   ],
+   "ms_per_char": 257.0288280288855,
+   "mean_of_seed_ms_per_char": 257.0288280288856
+  },
+  "bigram-d3": {
+   "layout": "wae,ylrstfgoiupmncdbq;.kzhvxj/",
+   "provenance": "campaign",
+   "covered_mass": 866253743.0,
+   "coverage_pct": 86.6253743,
+   "per_seed_ms_per_char": [
+    256.51329890274366,
+    256.47073392692965,
+    255.70230946741722
+   ],
+   "ms_per_char": 256.22878076569685,
+   "mean_of_seed_ms_per_char": 256.22878076569685
+  }
+ },
+ "elapsed_s": 2.125277042388916
+}

@@ -1,0 +1,768 @@
+{
+ "corpus": "blend-v1",
+ "n_charset_common": 20122,
+ "n_co_observed": 0,
+ "co_observed_mass_pct": 0.0,
+ "spearman_all_vs_co": [
+  NaN,
+  NaN
+ ],
+ "rows": {
+  "qwerty": {
+   "provenance": "real",
+   "all": {
+    "ms_per_char": 263.6088964776229,
+    "per_seed": [
+     263.8424356291868,
+     263.9408802374994,
+     263.0433735661824
+    ]
+   },
+   "own_observed": {
+    "ms_per_char": 265.18268320639623,
+    "per_seed": [
+     265.26738129463627,
+     265.21615936080656,
+     265.06450896374605
+    ],
+    "mass_pct": 55.35147383137857
+   },
+   "co_observed": {
+    "ms_per_char": NaN,
+    "per_seed": [
+     NaN,
+     NaN,
+     NaN
+    ]
+   }
+  },
+  "qwerty30m": {
+   "provenance": "real",
+   "all": {
+    "ms_per_char": 263.6088964776229,
+    "per_seed": [
+     263.8424356291868,
+     263.9408802374994,
+     263.0433735661824
+    ]
+   },
+   "own_observed": {
+    "ms_per_char": 265.18268320639623,
+    "per_seed": [
+     265.26738129463627,
+     265.21615936080656,
+     265.06450896374605
+    ],
+    "mass_pct": 55.35147383137857
+   },
+   "co_observed": {
+    "ms_per_char": NaN,
+    "per_seed": [
+     NaN,
+     NaN,
+     NaN
+    ]
+   }
+  },
+  "dvorak": {
+   "provenance": "real",
+   "all": {
+    "ms_per_char": 254.85349088942652,
+    "per_seed": [
+     254.9372558350756,
+     255.22049492661583,
+     254.40272190658817
+    ]
+   },
+   "own_observed": {
+    "ms_per_char": 251.25644378792805,
+    "per_seed": [
+     250.8656353390286,
+     251.2862440482449,
+     251.61745197651075
+    ],
+    "mass_pct": 18.697927358168766
+   },
+   "co_observed": {
+    "ms_per_char": NaN,
+    "per_seed": [
+     NaN,
+     NaN,
+     NaN
+    ]
+   }
+  },
+  "colemak": {
+   "provenance": "real",
+   "all": {
+    "ms_per_char": 258.12325414503294,
+    "per_seed": [
+     258.23852579301996,
+     258.5493504921956,
+     257.5818861498834
+    ]
+   },
+   "own_observed": {
+    "ms_per_char": 259.6887777525981,
+    "per_seed": [
+     259.6018146743202,
+     259.49608501323024,
+     259.96843357024403
+    ],
+    "mass_pct": 9.714171082337561
+   },
+   "co_observed": {
+    "ms_per_char": NaN,
+    "per_seed": [
+     NaN,
+     NaN,
+     NaN
+    ]
+   }
+  },
+  "colemak-dh": {
+   "provenance": "real",
+   "all": {
+    "ms_per_char": 258.6485170953842,
+    "per_seed": [
+     258.7435478654669,
+     259.0454822388677,
+     258.15652118181794
+    ]
+   },
+   "own_observed": {
+    "ms_per_char": 259.6619749968532,
+    "per_seed": [
+     259.7233390609734,
+     259.39738425099296,
+     259.8652016785931
+    ],
+    "mass_pct": 8.75026040905531
+   },
+   "co_observed": {
+    "ms_per_char": NaN,
+    "per_seed": [
+     NaN,
+     NaN,
+     NaN
+    ]
+   }
+  },
+  "canary": {
+   "provenance": "real",
+   "all": {
+    "ms_per_char": 257.3974592705992,
+    "per_seed": [
+     257.4084668147778,
+     257.894292364637,
+     256.889618632383
+    ]
+   },
+   "own_observed": {
+    "ms_per_char": 255.86030307149417,
+    "per_seed": [
+     255.61807482822545,
+     255.64535821089453,
+     256.3174761753625
+    ],
+    "mass_pct": 8.210759271790552
+   },
+   "co_observed": {
+    "ms_per_char": NaN,
+    "per_seed": [
+     NaN,
+     NaN,
+     NaN
+    ]
+   }
+  },
+  "recurva": {
+   "provenance": "real",
+   "all": {
+    "ms_per_char": 257.8827106870895,
+    "per_seed": [
+     258.1546275684614,
+     258.0953606776735,
+     257.3981438151338
+    ]
+   },
+   "own_observed": {
+    "ms_per_char": 260.0408424730561,
+    "per_seed": [
+     259.8177127030412,
+     259.908139202915,
+     260.39667551321213
+    ],
+    "mass_pct": 10.179738519048556
+   },
+   "co_observed": {
+    "ms_per_char": NaN,
+    "per_seed": [
+     NaN,
+     NaN,
+     NaN
+    ]
+   }
+  },
+  "sturdy": {
+   "provenance": "real",
+   "all": {
+    "ms_per_char": 264.71809978350905,
+    "per_seed": [
+     264.5994275164315,
+     265.2386954315356,
+     264.3161764025601
+    ]
+   },
+   "own_observed": {
+    "ms_per_char": 264.00219226153007,
+    "per_seed": [
+     263.8899505992752,
+     263.5944011232147,
+     264.5222250621004
+    ],
+    "mass_pct": 7.819602975000375
+   },
+   "co_observed": {
+    "ms_per_char": NaN,
+    "per_seed": [
+     NaN,
+     NaN,
+     NaN
+    ]
+   }
+  },
+  "graphite": {
+   "provenance": "real",
+   "all": {
+    "ms_per_char": 257.32048752641373,
+    "per_seed": [
+     257.1644976163798,
+     257.72952075126454,
+     257.06744421159675
+    ]
+   },
+   "own_observed": {
+    "ms_per_char": 256.7694645424369,
+    "per_seed": [
+     256.3826861670372,
+     256.75598676534906,
+     257.1697206949244
+    ],
+    "mass_pct": 11.63417646630052
+   },
+   "co_observed": {
+    "ms_per_char": NaN,
+    "per_seed": [
+     NaN,
+     NaN,
+     NaN
+    ]
+   }
+  },
+  "semimak": {
+   "provenance": "real",
+   "all": {
+    "ms_per_char": 256.5048739134342,
+    "per_seed": [
+     256.51311393994666,
+     256.8447595608554,
+     256.15674823950053
+    ]
+   },
+   "own_observed": {
+    "ms_per_char": 252.5070784357041,
+    "per_seed": [
+     252.6125029982901,
+     252.29501929932985,
+     252.61371300949247
+    ],
+    "mass_pct": 10.30397063710925
+   },
+   "co_observed": {
+    "ms_per_char": NaN,
+    "per_seed": [
+     NaN,
+     NaN,
+     NaN
+    ]
+   }
+  },
+  "arm-B": {
+   "provenance": "campaign",
+   "all": {
+    "ms_per_char": 253.46217787448387,
+    "per_seed": [
+     253.6160858744036,
+     253.82444425487117,
+     252.94600349417678
+    ]
+   },
+   "own_observed": {
+    "ms_per_char": 249.62167942106925,
+    "per_seed": [
+     249.63330492783174,
+     249.45277968230667,
+     249.77895365306918
+    ],
+    "mass_pct": 11.233263759400915
+   },
+   "co_observed": {
+    "ms_per_char": NaN,
+    "per_seed": [
+     NaN,
+     NaN,
+     NaN
+    ]
+   }
+  },
+  "BALL-1": {
+   "provenance": "campaign",
+   "all": {
+    "ms_per_char": 253.5311617184071,
+    "per_seed": [
+     253.72508744741845,
+     253.84272314524205,
+     253.02567456256074
+    ]
+   },
+   "own_observed": {
+    "ms_per_char": 249.6990466457629,
+    "per_seed": [
+     249.6869025651627,
+     249.49476915671755,
+     249.91546821540862
+    ],
+    "mass_pct": 10.912118883095248
+   },
+   "co_observed": {
+    "ms_per_char": NaN,
+    "per_seed": [
+     NaN,
+     NaN,
+     NaN
+    ]
+   }
+  },
+  "MID": {
+   "provenance": "campaign",
+   "all": {
+    "ms_per_char": 253.543619616326,
+    "per_seed": [
+     253.80221709022138,
+     253.8599448470507,
+     252.9686969117059
+    ]
+   },
+   "own_observed": {
+    "ms_per_char": 249.66966741843135,
+    "per_seed": [
+     249.7118765596895,
+     249.47165318196227,
+     249.82547251364232
+    ],
+    "mass_pct": 10.936365874432665
+   },
+   "co_observed": {
+    "ms_per_char": NaN,
+    "per_seed": [
+     NaN,
+     NaN,
+     NaN
+    ]
+   }
+  },
+  "armH-hdln": {
+   "provenance": "campaign",
+   "all": {
+    "ms_per_char": 253.54537393145,
+    "per_seed": [
+     253.81520006637788,
+     253.79166356210854,
+     253.0292581658637
+    ]
+   },
+   "own_observed": {
+    "ms_per_char": 249.7568621716708,
+    "per_seed": [
+     249.82921864031698,
+     249.50688113876902,
+     249.93448673592633
+    ],
+    "mass_pct": 11.442946247899805
+   },
+   "co_observed": {
+    "ms_per_char": NaN,
+    "per_seed": [
+     NaN,
+     NaN,
+     NaN
+    ]
+   }
+  },
+  "keybo-lsb": {
+   "provenance": "campaign",
+   "all": {
+    "ms_per_char": 253.9901489269985,
+    "per_seed": [
+     254.2348025810052,
+     254.12438231730007,
+     253.61126188269023
+    ]
+   },
+   "own_observed": {
+    "ms_per_char": 252.8775206575383,
+    "per_seed": [
+     252.82841686235602,
+     252.76075402554437,
+     253.04339108471444
+    ],
+    "mass_pct": 13.165741040732865
+   },
+   "co_observed": {
+    "ms_per_char": NaN,
+    "per_seed": [
+     NaN,
+     NaN,
+     NaN
+    ]
+   }
+  },
+  "keybo-lsb+lm": {
+   "provenance": "campaign",
+   "all": {
+    "ms_per_char": 254.05044206880157,
+    "per_seed": [
+     254.23926639789102,
+     254.2315717761538,
+     253.6804880323598
+    ]
+   },
+   "own_observed": {
+    "ms_per_char": 252.58471527738425,
+    "per_seed": [
+     252.55482118819262,
+     252.4524846116898,
+     252.7468400322704
+    ],
+    "mass_pct": 12.798122958114064
+   },
+   "co_observed": {
+    "ms_per_char": NaN,
+    "per_seed": [
+     NaN,
+     NaN,
+     NaN
+    ]
+   }
+  },
+  "flagship-c3": {
+   "provenance": "campaign",
+   "all": {
+    "ms_per_char": 254.51596821852888,
+    "per_seed": [
+     254.60011341708676,
+     254.78496971858374,
+     254.16282151991604
+    ]
+   },
+   "own_observed": {
+    "ms_per_char": 253.33399444754147,
+    "per_seed": [
+     253.29406236573902,
+     253.16076317623475,
+     253.5471578006507
+    ],
+    "mass_pct": 11.60604637119448
+   },
+   "co_observed": {
+    "ms_per_char": NaN,
+    "per_seed": [
+     NaN,
+     NaN,
+     NaN
+    ]
+   }
+  },
+  "archive-1843": {
+   "provenance": "campaign",
+   "all": {
+    "ms_per_char": 254.32385853069064,
+    "per_seed": [
+     254.47560362422718,
+     254.56268811858945,
+     253.93328384925542
+    ]
+   },
+   "own_observed": {
+    "ms_per_char": 251.8918268321414,
+    "per_seed": [
+     252.1021619098137,
+     251.71139920667355,
+     251.86191937993678
+    ],
+    "mass_pct": 10.758743666119283
+   },
+   "co_observed": {
+    "ms_per_char": NaN,
+    "per_seed": [
+     NaN,
+     NaN,
+     NaN
+    ]
+   }
+  },
+  "archive-1846": {
+   "provenance": "campaign",
+   "all": {
+    "ms_per_char": 254.28127347523994,
+    "per_seed": [
+     254.45994234913476,
+     254.49630076141779,
+     253.88757731516725
+    ]
+   },
+   "own_observed": {
+    "ms_per_char": 253.3833575539612,
+    "per_seed": [
+     253.51759134139579,
+     253.13997506233542,
+     253.4925062581523
+    ],
+    "mass_pct": 11.690587084207012
+   },
+   "co_observed": {
+    "ms_per_char": NaN,
+    "per_seed": [
+     NaN,
+     NaN,
+     NaN
+    ]
+   }
+  },
+  "lsb-sib": {
+   "provenance": "campaign",
+   "all": {
+    "ms_per_char": 254.18210861055036,
+    "per_seed": [
+     254.26595166580915,
+     254.48386803492528,
+     253.79650613091667
+    ]
+   },
+   "own_observed": {
+    "ms_per_char": 253.11586896593772,
+    "per_seed": [
+     253.09577141726106,
+     252.95833542000926,
+     253.29350006054278
+    ],
+    "mass_pct": 11.972567401145424
+   },
+   "co_observed": {
+    "ms_per_char": NaN,
+    "per_seed": [
+     NaN,
+     NaN,
+     NaN
+    ]
+   }
+  },
+  "keybo-c30m": {
+   "provenance": "campaign",
+   "all": {
+    "ms_per_char": 254.0022878859994,
+    "per_seed": [
+     254.1620191034874,
+     254.22998396615165,
+     253.6148605883592
+    ]
+   },
+   "own_observed": {
+    "ms_per_char": 251.77301131438193,
+    "per_seed": [
+     251.83538471498073,
+     251.76448527373324,
+     251.71916395443176
+    ],
+    "mass_pct": 11.890664287791791
+   },
+   "co_observed": {
+    "ms_per_char": NaN,
+    "per_seed": [
+     NaN,
+     NaN,
+     NaN
+    ]
+   }
+  },
+  "p16-balance": {
+   "provenance": "campaign",
+   "all": {
+    "ms_per_char": 254.28158705470025,
+    "per_seed": [
+     254.4154632574657,
+     254.62415810375717,
+     253.80513980287793
+    ]
+   },
+   "own_observed": {
+    "ms_per_char": 251.68052715665516,
+    "per_seed": [
+     251.8156414424142,
+     251.5435885351375,
+     251.6823514924138
+    ],
+    "mass_pct": 12.78218552751613
+   },
+   "co_observed": {
+    "ms_per_char": NaN,
+    "per_seed": [
+     NaN,
+     NaN,
+     NaN
+    ]
+   }
+  },
+  "p13stab-win": {
+   "provenance": "campaign",
+   "all": {
+    "ms_per_char": 254.09133663375582,
+    "per_seed": [
+     254.3682311196632,
+     254.23097476450013,
+     253.6748040171041
+    ]
+   },
+   "own_observed": {
+    "ms_per_char": 256.3697638555931,
+    "per_seed": [
+     255.96274225135943,
+     256.2850475688936,
+     256.8615017465262
+    ],
+    "mass_pct": 8.42279361707904
+   },
+   "co_observed": {
+    "ms_per_char": NaN,
+    "per_seed": [
+     NaN,
+     NaN,
+     NaN
+    ]
+   }
+  },
+  "p10-w05": {
+   "provenance": "campaign",
+   "all": {
+    "ms_per_char": 253.8959116823991,
+    "per_seed": [
+     254.09616111723332,
+     254.21168031170365,
+     253.37989361826035
+    ]
+   },
+   "own_observed": {
+    "ms_per_char": 253.74177352525692,
+    "per_seed": [
+     253.37348050160438,
+     253.74676909058314,
+     254.10507098358337
+    ],
+    "mass_pct": 10.75300102494735
+   },
+   "co_observed": {
+    "ms_per_char": NaN,
+    "per_seed": [
+     NaN,
+     NaN,
+     NaN
+    ]
+   }
+  },
+  "p11-w05": {
+   "provenance": "campaign",
+   "all": {
+    "ms_per_char": 253.8683708242542,
+    "per_seed": [
+     254.13172615716115,
+     254.1110030187141,
+     253.36238329688746
+    ]
+   },
+   "own_observed": {
+    "ms_per_char": 254.98556900999216,
+    "per_seed": [
+     255.02631136600837,
+     254.90860607547773,
+     255.02178958849044
+    ],
+    "mass_pct": 10.371877232373432
+   },
+   "co_observed": {
+    "ms_per_char": NaN,
+    "per_seed": [
+     NaN,
+     NaN,
+     NaN
+    ]
+   }
+  },
+  "tri-best": {
+   "provenance": "campaign",
+   "all": {
+    "ms_per_char": 256.8304029538891,
+    "per_seed": [
+     257.121639737853,
+     257.04085858311424,
+     256.3287105407003
+    ]
+   },
+   "own_observed": {
+    "ms_per_char": 255.57385766682148,
+    "per_seed": [
+     255.5614168892914,
+     255.62244209012317,
+     255.53771402104988
+    ],
+    "mass_pct": 11.172531425908929
+   },
+   "co_observed": {
+    "ms_per_char": NaN,
+    "per_seed": [
+     NaN,
+     NaN,
+     NaN
+    ]
+   }
+  },
+  "bigram-d3": {
+   "provenance": "campaign",
+   "all": {
+    "ms_per_char": 256.0174121157592,
+    "per_seed": [
+     256.3084066761678,
+     256.25861177234805,
+     255.48521789876185
+    ]
+   },
+   "own_observed": {
+    "ms_per_char": 255.43600034466112,
+    "per_seed": [
+     255.39438268839675,
+     255.40415640314686,
+     255.50946194243983
+    ],
+    "mass_pct": 15.113781775929413
+   },
+   "co_observed": {
+    "ms_per_char": NaN,
+    "per_seed": [
+     NaN,
+     NaN,
+     NaN
+    ]
+   }
+  }
+ }
+}
