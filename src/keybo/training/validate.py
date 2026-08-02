@@ -542,6 +542,7 @@ def _predict_cells(
     geometry: Geometry,
     direction: bool = False,
     kitchensink: bool = False,
+    latspan: str = "",
 ) -> np.ndarray:
     """g(geometry, wpm) + b(ngram) per cell, in MILLISECONDS — the model's full prediction.
 
@@ -566,7 +567,14 @@ def _predict_cells(
     )
     X = np.vstack(
         [
-            featurize(geometry, c.positions, wpm=c.wpm, direction=direction, kitchensink=kitchensink)
+            featurize(
+                geometry,
+                c.positions,
+                wpm=c.wpm,
+                direction=direction,
+                kitchensink=kitchensink,
+                latspan=latspan,
+            )
             for c in cells
         ]
     )
@@ -692,6 +700,7 @@ def validate(
     baseline_buckets: Mapping[int, float] | None = None,
     direction: bool = False,
     kitchensink: bool = False,
+    latspan: str = "",
 ) -> dict:
     """Run the full leave-one-layout-out experiment; returns the report dict.
 
@@ -753,6 +762,7 @@ def validate(
             "train_params": dict(train_params or {}),
             "direction": bool(direction),
             "kitchensink": bool(kitchensink),
+            "latspan": str(latspan),
         },
         "ceilings": {},
         "folds": {},
@@ -789,12 +799,18 @@ def validate(
             target_wpm=(wpm_lo + wpm_hi) / 2,
             direction=direction,
             kitchensink=kitchensink,
+            latspan=latspan,
             **params,
         )
 
         obs = np.array([c.obs for c in test_cells])
         pred = _predict_cells(
-            model, test_cells, geometry, direction=direction, kitchensink=kitchensink
+            model,
+            test_cells,
+            geometry,
+            direction=direction,
+            kitchensink=kitchensink,
+            latspan=latspan,
         )
         rho = _centered_spearman(test_cells, pred, obs)
         ceiling = report["ceilings"][holdout]
@@ -805,7 +821,12 @@ def validate(
         mae_baseline = float(np.mean(np.abs(base_pred - obs)))
 
         pred_all = _predict_cells(
-            model, all_cells, geometry, direction=direction, kitchensink=kitchensink
+            model,
+            all_cells,
+            geometry,
+            direction=direction,
+            kitchensink=kitchensink,
+            latspan=latspan,
         )
         tau_all4 = layout_ranking_tau(obs_table, aggregate_layout_table(all_cells, pred_all))
 

@@ -20,12 +20,35 @@ from keybo.features.schema import (
     BIGRAM_DIRECTION_FEATURE_NAMES,
     BIGRAM_FEATURE_NAMES,
     BIGRAM_KITCHENSINK_FEATURE_NAMES,
+    BIGRAM_LATSPAN_ADD_FEATURE_NAMES,
+    BIGRAM_LATSPAN_REPLACE_FEATURE_NAMES,
     TRIGRAM_DIRECTION_FEATURE_NAMES,
     TRIGRAM_FEATURE_NAMES,
     TRIGRAM_KITCHENSINK_FEATURE_NAMES,
+    TRIGRAM_LATSPAN_ADD_FEATURE_NAMES,
+    TRIGRAM_LATSPAN_REPLACE_FEATURE_NAMES,
 )
 from keybo.geometry import Geometry, Position
 from keybo.layout import Layout
+
+
+def _check_latspan(latspan: str, direction: bool, kitchensink: bool) -> str:
+    """Validate the ``latspan`` mode and reject illegal frame combinations.
+
+    ``latspan`` is an independent axis over the SERVED (narrow) frame — the incumbent the
+    LATSPAN-1 A/B compares against is narrow — so it does not compose with ``direction``/
+    ``kitchensink``: there is no stamp for a widened+lateral-span population and allowing the
+    combination would silently create a frame no model is validated for. Legal values are
+    ``""`` (off), ``"add"`` and ``"replace"``.
+    """
+    if latspan not in ("", "add", "replace"):
+        raise ValueError(f"latspan must be '', 'add', or 'replace' (got {latspan!r})")
+    if latspan and (direction or kitchensink):
+        raise ValueError(
+            "latspan operates on the narrow served frame and does not compose with "
+            "direction/kitchensink (no stamp exists for a combined frame)"
+        )
+    return latspan
 
 
 def _placement_row_from_positions(
@@ -34,6 +57,7 @@ def _placement_row_from_positions(
     b: Position,
     direction: bool = False,
     kitchensink: bool = False,
+    latspan: str = "",
 ) -> dict[str, float]:
     """The placement/relational/geometry features for one bigram, from key positions.
 
@@ -56,7 +80,16 @@ def _placement_row_from_positions(
     the kitchen-sink frame is defined as the widened frame plus this block, so the two flags
     compose into three legal frames (narrow, widened, kitchen-sink) rather than four — there is
     no "kitchen-sink without direction" model population and no stamp for one.
+
+    ``latspan`` (LATSPAN-1) is the independent lateral-span axis over the NARROW frame:
+    ``"add"`` includes an extra ``lateral_span`` key alongside the served columns, ``"replace"``
+    includes it INSTEAD of the narrow ``lsb`` (the ``lsb`` key stays in the dict but the
+    REPLACE name list does not select it, so the served block is never mutated). The key is
+    added only when requested, mirroring ``if direction``/``if kitchensink``, so a test pinning
+    ``list(row) == name_list`` for the served frame still holds. Does not compose with
+    ``direction``/``kitchensink`` (see :func:`_check_latspan`).
     """
+    _check_latspan(latspan, direction, kitchensink)
     g = geometry
     bx, by = b
     cls = C.classify_positions(g, a, b)
@@ -100,6 +133,12 @@ def _placement_row_from_positions(
         row["pinky_off_home"] = float(C.is_pinky_off_home(g, a, b))
         row["weak_finger_pair"] = float(C.is_weak_finger_pair(g, a, b))
         row["finger_step"] = C.finger_step(g, a, b)
+    if latspan:
+        # LATSPAN-1: the graded lateral stretch. Added for both "add" and "replace"; the
+        # REPLACE name list simply does not select the served ``lsb`` key that stays above,
+        # so the served block is never mutated. Column-by-name extraction downstream makes an
+        # unselected extra key harmless.
+        row["lateral_span"] = C.lateral_span(g, a, b)
     return row
 
 
@@ -116,8 +155,14 @@ def _placement_row(
     )
 
 
-def _bigram_column_names(direction: bool, kitchensink: bool = False) -> list[str]:
+def _bigram_column_names(
+    direction: bool, kitchensink: bool = False, latspan: str = ""
+) -> list[str]:
     """The canonical column order for the frame these flags select."""
+    if latspan == "add":
+        return BIGRAM_LATSPAN_ADD_FEATURE_NAMES
+    if latspan == "replace":
+        return BIGRAM_LATSPAN_REPLACE_FEATURE_NAMES
     if kitchensink:
         return BIGRAM_KITCHENSINK_FEATURE_NAMES
     return BIGRAM_DIRECTION_FEATURE_NAMES if direction else BIGRAM_FEATURE_NAMES
@@ -156,14 +201,21 @@ def bigram_features_from_positions(
     wpm: float = 0.0,
     direction: bool = False,
     kitchensink: bool = False,
+    latspan: str = "",
 ) -> np.ndarray:
     """Bigram feature vector from recorded key positions (training path)."""
     row = _placement_row_from_positions(
-        geometry, positions[0], positions[1], direction=direction, kitchensink=kitchensink
+        geometry,
+        positions[0],
+        positions[1],
+        direction=direction,
+        kitchensink=kitchensink,
+        latspan=latspan,
     )
     row["wpm"] = float(wpm)
     return np.array(
-        [row[name] for name in _bigram_column_names(direction, kitchensink)], dtype=np.float64
+        [row[name] for name in _bigram_column_names(direction, kitchensink, latspan)],
+        dtype=np.float64,
     )
 
 
@@ -204,6 +256,7 @@ def _trigram_row_from_positions(
     wpm: float,
     direction: bool = False,
     kitchensink: bool = False,
+    latspan: str = "",
 ) -> dict[str, float]:
     """Assemble the full trigram row from the three positions (the shared core).
 
@@ -215,6 +268,11 @@ def _trigram_row_from_positions(
     (:func:`trigram_kitchensink_row`) AND widens both constituent bigrams by the five
     bigram-level ones — which is why 12 candidate definitions become 17 new trigram columns.
     It implies ``direction``, so the three legal frames stay narrow / widened / kitchen-sink.
+
+    ``latspan`` (LATSPAN-1) is bigram-level, so it enters each constituent bigram's placement
+    block as ``bg1_lateral_span``/``bg2_lateral_span`` (parallel to how ``lsb`` becomes
+    ``bg1_lsb``/``bg2_lsb``); there is no trigram-LEVEL lateral-span column. It does not compose
+    with ``direction``/``kitchensink``.
     """
     row = _trigram_level_from_positions(geometry, a, b, c)
     if direction or kitchensink:
@@ -228,11 +286,11 @@ def _trigram_row_from_positions(
     if kitchensink:
         row.update(trigram_kitchensink_row(geometry, a, b, c))
     for name, value in _placement_row_from_positions(
-        geometry, a, b, direction=direction, kitchensink=kitchensink
+        geometry, a, b, direction=direction, kitchensink=kitchensink, latspan=latspan
     ).items():
         row[f"bg1_{name}"] = value
     for name, value in _placement_row_from_positions(
-        geometry, b, c, direction=direction, kitchensink=kitchensink
+        geometry, b, c, direction=direction, kitchensink=kitchensink, latspan=latspan
     ).items():
         row[f"bg2_{name}"] = value
     row["wpm"] = float(wpm)
@@ -330,7 +388,13 @@ def trigram_kitchensink_row(
     }
 
 
-def _trigram_column_names(direction: bool, kitchensink: bool = False) -> list[str]:
+def _trigram_column_names(
+    direction: bool, kitchensink: bool = False, latspan: str = ""
+) -> list[str]:
+    if latspan == "add":
+        return TRIGRAM_LATSPAN_ADD_FEATURE_NAMES
+    if latspan == "replace":
+        return TRIGRAM_LATSPAN_REPLACE_FEATURE_NAMES
     if kitchensink:
         return TRIGRAM_KITCHENSINK_FEATURE_NAMES
     return TRIGRAM_DIRECTION_FEATURE_NAMES if direction else TRIGRAM_FEATURE_NAMES
@@ -375,12 +439,14 @@ def trigram_features_from_positions(
     wpm: float = 0.0,
     direction: bool = False,
     kitchensink: bool = False,
+    latspan: str = "",
 ) -> np.ndarray:
     """Trigram feature vector from recorded key positions (training path)."""
     a, b, c = positions
     row = _trigram_row_from_positions(
-        geometry, a, b, c, wpm, direction=direction, kitchensink=kitchensink
+        geometry, a, b, c, wpm, direction=direction, kitchensink=kitchensink, latspan=latspan
     )
     return np.array(
-        [row[name] for name in _trigram_column_names(direction, kitchensink)], dtype=np.float64
+        [row[name] for name in _trigram_column_names(direction, kitchensink, latspan)],
+        dtype=np.float64,
     )

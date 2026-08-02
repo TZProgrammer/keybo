@@ -230,3 +230,57 @@ TRIGRAM_KITCHENSINK_FEATURE_NAMES = [
 #: :data:`FEATURE_VERSION` nor :data:`FEATURE_VERSION_DIRECTION`, or the load-time guard in
 #: ``keybo.models.base`` could not tell the three model populations apart.
 FEATURE_VERSION_KITCHENSINK = f"{FEATURE_VERSION}+kitchensink.1"
+
+# --- the LATERAL-SPAN frames (LATSPAN-1, opt-in, additive) ---------------------------------
+#
+# A REPRESENTATION experiment, not a new-information one: ``classify.lateral_span`` is fully
+# determined by the served bigram row (0 of 699 K30 / 759 K31 buckets ambiguous — verified),
+# so these frames hand the model an assembled quantity it could in principle synthesize. The
+# question is whether making the graded stretch EXPLICIT changes held-out transfer at the
+# shipped depth/regularization, measured against the served frame as a clean single-variable
+# A/B (LATSPAN-1 preregistration, subagent ``latspan``).
+#
+# Two designs, each its own stamp so the three lateral-span model populations (served, add,
+# replace) can never be confused by the ``models/base.py`` load-time guard:
+#
+# * ADD — the served frame plus a ``lateral_span`` column. The graded stretch measured on
+#   ALL 204 same-hand two-finger pairs, alongside the narrow ``lsb`` (index/middle-only, blind
+#   to 172 of them) it does NOT remove. Bigram 20 -> 21 columns; trigram 46 -> 48 (the column
+#   is bigram-level, so it enters once per constituent, like ``lsb`` -> ``bg1_lsb``/``bg2_lsb``).
+# * REPLACE — the served frame with the narrow ``lsb`` column SWAPPED for ``lateral_span`` at
+#   the same position (same width: bigram 20, trigram 46). A like-for-like swap of a
+#   provably-blind predicate for a blind-spot-free graded one — the more interesting design if
+#   representation, not information, is the lever.
+#
+# Kept OUT of the served lists and behind an explicit opt-in for the same reason
+# ``_BIGRAM_DIRECTION_NAMES`` is: ``_BIGRAM_PLACEMENT_NAMES`` is the shared prefix of the
+# version-locked served frames, so a name added there would silently widen the served frame for
+# all six shipped ``data/models/k31`` artifacts.
+
+#: The served placement block with a ``lateral_span`` column appended (ADD).
+_BIGRAM_PLACEMENT_LATSPAN_ADD = [*_BIGRAM_PLACEMENT_NAMES, "lateral_span"]
+#: The served placement block with ``lsb`` swapped for ``lateral_span`` IN PLACE (REPLACE).
+_BIGRAM_PLACEMENT_LATSPAN_REPLACE = [
+    "lateral_span" if n == "lsb" else n for n in _BIGRAM_PLACEMENT_NAMES
+]
+
+BIGRAM_LATSPAN_ADD_FEATURE_NAMES = [*_BIGRAM_PLACEMENT_LATSPAN_ADD, "wpm"]
+BIGRAM_LATSPAN_REPLACE_FEATURE_NAMES = [*_BIGRAM_PLACEMENT_LATSPAN_REPLACE, "wpm"]
+
+TRIGRAM_LATSPAN_ADD_FEATURE_NAMES = [
+    *_TRIGRAM_LEVEL_NAMES,
+    *(f"bg1_{n}" for n in _BIGRAM_PLACEMENT_LATSPAN_ADD),
+    *(f"bg2_{n}" for n in _BIGRAM_PLACEMENT_LATSPAN_ADD),
+    "wpm",
+]
+TRIGRAM_LATSPAN_REPLACE_FEATURE_NAMES = [
+    *_TRIGRAM_LEVEL_NAMES,
+    *(f"bg1_{n}" for n in _BIGRAM_PLACEMENT_LATSPAN_REPLACE),
+    *(f"bg2_{n}" for n in _BIGRAM_PLACEMENT_LATSPAN_REPLACE),
+    "wpm",
+]
+
+#: Stamped by anything trained on a lateral-span frame. Each must be distinct from every other
+#: known stamp so the load-time guard can tell the populations apart.
+FEATURE_VERSION_LATSPAN_ADD = f"{FEATURE_VERSION}+latspan-add.1"
+FEATURE_VERSION_LATSPAN_REPLACE = f"{FEATURE_VERSION}+latspan-replace.1"
