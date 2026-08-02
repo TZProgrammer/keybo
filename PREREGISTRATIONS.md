@@ -10995,3 +10995,47 @@ User-directed: "get sg from a branch to main; there should be no dangling branch
 🔴 **A THIRD DEFECT WORTH ITS OWN FIX, RAISED BY THIS ARM: THE HIGH-WPM GATE HAS NO SUPPORT FLOOR.** The thinnest cell in the entire grid — **azerty b120, 64 cells / 23 participants** — SINGLE-HANDEDLY decided all four arms. A gate that can be resolved by one sparse cell is a gate whose verdicts are hostage to that cell. ⇒ **PROPOSED (not enacted): add a minimum-support requirement to `require_no_high_wpm_regression_in_report`.** ⚠ **This does NOT retroactively soften MIRROR-1 or SRROLL-1 — both also fail on effect size or 3/3 consistency — but it means "failed the high-WPM gate" is a weaker statement than it reads, and any FUTURE arm rejected ONLY at azerty b120 must be re-examined under a support floor before being written off.**
 
 🟢 Branch `mirror-symmetry` @ 3e03ad4 (worktree `/local/home/zegertho/repos/keybo-wt-mirror`) — **LOCAL ONLY, not pushed, not merged, no default changed, `data/models/k31/` untouched.** pytest **1257 passed / 3 skipped / 0 failed** (= baseline); ruff 22 errors, all pre-existing in `drivers-normgauge/`, **ZERO added**. Report `state/mirror/report.md` · prereg `state/mirror/PREREGISTRATION.md` · artifacts index `state/mirror/artifacts/profiles-and-artifacts-index.md`.
+
+### ROWOFFSETS-1 — 🟢 THE HARDCODED `row_offsets` ARE VINDICATED, AND NOT BECAUSE THE FIT AGREED: THE OFFSETS ARE **NOT IDENTIFIED** AT THIS SAMPLE SIZE ON EITHER AXIS, WITH THE SHIPPED VALUES INSIDE BOTH CIs — while the harness's own RESEEDING NOISE (sd 0.1219) is larger than every effect measured and a ZERO-INFORMATION PLACEBO beat every real candidate (2026-08-02)
+Answers the user's question verbatim — *"Why is row offset hardcoded like this? Is there a way to properly assign the best row_offsets for the learning of the model?"* Child `stagger`, branch
+`stagger-rowoffsets` (worktree `/tmp/stagger-wt`) **5 commits, LOCAL ONLY — nothing pushed, nothing merged to main, no layout adopted, `data/models/k31/` untouched.** Causal order preserved: prereg
+`dd112d3` **committed BEFORE any B or C number existed**, space-axis addendum `dd3223b` **committed before any space number existed**, drivers+A+D `79fc155`, result `07f9484`. A-block and D-block already
+registered separately as **STAGGER-A-1 / STAGGER-D-1 (`3da9695`)**; this entry is the B / C / space-axis ANSWER.
+🟢 **THE ANSWER TO "WHY HARDCODED": BECAUSE IT IS A PHYSICAL MEASUREMENT, AND IT IS THE RIGHT ONE.** top −0.25 / home 0.0 / bottom +0.50 is the correct ANSI stagger direction and magnitude. Two things
+were nevertheless never justified and are worth fixing in DOCUMENTATION, not in values: (i) only **2 of the 3 letter numbers are free** — a uniform shift is a gauge freedom, so `home = 0.0` is a CHOICE OF
+ORIGIN, not a measurement; (ii) there is an **invisible 4th parameter** — space's own offset — pinned at 0.0 **by dict omission**, never by a decision (`row_offsets` has keys {1,2,3}; space is `(0,0)`; `.get(ay, 0.0)` supplies it).
+🟢 **THE ANSWER TO "IS THERE A WAY TO FIT THEM": YES, AND IT WAS BUILT AND RUN — THE METHOD WORKS AND THE DATA CANNOT SUPPORT THE ANSWER.** Profile held-out LOLO error over a DYADIC grid, training AND
+evaluating under each candidate geometry (`inv_b.py`, `inv_s.py`). Dyadic is load-bearing, not fastidious: `is_lsb` tests `dx > 1.5` and **1.5 is exactly attainable**, so at non-dyadic offsets the `lsb`
+INDICATOR FLIPS on 4 pairs (max|Δ| = **1.0**, vs `dx`'s float noise ~4.4e-16). **Any future offset work must check for indicator flips, not just `dx` equality.**
+🔴 **B — NOT IDENTIFIED, by the pre-registered rule, and the argmin has the WRONG PHYSICAL SIGN.** 7×7 dyadic grid (`off_top` ∈ [−1,+0.5] × `off_bottom` ∈ [−0.5,+1]), 4 folds, seed 0, 2384 s. Pooled argmin
+**(top +0.25, bottom 0.00)** beats shipped by only **−0.0377 ms/char = 28% of the registered 0.135 bar**; **0 of 49** points clear the bar; shipped ranks 11/49 (z = −0.854). **CI = 43 of 49 grid points,
+spanning 1.50 key widths in BOTH coordinates** ⇒ prereg B4 fires (**≥1.0 ⇒ NOT IDENTIFIED**), and **the shipped point is INSIDE the CI** ⇒ prereg B5: **VINDICATED**. `off_top = +0.25` shifts the TOP row
+RIGHTWARD — **inverting the physical ANSI stagger** — so this "best fit" is fitting noise. ⚠ **AND THE PER-FOLD ARGMINS SCATTER ACROSS THE WHOLE BOX**, which is exactly what the invariant was written to
+catch: azerty (0.00, 0.00) −0.112 · **dvorak (−0.25, +0.50) = SHIPPED EXACTLY, delta 0.000** · qwerty (+0.25, 0.00) −0.253 · qwertz (+0.50, −0.50) −0.089. **No two folds agree, and the THINNEST fold
+(dvorak, 42.4% cross-row) picks the shipped values exactly.**
+🟢 **THE DECISIVE NUMBER, AND IT IS A RULER RESULT: EACH FOLD'S OWN SURFACE SPREAD (0.19–0.47 ms/char) EXCEEDS THE ENTIRE POOLED OFFSET SURFACE (0.1487).** The between-fold noise is larger than the whole
+signal being fit ⇒ **this is a RESOLUTION limit, not a data-volume one.** Identifying data is plentiful (3275 cross-row + 876 space-touching of 5854 cells; STAGGER-A-1). **Converging this needs MORE
+LAYOUTS (more folds), not more samples per layout** — the one concrete thing that would change the answer.
+🔴 **C — DO NOT ADOPT. NOTHING REACHES THE BAR, AND TWO CONTROLS ARE WHAT DECIDE IT.** 4 folds × 3 seeds, paired per-fold per MOR-FIX-1. Best candidate anywhere: ZERO at **−0.0603 (45% of the bar)**;
+B argmin −0.0377 (28%); space +0.125 −0.0212 (16%). (a) **`SEEDNOISE` — the IDENTICAL SHIPPED GEOMETRY re-run at seeds 3-5 — has sd 0.1219 with per-fold swings to +0.2237 (azerty) and −0.2092 (dvorak),
+LARGER THAN EVERY EFFECT MEASURED.** Every "win" here is reproducible by changing a random seed and touching no geometry. (b) **THE MANDATORY SAME-WIDTH PLACEBO BEAT EVERY REAL CANDIDATE**: a uniform +0.5
+shift carries **zero new information on letter pairs** (bit-identical) yet moved wmae **+0.1142** — ~2× ZERO's effect, in the WORSE direction — entirely via the 9.8% space-touching rows. **Reading a
+candidate against SHIPPED without this placebo would have mistaken a nuisance channel for a geometry result: the DIRECTION-1 lesson, reproduced exactly.**
+⚠ **AND THE HIGH-WPM GATE FAILS FOR THE SHIPPED GEOMETRY ITSELF — so a gate failure here is NOT attributable to any geometry change.** ZERO **and `SEEDNOISE`** both fail STRUCTURALLY (azerty bucket 120,
+3/3 seeds). Since `SEEDNOISE` *is* shipped, the honest inference is **"azerty b120 is not stable enough at 3 seeds to support a gated verdict"**, not "ZERO regresses high-wpm". 🟢 **THIS INDEPENDENTLY
+CONVERGES WITH MIRROR-1's 3rd defect** (the gate has no support floor and one 23-participant cell decided all 4 of its arms) — **two children, different arms, same azerty-b120 cell, same conclusion.**
+That makes the gate's missing support floor a **twice-evidenced** instrument defect, not a one-arm anecdote.
+🟡 **THE SPACE AXIS — registered BEFORE measuring, and it is the one place a real (sub-floor) direction shows.** 1-D dyadic scan of `row_offsets[0]` ∈ [−1,+1], letters pinned at shipped, 816 s. Argmin
+**+0.125**, delta vs the accidental 0.0 = **−0.0212 = 16% of the bar** ⇒ does not meet it. **CI spans the FULL 2.00 key widths (13/17 points) ⇒ NOT IDENTIFIED**, shipped implicit 0.0 inside it. ⚠ **But all
+FOUR per-fold argmins are POSITIVE (+0.125 / +0.125 / +0.75 / +0.75) and EVERY negative value is worse than 0.0.** That is a DIRECTION, not a value, and it is below the floor ⇒ **registered as an OPEN
+QUESTION, not a finding.** Physically plausible (a wide centred spacebar has no single column and the right thumb sits right of centre) but **untested, and not claimed.**
+🟢 **D, re-scoped to descriptive by me mid-run after my own H-stagger hypothesis was refuted (MIRROR-SCOPE-1): the number MOVES — 0.439× at the B argmin — and the child correctly refuses to read it as
+support.** It falls by the very magnitude-penalty mechanism STAGGER-D-1 proved (that argmin sets `off_bottom = 0.00`, i.e. a SMALLER stagger), and it is the same non-result as the sweep's "top only" row.
+Since the B argmin fails C's bar AND inverts the physical sign, a shrink here is evidence about MAGNITUDE, not correctness. **The space-axis row is identical to shipped BY CONSTRUCTION** — the 870-pair
+asymmetry universe excludes space, so the statistic is structurally blind to `off_space`.
+=> **NET, AND IT IS A POSITIVE RESULT RATHER THAN A FAILURE TO FIND ONE: the hardcode stays.** The geometry was right; what was undocumented is that only 2 of the 3 letter numbers are identified, that
+home = 0.0 is an origin choice, and that a 4th parameter exists by accident. **Registered follow-ups, all documentation/robustness and NONE a value change:** (1) fix **VALIDATE-GEOM-1** (`validate()` must
+forward `geometry` to `train_fn` or reject a non-default board loudly — it produced a **+0.72 ms/char** artifact, **5× the bar**, and is the reason this arm hand-rolled the fold loop); (2) give `row_offsets`
+an explicit `0: 0.0` entry (a pure no-op) so space's offset is a REVIEWABLE choice, and pin it; (3) pin `ROW_STAGGERED_31.row_offsets` (still open; the K31 offsets are what the SHIPPED models trained under);
+(4) document the gauge + the dyadic/`lsb`-threshold caveat; (5) **never use mirror asymmetry as a stagger objective** (provably sign-blind, minimized by a flat ortho board). **Not landed — per instruction
+the answer, not the fix, was the deliverable.**
