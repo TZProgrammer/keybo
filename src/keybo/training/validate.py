@@ -26,7 +26,7 @@ Cells below the sample floor are refused, not printed with a caveat.
 
 from __future__ import annotations
 
-from collections import defaultdict
+from collections import Counter, defaultdict
 from collections.abc import Mapping
 from dataclasses import dataclass
 
@@ -602,6 +602,27 @@ def _distance(positions) -> float:
     )
 
 
+def _bucket_support(cells: list[Cell]) -> dict[int, dict[str, int]]:
+    """Cells and distinct participants behind each wpm bucket.
+
+    Reported alongside the high-wpm verdict, never an input to it. A rho delta says nothing about
+    how much evidence produced it, and two arms were decided by the grid's thinnest cell — so the
+    count travels with the verdict rather than needing a separate audit to recover.
+
+    ``Cell.samples`` is ``(wpm, duration, pid, hold)``; the pid is what makes this a participant
+    count rather than another cell count.
+    """
+    out: dict[int, dict[str, int]] = {}
+    pids: dict[int, set[int]] = defaultdict(set)
+    counts: Counter[int] = Counter()
+    for c in cells:
+        counts[c.bucket] += 1
+        pids[c.bucket].update(s[2] for s in c.samples)
+    for bucket in sorted(counts):
+        out[bucket] = {"n_cells": counts[bucket], "n_participants": len(pids[bucket])}
+    return out
+
+
 def _baseline_fit(train_cells: list[Cell]) -> np.ndarray:
     """The dumb floor: duration ~ 1 + distance + wpm, least squares."""
     X = np.array([[1.0, _distance(c.positions), c.wpm] for c in train_cells])
@@ -658,6 +679,9 @@ def require_no_high_wpm_regression_in_report(report: dict, what: str) -> dict:
             "regressing_bucket_seed_counts": {str(k): v for k, v in sorted(counts.items())},
             "structural_buckets": struct,
             "noise_buckets": sorted(b for b, h in counts.items() if 0 < h < n),
+            # Carried through from the per-seed blocks (identical across seeds — same test cells),
+            # so a refusal can be read together with the evidence that produced it.
+            "support": next((b.get("support") for b in blocks if b.get("support")), {}) or {},
         }
         if struct:
             structural.append(f"{holdout} buckets {struct} on {n}/{n} seeds")
@@ -668,10 +692,26 @@ def require_no_high_wpm_regression_in_report(report: dict, what: str) -> dict:
             f"explicitly that the result is ungated."
         )
     if structural:
+        thin = [
+            f"{holdout} bucket {bucket} backed by {sup}"
+            for holdout, fold in per_fold.items()
+            for bucket in fold["structural_buckets"]
+            if (sup := fold.get("support", {}).get(str(bucket))) is not None
+        ]
+        # Report the support behind a refusal but do NOT let it change the verdict: two arms were
+        # decided by one 23-participant cell that also refused the SHIPPED model (see
+        # bucket_regression_report). Whether that is disqualifying is a pre-registered decision,
+        # so this states the evidence and still refuses.
+        caveat = (
+            f" SUPPORT behind the refusing bucket(s): {'; '.join(thin)} — check this is not a "
+            f"thin-cell artifact before acting on the refusal."
+            if thin
+            else ""
+        )
         raise HighWpmRegression(
             f"{what}: high-wpm regression is STRUCTURAL (every seed) in {'; '.join(structural)}. "
             f"Fast and slow typing are different regimes and this objective is aimed at people who have "
-            f"stopped being slow, so this is refused rather than ranked. Per-fold detail: {per_fold}."
+            f"stopped being slow, so this is refused rather than ranked.{caveat} Per-fold detail: {per_fold}."
         )
     return {"passed": True, "gated": True, "per_fold": per_fold}
 
@@ -841,7 +881,10 @@ def validate(
                 # Always present, gated or not: an artifact that merely OMITS a verdict reads the
                 # same whether the gate ran and passed or never ran at all (TAUGATE-1).
                 "high_wpm_gate": bucket_regression_report(
-                    bucket_rhos, baseline_buckets or {}, f"{holdout} seed={seed}"
+                    bucket_rhos,
+                    baseline_buckets or {},
+                    f"{holdout} seed={seed}",
+                    support=_bucket_support(test_cells),
                 ),
             }
         )

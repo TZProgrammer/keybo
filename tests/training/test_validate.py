@@ -35,6 +35,7 @@ from keybo.training.validate import (
     validate,
     weighted_mape,
 )
+from keybo.verdicts import bucket_regression_report
 
 # Four fake "layouts": the same six ngrams live at different positions, so a
 # geometry-lawful duration transfers across them while a memorized lookup cannot. Each
@@ -1023,3 +1024,66 @@ def test_validate_forwards_geometry_to_the_training_call():
         "validate(geometry=...) did not reach the training call; "
         f"trainer saw {[getattr(g, 'row_offsets', g) for g in seen]}"
     )
+
+
+# --- a high-wpm verdict must carry the support behind it (MIRROR-1 / ROWOFFSETS-1) --------
+
+
+def test_high_wpm_verdict_records_the_support_behind_it():
+    """A rho delta says nothing about how much evidence produced it.
+
+    Two arms were decided by the grid's thinnest cell (azerty b120, 64 cells / 23 participants),
+    and in one of them that cell also refused SEEDNOISE -- the SHIPPED geometry merely reseeded, a
+    gate refusing the incumbent. The counts must therefore travel WITH the verdict, so nobody can
+    read "failed the high-wpm gate" without seeing what backed it.
+
+    Support is recorded, deliberately NOT thresholded: a minimum-n would also silently decide which
+    past verdicts stand, which is a pre-registered decision rather than a default.
+    """
+    rows = _lawful_rows(n_pids=8, samples_per_pid=8)
+    report = validate(
+        rows,
+        seeds=[0],
+        wpm_lo=60,
+        wpm_hi=100,
+        bucket_width=20,
+        min_cell_samples=4,
+        n_boot=5,
+        train_params=_fast_params(),
+        baseline_buckets={60: 0.5, 80: 0.5},
+    )
+    for holdout, fold in report["folds"].items():
+        block = fold["seeds"][0]["high_wpm_gate"]
+        support = block["support"]
+        assert support is not None, (
+            f"{holdout}: verdict carries no support -- the count was dropped"
+        )
+        assert support, f"{holdout}: support is empty despite gated buckets"
+        for bucket, sup in support.items():
+            assert sup["n_cells"] >= 1, f"{holdout} bucket {bucket}: {sup}"
+            # The participant count is the point: it must not merely echo n_cells.
+            assert 1 <= sup["n_participants"] <= 8, f"{holdout} bucket {bucket}: {sup}"
+        # Every gated bucket must be accounted for, else a refusal could cite an unmeasured cell.
+        assert {str(b) for b in block["gated_buckets"]} <= set(support)
+
+
+def test_support_is_reported_but_never_changes_the_verdict():
+    """Thin support must not flip pass->fail or fail->pass. It is evidence, not an input."""
+    candidate = {60: 0.50, 80: 0.20}
+    baseline = {60: 0.50, 80: 0.50}
+    without = bucket_regression_report(candidate, baseline, "x")
+    with_thin = bucket_regression_report(
+        candidate,
+        baseline,
+        "x",
+        support={
+            60: {"n_cells": 999, "n_participants": 999},
+            80: {"n_cells": 3, "n_participants": 1},
+        },
+    )
+    assert without["passed"] is False and with_thin["passed"] is False
+    assert without["regressing_high_buckets"] == with_thin["regressing_high_buckets"]
+    # ...and the thin cell is surfaced so a reader cannot miss it.
+    assert with_thin["min_regressing_support"] == 1
+    # Not supplied stays distinguishable from supplied-and-thin.
+    assert without["support"] is None and without["min_regressing_support"] is None

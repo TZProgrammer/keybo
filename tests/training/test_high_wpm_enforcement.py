@@ -62,6 +62,9 @@ def test_a_clean_arm_PASSES_and_the_verdict_is_SERIALIZABLE() -> None:
     verdict = require_no_high_wpm_regression_in_report(
         _report({"qwerty": [[], [], []], "qwertz": [[], [], []]}), "clean"
     )
+    # Exact equality on purpose: a verdict quietly gaining a field is how a reader ends up
+    # trusting a dict whose shape they no longer know. `support` is {} here because `_report`
+    # builds blocks without it — "not supplied" stays distinguishable from "supplied and thin".
     assert verdict == {
         "passed": True,
         "gated": True,
@@ -71,12 +74,14 @@ def test_a_clean_arm_PASSES_and_the_verdict_is_SERIALIZABLE() -> None:
                 "regressing_bucket_seed_counts": {},
                 "structural_buckets": [],
                 "noise_buckets": [],
+                "support": {},
             },
             "qwertz": {
                 "n_seeds": 3,
                 "regressing_bucket_seed_counts": {},
                 "structural_buckets": [],
                 "noise_buckets": [],
+                "support": {},
             },
         },
     }

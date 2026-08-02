@@ -214,6 +214,7 @@ def bucket_regression_report(
     *,
     tolerance: float = HIGH_WPM_TOLERANCE,
     floor: int = HIGH_WPM_FLOOR,
+    support: Mapping[int, Mapping[str, int]] | None = None,
 ) -> dict:
     """The gate's verdict as a serializable dict — including when it did NOT run.
 
@@ -221,6 +222,17 @@ def bucket_regression_report(
     Both are explicit because an artifact that merely omits a verdict reads identically whether the
     gate ran and passed or never ran — the ambiguity that let the ``lolo`` tau gate report a pass
     while checking nothing (TAUGATE-1).
+
+    ``support`` optionally maps bucket -> {"n_cells": int, "n_participants": int}, and is recorded
+    verbatim under ``support`` so a verdict can never be read without the evidence behind it. It
+    does NOT change any verdict. Two arms (MIRROR-1 and ROWOFFSETS-1, independently) were decided
+    entirely by the thinnest cell in the grid — azerty b120, 64 cells / 23 participants — and in
+    ROWOFFSETS-1 that cell also refused SEEDNOISE, i.e. the SHIPPED geometry merely reseeded. A
+    gate that refuses the incumbent is measuring instability, not the candidate. Recording support
+    makes that visible at the point of the verdict instead of requiring a separate investigation.
+
+    Deliberately NOT a threshold: choosing a minimum n that silences that cell would also decide
+    which past verdicts stand, so the floor is a pre-registered decision, not a default.
 
     Never raises: use it for reporting, and :func:`require_no_high_wpm_regression` to enforce.
     """
@@ -248,6 +260,25 @@ def bucket_regression_report(
         "worst_bucket": min(deltas, key=lambda b: deltas[b]) if deltas else None,
         "worst_high_bucket": min(high, key=lambda b: high[b]) if high else None,
         "deltas": deltas,
+        # Evidence behind the verdict, never an input to it. `None` distinguishes "not supplied"
+        # from "supplied and thin" — the same absence-is-not-disproof rule as `gated` above.
+        "support": (
+            {str(b): dict(support[b]) for b in sorted(support) if b in deltas}
+            if support is not None
+            else None
+        ),
+        "min_regressing_support": (
+            min(
+                (
+                    int(support[b].get("n_participants", 0))
+                    for b in regressing
+                    if b in support and "n_participants" in support[b]
+                ),
+                default=None,
+            )
+            if support is not None
+            else None
+        ),
     }
     if gated:
         report["passed"] = not regressing
