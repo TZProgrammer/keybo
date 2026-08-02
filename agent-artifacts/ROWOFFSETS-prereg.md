@@ -93,3 +93,59 @@ D3. Registered as the DECISIVE quantity for D: the ratio (asymmetry with fitted 
 ## Hard constraints acknowledged
 data/models/k31/ read-only; no merge to main; no push of non-ledger code; no layout adopted; nothing
 in ~/agent-workflow-tool/; `mirror`/`latspan` trees read-only.
+
+---
+
+# ADDENDUM 1 — THE SPACE AXIS (`row_offsets[0]`). Registered BEFORE any space number exists.
+Added 2026-08-02 on parent instruction, arising from my own INVARIANT A finding. Nothing in this
+addendum has been measured at the time of writing. The 7x7 letter grid was already in flight and is
+UNAFFECTED, because A4 established the axes are exactly orthogonal (setting `row_offsets[0]` moves
+space-touching pairs and touches NO letter-letter pair, max|d| = 0.0e+00).
+
+## Why it is in scope
+`row_offsets` has keys {1,2,3}; space sits at `space_position=(0,0)`, so `.get(ay, 0.0)` silently
+supplies **0.0 for space**. That value was never chosen -- it is an artifact of DICT OMISSION. It is
+the single most consequential unexamined constant in the geometry, because space is the highest-
+frequency key in any corpus and **876 of 5854 bigram eval cells (15.0%)** touch it. A2/A4 proved it is
+a genuine free parameter of the model's feature map, not a gauge artifact.
+
+## What is being estimated
+`off_space` = the offset added to space's column when measuring `stagger_adjusted_dx` to/from space.
+Letter offsets are PINNED at shipped (top -0.25, home 0.0, bottom +0.50) so this is a clean 1-D scan
+and cannot be confounded with the letter block.
+
+## S1 — grid
+`off_space` in [-1.00, +1.00], step 0.125 (DYADIC, per A5: `is_lsb` tests `dx > 1.5` and 1.5 is
+exactly attainable, so non-dyadic values can flip an indicator on float noise). 17 points. The shipped
+implicit value **0.0 is ON the grid**, so the incumbent is evaluated by the identical code path.
+Physical prior, recorded now so it cannot be retrofitted: on a real ANSI board the spacebar is wide and
+centred, so a typist's thumb contact point has no single "column"; plausible values span roughly
+[-0.5, +0.5] and anything outside that would be a surprise needing explanation, not a result.
+
+## S2 — estimator and folds
+Leave-one-layout-out over all 4 layouts, seeds 0,1,2, trained AND evaluated under the same geometry
+(never `validate(geometry=)` -- VALIDATE-GEOM-1). Per-fold argmin = per-fold estimate. Report ALL FOUR
+per-fold estimates, never the pooled alone (parent's explicit instruction, and justified by the 42.4%
+dvorak / 59.9% qwerty per-fold cross-row spread).
+
+## S3 — THE BAR for the space axis, registered now
+Identical in form to C3 so the two axes are commensurable. An ADOPT of a non-zero `off_space` requires
+ALL THREE of:
+  (a) mean paired per-fold wmae delta vs shipped-implicit-0.0 <= **-0.135 ms/char** (the MODEL-SEED
+      floor for fixed boards -- NOT the 0.883 SEARCH-seed spread),
+  (b) the sign holds on **>= 3 of 4 folds**,
+  (c) no STRUCTURAL high-wpm regression (`require_no_high_wpm_regression_in_report`), or the result is
+      reported as UNGATED rather than as passing.
+Below that bar the registered conclusion is: **"the space offset is measurable but below the
+instrument's floor => the accidental 0.0 is not refuted, and it stays."**
+
+## S4 — CI and the honest-null rule
+CI = the set of grid points whose pooled held-out wmae is within the SEED-SPREAD of the pooled optimum.
+REGISTERED: if that set spans **>= 1.0 key width**, the conclusion is **"NOT IDENTIFIED AT THIS SAMPLE
+SIZE"** and no point estimate is quoted as the answer. A wide CI here is a perfectly good result and
+will be reported as such.
+
+## S5 — priority, registered so a budget squeeze cannot silently reorder it
+C (held-out effect vs the pre-registered bar) > B (letter grid) > S (space axis). If budget does not
+stretch to S, the report must say **"space axis: NOT MEASURED"** explicitly. Inferring it from the
+letter result is forbidden -- absence of measurement is not a null result.
