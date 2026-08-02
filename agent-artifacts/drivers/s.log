@@ -1,0 +1,26 @@
+fold azerty: 1728 train rows, 1001 test cells
+fold dvorak: 1717 train rows, 799 test cells
+fold qwerty: 1511 train rows, 2648 test cells
+fold qwertz: 1650 train rows, 1406 test cells
+  off_space=-1.0000  pooled_wmae=9.982393  [48s]
+  off_space=-0.8750  pooled_wmae=10.052750  [96s]
+  off_space=-0.7500  pooled_wmae=10.042376  [145s]
+  off_space=-0.6250  pooled_wmae=10.001268  [192s]
+  off_space=-0.5000  pooled_wmae=10.026028  [240s]
+  off_space=-0.3750  pooled_wmae=9.978246  [288s]
+  off_space=-0.2500  pooled_wmae=9.937230  [336s]
+  off_space=-0.1250  pooled_wmae=9.922005  [384s]
+  off_space=+0.0000  pooled_wmae=9.894788  [431s]
+  off_space=+0.1250  pooled_wmae=9.873565  [481s]
+  off_space=+0.2500  pooled_wmae=9.900258  [530s]
+  off_space=+0.3750  pooled_wmae=9.902963  [578s]
+  off_space=+0.5000  pooled_wmae=9.925133  [625s]
+  off_space=+0.6250  pooled_wmae=9.941115  [673s]
+  off_space=+0.7500  pooled_wmae=9.881555  [721s]
+  off_space=+0.8750  pooled_wmae=9.935310  [769s]
+  off_space=+1.0000  pooled_wmae=9.923144  [816s]
+
+argmin off_space=0.125 pooled_wmae=9.873565
+shipped implicit 0.0: pooled_wmae=9.894788
+delta(argmin - shipped) = -0.021224 ms/char
+total 816s

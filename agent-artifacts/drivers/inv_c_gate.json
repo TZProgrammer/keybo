@@ -1,0 +1,102 @@
+{
+ "SHIPPED": {
+  "verdict": "PASS",
+  "detail": {
+   "passed": true,
+   "gated": true,
+   "per_fold": {
+    "azerty": {
+     "n_seeds": 3,
+     "regressing_bucket_seed_counts": {
+      "100": 1,
+      "120": 1
+     },
+     "structural_buckets": [],
+     "noise_buckets": [
+      100,
+      120
+     ]
+    },
+    "dvorak": {
+     "n_seeds": 3,
+     "regressing_bucket_seed_counts": {
+      "100": 1
+     },
+     "structural_buckets": [],
+     "noise_buckets": [
+      100
+     ]
+    },
+    "qwerty": {
+     "n_seeds": 3,
+     "regressing_bucket_seed_counts": {},
+     "structural_buckets": [],
+     "noise_buckets": []
+    },
+    "qwertz": {
+     "n_seeds": 3,
+     "regressing_bucket_seed_counts": {
+      "120": 1
+     },
+     "structural_buckets": [],
+     "noise_buckets": [
+      120
+     ]
+    }
+   }
+  }
+ },
+ "PLACEBO": {
+  "verdict": "PASS",
+  "detail": {
+   "passed": true,
+   "gated": true,
+   "per_fold": {
+    "azerty": {
+     "n_seeds": 3,
+     "regressing_bucket_seed_counts": {
+      "120": 2
+     },
+     "structural_buckets": [],
+     "noise_buckets": [
+      120
+     ]
+    },
+    "dvorak": {
+     "n_seeds": 3,
+     "regressing_bucket_seed_counts": {
+      "120": 1
+     },
+     "structural_buckets": [],
+     "noise_buckets": [
+      120
+     ]
+    },
+    "qwerty": {
+     "n_seeds": 3,
+     "regressing_bucket_seed_counts": {
+      "120": 1
+     },
+     "structural_buckets": [],
+     "noise_buckets": [
+      120
+     ]
+    },
+    "qwertz": {
+     "n_seeds": 3,
+     "regressing_bucket_seed_counts": {},
+     "structural_buckets": [],
+     "noise_buckets": []
+    }
+   }
+  }
+ },
+ "ZERO": {
+  "verdict": "FAIL",
+  "error": "ZERO: high-wpm regression is STRUCTURAL (every seed) in azerty buckets [120] on 3/3 seeds. Fast and slow typing are different regimes and this objective is aimed at people who have stopped being slow, so this is refused rather than ranked. Per-fold detail: {'azerty': {'n_seeds': 3, 'regressing_bucket_seed_counts': {'120': 3}, 'structural_buckets': [120], 'noise_buckets': []}, 'dvorak': {'n_seeds': 3, 'regressing_bucket_seed_counts': {}, 'structural_buckets': [], 'noise_buckets': []}, 'qwerty': {'n_seeds': 3, 'regressing_bucket_seed_counts': {'80': 1}, 'structural_buckets': [], 'noise_buckets': [80]}, 'qwertz': {'n_seeds': 3, 'regressing_bucket_seed_counts': {}, 'structural_buckets': [], 'noise_buckets': []}}."
+ },
+ "SEEDNOISE": {
+  "verdict": "FAIL",
+  "error": "SEEDNOISE: high-wpm regression is STRUCTURAL (every seed) in azerty buckets [120] on 3/3 seeds. Fast and slow typing are different regimes and this objective is aimed at people who have stopped being slow, so this is refused rather than ranked. Per-fold detail: {'azerty': {'n_seeds': 3, 'regressing_bucket_seed_counts': {'120': 3}, 'structural_buckets': [120], 'noise_buckets': []}, 'dvorak': {'n_seeds': 3, 'regressing_bucket_seed_counts': {'100': 1}, 'structural_buckets': [], 'noise_buckets': [100]}, 'qwerty': {'n_seeds': 3, 'regressing_bucket_seed_counts': {'80': 1}, 'structural_buckets': [], 'noise_buckets': [80]}, 'qwertz': {'n_seeds': 3, 'regressing_bucket_seed_counts': {}, 'structural_buckets': [], 'noise_buckets': []}}."
+ }
+}
