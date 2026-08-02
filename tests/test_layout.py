@@ -11,6 +11,7 @@ import pytest
 
 from keybo.geometry import ROW_STAGGERED_30
 from keybo.layout import Layout
+from keybo.layouts import NAMED_LAYOUTS
 
 QWERTY = "qwertyuiopasdfghjkl;zxcvbnm,./"
 # 30 distinct chars incl. the two punctuation keys the old scorer ignored.
@@ -145,3 +146,43 @@ def test_random_swap_is_reproducible_with_seeded_rng():
     a.random_swap(random.Random(42))
     b.random_swap(random.Random(42))
     assert a.as_dict() == b.as_dict()
+
+
+# --- the named registry (colemak-dh two-string incident) ---------------------------------
+
+
+def test_every_named_layout_is_a_valid_permutation():
+    """Every registry entry must survive `Layout`, which is what nothing checked.
+
+    `colemak-dh` circulated as TWO strings under one name across campaign artifacts, and the
+    wrong one was 31 characters with a duplicated `z`. `Layout` would have rejected it -- but
+    the artifacts scored raw strings without ever constructing a `Layout`, so it produced a
+    plausible 0.867 ms/char error instead of an exception. Pinning it in the registry is what
+    makes the two strings distinguishable at all.
+    """
+    for name, keys in NAMED_LAYOUTS.items():
+        # Name the entry in the failure, or a bad registry addition reports only a bare raise.
+        try:
+            Layout(keys, ROW_STAGGERED_30)  # raises on wrong length or duplicates
+        except ValueError as exc:  # pragma: no cover - guards a malformed registry entry
+            raise AssertionError(f"named layout {name!r} is not a valid board: {exc}") from exc
+
+
+def test_colemak_dh_is_pinned_to_the_measured_variant():
+    # The variant every prior measurement actually used; the rival ...cdvzkh... is malformed.
+    assert NAMED_LAYOUTS["colemak-dh"] == "qwfpbjluy;arstgmneiozxcdvkh,./"
+
+
+def test_the_registry_validator_rejects_a_malformed_entry():
+    from keybo import layouts as m
+
+    original = m.NAMED_LAYOUTS
+    try:
+        m.NAMED_LAYOUTS = {**original, "bogus": "qwfpbjluy;arstgmneiozxcdvzkh,./"}  # 31, dup z
+        with pytest.raises(ValueError, match="31 keys"):
+            m._validate()
+        m.NAMED_LAYOUTS = {**original, "bogus": "qwertyuiopasdfghjkl;zxcvbnm,.."}  # 30, dup .
+        with pytest.raises(ValueError, match="repeats"):
+            m._validate()
+    finally:
+        m.NAMED_LAYOUTS = original
