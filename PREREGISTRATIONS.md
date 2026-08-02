@@ -11121,3 +11121,208 @@ the answer, not the fix, was the deliverable.**
 🔴 **THE STREAK IS NOW THE RESULT, NOT NINE SEPARATE DISAPPOINTMENTS.** Feature-frame arms attempted and their outcomes: same-row rolls (SRROLL-1, gate-rejected) · final-finger absolute position (ABSPOS-1) · quadgrams (QUADGRAM-1) · direction (DIRECTION, below floor) · normgauge (NORMOPT-1) · lateral-span ADD and REPLACE × bigram and trigram (LATSPAN-1, ×4) · mirror symmetry (MIRROR-1, inert-to-harmful) · fitted row_offsets (ROWOFFSETS-1, not identified). ⇒ **EVERY intervention on the COLUMN LIST has returned null or worse, while the two arms that touched the DATA/EVALUATION (the support audit; the fold-count limit) both returned STRUCTURAL findings.**
 
 🟢 **THE CONVERGENT EXPLANATION, now triangulated by four independent children:** ROWOFFSETS-1 (each fold's spread EXCEEDS the whole pooled surface ⇒ needs MORE LAYOUTS) · GENAUDIT-1 (tuned boards draw ~30% of predicted mass from never-observed cells) · MIRROR-1 (arm D, augmentation where support is thin, beat every frame-constraint arm) · LATSPAN-1 (a better descriptor adds nothing as a per-bigram input). ⇒ 🔴 **THE BINDING CONSTRAINT IS LAYOUT DIVERSITY IN THE TRAINING DATA — 4 folds — NOT THE EXPRESSIVENESS OF THE FRAME. Adding a tenth column is predicted null a priori; the next informative experiment changes the DATA or the EVALUATION.** ⚠ **This is a PREDICTION, and it is falsifiable: a frame arm that clears the bar on ≥3/4 folds with a same-geometry reseed control would refute it. Registering it so it can be held against future arms rather than re-litigated per-arm.**
+
+---
+
+## TOURNAMENT-1 — PREREGISTRATION: COMPLETE PAIRWISE ROUND-ROBIN OVER THE ADOPTION FIELD, AND A PROOF THAT THE CYCLE THE BRIEF ASKS FOR CANNOT EXIST ON THE PRIMARY AXIS
+
+**Registered 2026-08-02, BEFORE any number of mine exists.** Child `tournament`, spawned by
+`keybo-optimization`. Task, in the user's words: *"1v1 every layout we are considering against
+every other layout, and propose the one we will ship."* Worktree
+`/local/home/zegertho/agent/workspaces/tournament/wt`, branch `tournament` @ `3179dd3`.
+
+### §0 — A STRUCTURAL CORRECTION TO MY OWN BRIEF, REGISTERED AS A PREDICTION SO IT CAN BE HELD AGAINST ME
+
+🟢 **A CONDORCET CYCLE ON THE PRIMARY (PAIRED PER-SEED SPEED) AXIS IS MATHEMATICALLY IMPOSSIBLE,
+AND I REGISTER THAT AS A FALSIFIABLE PREDICTION BEFORE MEASURING.** My brief makes cycle-detection
+the headline first-class outcome ("if a cycle exists, that is the explanation for why five agents
+have failed to pick a winner"; "a total order imposed on a cyclic relation is an artifact"). With a
+COMMON seed set, the MOR-FIX-1-compliant paired margin is LINEAR:
+
+```
+margin(A,B) = (1/n) Σ_s [ x_s(A) − x_s(B) ] = mean_s x_s(A) − mean_s x_s(B) = M(A) − M(B)
+```
+
+so `sign(margin(A,B))` is induced by the scalar field `M(·)`. The relation "A beats B" (margin < 0
+AND clears the registered significance + floor bars) is therefore a SUB-RELATION of the total order
+by `M`, and every sub-relation of a total order is acyclic. **A cycle cannot occur — this is not
+"was not observed", it is "cannot exist".** PREDICTION: 0 cycles among all triples on the primary
+axis. Falsifier: any 3-cycle. Were one to appear, it would prove a BUG in my estimator (unequal
+seed sets across pairs, a non-paired mean-of-ratios collapse, or non-determinism), and I would
+report it as a defect and not as a finding about layouts.
+
+⇒ **CONSEQUENCE FOR THE BRIEF'S THESIS: the tournament cannot be the reason five prior agents
+failed to name a winner.** I register my competing explanation now: (a) the intra-cluster margins
+sit AT OR BELOW the instrument's resolution floor, and (b) the verdicts are PRICING-DEPENDENT
+(all-cells vs observed-only vs common-support), which is a validity problem, not an ordering
+problem. **A cycle IS well-posed under multi-criterion aggregation** (≥3 axes, per-pair majority),
+which is the classic Condorcet paradox — so that is where I will actually test for one (§6), and it
+is the only place a cycle finding would be about the boards rather than about my code.
+
+### §1 — THE CANDIDATE SET, AND THE JUSTIFICATION OF ITS BOUNDARY
+
+13 boards. Every string VERIFIED against a repo artifact or the registry, NOT taken from my brief's
+transcription (both strings my brief did give — `candidate` and `F(2.0)` — reconciled EXACTLY).
+
+**TUNED / KEYBO (7):** `arm-B` `flmpg-yuo,sntdcireahkxbwv'.jzq` · `BALL-1`
+`flmpg-yuo,sntcdireahkxbwv'.jzq` · `F(2.5)` `flmpg-,uoysntdcireahkxbwv.'jzq` · `F(2.0)`
+`pyu.,gdfnlhieaocstrmkj'-qbwzvx` · `candidate` `pyu.,vdfnlhieaocstrmkj'-qgwbzx` · `keybo-lsb`
+`pyuo,vgdnlhiea.cstrmkj-z'fwbxq` · `flagship-c3` `pyou'vgdnmheai.cstrlkjz,-wfbxq`
+**COMMUNITY (5):** `colemak` · `colemak-dh` · `graphite` · `semimak` · `dvorak`
+**BASELINE (1):** `qwerty` — mandatory incumbent/fallback.
+
+**EXCLUSIONS, each with its reason (per the brief's requirement to justify the boundary):**
+- `keybo-c30m`, `keybo-lsb+lm`, `archive-1843`, `archive-1846`, `lsb-sib`, `p16-balance`,
+  `p13stab-win`, `qwerty30m` — EXCLUDED as not boards a reasonable person is choosing between
+  *today*: REPOLISH-1 established that `keybo-c30m` and `keybo-lsb+lm` both 2-opt-polish to exactly
+  `candidate` (already in), `archive-1843`/`archive-1846`/`lsb-sib` collapse onto shared fixpoints,
+  and `qwerty30m` is a charset variant of the baseline rather than a design. Including a board that
+  polishes into another board manufactures a fake matchup, which is precisely what the brief warns
+  against. **`keybo-lsb` is retained DESPITE polishing to `candidate`** because it is the published
+  public flagship and the user may adopt it as such; its pair with `candidate` is labelled a
+  POLISH-PAIR, not a matchup.
+- `canary`, `recurva`, `sturdy`, `mtgap` — EXCLUDED: not in the adoption conversation in any prior
+  report, and `canary`/`recurva`/`sturdy` sit on the CLASSIC charset (`;`/`/` instead of `'`/`-`),
+  so they are not commensurable without a charset argument this task does not need.
+
+**⚠ REGISTERED AMBIGUITY — `colemak-dh` has TWO strings in prior artifacts** and I will not silently
+pick one: `qwfpbjluy;arstgmneioxcdvzkh,./` (ship2 `canon.json`) vs
+`qwfpbjluy;arstgmneiozxcdvkh,./` (ship2 `charset_hamming.json`). Both are published variants. **Rule
+registered in advance:** score BOTH, report both, and identify which one prior agents measured by
+reconciling against `covonly.json`'s `colemak-dh = 258.75802535209823`; the reconciling one enters
+the tournament and the other is reported as a disclosure.
+
+**NEAR-CLONE FAMILIES (declared in advance, from Hamming distance over the 30 slots).** Family A =
+{arm-B, BALL-1, F(2.5)} (pairwise 2–6); Family B = {F(2.0), candidate, keybo-lsb, flagship-c3}
+(`pyu`/`pyo` skeleton); cross-family 28–29. **Registered classification rule:** a pair with Hamming
+≤ 6 is a NEAR-CLONE PAIR and its verdict is reported as *"a within-design micro-variant
+comparison"*; a pair at Hamming ≥ 20 is a REAL MATCHUP. A pair where one board 2-opt-polishes into
+the other is a POLISH-PAIR and is NEVER reported as a design win.
+
+### §2 — PRIMARY AXIS AND THE PAIRED ESTIMATOR (MOR-FIX-1 COMPLIANT)
+
+Primary axis = **measured predicted speed, `ms_per_char`**, on the K31 production surface
+(`T2[a,b] + Tcond[a,b,c]`, seed-averaged in the shipped path), corpus `blend-v1` trigrams,
+`target_wpm = 90.0`, geometry `ROW_STAGGERED_30`. **`ms_per_char` (per CHARACTER TYPED), never raw
+corpus totals** — `timecard.TimeCard`'s own docstring establishes raw totals are not comparable
+across charsets, and this field spans charsets (qwerty covers 86.63% of corpus mass, C30M boards
+88.7%).
+
+**The unit of replication is the MODEL SEED.** For each seed `s` I build the per-seed tables
+(`T2_s`, `Tc_s`) and score every board, giving `x_s(board)` = that board's ms/char under seed `s`.
+For an unordered pair `{A,B}`: per-seed delta `d_s = x_s(A) − x_s(B)`, then mean / sd / sem /
+paired-t / CI over the SAME seed set for every pair. **Never a mean of ratios; never unequal seed
+sets across pairs.**
+
+**n = 25 seeds (0..24)**, matching SEEDTB-1 so its 10 published pairs are directly comparable.
+Seeds 0–2 are the shipped artifacts; 3–24 are retrained with the SEEDTB-1-recovered recipe
+(bigram `_DEFAULT_PARAMS` @ `random_state=s`, `n_jobs=48`; trigram **CAND4** = 427 trees, depth 5 —
+NOT the defaults, the load-bearing correction from SEEDTB-1). `data/models/k31/` is READ-ONLY;
+retrained models are written to my worktree only.
+
+### §3 — THE THREE PRICINGS (the brief asks for two; I add a third and say why)
+
+Every pair is decided under **each** pricing, and I report which verdicts FLIP:
+1. **ALL-CELLS** — every corpus trigram the board can type. The incumbent convention.
+2. **OBSERVED-ONLY** — only position-triples the trigram model actually SAW in training
+   (`tristrokes31_cond_v1.tsv`), per GENAUDIT-1. Guards the ~30%-unobserved-mass extrapolation.
+3. **COMMON-SUPPORT** (mine, new) — only corpus n-grams typable by ALL 13 boards. **Why it is
+   needed and why no prior agent's number is clean without it:** pricings 1 and 2 evaluate each
+   board over ITS OWN typable subset of the corpus, so a charset difference changes the
+   *denominator's composition*, not just its size. `ms_per_char` cancels the SIZE of the subset but
+   NOT its CONTENT. Common-support forces one identical n-gram set for all 13, making the
+   comparison a pure layout contrast.
+
+### §4 — THE MEASURED RESOLUTION FLOOR (INVARIANT 2), AND WHY THE BRIEF'S OWN CONTROL IS DEGENERATE
+
+🔴 **I MUST FLAG THAT MY BRIEF'S PRESCRIBED CONTROL CANNOT BE RUN AS WRITTEN.** It says *"reseed the
+SAME board against ITSELF and report that spread"*. In this paired design that is **identically
+zero for every seed**: the surface is deterministic given (board, seed), so `x_s(A) − x_s(A) = 0`
+exactly. There is no second stochastic draw. Reporting "floor = 0" would be a vacuous green — the
+same failure class the brief itself warns about ("a test that goes red proves nothing until you know
+WHICH failure you got"). The DIAGNOSIS behind the invariant is correct and binding (do NOT borrow
+0.135 or 0.883 — both are other harnesses' numbers), so I register three non-degenerate controls
+that measure THIS harness's own noise:
+
+- **FLOOR-A — split-half same-board placebo (the quotable floor).** Partition the 25 seeds into
+  disjoint halves H1, H2; for each board compute `|mean_{H1} x − mean_{H2} x|`. Truth is exactly 0
+  by construction, so the observed spread is pure instrument noise at the sample size a verdict is
+  read at. Report the distribution over boards × many random partitions; the floor is its p50 and
+  p90. **A margin below the p90 of this placebo is NOT a win regardless of p-value.**
+- **FLOOR-B — exact sign-flip permutation null, per pair.** Distribution-free: flip the signs of
+  the per-seed deltas over all 2^25 (sampled 20,000, fixed rng seed 20260802) and locate the
+  observed mean. Guards against the paired-t's normality assumption.
+- **FLOOR-C — verdict stability across disjoint seed halves.** Re-run the full tournament on seeds
+  {0..11} and {12..24} independently and count verdict disagreements. This measures *"would another
+  agent with different seeds get my answer?"* — the question that actually matters given five prior
+  agents disagreed.
+
+### §5 — THE VERDICT RULE, WITH `TIED` AS A REAL POSITIVE VERDICT (registered before measuring)
+
+For each pair, under each pricing, in order:
+- **`A` (or `B`) — a WIN** iff ALL THREE hold: (i) paired-t p < α after Holm correction within the
+  pricing's 78-pair family; (ii) `|mean margin|` ≥ **FLOOR-A p90**; (iii) the per-seed sign pattern
+  is ≥ 20 of 25 in the winner's favour. Requiring all three means a statistically significant
+  margin *below the measured floor* is NOT a win — the precise error INVARIANT 2 exists to prevent.
+- **`TIED` — an AFFIRMATIVE verdict, not a fallback for p>0.05:** the pair is TIED iff the 95% CI
+  for the mean margin lies ENTIRELY INSIDE ±FLOOR-A p90 — i.e. the data are precise enough to
+  exclude any difference larger than the instrument's own noise. This is an equivalence claim with
+  content: "these two boards are the same board to this instrument."
+- **`UNRESOLVED`** — everything else (CI spans the floor boundary: neither a win nor an
+  equivalence). Registered explicitly so `TIED` cannot absorb it. `UNRESOLVED` ≠ `TIED`.
+- **FLIP** — any pair whose verdict differs across the three pricings is marked FLIPPED and,
+  per the brief's INVARIANT 5, is **declared NOT DECIDED** irrespective of its all-cells verdict.
+
+α = 0.05 with Holm within each pricing's family of 78 pairs; the strict Bonferroni-over-all-tests
+figure is reported alongside as the conservative backstop. Direction of every reported margin: FIRST
+minus SECOND, negative = first is faster.
+
+### §6 — SECONDARY AXES, EACH LABELLED MEASURED vs OPINION (INVARIANT 4), AND THE ONLY PLACE A CYCLE IS WELL-POSED
+
+Every secondary axis carries a provenance tag and NONE may cast a deciding vote:
+- **`lat-span`** — MEASURED, and the informative lateral-stretch gauge (r = +0.3137 with speed on
+  150 unselected boards, LSBNAME-1). Included.
+- **`sfb`** — MEASURED corpus count. Included (largest weight in the project's own community
+  scorer).
+- **`comfort`** — 🔴 **OPINION. SIX HAND-CHOSEN WEIGHTS** (sfb 25, scissor 15, bottom_row 10, lsb
+  10, off_home 8, lag2_reuse 5). Reported, NEVER decisive, and always tagged.
+- **`lsb` / `lsb-dist`** — EXCLUDED as decision inputs: LSBNAME-1 measured them at r = +0.9954 with
+  each other (the SAME gauge) and r ≈ +0.08/+0.09 with speed (~uninformative).
+- **error rate** — EXCLUDED: the axis is dead (the 1.22× is the effect size of a gate that FAILED).
+- **"weak finger %"** — EXCLUDED: not a repo concept; it was invented by a parent, is
+  model-derived rather than a corpus count, and is partly zero-sum within a hand.
+
+**THE CYCLE TEST, run where it is meaningful:** aggregate {speed, sfb, lat-span} by per-pair
+majority and enumerate all C(13,3) = 286 triples for 3-cycles. A cycle HERE is a real finding about
+the field (genuine criterion conflict). PREDICTION registered: a cycle is PLAUSIBLE here (unlike on
+the primary axis, where it is impossible) because speed and comfort-shaped gauges are ~orthogonal
+on this field (spearman −0.098/+0.413/+0.280, all non-significant, PREREG:10215).
+
+### §7 — DEGENERACY CHECKS (registered in advance; this campaign has been bitten by vacuous greens)
+
+The tournament would be a vacuous green if the seeds did not actually differ. Checks, all of which
+must PASS before any verdict is read: **D1** all 44 new artifact sha256 distinct · **D2** per-seed
+ms/char distinct per board · **D3** `sd(margin) > 0` for every pair · **D4** shipped seeds 0–2
+reproduce SEEDTB-1's published per-seed values at 0.00e+00 · **D5** `keybo.__file__` resolves inside
+MY worktree — asserted in every driver, because the shared checkout `/local/home/zegertho/repos/keybo`
+is a LIVE SIBLING's working tree (`pick2`, currently on branch `pick2-decision`) and the venv's
+editable install points THERE, so a naive `import keybo` in this session silently measures another
+agent's branch (VERIFIED firing, 2026-08-02) · **D6** stroke-frame row counts 2202 / 16643 ·
+**D7** the acyclicity prediction of §0 confirmed numerically on the primary axis · **D8** the
+tournament matrix is exactly antisymmetric (A-beats-B ⟺ not B-beats-A) — catches a paired-sign bug.
+
+### §8 — WHAT WOULD FALSIFY MY OWN CONCLUSION, AND THE COMMITMENT ON THE PROPOSAL
+
+Registered so the write-up cannot be reverse-engineered from the numbers:
+- If FLOOR-A's p90 exceeds the entire intra-cluster spread, then **no intra-cluster board can be
+  named on speed** and I will say the tuned cluster is one equivalence class, then pick on an
+  explicitly-labelled non-measured tiebreaker.
+- If the common-support pricing REVERSES the tuned-vs-qwerty sign, the whole field collapses to
+  "charset artifact" and I must report that as the headline instead of a board.
+- **The proposal commitment (INVARIANT 6):** I will name exactly ONE board. I state in advance that
+  the tiebreaker, if needed, will be a NAMED non-measured criterion, and that it **must not** be a
+  Hamming distance or similarity score to any other layout — the user has said explicitly he does
+  not care about those. Learnability-from-qwerty is likewise NOT usable as a "similarity" proxy;
+  the only admissible non-measured criteria are ones I will name and defend in the report.
+
+**Nothing adopted. `src/keybo/layouts.py` untouched. `data/models/k31/` READ-ONLY. No code pushed.**
