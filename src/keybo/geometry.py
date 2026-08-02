@@ -56,13 +56,29 @@ class Geometry:
         slots: the key positions in canonical order (top row left-to-right, then home,
             then bottom). ``Layout`` assigns characters to these slots by index.
         row_offsets: horizontal stagger applied to a key's column when measuring
-            stagger-adjusted horizontal distance, keyed by row (y).
+            stagger-adjusted horizontal distance, keyed by row (y). ``y=3`` is the top
+            row, ``y=2`` home, ``y=1`` bottom, and ``y=0`` the space/thumb row, so the
+            shipped values read top -0.25 / home 0.0 / bottom +0.5 — the ANSI stagger.
+
+            ``home = 0.0`` is an ORIGIN CHOICE, not a measurement: offsets enter only
+            inside differences between two keys' rows, so adding a constant to all four
+            rows leaves every pair unchanged. Only the differences are identifiable.
+
+            The ``y=0`` entry is what pins space. It is written out explicitly rather
+            than left to ``dict.get``'s default so that it is reviewable and testable:
+            it is a real parameter, exactly orthogonal to the letter rows (changing it
+            moves every space-touching pair and no letter-letter pair). ROWOFFSETS-1
+            could not identify any of these values from the data — the leave-one-layout-out
+            CI spans 1.5 key widths on the letter axes and 2.0 on the space axis, with
+            these values inside it — so they are the physical defaults, not fitted ones.
         space_position: where the space bar sits. Space is a fixed key present on every
             layout (typed by the thumb), so it is not one of the assignable ``slots``.
     """
 
     slots: tuple[Position, ...]
-    row_offsets: dict[int, float] = field(default_factory=lambda: {1: 0.5, 2: 0.0, 3: -0.25})
+    row_offsets: dict[int, float] = field(
+        default_factory=lambda: {0: 0.0, 1: 0.5, 2: 0.0, 3: -0.25}
+    )
     space_position: Position = (0, 0)
 
     def finger(self, x: int) -> Finger:
@@ -90,8 +106,11 @@ class Geometry:
     def stagger_adjusted_dx(self, a: Position, b: Position) -> float:
         """Absolute horizontal distance between two keys, accounting for row stagger.
 
-        Rows without a stagger entry (notably the space/thumb row, y=0) contribute no
-        offset.
+        Already absolute — callers must not wrap the result in ``abs()`` again.
+
+        Any row without a stagger entry contributes no offset. Every row of the shipped
+        boards has one, including the space row (``y=0``, pinned at 0.0); the ``.get``
+        default is only a guard for a caller-supplied partial ``row_offsets``.
         """
         ax, ay = a
         bx, by = b

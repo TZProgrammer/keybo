@@ -787,6 +787,7 @@ def validate(
         model = train_fn(
             train_rows,
             target_wpm=(wpm_lo + wpm_hi) / 2,
+            geometry=geometry,
             direction=direction,
             kitchensink=kitchensink,
             **params,

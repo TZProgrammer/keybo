@@ -13,12 +13,16 @@ A harness that can't tell those apart would pass any model, which is worse than 
 """
 
 import warnings
+from dataclasses import replace
+from unittest import mock
 
 import numpy as np
 import pytest
 from scipy.stats import ConstantInputWarning
 
+import keybo.training.train as train_module
 from keybo.data.strokes import StrokeRow, iqr_average
+from keybo.geometry import ROW_STAGGERED_30, Geometry
 from keybo.training.validate import (
     Cell,
     _bootstrap_rho_ci,
@@ -973,3 +977,49 @@ def test_validate_evaluates_lograt_models_in_ms():
         assert m["wmae"] < 60
         assert m["rho"] > 0.6
         assert 0.3 < m["calibration_slope"] < 3.0
+
+
+# --- geometry must reach TRAINING, not just evaluation (VALIDATE-GEOM-1) -----------------
+
+
+def test_validate_forwards_geometry_to_the_training_call():
+    """``validate(geometry=X)`` must train on X, not on ``train_bigram_model``'s default.
+
+    The fold loop threads ``geometry`` into ``_predict_cells`` but for a long time did not
+    pass it to ``train_fn``, so a caller supplying a custom board got EVALUATION on their
+    geometry and TRAINING on the shipped one -- silently, with a plausible-looking report.
+    This is the "accepted but not honoured" defect class, and its whole danger is that no
+    output distinguishes it. So assert on the argument the trainer actually received.
+
+    It was inert for K30-vs-K31 (identical row_offsets, and featurization never reads
+    ``slots``), which is why it survived: only a DIFFERENT-STAGGER board reveals it.
+    """
+    custom = replace(ROW_STAGGERED_30, row_offsets={0: 0.0, 1: 0.25, 2: 0.0, 3: -0.75})
+    seen: list[Geometry] = []
+    # validate() imports train_bigram_model *inside* the function (validate.py:728), so the
+    # name must be patched on its SOURCE module -- patching validate_module would not
+    # intercept, and a spy that never fires would make this test vacuously green.
+    real = train_module.train_bigram_model
+
+    def spy(*args, **kwargs):
+        seen.append(kwargs.get("geometry"))
+        return real(*args, **kwargs)
+
+    with mock.patch.object(train_module, "train_bigram_model", spy):
+        validate(
+            _lawful_rows(n_pids=6, samples_per_pid=6),
+            seeds=[0],
+            wpm_lo=60,
+            wpm_hi=100,
+            bucket_width=40,
+            min_cell_samples=4,
+            n_boot=5,
+            train_params=_fast_params(),
+            geometry=custom,
+        )
+
+    assert seen, "train_bigram_model was never called -- the spy did not intercept training"
+    assert all(g is custom for g in seen), (
+        "validate(geometry=...) did not reach the training call; "
+        f"trainer saw {[getattr(g, 'row_offsets', g) for g in seen]}"
+    )

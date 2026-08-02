@@ -8,11 +8,13 @@ Coordinate system (inherited from the original project, verified against it):
   top row -0.25, home 0.0, bottom +0.5.
 """
 
+from dataclasses import replace
+from itertools import permutations
 from math import sqrt
 
 import pytest
 
-from keybo.geometry import ROW_STAGGERED_30, Finger, Geometry
+from keybo.geometry import ROW_STAGGERED_30, ROW_STAGGERED_31, Finger, Geometry
 
 
 def test_ships_a_row_staggered_30_key_geometry():
@@ -78,7 +80,65 @@ def test_same_finger_is_same_finger_same_hand():
 
 
 def test_row_offsets_match_the_row_stagger():
-    assert ROW_STAGGERED_30.row_offsets == {1: 0.5, 2: 0.0, 3: -0.25}
+    # y=3 top, y=2 home, y=1 bottom, y=0 space -> top -0.25 / home 0.0 / bottom +0.5.
+    # The y=0 entry is written out rather than left to dict.get's default: it is a real
+    # parameter (see the orthogonality test below), so it must be reviewable here.
+    assert ROW_STAGGERED_30.row_offsets == {0: 0.0, 1: 0.5, 2: 0.0, 3: -0.25}
+
+
+def test_row_offsets_are_pinned_on_the_k31_board_too():
+    # ROW_STAGGERED_31 adds the quote slot but must not diverge on the stagger, or every
+    # K30-vs-K31 comparison silently compares two different physical boards.
+    assert ROW_STAGGERED_31.row_offsets == ROW_STAGGERED_30.row_offsets
+    assert ROW_STAGGERED_31.space_position == ROW_STAGGERED_30.space_position
+
+
+def test_space_offset_is_orthogonal_to_the_letter_rows():
+    """The y=0 offset moves space-touching pairs and *only* those.
+
+    This is why it has to be explicit: it is exactly orthogonal to the letter block, so a
+    sweep over rows 1-3 holds it at a value nobody chose. Guards the STAGGER-A-1 finding.
+    """
+    moved = replace(
+        ROW_STAGGERED_30,
+        row_offsets={**ROW_STAGGERED_30.row_offsets, 0: 0.61},
+    )
+    space = ROW_STAGGERED_30.space_position
+    for a, b in permutations(ROW_STAGGERED_30.slots, 2):
+        assert moved.stagger_adjusted_dx(a, b) == ROW_STAGGERED_30.stagger_adjusted_dx(a, b)
+    for key in ROW_STAGGERED_30.slots:
+        assert moved.stagger_adjusted_dx(key, space) != pytest.approx(
+            ROW_STAGGERED_30.stagger_adjusted_dx(key, space)
+        )
+
+
+def test_a_uniform_offset_shift_cancels_only_where_every_row_has_an_entry():
+    """Ledger:9313 said a uniform shift "cancels because offsets enter only inside
+    differences". That holds for letter-letter pairs, and it holds for space-touching
+    pairs *only because* y=0 now has an entry that shifts with the rest. Before the
+    explicit entry, dict.get pinned space at 0.0 and every space pair moved by the shift.
+    """
+    c = 0.37
+    shifted = replace(
+        ROW_STAGGERED_30,
+        row_offsets={k: v + c for k, v in ROW_STAGGERED_30.row_offsets.items()},
+    )
+    space = ROW_STAGGERED_30.space_position
+    for a, b in permutations([*ROW_STAGGERED_30.slots, space], 2):
+        assert shifted.stagger_adjusted_dx(a, b) == pytest.approx(
+            ROW_STAGGERED_30.stagger_adjusted_dx(a, b)
+        )
+
+
+def test_same_row_pairs_carry_no_offset_information():
+    # Offsets cancel within a row, so same-row pairs are invariant to *any* offsets. This
+    # is what makes only cross-row pairs able to identify the stagger (ROWOFFSETS-1).
+    arbitrary = replace(ROW_STAGGERED_30, row_offsets={0: 0.3, 1: -0.9, 2: 0.4, 3: 1.7})
+    for a, b in permutations(ROW_STAGGERED_30.slots, 2):
+        if a[1] == b[1]:
+            assert arbitrary.stagger_adjusted_dx(a, b) == pytest.approx(
+                ROW_STAGGERED_30.stagger_adjusted_dx(a, b)
+            )
 
 
 def test_stagger_adjusted_dx_applies_row_offsets():
