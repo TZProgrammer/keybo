@@ -64,7 +64,6 @@ from keybo.analysis.discrimination import format_report as format_discrimination
 from keybo.analysis.discrimination import require_declared_invariants_hold
 from keybo.analysis.kmstats import STAT_NAMES, KmStats
 from keybo.analysis.lateral_span import LateralSpan
-from keybo.features import classify as _C
 from keybo.analysis.redirects import REDIRECT_CLASSES, RedirectFamily
 from keybo.analysis.scissor_fingers import FINGER_NAMES, ScissorByFinger
 from keybo.analysis.skipgram_span import sg_dist as sg_dist_gauge
@@ -77,6 +76,7 @@ from keybo.data.corpus import (
     known_corpora,
     production_corpus_dir,
 )
+from keybo.features import classify as _C
 from keybo.geometry import ROW_STAGGERED_30
 from keybo.layout import Layout
 from keybo.layouts import NAMED_LAYOUTS
@@ -318,7 +318,6 @@ def _raw_total_reconciliation(card, ref_card) -> dict | None:
     }
 
 
-
 def _narrow_lsb_share(layout, bigram_freqs) -> float:
     """Corpus mass of bigrams the MODEL's ``classify.is_lsb`` flags (index/middle only).
 
@@ -336,6 +335,7 @@ def _narrow_lsb_share(layout, bigram_freqs) -> float:
         if _C.is_lsb(layout.geometry, a, b):
             total += f
     return total
+
 
 def run(args: argparse.Namespace) -> int:
     specs = [_resolve(s) for s in args.layouts]
