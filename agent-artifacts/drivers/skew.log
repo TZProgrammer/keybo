@@ -1,0 +1,13 @@
+loaded 2202 rows in 236.9s  (CLI settings: wpm_threshold=0,min_samples=1)
+dvorak fold: 1717 train rows, 799 test cells
+one train_bigram_model fit: 15.9s
+second fit: 20.5s
+
+wmae  train=ship eval=ship : 13.229591
+wmae  train=ship eval=WILD : 14.130878   <-- validate(geometry=WILD) today
+wmae  train=WILD eval=WILD : 13.408273   <-- the honest A/B
+
+models differ? max|pred_ship_model - pred_wild_model| on same eval geom = 207.531302  => geometry DOES change training when passed
+=> CONFIRMED: validate() never forwards `geometry` to train_fn (line ~787). The documented `geometry=` parameter is EVAL-ONLY.
+
+workaround: pass geometry inside train_params (forwarded via **params)
