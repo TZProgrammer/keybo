@@ -12022,3 +12022,160 @@ fresh base off `origin/main` so the parent's unpushed local HEAD cannot ride alo
 honoured: `PYTHONPATH` pinned to my worktree with `keybo.__file__` asserted in-worktree (**the D5
 trap is LIVE — a bare `import keybo` resolves to the shared checkout on `main`**), all four thread
 vars set before importing xgboost, `/tmp` **subdir** only, `require_finite` on every aggregate.
+
+---
+
+## CALIB-1 RESULT — **UNIFORM, NOT DIFFERENTIAL** (0 of 6 classes survive Holm; the observed ratio spread is *below* noise) — and **NOT FIXED, because a rescale is the WRONG INSTRUMENT: the required correction is a property of the LAYOUT, not of the surface.** Backlog **E4 / roadmap 4.2 is now IMPLEMENTED and GATED** — as a REPORT, with the threshold left to the human.
+
+🟢 **NEGATIVE CONTROLS FIRST, BOTH GREEN.** All six published class contrasts reproduce with my own
+code (worst |diff| **0.0049 ms** = the 2-dp rounding of the published values, all six `n` exact), and
+my independently rebuilt 486 pairs match `sfbprice`'s `c02` records **BYTE-EXACTLY**
+(|Δraw| = |Δpred| = |Δpred_b| = **0.000e+00**, |Δn| = 0 — two independent code paths). **The
+phenomenon is real exactly as PICK2-1/SFBPRICE-1 stated it.** Two definitions had to be recovered
+and are recorded as traps: the row classes are **either-key** (`row_a==R or row_b==R`), not
+landing-key; and in `ROW_STAGGERED_31` **y=3 is the TOP row, y=1 the BOTTOM**.
+
+🔴 **CORRECTION TO THE FRAMING THAT SPAWNED THIS ARM — the "computed but never gated" charge is HALF
+right, and the half that is wrong makes the story WORSE.** `grep -c calibration_slope
+PREREGISTRATIONS.md` = **0**, and the only assertions in the suite were `0.5 < slope < 2.0`
+(`tests/training/test_validate.py:370`) and `0.3 < slope < 3.0` (:980) — **a slope of 2.9 passed the
+suite.** But the ledger DOES report the quantity in prose, twice, and reads it as *reassurance*:
+**:98** *"Hardened metrics: calibration slope 1.04 on qwerty (no compression)"* and **:356** *"both
+champions hold τ +1.0 with calibration slopes ~1.0 per fold."* ⇒ **the number was measured, reported,
+AND MISREAD as evidence of calibration.** A number that was looked at and misinterpreted is harder to
+catch than one nobody read. ⚠ **STANDING LESSON: when a metric and a hand-computed diagnostic
+disagree, suspect the ESTIMAND before suspecting either number.**
+
+🔴🔴 **THE CENTRAL FINDING, AND IT DISSOLVES THE APPARENT CONTRADICTION: the repo's
+`calibration_slope` and the campaign's "ratio of contrasts" are TWO SIDES OF ONE ATTENUATION
+IDENTITY.** `calibration_slope` is `slope(obs~pred)`; the ratio tracks `slope(pred~obs)`. Measured on
+the 486 pairs: **1.461839 × 0.296078 = 0.432818 = r² to 5.6e-16**, and they are **NOT reciprocals**
+(1/1.4618 = 0.684 ≠ 0.296). The six published ratios (mean **0.3708**) live on the attenuated side.
+
+🔴 **AND THE ALGEBRA THAT DECIDES WHETHER THIS IS A DEFECT AT ALL — I REGISTERED THE OPPOSITE AND WAS
+WRONG.** My prereg's null was that a small ratio is what an MSE-optimal predictor *should* produce.
+**False.** For the conditional mean `sd(pred) = r·sd(obs)`, hence **`slope(obs~pred) = 1` EXACTLY at
+ANY r².** ⇒ **A LOW r² DOES NOT LICENSE A SLOPE AWAY FROM 1; they are two separate defects, and
+conflating them is exactly what let a compressed surface read as "well calibrated" for a whole
+campaign.** Measured: `sd(raw)` 40.378, `sd(pred)` 18.172, `r` 0.6579 ⇒ an optimal predictor needs
+`sd(pred)` **26.56**, so the surface is **over-shrunk by 1.4618×** at pair level. This identity is now
+a test built from data (`test_low_r2_does_not_license_a_slope_away_from_1`), not an assertion.
+
+🟢 **INVARIANT 2 — REGISTERED VERDICT: UNIFORM.** Per the rule registered before measuring (residual
+class contrasts after ONE global affine map, the map **refitted inside every one of 10,000 pair-level
+bootstrap draws**, Holm across 6 at α=0.05): **NO class survives** — same-finger −0.63 ms (p=0.996),
+same-hand +7.09 (0.097), dy≥2 +1.24 (0.960), bottom-row +5.05 (0.018, Holm needs ≤0.0083),
+adjacent +6.49 (0.272), top-row −6.82 (0.055, needs ≤0.010). The two nearest-to-significant classes
+point in **opposite** directions (bottom +5.05 vs top −6.82) — a single map slightly mis-fitting the
+ROW axis, not a pricing hierarchy. 🟢 **THE STRONGER TEST, in the campaign's own currency: observed
+six-ratio spread 0.4890 vs a uniform-truth null at p50 1.0384 / p95 5.6382 ⇒ p = 0.834 — THE OBSERVED
+SPREAD IS SMALLER THAN NOISE ALONE WOULD PRODUCE.** ⚠ **The six-ratio table was the WRONG INSTRUMENT
+and its CIs prove it: dy≥2 is [0.2026, 2.2732] and top-row is [−1.1293, 1.3433] — a ratio estimator
+with a small raw contrast in the denominator.** ⇒ **SFBPRICE-1's single global affine correction is
+the licensed form, and the "wrong exchange rate between features" harm model is REFUTED.**
+
+🔴 **INVARIANT 1 DECOMPOSITION (mean ratio 0.3708 → 1.0), with one mechanism DELIBERATELY UNQUANTIFIED:**
+**ESTIMAND owns ~72%** — restoring the practice term `b` closes **57.8%** (0.3708 → **0.7371**; per
+class +12.2% to **+100.7%**, so SFBPRICE-1's "49% for same-finger" *understated* `b`'s role), and
+using a mean rather than a median-of-medians reaches **0.8232**. **ERRORS-IN-VARIABLES owns ~NOTHING
+and is REFUTED by its own registered falsifier** (+0.0027 vs a 0.03 threshold), because 🔴 **the raw
+side is NOT noisy — split-half reliability of a pair's median is 0.9860 (random) / 0.9854
+(participant-level), noise sd only 4.8 ms.** ⇒ the r² **ceiling is 0.986** and the observed 0.4328
+reaches only **43.9%** of it, so **the unexplained 55% is GENUINE MODEL MISFIT, not target noise** —
+refuting my own registered favourite. ⚠ **H-SHRINK (γ/α) IS NOT QUANTIFIED: I did not run the γ=0
+ablation, so I claim NO share for tunable shrinkage rather than guessing one.** It is the highest-value
+follow-up.
+
+🔴 **THE SCOPE CORRECTION THAT MATTERS MOST — AT CELL LEVEL THE COMPRESSION IS *ONE FOLD*, NOT THE
+SURFACE.** A real 12-model LOLO (4 holdouts × 3 seeds) through the reviewed `validate()` seams, on
+the **bucket-centered** (structural) slope — wpm is a model INPUT, so a pooled slope is carried by the
+wpm→duration ramp the model was handed: **azerty 1.0423 · dvorak 0.9248 · qwertz 1.0217 · QWERTY
+1.4067.** ⇒ **three of four folds are calibrated to within 0.08 of 1.0, and only qwerty compresses —
+its 1.4067 essentially REPRODUCES the pair-level 1.4618.** The "surface-wide 1.46× compression" is the
+**hardest fold's** number (qwerty: fewest training cells, most test cells — the ledger's own
+"familiar hardest-fold pattern").
+
+🔴 **INVARIANT 3 — ALL FOUR FIX ROUTES REJECTED, and the REASON is the finding.** Registered rule
+(map fitted on HELD-IN folds only, applied to HELD-OUT; adoptable iff mean Δ≤0 AND ≥3/4 folds
+non-worse on BOTH `wmae` and `umae`): affine-held-in **Δwmae +0.5942, 0/12 cells better**;
+affine-**ORACLE** +1.5833; restore-`b` **+9.9065**; `b`-then-affine +1.9925. **(a) calibration DOES
+move into band — pooled 0.9796 / centered 1.0488 — and (b) held-out magnitude accuracy REGRESSES on
+all 12 of 12 cells, exactly as I registered.** 🔴 **MECHANISM: THE REQUIRED CORRECTION IS
+LAYOUT-SPECIFIC AND CANNOT TRANSFER** — a held-in map always says "expand by ~1.02–1.08" while the
+oracle spans **0.9189 (dvorak) to 1.2283 (qwerty)**; a held-in map cannot know the held-out fold's
+calibration error because **that error is a property of the LAYOUT.** **Even the ORACLE map fails**
+(qwerty Δwmae +7.34), so this is not a "fit it better" problem. ⚠ **THE TENSION IS NOT THE ONE
+EXPECTED: a positive-slope affine map is MONOTONE, so ρ/τ are invariant BY CONSTRUCTION and the fix
+CANNOT cost rank accuracy — the entire cost lands on MAGNITUDE, and it comes from layout
+heterogeneity, not from removing useful shrinkage.** ⚠ **Also: `b` helps the CONTRAST and hurts the
+LEVEL** (mean `b` = −0.127 log units ⇒ ×0.88 on every prediction; `wmae` is level-sensitive, a
+contrast is not) — both measurements are right about different estimands, so "restore `b`" is not a
+fix either. **RECOMMENDATION: do NOT install a rescale. Report the slope, and read the qwerty-fold
+compression as a DATA-DIVERSITY symptom** — agreeing with CLOSING-1/2 and LATSPAN-1's nine nulls.
+
+🟢 **INVARIANT 4 — THE BLAST RADIUS IS SMALL AND MOSTLY PROVABLE. `ms/char` is LINEAR in the tables,
+so an affine surface map sends `mspc → A + b·mspc`; VERIFIED to machine precision — across 39
+equal-coverage board pairs every ms margin scales by exactly `b`, worst |margin_ratio − b| =
+2.164e-12.**
+- **INSENSITIVE (order/sign-only, invariant under any positive affine map):** 🟢 **`candidate`
+  SURVIVES — rank 3/13 with ZERO losses above the floor under ALL FOUR pricings**, and there are
+  **0 rank changes** in the whole 13-board field (top-5 `F(2.0), arm-B, candidate, F(2.5), BALL-1`
+  under every pricing); the 5-board cluster equivalence; all 78 TOURNAMENT-1 pair verdicts;
+  "qwerty is slowest"; **every ρ/τ-based arm verdict including LATSPAN-1's nine nulls.**
+- **SENSITIVE (ms- or percent-denominated):** 🔴 **the qwerty-vs-field gap IN PERCENT is NOT
+  invariant — 3.6845% → 5.6001%** (absolute 9.7147 → 14.2013 ms), because a percent is a ratio of a
+  **scaling margin** to a **non-scaling level**. ⚠ **Direction matters: the correction makes qwerty
+  look WORSE, so the published ~3.4–3.7% is a LOWER BOUND and no conclusion is overturned.** Also
+  every "X beats Y by N ms/char" figure (scales by exactly `b`), and **PRICEBAND-1's ms-denominated
+  sfb cap** — its *location* in sfb units is unchanged (`sf_share` is a pure corpus/board quantity)
+  but the **ms price** attached to it is understated by 1.05–1.46×.
+- 🟢 **A PROVABLE EXEMPTION THAT SHRINKS THE RADIUS FURTHER: the practice term CANCELS EXACTLY
+  between layouts — MEASURED, not assumed.** `b` is keyed by *ngram identity*, so its
+  frequency-weighted total is a corpus constant: **−0.12673430 for candidate, F(2.0) AND arm-B,
+  identical to 8 decimals** across equal coverage. ⇒ **the largest single component of "the
+  compression" has ZERO effect on top-cluster decisions**, and `train.py:27`'s "scoring ignores `b`"
+  is CORRECT for layout comparison. ⚠ **But across UNEQUAL coverage the residual is 4.45e-3 log
+  units ≈ 1.1 ms/char — NOT negligible against ~0.3 ms/char cluster margins**, so `b` does *not*
+  cancel in qwerty-vs-candidate magnitudes.
+- 🟢 **FLOOR MEASURED, NOT BORROWED:** split-half same-board placebo (truth = 0 by construction),
+  p90 **0.2855** — which reproduces TOURNAMENT-1's **0.2921** and SFBPRICE-1's **0.2905** from a
+  THIRD code path ⇒ same floor, **the count of distinct floors stays at FOUR.**
+
+🟢 **INVARIANT 5 — E4 IS NOW IMPLEMENTED, AND DELIBERATELY AS A REPORT RATHER THAN A THRESHOLD
+(the GATESUPPORT-1 precedent).** `verdicts.py` gains `calibration_report()` / `require_calibration()`
+/ `CalibrationCompressed`, wired into `validate()` as a **`calibration_gate` block beside
+`high_wpm_gate` that is ALWAYS emitted** — `gated` says whether a verdict was reachable and `passed`
+is `None` when it was not, so an artifact that merely OMITS a calibration verdict can no longer read
+like a passing one (the TAUGATE-1 rule). It reports `pooled` + **`bucket_centered`** + every
+per-bucket slope, each with its cells/participants **support travelling alongside**.
+⚠ **`require_calibration` takes `band` as a REQUIRED keyword with NO DEFAULT — deliberately unlike
+every other gate in the module — because a calibration band has RETROACTIVE FORCE.**
+`CALIBRATION_SLOPE_RECOMMENDED_BAND = (0.90, 1.10)` exists **to hand a human, not to apply.**
+**MY RECOMMENDATION, THE DECISION IS THE HUMAN'S: gate the bucket-centered slope per fold at
+[0.90, 1.10]. ITS RETROACTIVE FORCE, STATED PLAINLY — THE SHIPPED SURFACE FAILS IT ON THE QWERTY FOLD
+(1.4067) and passes on the other three; a tighter [0.95, 1.05] would also fail dvorak (0.9248). So
+choosing this number decides whether the qwerty fold's past results stand.** The TARGET of 1.0 is not
+negotiable (the identity above); only the WIDTH is a judgement.
+🟢 **9 new tests, and the guard is MUTATION-TESTED: forcing `report["passed"] = True` turns exactly 3
+of them red with "DID NOT RAISE", so it is not vacuously green.** Full suite **1276 passed / 3
+skipped / 0 failed**.
+
+⚠ **WHAT I AM NOT CLAIMING.** (1) **H-SHRINK's share is UNMEASURED** (no γ=0 ablation) — the highest
+-value follow-up. (2) **The trigram `Tc` is uncorrected and its calibration unmeasured**; every slope
+here is a bigram-surface statement. (3) **WHY qwerty specifically compresses is not isolated** (fewest
+train cells / most test cells is plausible, not established). (4) **The gate's END-TO-END run on a
+live `validate()` was SIGKILLed by tmux-server crashes THREE times (exit 144, not a test failure) and
+I have not seen it finish — so the gate is verified by unit + mutation tests and by the real 12-model
+LOLO whose slopes it consumes, but I do NOT claim the end-to-end run passed.** (5) Isotonic/non-affine
+recalibration untested; I expect it to fail the same transfer test for the same layout-specific
+reason, but that is an inference.
+
+**PROVENANCE.** PREREG `57281d1` @ **2026-08-03T06:03:20Z**, committed before any new number of mine
+existed (only E-control reproductions of ALREADY-PUBLISHED values preceded it, as its §0 states).
+Gate + drivers `9b22a91`, gate-effectiveness driver `93b2b5a`. Branch `calib` stays LOCAL;
+`data/models/k31/` never written; `layouts.py` untouched; no layout adopted or promoted; nothing
+pushed but this ledger entry. 🟢 **The D5 trap fired for real** — a bare `import keybo` resolves to
+the SHARED checkout on `main`, so every driver asserts `keybo.__file__` in-worktree and prints both
+branches. Artifacts: `/local/home/zegertho/agent/state/calib/artifacts/` (`k01_uniform.json`,
+`k02_decompose.json`, `k03_reconcile_fix.json`, `k04_blast.json`,
+`profiles-and-artifacts-index.md`).
