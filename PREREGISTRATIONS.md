@@ -11883,3 +11883,199 @@ ratios show.**
 🟢 **CONTROLS AND PROCESS: E1a reproduces TOURNAMENT-1's 125 published per-seed values at 0.000e+00; E1b vs shipped `card()` at 1.211e-14; E3 reproduced all EIGHT published sfb-pricing quantities identically, and its T2 matches mine at max|diff| 0.000e+00.** 🟢 **THE RESCUED SEED TABLES EARNED THEIR RESCUE: the whole n=25 1v1 took 4 SECONDS.** ⚠ **HIGH-WPM GATE declared UNGATED-BY-CONSTRUCTION rather than faked — a surface edit has no rho, and claiming a pass would BE the TAUGATE-1 defect.** Branch `sfbprice` @ 82244e5 stays local; `data/models/k31/` never written; `layouts.py` untouched; nothing adopted.
 
 ⇒ 🟢 **NET, AND THIS CLOSES THE ADOPTION QUESTION: the proposed board is `candidate` = `pyu.,vdfnlhieaocstrmkj'-qgwbzx`. The strongest objection raised against it — that the top cluster might be an artifact of a mispriced objective — was tested at the objective level and RESOLVED IN ITS FAVOUR: correcting the price makes the search prefer `candidate` OVER arm-B, and the residual mispricing was working against it all along. What remains is not a measurement gap but a MODEL-CLASS limit (the frame cannot express the raw price at any finite weight) and the standing 4-fold layout-diversity ceiling of CLOSING-2.**
+
+
+---
+
+# LOS-1 PREREGISTRATION — a Likelihood-Of-Superiority instrument (agent `los`)
+
+Registered 2026-08-03T15:53:51Z, BEFORE any LOS number of this agent existed.
+Full text also at `/local/home/zegertho/agent/state/los/PREREGISTRATION.md`.
+
+# PREREGISTRATION — LOS-1: a Likelihood-Of-Superiority instrument for layout A vs B
+
+**Agent:** `los` (subagent of `keybo-optimization`). **Written before any LOS number of mine exists.**
+Only quantities I did NOT compute are cited below (prior siblings' published values, used as inputs
+and as calibration targets). The causal order is checkable in git: this file is committed BEFORE the
+first LOS number.
+
+---
+
+## §0. THE PROBLEM I AM SOLVING, AND THE DEFECT I MUST NOT REPRODUCE
+
+The user's words: *"a 0.01 ms/char difference is not significant since the stddev of our models is so
+high, we need a metric that tells us the CONFIDENCE that one layout is faster than another, kind of
+like fishtest."*
+
+The defect to avoid — **significance without resolution** (TOURNAMENT-1, measured): 21 of 30
+top-cluster pair-pricings CLEARED HOLM correction while EVERY margin sat BELOW the measured
+resolution floor; `arm-B vs F(2.5)` is p=1.7e-04 / 4.9e-21 / 1.3e-03 across three pricings AND
+flips sign between them. A p-value answers *"is the mean nonzero"*, which is not the question.
+
+⇒ **A LOS that returns 0.99 on a sub-floor margin is worse than no instrument.** The registered
+requirement is therefore not merely "compute a probability" but "compute one that CANNOT do that",
+and demonstrate it cannot.
+
+## §1. THE ESTIMAND — registered BEFORE any math (INVARIANT 1)
+
+Three readings of "confidence that A is faster than B" are available and give different numbers. I
+register **all three, computed and reported side by side**, because the honest deliverable is the
+DROP between them, and I name (b) as the PRIMARY:
+
+- **LOS_seed** — *P(the estimator's mean margin has the sign we observed), seed noise only.*
+  Uncertainty IN: model-seed (retrain RNG) variance, via the paired per-seed margins.
+  Uncertainty OUT: everything else. **Registered as nearly worthless on its own** — a statement
+  about our RNG, not about typing. Reported ONLY as the upper bound / decomposition baseline.
+- **LOS_design (PRIMARY)** — *P(a re-run of this whole comparison design, at this sample size,
+  would agree on the sign)*, i.e. sign-confidence once the margin is referred to the DESIGN's own
+  measured resolution floor rather than to zero. Uncertainty IN: seed variance + the split-half
+  same-board placebo floor (the noise a verdict is actually read at) + pricing/corpus choice.
+  Uncertainty OUT: model validity (extrapolation, calibration level).
+- **LOS_typist** — *P(a real typist would be faster on A than B).* Uncertainty IN: everything in
+  LOS_design PLUS extrapolation exposure (the co-observed sign-flip rate) and calibration.
+  This is what the user actually wants and it is the one that must be allowed to come out near 0.5.
+
+**Registered in advance:** I expect `LOS_seed ≥ LOS_design ≥ LOS_typist` for every pair, and the
+gap `LOS_seed − LOS_typist` to be LARGE (>0.3) for sub-floor pairs and SMALL (<0.02) for the
+qwerty contrasts. If that ordering is violated anywhere I will report the violation prominently
+rather than smoothing it.
+
+## §2. WHAT I TAKE FROM FISHTEST AND WHAT DOES NOT TRANSFER — registered before implementing
+
+TRANSFERS: (i) the *idea* of a bounded-error decision rather than a bare p-value; (ii) H0/H1 stated
+as an INTERVAL with a named minimum meaningful effect, not a point null; (iii) LOS as a one-sided
+posterior on the paired result; (iv) reporting an explicit UNDECIDED region instead of forcing a
+verdict; (v) paired accounting to remove the common mode (fishtest's pentanomial ≈ our per-seed
+pairing, which removes the near-common seed shift: r>0.957 all pairs / r>0.993 within family,
+SEEDTB-1).
+
+DOES NOT TRANSFER, and a naive port would be a fake instrument:
+1. **No independent trials to accumulate.** Our margin is DETERMINISTIC given (board, seed); our
+   replications are model seeds, not games. "Play more games" has no analogue — more seeds shrink
+   estimator noise but cannot touch the 4-layout-diversity ceiling.
+2. **Therefore SPRT's sequential stopping is inapplicable as a power device** and I will NOT
+   implement early stopping. (SEEDTB-1 measured naive peeking at 0.183 realized type-I.)
+3. **Fishtest's H0 is calibrated in ELO, a validated scale.** Our ms/char axis has NO validated
+   scale for novel boards (60–70% extrapolation), so the H1 bound must be set from OUR OWN measured
+   floor, not borrowed.
+4. **No intransitivity is possible on our speed axis** (margin is exactly linear in a common seed
+   set ⇒ sub-relation of a total order; 0 cycles verified). I register this as a PROPERTY my
+   instrument inherits, not a discovery: any LOS defined on the speed axis is monotone in M(A)−M(B).
+
+## §3. THE INSTRUMENT — registered definition
+
+Let `d_s = M_s(A) − M_s(B)` be the paired per-seed margin over the n=25 common seed set (negative
+= A faster). Let `F` be the floor measured for THIS design (§4). Registered forms:
+
+- `LOS_seed  = P(μ < 0 | d)` under a flat-prior Bayesian t / equivalently a one-sided paired t on
+  H0: μ=0. (Point-null; this is the quantity that produces the pathology, included deliberately.)
+- `LOS_design = P(μ < −F_eff | d)` — the **INTERVAL-NULL / floor-referred form.** This is the
+  fishtest-style move: the null is not "no difference" but "no difference LARGER THAN THE
+  INSTRUMENT'S OWN RESOLUTION". Registered: `F_eff` is a floor-derived threshold, and the null
+  region is `|μ| ≤ F_eff`, so LOS_design is a one-sided posterior mass beyond the floor, and a
+  three-way verdict follows: A-DECIDED / B-DECIDED / UNDECIDED(within-resolution).
+- `LOS_typist = ` LOS_design further degraded by an explicit **wrong-sign hazard** `q(gap)` taken
+  from the co-observed sign-flip rate (PICK2-1, an ALREADY-MEASURED probability-of-wrong-sign
+  stratified by gap: 81% for gaps <0.42, 74% for 0.43–0.96, 30% for 0.97–3.04, 12% for >3.0) via a
+  mixture: `LOS_typist = (1−q)·LOS_design + q·(1−LOS_design)`. Registered rationale: `q` is the
+  measured probability that the model's sign reverses on ground the model actually observed, so it
+  is a direct hazard on the SIGN, which is exactly what LOS is a statement about.
+  **Registered property (checkable, and it is the point):** as `q → 0.5`, `LOS_typist → 0.5` for ANY
+  LOS_design — an 81% flip hazard CANNOT be laundered into confidence. This is the structural
+  guarantee that the pathology is impossible, not a tuning choice.
+
+**Registered mandatory output contract:** every LOS number is reported beside `mean margin`, `F`,
+and `margin/F`. A probability printed without its floor is the defect (INVARIANT 5).
+
+## §4. THE FLOOR — I BORROW NONE (registered method)
+
+The floor is a property of the COMPARISON DESIGN. My design = paired per-seed margins over a common
+seed set at n=25, fixed boards, seed-mean surfaces. I will measure:
+
+- **FLOOR-L (primary): split-half same-board placebo.** Partition the n seeds into two disjoint
+  halves, score the SAME board on each, take |mean(H1) − mean(H2)|; many random partitions × all
+  boards. Truth is EXACTLY 0 by construction, so all spread is instrument noise at the sample size
+  a verdict is read at. Registered summary statistic: **p90**.
+  Registered prediction (falsifiable): my p90 will reproduce TOURNAMENT-1's 0.2921 / SFBPRICE-1's
+  0.2905 to within ±0.02. If it does NOT, one of us is wrong and I will say which and why.
+  ⚠ Registered in advance: a split-half floor is a statement about a HALF-SIZE sample (n≈12), so
+  using it directly as `F_eff` for an n=25 verdict is CONSERVATIVE by construction. I therefore
+  ALSO register `F_eff` at the verdict's own n (scale the half-half spread to the n=25 mean's
+  scale: dividing the half-vs-half difference by 2 gives the deviation of one half-mean from the
+  truth, and √(12/25) rescales that to n=25) and I will REPORT BOTH, defaulting to the
+  CONSERVATIVE (unscaled p90) for the headline verdict and disclosing the effect of the choice.
+- **FLOOR-P: permutation / resampling null (INVARIANT 3's third leg).** Random sign-flips of the
+  paired per-seed margins, 20,000 draws/pair — distribution-free, so no normality assumption
+  carries weight. Registered use: measure the null distribution of my LOS statistic rather than
+  assuming it.
+
+## §5. CALIBRATION OF THE INSTRUMENT — MANDATORY, reported BEFORE any real pair (INVARIANT 3)
+
+Registered PASS/FAIL bars, fixed now:
+
+| case | construction | REGISTERED REQUIREMENT |
+|---|---|---|
+| **NULL-1** board vs ITSELF | d_s ≡ 0 for all s | LOS_design **= 0.5 exactly**; anything else ⇒ instrument BROKEN |
+| **NULL-2** same-board split-half pair | score one board on two disjoint seed halves | LOS_design in **[0.35, 0.65]**; median over many partitions in [0.45,0.55] |
+| **NULL-3** permutation null | sign-flip d_s | LOS_design distribution ≈ Uniform(0,1) ⇒ **P(LOS>0.95) ≤ 0.05**; and the DECIDED rate ≤ 0.05 |
+| **BIG** any tuned board vs qwerty | 8.62–9.71 ms/char = 29.5–33.3× floor, 0/25 signs | LOS_design **≥ 0.99**; LOS_typist **≥ 0.95** (the 12% flip hazard for gaps >3.0 caps it — registered, and I will report the cap rather than hiding it) |
+
+**Registered kill condition:** if NULL-2's median LOS_design falls outside [0.45,0.55], or NULL-3's
+`P(LOS>0.95) > 0.05`, or BIG's LOS_design < 0.99, the instrument is reported as **UNVALIDATED** and
+I will NOT publish a verdict on the live pair from it. An uncalibrated confidence number is the
+defect wearing a Bayesian hat.
+
+## §6. THE LIVE QUESTION — registered decision rule BEFORE computing it (INVARIANT 4)
+
+`candidate` = `pyu.,vdfnlhieaocstrmkj'-qgwbzx` vs `flagship-c3` = `pyou'vgdnmheai.cstrlkjz,-wfbxq`.
+The user's claim is that this "might as well be a tie". TOURNAMENT-1 resolved it for `candidate`
+under all three pricings (gap 0.75–1.18 ms/char = 2.5–4.0× the floor, 0/25 signs).
+
+**Registered rule, fixed now:** the pair is **DECIDED** iff `LOS_design ≥ 0.95` under ALL THREE
+pricings (all-cells / observed-only / common-support). It is **UNDECIDED** otherwise. `LOS_typist`
+is reported alongside and its own verdict stated separately; if LOS_typist < 0.95 while
+LOS_design ≥ 0.95, the registered reading is **"decided on the model, undecided about a human"**
+and I will report exactly that phrase rather than picking whichever is convenient.
+
+**Registered prediction (falsifiable, before computing):** LOS_design ≥ 0.99 (the gap is 2.5–4.0×
+the floor and 0/25 signs) and LOS_typist ≈ 0.70–0.90 (the 0.97–3.04 gap stratum carries a 30%
+flip hazard, which caps sign-confidence near 0.70). ⇒ I predict I will **agree** with
+TOURNAMENT-1 on the model axis and **partially vindicate the user** on the typist axis. If I get
+LOS_design < 0.95, that DISAGREEMENT is the finding and I must explain which instrument is right.
+
+## §7. NEGATIVE CONTROL — mandatory before any new number is trusted
+
+Registered: my per-seed ms/char pipeline, built from the 22 cached (T2,Tc) tables + the 3 shipped
+seeds, must reproduce ALREADY-PUBLISHED quantities I did not compute:
+- **NC1** TOURNAMENT-1's published per-pair `mean`/`sd` for the 10 cluster pairs and the qwerty
+  contrasts (`tournament.json`) — registered bar: max |Δ| ≤ 1e-9 on the mean margin.
+- **NC2** the shipped `TimeSurface.card()` / `seed_totals()` path on ≥3 structurally different
+  boards — registered bar: worst relative deviation ≤ 1e-12.
+- **NC3** the seed-mean board means in TOURNAMENT-1 §2.1 (13 boards × 3 pricings).
+A script exiting 0 is NOT a pass; I state the measured agreement.
+
+## §8. DEGENERACY CHECKS — what would make my LOS vacuously confident, registered in advance
+
+This campaign has shipped two vacuously-green instruments (PRICEBAND-1's monotone-by-construction
+placebo; a mock that patched the wrong module and never fired). Registered:
+- **D1** `sd(d_s) > 0` for every pair (a zero-variance margin ⇒ t→±∞ ⇒ spurious LOS=1).
+- **D2** per-seed ms/char distinct across all 25 seeds for every board (proves the seeds differ).
+- **D3** my LOS must be able to RETURN ~0.5 on real data, not only on constructed nulls — I will
+  exhibit at least one real pair with LOS_design in [0.3,0.7] or report that none exists.
+- **D4** the flip-hazard mixture must be verified to move LOS in the RIGHT direction (toward 0.5)
+  by a unit test with q=0.5 ⇒ LOS=0.5 exactly, and q=0 ⇒ LOS unchanged.
+- **D5** `keybo.__file__` asserted inside MY worktree in every driver, and both checkouts' branches
+  printed (the shared venv resolves `import keybo` to a possibly-different checkout — a measured
+  trap that has fired for real in this campaign).
+- **D6** thread env vars pinned BEFORE any import that reads them.
+
+## §9. WHAT I WILL NOT DO
+No layout adopted or promoted; `src/keybo/layouts.py` untouched; `data/models/k31/` never written;
+no code pushed; no branch merged or deleted; no threshold installed that silently re-adjudicates
+history (GATESUPPORT-1 precedent: LOS is made COMPUTABLE and VISIBLE, a threshold is RECOMMENDED,
+and adopting it is left as a human decision).
+
+## §10. REGISTERED HONESTY CLAUSE
+If any number in my brief disagrees with what I measure, the brief is wrong and I say so
+prominently. If my own registered predictions (§1, §4, §6) fail, I report the failure as a result,
+not as a footnote.
