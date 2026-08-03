@@ -12639,3 +12639,45 @@ then `_predict_cells` adds nothing, `base` IS `g` alone, and CALIB-1's arm is a 
 single-application of `b`. **Discriminator:** `len(bmap)` and `n_ngrams` on a freshly trained LOLO
 model, plus A1's numeric bar. I will report whichever holds, and if the double-count is refuted I
 will say so as prominently as I would say the opposite.
+
+### FREQCORRECT-1 ADDENDUM 2 (registered BEFORE measuring) — **THE EQUAL-`n` FALSIFIER FOR MY OWN INVARIANT-B RESULT**
+
+Registered after §(b) was measured and written up, but **BEFORE** this test is run. It is the
+falsifier I named in my own report as the top open risk, and I am running it against myself.
+
+🟠 **THE PROBLEM, measured and already published in my report:** within a matched-geometry group,
+`β(log sample-count ~ log-frequency) = 1.0051` — sample count tracks frequency almost one-for-one.
+Partialling `log n` out moves `β_freq` from **−0.065084** to **+0.024502** (sign flip). At that
+collinearity, "controlling for `n`" is closer to *deleting the frequency variable* than to
+controlling a confound, so **frequency and sample count are NOT separately identified** by the
+design as run. A pure noise-attenuation mechanism — thin rare cells → attenuated IQR-means →
+apparent slope — cannot be refuted by that instrument.
+
+**THE DESIGN, registered:** re-measure `β_freq` on cells **subsampled to a COMMON `n` within each
+matched-geometry group**. Take `n_min` = the smallest raw-sample count in the group, draw exactly
+`n_min` samples without replacement from every cell in that group, recompute each cell's IQR-mean
+target from the drawn samples only, then re-run the identical within-group pooled slope. Every cell
+in a group then carries the SAME sample count, so the attenuation channel is closed **by
+construction** rather than by regression adjustment. Repeat over `R` independent draws and report
+the distribution of `β_freq^equal-n`.
+
+**REGISTERED DECISION RULE — and it can only go against me:**
+- **`β_freq^equal-n` CI95 still excludes 0 AND |β| stays > the equal-`n` design's own permutation
+  floor ⇒ MY §(b) SURVIVES**, and the practice effect is not a sample-count artifact.
+- **`β_freq^equal-n` collapses into its floor (CI95 contains 0) ⇒ MY §(b) FALLS.** I register that in
+  that case I will (a) rewrite report.md's line 1 and §(b), (b) downgrade `R_encode ≈ 1.06` from
+  "`b` is calibrated to the right quantity" to "`b` is calibrated to a quantity I cannot show is
+  practice", and (c) state that the CORRECTNESS verdict rests thereafter on the geometric-R² nulls
+  (P2/P3/N3) ALONE, which is a materially weaker position.
+- **Registered prediction (mine, before measuring):** `β_freq^equal-n` stays negative and clears its
+  floor, but **shrinks** relative to −0.065084 — because equal-`n` subsampling discards data and adds
+  target noise, which attenuates any true slope. I register the shrinkage direction NOW so I cannot
+  later present an attenuated estimate as a clean confirmation.
+- **FLOOR, measured for THIS design, not borrowed** (§9): the same within-group frequency permutation
+  applied to the equal-`n` targets. The floor is a property of the comparison design and equal-`n`
+  targets are noisier, so its floor MUST be re-measured rather than reused from N4's 1.385e-02.
+
+⚠ **NEGATIVE CONTROL, registered:** an equal-`n` run at the group's **maximum** feasible common `n`
+is impossible (it is bounded by the minimum), so instead I register a **within-design placebo**: the
+equal-`n` design applied to PERMUTED frequency must give 0 within CI. If it does not, the
+subsampling itself manufactures a slope and neither reading is available.
