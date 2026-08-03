@@ -39,6 +39,18 @@ complementary the same way).
   probability the difference is LARGER than the instrument's resolution at all, in either direction.
   This is estimand (c) ("confidence the margin exceeds a meaningful threshold"); it answers "is there
   a resolvable difference" while ``los_design`` answers "which way, treating sub-floor as a tie".
+* :attr:`LOSResult.los_valid`  — (LOSVAR-1) ``los_design`` recomputed on a posterior whose scale is
+  widened to ``sqrt(sem**2 + sigma_diff**2)``, where ``sigma_diff`` is the MEASURED
+  LAYOUT-DIFFERENTIAL component of the model's held-out validation error. This is the estimand that
+  answers the user's actual question ("shouldn't the stddev come from the model's error on the
+  validation set?"). The subtlety that makes it correct rather than useless: the model's held-out
+  error is ~9 ms/char, but almost all of it is COMMON-MODE — both boards are scored by the SAME
+  surface over the SAME corpus, so any board-invariant error component cancels EXACTLY in the paired
+  difference (the mass-difference weight vector ``m_p(A) - m_p(B)`` sums to zero). Plugging the raw
+  9 ms in would return ~0.5 for every pair including tuned-vs-qwerty, which is not conservatism, it
+  is a broken instrument. Only the part that does NOT cancel — the layout-differential part — may
+  enter, and ``sigma_diff`` is that part, measured by leave-one-layout-out (see
+  ``drivers-losvar/v01_decompose.py``). ``sigma_diff=0`` gives back ``los_design`` bit-for-bit.
 * :attr:`LOSResult.los_typist` — degrades ``los_design`` by an extrapolation WRONG-SIGN HAZARD
   ``q(gap)`` (the measured co-observed sign-flip rate: on the ground the model actually observed,
   what fraction of pairwise speed signs reverse). Enters as a mixture
@@ -73,8 +85,20 @@ from scipy import stats
 # ------------------------------------------------------------------------------------------------
 # Extrapolation wrong-sign hazard q(gap): PICK2-1's MEASURED co-observed sign-flip rate, stratified
 # by the fitted gap. On the trigrams the K31 study actually observed (13.06% of position trigrams),
-# this fraction of pairwise speed signs REVERSES relative to the full-corpus prediction. It is a
-# direct probability-that-the-sign-is-wrong, which is exactly what LOS is a statement about.
+# this fraction of pairwise speed signs REVERSES relative to the full-corpus prediction.
+#
+# ⚠ CORRECTION (LOSVAR-1, 🟢 verified by reading PICK2-1's own driver
+# ``agent-artifacts/pick2/measured_pairwise.py`` on branch ``pick2-decision``): this comment
+# previously called ``q`` "a direct probability-that-the-sign-is-wrong". IT IS NOT.
+# PICK2-1 computes ``delta_full`` = the SHIPPED MODEL's margin on all charset-common trigrams and
+# ``delta_co`` = the SAME MODEL's margin restricted to the co-observed subset, then flags
+# ``sign(delta_full) != sign(delta_co)``. BOTH operands are ``(T2+Tc)`` sums over the same fitted
+# surface — NO OBSERVED TIMING enters the statistic at any point. So ``q`` measures the model's
+# CORPUS-SUBSET SENSITIVITY (does my own margin survive reweighting to measured territory?), which
+# is a fragility diagnostic, not a validation-error measurement. Treating it as the latter
+# double-counts the model. It is retained because a margin that reverses under reweighting IS
+# evidence of fragility — but the honest propagation of validation error is ``sigma_diff`` /
+# ``los_valid``, which is measured against HELD-OUT OBSERVED data.
 # Bins are [lo, hi) in ms/char of |mean margin|; the last is open-ended.
 #   gap < 0.42        -> 0.81      (22/27 pairs flipped)
 #   0.42 <= gap < 0.97 -> 0.74     (20/27)
@@ -90,7 +114,12 @@ _FLIP_BINS: tuple[tuple[float, float, float], ...] = (
 
 
 def flip_hazard(gap: float) -> float:
-    """Measured wrong-sign hazard ``q`` for a |mean margin| ``gap`` (ms/char); PICK2-1 strata."""
+    """PICK2-1's co-observed sign-flip rate ``q`` for a |mean margin| ``gap`` (ms/char).
+
+    ⚠ This is a MODEL-VS-MODEL corpus-subset-sensitivity rate, NOT a measured wrong-sign frequency —
+    see the correction on ``_FLIP_BINS``. For validation error propagated against held-out OBSERVED
+    data, use ``compute_los(..., sigma_diff=...)`` and read ``los_valid``.
+    """
     g = abs(float(gap))
     for lo, hi, q in _FLIP_BINS:
         if lo <= g < hi:
@@ -198,6 +227,11 @@ class LOSResult:
     faster: str                 # "A" | "B" — the board the sign points to
     verdict: str                # "A-DECIDED" | "B-DECIDED" | "UNDECIDED"
     decided_threshold: float = 0.95
+    los_valid: float = float("nan")   # los_design on a posterior widened by sigma_diff (LOSVAR-1)
+    sigma_diff: float = 0.0           # the MEASURED layout-differential validation error (ms/char)
+    scale_valid: float = float("nan")  # sqrt(sem^2 + sigma_diff^2), the widened posterior scale
+    p_tie_valid: float = float("nan")
+    verdict_valid: str = ""
     extra: dict = field(default_factory=dict)
 
     def as_row(self) -> dict:
@@ -208,13 +242,18 @@ class LOSResult:
             "floor": self.floor, "margin_over_floor": self.margin_over_floor,
             "p_two_sided": self.p_two_sided,
             "LOS_seed": self.los_seed, "LOS_design": self.los_design,
-            "LOS_typist": self.los_typist, "p_exceed": self.p_exceed,
+            "LOS_typist": self.los_typist, "LOS_valid": self.los_valid,
+            "sigma_diff": self.sigma_diff, "scale_valid": self.scale_valid,
+            "p_exceed": self.p_exceed,
             "p_tie": self.p_tie, "q": self.flip_hazard_q,
             "faster": self.faster, "verdict": self.verdict,
+            "verdict_valid": self.verdict_valid,
         }
 
 
-def _posterior_below(margin_samples: np.ndarray, threshold: float) -> float:
+def _posterior_below(
+    margin_samples: np.ndarray, threshold: float, sigma_diff: float = 0.0
+) -> float:
     """Flat-prior posterior mass ``P(mu < threshold)`` for the mean of the paired differences.
 
     The marginal posterior of mu under a flat prior on (mu, log sigma) is a location-scale Student-t
@@ -222,17 +261,28 @@ def _posterior_below(margin_samples: np.ndarray, threshold: float) -> float:
     one-sided t-test, but framed as a probability ABOUT mu, which is what a confidence-of-superiority
     statement is. Returned for a single threshold; the three ROPE regions are differences of two of
     these, so the tie mass is exact and the three regions sum to 1 by construction.
+
+    ``sigma_diff`` (LOSVAR-1) widens the scale to ``sqrt(sem**2 + sigma_diff**2)``: the model's
+    LAYOUT-DIFFERENTIAL validation error added in quadrature with the seed-noise sem, since retrain
+    RNG and surface-vs-truth error are independent sources. ``sigma_diff == 0`` skips the quadrature
+    entirely and so reproduces the seed-only scale BIT-FOR-BIT — that is what makes
+    ``los_valid`` a strict generalization of ``los_design`` rather than a second formula that merely
+    agrees to rounding. ``df`` stays at ``n-1``: a Welch-style effective df would be LARGER (thinner
+    tails, MORE confidence), so ``n-1`` is the conservative choice.
     """
     x = np.asarray(margin_samples, dtype=np.float64)
     n = x.size
     if n < 2:
         raise ValueError("need >=2 seeds")
+    if sigma_diff < 0:
+        raise ValueError(f"sigma_diff must be >= 0, got {sigma_diff}")
     mean = float(x.mean())
     sem = float(x.std(ddof=1) / np.sqrt(n))
-    if sem == 0.0:
+    scale = sem if sigma_diff == 0.0 else float(np.hypot(sem, sigma_diff))
+    if scale == 0.0:
         # zero variance: posterior is a point mass at the mean. Split the boundary evenly.
         return 1.0 if mean < threshold else (0.5 if mean == threshold else 0.0)
-    return float(stats.t.cdf((threshold - mean) / sem, n - 1))
+    return float(stats.t.cdf((threshold - mean) / scale, n - 1))
 
 
 def compute_los(
@@ -242,11 +292,17 @@ def compute_los(
     a_name: str = "A",
     b_name: str = "B",
     decided_threshold: float = 0.95,
+    sigma_diff: float = 0.0,
 ) -> LOSResult:
     """The instrument. ``ms_a``/``ms_b`` are ``(n_seeds,)`` per-seed ms/char over a COMMON seed set.
 
     The pairing is by seed index (that is what removes the near-common seed shift, r>0.957). ``floor``
     is the design's MEASURED resolution floor (ms/char); pass the one measured for THIS design.
+
+    ``sigma_diff`` is the MEASURED layout-differential validation error (ms/char) and drives the
+    FOURTH estimand :attr:`LOSResult.los_valid`. Default 0.0 means "not supplied", in which case
+    ``los_valid`` equals ``los_design`` exactly and nothing about the other three estimands changes —
+    every previously published LOS number keeps its meaning under this addition.
     """
     ms_a = np.asarray(ms_a, dtype=np.float64)
     ms_b = np.asarray(ms_b, dtype=np.float64)
@@ -284,12 +340,30 @@ def compute_los(
     q = flip_hazard(mean)
     los_typist = apply_flip_hazard(los_design, q)
 
+    # LOS_valid (LOSVAR-1): the SAME ROPE construction, on a posterior widened by the model's
+    # measured layout-differential validation error. Only the SCALE changes — the estimand, the
+    # floor and the tie-splitting rule are identical to los_design, which is what makes the DROP
+    # between them attributable to validation error and nothing else.
+    if sigma_diff == 0.0:
+        p_a_valid, p_b_valid = p_a_beyond, p_b_beyond
+    else:
+        p_a_valid = _posterior_below(d, -floor, sigma_diff)
+        p_b_valid = 1.0 - _posterior_below(d, floor, sigma_diff)
+    p_tie_valid = max(0.0, 1.0 - p_a_valid - p_b_valid)
+    los_valid = p_a_valid + 0.5 * p_tie_valid
+
     if los_design >= decided_threshold:
         verdict = "A-DECIDED"
     elif los_design <= 1.0 - decided_threshold:
         verdict = "B-DECIDED"
     else:
         verdict = "UNDECIDED"
+    if los_valid >= decided_threshold:
+        verdict_valid = "A-DECIDED"
+    elif los_valid <= 1.0 - decided_threshold:
+        verdict_valid = "B-DECIDED"
+    else:
+        verdict_valid = "UNDECIDED"
 
     return LOSResult(
         a=a_name, b=b_name, n_seeds=n, mean_margin=mean, sd_margin=sd, sem_margin=sem,
@@ -298,4 +372,7 @@ def compute_los(
         los_seed=los_seed, los_design=los_design, los_typist=los_typist,
         p_exceed=p_exceed, p_a_beyond=p_a_beyond, p_b_beyond=p_b_beyond, p_tie=p_tie,
         flip_hazard_q=q, faster=faster, verdict=verdict, decided_threshold=decided_threshold,
+        los_valid=los_valid, sigma_diff=float(sigma_diff),
+        scale_valid=float(np.hypot(sem, sigma_diff)), p_tie_valid=p_tie_valid,
+        verdict_valid=verdict_valid,
     )

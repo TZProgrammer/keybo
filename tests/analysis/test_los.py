@@ -144,3 +144,80 @@ def test_los_is_directional_and_complementary():
     assert rab.los_design == pytest.approx(1 - rba.los_design)
     assert rab.los_seed == pytest.approx(1 - rba.los_seed)
     assert rab.p_exceed == pytest.approx(rba.p_exceed)   # non-directional: symmetric
+
+
+# ==================================================================================================
+# LOSVAR-1: the FOURTH estimand, los_valid — los_design on a posterior widened by the MEASURED
+# layout-differential validation error. These encode the registered structural properties.
+# ==================================================================================================
+
+
+def _pair(n=25, margin=-1.046, sd=0.18, seed=7):
+    """A synthetic paired sample with a controlled mean margin and seed-scatter sd."""
+    rng = np.random.default_rng(seed)
+    d = rng.normal(0.0, 1.0, size=n)
+    d = (d - d.mean()) / d.std(ddof=1) * sd + margin      # exact mean and ddof=1 sd
+    base = 254.0 + rng.normal(0, 0.4, size=n)
+    return base + d, base
+
+
+def test_los_valid_with_zero_sigma_diff_is_los_design_bit_for_bit():
+    """NC3, as a test: sigma_diff=0 must be a STRICT generalization, not merely close."""
+    a, b = _pair()
+    r = compute_los(a, b, floor=0.2929, sigma_diff=0.0)
+    assert r.los_valid == r.los_design            # bit-for-bit, not approx
+    assert r.sigma_diff == 0.0
+    # and the default (no sigma_diff passed at all) behaves identically
+    assert compute_los(a, b, floor=0.2929).los_valid == r.los_design
+
+
+def test_los_valid_goes_to_equipoise_as_sigma_diff_grows():
+    a, b = _pair()
+    prev = compute_los(a, b, floor=0.2929, sigma_diff=0.0).los_valid
+    assert prev > 0.99                                    # decided on seed noise alone
+    for s in (0.1, 0.3, 1.0, 3.0, 10.0, 100.0, 1e4):
+        cur = compute_los(a, b, floor=0.2929, sigma_diff=s).los_valid
+        assert cur <= prev + 1e-12                        # monotone non-increasing
+        prev = cur
+    assert compute_los(a, b, floor=0.2929, sigma_diff=1e6).los_valid == pytest.approx(0.5, abs=1e-3)
+
+
+def test_los_valid_null_board_against_itself_is_exactly_half_for_any_sigma_diff():
+    """NULL-1 must hold for the new estimand at EVERY sigma_diff — a widened scale cannot
+    manufacture a direction out of a zero margin."""
+    rng = np.random.default_rng(0)
+    ms = 254.0 + rng.normal(0, 0.4, size=25)
+    for s in (0.0, 0.05, 0.5, 5.0, 50.0):
+        r = compute_los(ms, ms.copy(), floor=0.2929, sigma_diff=s)
+        assert r.los_valid == pytest.approx(0.5)
+        assert r.verdict_valid == "UNDECIDED"
+
+
+def test_los_valid_is_symmetric_under_swapping_the_boards():
+    """Directionality: LOS_valid(B vs A) == 1 - LOS_valid(A vs B), like every other estimand."""
+    a, b = _pair()
+    fwd = compute_los(a, b, floor=0.2929, sigma_diff=0.4).los_valid
+    rev = compute_los(b, a, floor=0.2929, sigma_diff=0.4).los_valid
+    assert fwd + rev == pytest.approx(1.0)
+
+
+def test_los_valid_scale_is_the_quadrature_sum():
+    a, b = _pair(sd=0.18)
+    r = compute_los(a, b, floor=0.2929, sigma_diff=0.4)
+    assert r.scale_valid == pytest.approx(np.hypot(r.sem_margin, 0.4))
+    assert r.scale_valid > r.sem_margin                   # strictly wider than seed-only
+
+
+def test_los_valid_rejects_negative_sigma_diff():
+    a, b = _pair()
+    with pytest.raises(ValueError):
+        compute_los(a, b, floor=0.2929, sigma_diff=-0.1)
+
+
+def test_los_valid_subfloor_margin_stays_at_equipoise():
+    """The anti-pathology guarantee must survive the widening: a sub-floor margin cannot become
+    decided by ADDING uncertainty (that would be nonsense) nor drift away from 0.5."""
+    a, b = _pair(margin=-0.011, sd=0.02)                  # arm-B-vs-candidate-like: deep sub-floor
+    for s in (0.0, 0.1, 0.5, 2.0):
+        r = compute_los(a, b, floor=0.2929, sigma_diff=s)
+        assert 0.45 <= r.los_valid <= 0.55
