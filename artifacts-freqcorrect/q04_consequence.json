@@ -1,0 +1,62 @@
+{
+ "cell_kw": {
+  "wpm_lo": 40,
+  "wpm_hi": 140,
+  "bucket_width": 20,
+  "min_cell_samples": 10
+ },
+ "boot_seed": 20260803,
+ "geometry": "ROW_STAGGERED_31",
+ "h1_transfer": {
+  "n_shared_ngrams": 545,
+  "corr_b_qwerty_vs_b_nonqwerty": 0.6488726915809426,
+  "mean_diff": 0.02207205322997139,
+  "sd_diff": 0.1407920921721583,
+  "rms_diff": 0.14238404879620406,
+  "sd_b_qwerty": 0.18160630109039963,
+  "sd_b_nonqwerty": 0.09086379521804783,
+  "slope_nq_on_q": 0.3246530269951689,
+  "corr_vs_floor": {
+   "cross_layout_corr": 0.6488726915809426,
+   "same_layout_floor_corr_mean": 0.9918637968546737,
+   "gap": 0.3429911052737311,
+   "cross_layout_rms": 0.14238404879620406,
+   "same_layout_floor_rms_mean": 0.020322297194418148,
+   "rms_ratio_cross_over_floor": 7.006296947340784,
+   "verdict": "DISAGREE BEYOND NOISE (contamination)"
+  }
+ },
+ "measured_floor_split_half_qwerty": {
+  "n_splits": 12,
+  "corr_mean": 0.9918637968546737,
+  "corr_sd": 0.0010301312460060615,
+  "corr_p05": 0.9902406943345827,
+  "rms_mean": 0.020322297194418148,
+  "rms_sd": 0.0012939834420614856,
+  "rms_p95": 0.022341918136561917,
+  "design": "random halves of the QWERTY rows, b refit on each half by the same estimator. TRUTH = the two halves estimate the SAME quantity, so any disagreement is pure sampling noise. This is the design-matched floor for 'do two b estimates agree?'"
+ },
+ "h1_sharp_geometry_predicts_disagreement": {
+  "n_ngrams": 545,
+  "R2_oof_GBM": 0.12939322735966052,
+  "R2_oof_OLS": -0.004864306399009255,
+  "placebo_R2_mean": -0.1884504967967673,
+  "placebo_R2_p95": -0.13092590882698224,
+  "exceeds_placebo": true,
+  "interpretation": "a PURE practice term has no reason for its cross-layout disagreement to track a GEOMETRY difference; R2 above the placebo means the 'practice' estimate is absorbing layout-specific geometry"
+ },
+ "invariant_d_magnitude": {
+  "R2_oof_b_shipped_on_geometry": -0.015121773695872642,
+  "B_candidate_full_b": -0.12673429794113286,
+  "B_candidate_geometric_part": 0.014397952096801309,
+  "B_qwerty_full_b": -0.1311842213198639,
+  "B_qwerty_geometric_part": 0.013811457662048299,
+  "geometric_share_of_B_candidate": -0.11360738435217474,
+  "cross_coverage_residual_full": 0.004449923378731041,
+  "cross_coverage_residual_geometric": 0.0005864944347530095,
+  "note": "B is a log-ratio, so exp(B) is the multiplicative level. The share of B that is PREDICTABLE FROM GEOMETRY is the part mislabelled 'practice'.",
+  "exp_B_candidate_full": 0.880967716438868,
+  "exp_B_candidate_geometric": 1.0145021018565357
+ },
+ "wall_s": 623.5922820568085
+}

@@ -1,0 +1,146 @@
+{
+ "cell_kw": {
+  "wpm_lo": 40,
+  "wpm_hi": 140,
+  "bucket_width": 20,
+  "min_cell_samples": 10
+ },
+ "boot_seed": 20260803,
+ "geometry": "ROW_STAGGERED_31",
+ "served_feature_names": [
+  "bottom",
+  "home",
+  "top",
+  "pinky",
+  "ring",
+  "middle",
+  "index",
+  "lateral",
+  "same_hand",
+  "same_finger",
+  "adjacent",
+  "scissor",
+  "lsb",
+  "dx",
+  "dy",
+  "distance",
+  "angle",
+  "inwards",
+  "outwards",
+  "wpm"
+ ],
+ "n_served_features": 20,
+ "p1_bijection": {
+  "max_geometries_per_layout_ngram": 1,
+  "bijection_holds": true,
+  "n_distinct_ngrams": 724,
+  "ngram_distinct_geometry_count_hist": [
+   0,
+   211,
+   369,
+   132,
+   12
+  ],
+  "ngram_layout_count_hist": [
+   0,
+   163,
+   70,
+   65,
+   426
+  ],
+  "n_ngrams_single_geometry": 211,
+  "frac_ngrams_single_geometry": 0.2914364640883978
+ },
+ "b_full": {
+  "n_ngrams": 724,
+  "shrinkage_k": 100.0,
+  "backfit_iters": 2,
+  "target_space": "LOGRAT",
+  "mean_b": 0.03779103867403314,
+  "sd_b": 0.18600163335515127,
+  "min_b": -0.493077,
+  "max_b": 0.753862
+ },
+ "b_seedmean_shipped": {
+  "n_ngrams": 724,
+  "mean": 0.0376138347145488,
+  "sd": 0.18549566039389137,
+  "min": -0.4904753333333334,
+  "max": 0.7519743333333334
+ },
+ "n1_neg_control": {
+  "B_candidate": -0.12673429794113286,
+  "published": -0.12673429794113286,
+  "abs_diff": 0.0,
+  "bar": 1e-09,
+  "passes": true,
+  "cov_mass_frac": 0.914210134,
+  "recipe": "seed-mean b from the 3 SHIPPED k31 bigram models' metadata, trigram first-transition marginal weighting"
+ },
+ "p2_b_on_geometry": {
+  "n_rows": 2202,
+  "n_geo_cols": 19,
+  "R2_oof_GBM": -0.015121773695872642,
+  "R2_oof_OLS": 0.0055928694381818245,
+  "R2_insample_GBM": 0.24606346759145226,
+  "registered_threshold_geometric": 0.3,
+  "registered_threshold_refuted": 0.1,
+  "verdict": "H-SATURATED REFUTED",
+  "sd_b_rows": 0.20071828744115056,
+  "sd_geometric_component": 0.07523874082160974
+ },
+ "n3_placebo": {
+  "n_ngrams": 724,
+  "mean_b": -0.08401751786695519,
+  "sd_b": 0.06392801113328268,
+  "R2_oof_GBM": -0.09152459116701395,
+  "R2_oof_OLS": -0.006354226115449668,
+  "passes_near_zero": true
+ },
+ "n3_real_same_pipeline": {
+  "R2_oof_GBM": -0.08747194751873244,
+  "n_ngrams": 724,
+  "mean_b": 0.052894046837572144
+ },
+ "p3_shrinkage": {
+  "0.0": {
+   "R2_oof_GBM": -0.020490477348518832,
+   "sd_b": 0.3322091829199969,
+   "mean_b": 0.17241809616986356
+  },
+  "10.0": {
+   "R2_oof_GBM": -0.05837258549392166,
+   "sd_b": 0.20024416509887386,
+   "mean_b": 0.09474152931053416
+  },
+  "100.0": {
+   "R2_oof_GBM": -0.08747194751873244,
+   "sd_b": 0.1676887482716484,
+   "mean_b": 0.052894046837572144
+  },
+  "1000.0": {
+   "R2_oof_GBM": -0.09886245866474286,
+   "sd_b": 0.12016352346481389,
+   "mean_b": 0.01730723566919757
+  },
+  "10000.0": {
+   "R2_oof_GBM": -0.08113336980982955,
+   "sd_b": 0.07805079125153266,
+   "mean_b": -0.00993087221112903
+  }
+ },
+ "a1_double_count": {
+  "n_cells": 5854,
+  "n_cells_with_b": 5854,
+  "frac_cells_with_b": 1.0,
+  "worst_abs_diff_pred_path_vs_g_times_expb": 1.1368683772161603e-13,
+  "bar": 1e-06,
+  "double_count_confirmed": true,
+  "mean_pred_path_ms": 150.96449995928538,
+  "mean_pred_g_ms": 153.0975100521706,
+  "mean_ratio_path_over_g": 0.9803187839308539,
+  "practice_block_present_in_metadata": true,
+  "n_ngrams_in_metadata": 724
+ },
+ "wall_s": 311.5499563217163
+}

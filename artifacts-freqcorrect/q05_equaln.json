@@ -1,0 +1,59 @@
+{
+ "cell_kw": {
+  "wpm_lo": 40,
+  "wpm_hi": 140,
+  "bucket_width": 20,
+  "min_cell_samples": 10
+ },
+ "boot_seed": 20260803,
+ "geometry": "ROW_STAGGERED_31",
+ "registered_in": "PREREGISTRATIONS.md FREQCORRECT-1 ADDENDUM 2 (commit b51e7e1)",
+ "baseline_full_sample": {
+  "beta_freq": -0.06508426421341934,
+  "q02_published": -0.065084212,
+  "note": "recomputed in-process; must match q02 to ~1e-6"
+ },
+ "equal_n_design": {
+  "n_groups": 630,
+  "common_n_min": 10,
+  "common_n_median": 67.5,
+  "common_n_max": 67029,
+  "cells_total_in_usable": 1296,
+  "mean_frac_samples_retained": 0.4423890678729433,
+  "design": "every cell in a group subsampled WITHOUT replacement to the group's minimum raw sample count; target = IQR-mean of the DRAWN samples only"
+ },
+ "equal_n_primary": {
+  "n_draws": 200,
+  "beta_mean": -0.06540044336622032,
+  "beta_sd": 0.0011885684154857783,
+  "beta_median": -0.06547091387531977,
+  "ci95_over_draws": [
+   -0.06768005520799582,
+   -0.06333157308858084
+  ],
+  "shrinkage_vs_full_sample": 1.0048579968848412,
+  "registered_prediction_shrinks": false
+ },
+ "equal_n_floor": {
+  "n_perm": 400,
+  "null_mean": -0.0006606493025103954,
+  "null_sd": 0.006986457601997461,
+  "MEASURED_FLOOR_p95_abs_beta": 0.013959837315499086,
+  "beta_over_floor": 4.684900109373671,
+  "permutation_p_two_sided": 0.0,
+  "q02_full_sample_floor_for_reference": 0.01385,
+  "note": "re-MEASURED for this design; equal-n targets are noisier so N4's floor cannot be reused"
+ },
+ "registered_verdict": {
+  "ci95_excludes_zero": true,
+  "clears_own_floor": true,
+  "verdict": "INVARIANT B SURVIVES the equal-n falsifier",
+  "rule": "registered in ADDENDUM 2: CI95 excludes 0 AND |beta| > this design's own permutation floor => survives; otherwise falls, and the CORRECTNESS verdict then rests on the geometric-R2 nulls (P2/P3/N3) alone"
+ },
+ "placebo_permuted_freq_is_the_floor_run": {
+  "null_centered_on_zero": true,
+  "null_mean": -0.0006606493025103954,
+  "note": "the floor run IS the registered placebo: equal-n targets + permuted frequency"
+ },
+ "wall_s": 390.5174593925476
+}

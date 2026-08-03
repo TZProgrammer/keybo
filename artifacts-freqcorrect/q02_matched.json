@@ -1,0 +1,79 @@
+{
+ "cell_kw": {
+  "wpm_lo": 40,
+  "wpm_hi": 140,
+  "bucket_width": 20,
+  "min_cell_samples": 10
+ },
+ "boot_seed": 20260803,
+ "geometry": "ROW_STAGGERED_31",
+ "n_geo_cols": 19,
+ "design": {
+  "n_groups_total": 5188,
+  "n_groups_usable": 630,
+  "n_cells_in_usable": 1296,
+  "group_size_hist": [
+   0,
+   0,
+   602,
+   20,
+   8
+  ],
+  "median_logfreq_spread_in_usable": 1.1623596335806563,
+  "total_logfreq_range": 11.011377044934772,
+  "grouping": "(layout, wpm_bucket, EXACT 19-col served geometry vector)"
+ },
+ "invariant_b_primary": {
+  "beta_freq": -0.06508426421341934,
+  "ci95": [
+   -0.07619872923909723,
+   -0.054052781515806156
+  ],
+  "n_boot": 10000,
+  "n_groups": 630,
+  "boot_sd": 0.005630332789901564,
+  "excludes_zero": true,
+  "sign": "negative (more frequent => faster)"
+ },
+ "n4_null_floor": {
+  "n_perm": 2000,
+  "null_mean": -1.2299873075034274e-06,
+  "null_sd": 0.007028291063143323,
+  "null_p95_abs": 0.013850977508304147,
+  "MEASURED_FLOOR_p95_abs_beta": 0.013850977508304147,
+  "beta_over_floor": 4.698893213450028,
+  "permutation_p_two_sided": 0.0,
+  "passes_null_centered_on_zero": true
+ },
+ "invariant_b_encode": {
+  "beta_b_on_logfreq": -0.06907808996998797,
+  "ci95": [
+   -0.07855733172528107,
+   -0.05995110269109248
+  ],
+  "beta_obs_on_logfreq": -0.06508426421341934,
+  "R_encode": 1.0613639226752627,
+  "R_encode_ci95": [
+   0.9761229617155738,
+   1.1655653416749054
+  ],
+  "registered_misattribution_if": "R_encode >= 2 or <= 0.5",
+  "misattribution": false,
+  "n_boot_ratio": 10000
+ },
+ "confounds": {
+  "beta_logn_on_logfreq_within_group": 1.0051018282052089,
+  "beta_freq_partialling_out_logn": 0.02450232787437926,
+  "beta_logn_partialling_out_freq": -0.0891318566674699,
+  "beta_freq_shift_from_partialling_logn": 0.0895865920877986,
+  "participant_jaccard_median": 0.12742946708463948,
+  "participant_jaccard_mean": 0.19063273789236143,
+  "n_pairs": 710,
+  "NOT_CONTROLLED": [
+   "bigram position-within-word",
+   "word-level context",
+   "per-participant skill x frequency interaction"
+  ]
+ },
+ "wall_s": 182.37457132339478
+}
