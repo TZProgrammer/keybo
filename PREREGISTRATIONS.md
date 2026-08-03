@@ -12532,3 +12532,245 @@ not as a footnote.
 
 ⚠ **WHAT WOULD FLIP IT, named and untested (~15 min): an `interaction_constraints` variant forbidding freq from entering geometry leaves (so no capacity is diverted). If that beat BOTH the incumbent AND a matched placebo above the reseed floor on ≥3/4 folds, the recommendation flips.** ⚠ **AND THE ONE UNEXPLORED LEVER THAT IS NOT RANKING-INERT BY CONSTRUCTION: the per-typist / HOLD-TIME channel (`train.py:154` DISCARDS hold). Because it is not frequency-keyed, it is the only target-cleaning route that does not automatically cancel — the right next arm if the goal is a better SURFACE rather than a better RANKING.** ⚠ Also material for any future cross-CHARSET comparison: the across-charset `b` spread is 4.44e-3 log (bigram) / 1.80e-3 (trigram) ≈ 1 ms/char.
 🟢 **PROCESS — A NEAR-MISS ON SHARED STATE, CAUGHT AND HANDLED CORRECTLY, WORTH REGISTERING AS THE PATTERN: the child's branch was based on `b87beb9` while `origin/main` had moved SIX commits ahead, so a direct branch push would have DELETED 535 LINES of sibling work. It cherry-picked LINES-ONLY onto a fresh worktree off CURRENT origin/main, audited 0 deletions, pushed, then confirmed `ls-remote` == its HEAD and that all sibling sections survived.** ⇒ **This is now the third agent to hit the stale-base ledger hazard and the second to avoid data loss only by the lines-only + audit-deletions discipline. It should be the default procedure, not a recovery.** 🟢 Discipline verified: `data/models/k31/` never written, `layouts.py` untouched, no board adopted, no code pushed, shared checkout clean, and **shap installed into an isolated `--target` dir, never the shared venv.**
+
+## LOSVAR-1 — PREREGISTRATION: DOES PROPAGATING THE MODEL'S **HELD-OUT VALIDATION ERROR** INTO LOS CHANGE THE `candidate` vs `flagship-c3` VERDICT? THE CORE MEASUREMENT IS THE **COMMON-MODE vs LAYOUT-DIFFERENTIAL DECOMPOSITION** OF THAT ERROR — WHICH NOBODY HAS MEASURED. (registered 2026-08-03, BEFORE any number of mine exists)
+
+**Registered BEFORE any number of mine exists.** The causal order is verifiable in git: this text is
+committed to `PREREGISTRATIONS.md` (ledger-only commit) before any measurement driver of mine is run.
+
+---
+
+## 0. THE QUESTION
+
+The user asked: *"Shouldn't LOS have a stddev calculated from the model's error on validation set? Or
+are we already doing that?"*
+
+**We are not.** 🟡 HIGH (read the code): `keybo.analysis.los.compute_los` (branch `los` @ `108e683`)
+computes `sd = d.std(ddof=1)` over the paired per-seed margins `d_s = ms_A(s) − ms_B(s)` across the
+n=25 model seeds, and `sem = sd/√25`. That is **retrain-to-retrain scatter of the margin** — the
+estimator's own RNG noise — not the model's error against held-out data. LOS_design's posterior
+therefore prices *seed stability* and nothing about whether the surface is right.
+
+**LOSVAR-1's job: put the model's held-out validation error into the confidence statement, correctly.**
+
+## 1. THE CRUX, AND WHY THE NAIVE FIX IS WRONG
+
+The model's held-out cell-level error is ~9.1 ms/char wmae (12.1 umae) per `calib`'s `k03`, versus a
+LOS margin sd of ~0.15–0.21 ms/char — a ~60× scale gap. Plugging 9.1 into the posterior would return
+~0.5 for *every* pair including tuned-vs-qwerty at 33× the floor, failing the known-big bar and making
+the instrument useless.
+
+The reason is that **most validation error is COMMON-MODE**: both boards are scored by the SAME
+surface over the SAME corpus, so any error component shared between them cancels in the paired
+difference `ms_A − ms_B`. **The quantity that actually threatens the sign is the LAYOUT-DIFFERENTIAL
+component of validation error, and it has never been measured.** That measurement is the deliverable.
+
+## 2. THE ESTIMAND, DEFINED BEFORE MEASURING
+
+Let a board's score be `M(L) = Σ_k w_k · T(p_k(L))` where `w_k` is normalized corpus mass and `T` the
+fitted surface over position n-grams. Write the surface's error at position n-gram `p` as
+`e(p) = T(p) − T*(p)` for the (unobservable) truth `T*`. Then the error in a paired margin is
+
+    Δe(A,B) = Σ_k w_k e(p_k(A)) − Σ_k w_k e(p_k(B))
+
+Decompose `e(p) = c + r(p)` where `c` is any board-invariant level/scale component. **`c` cancels
+exactly in `Δe`** (registered algebra, to be demonstrated numerically, not asserted). What survives is
+driven by `r`, weighted by the *difference* of the two boards' position-mass distributions. So:
+
+* **σ_common** — the magnitude of the board-invariant part of held-out error, in ms/char at the
+  board-score level. Reported for scale; **it does not enter the posterior.**
+* **σ_diff** — the sd of `Δe(A,B)` over held-out layouts: the LAYOUT-DIFFERENTIAL error, in ms/char.
+  **This is the quantity that enters the posterior.**
+
+### 2.1 ROUTE (a) — LOLO-DERIVED, the primary
+
+Use the existing reviewed `leave_one_layout_out` / `build_cells` / `_predict_cells` path on the K31
+bigram stroke table (`bistrokes31_v1.tsv`, `ROW_STAGGERED_31`, `min_cell_samples=10`, wpm 40–140,
+bucket 20), 4 folds × ≥3 seeds. For a held-out layout the model **never trained on**, the per-cell
+residual `obs − pred` is the honest analogue of "how wrong will this surface be on a board nobody has
+typed."
+
+For each fold, aggregate the held-out residuals to the **board-score level** through the same
+mass-weighted aggregation a board score uses, giving a per-fold *level* error `L_f` (a scalar
+ms-per-ngram offset). Then:
+
+* **σ_common** := the sd/spread of `L_f` across folds — a level shift that any board inherits equally.
+* **σ_diff** is obtained by *removing* the fold's level (and, in a second variant, an affine
+  level+scale map fit on the fold) and propagating the **residual structure** `r` through the
+  **actual position-mass difference of a real board pair**:
+
+      Δe_f(A,B) = Σ_p [ m_p(A) − m_p(B) ] · r_f(p)
+
+  where `m_p(L)` is board `L`'s normalized corpus mass on position bigram `p`, and `r_f(p)` is the
+  fold's de-levelled held-out residual at `p`. Averaged over the folds' seeds, `sd_f{Δe_f}` and
+  `RMS_f{Δe_f}` are the LOLO-derived σ_diff. **`Δe` is computed on the position n-grams the fold
+  actually observed** (that is where a residual exists at all); the registered handling of unobserved
+  positions is §2.3.
+
+**Registered PREDICTION (falsifiable):** σ_diff ≪ σ_common, because the `[m_p(A) − m_p(B)]` weight
+vector is near-zero on most positions (two good boards put similar mass on similar positions) and
+sums to 0 by construction. Order of magnitude registered **before measuring: σ_diff = 0.05–2 ms/char**
+(a 3-order-wide band — I am registering that I do not know it, so that a hit is not a post-hoc fit).
+
+### 2.2 ROUTE (b) — the INDEPENDENT CHECK, and a correction registered before measuring
+
+The brief offers PICK2-1's co-observed sign-flip rates (42% overall; 81% for gaps < 0.42, 12% for
+gaps > 3.0) as "an EMPIRICAL wrong-sign frequency" against which to validate route (a).
+
+🔴 **REGISTERED CORRECTION, from reading PICK2-1's own driver
+(`agent-artifacts/pick2/measured_pairwise.py` on branch `pick2-decision`) BEFORE measuring anything:
+that flip rate contains NO OBSERVED TIMING. It is model-vs-model.** `delta_full` is the *model's*
+margin on all charset-common trigrams; `delta_co` is the *same model's* margin restricted to the
+co-observed subset; a "flip" is `sign(delta_full) != sign(delta_co)`. Both operands are
+`(T2+Tc)`-weighted sums over the shipped surface. So it measures **corpus-subset sensitivity of the
+model's own margin**, not agreement with human data — it is a *sample-restriction* statistic, not a
+wrong-sign frequency. It is still informative (a margin that reverses when you reweight to measured
+territory is fragile) but it is **not** an independent measurement of validation error, and calling it
+one double-counts the model.
+
+Therefore route (b) is **two** things, and I register both:
+
+* **(b1) PICK2-1 as published, reproduced** — recompute the co-observed flip statistic on my own
+  pipeline to confirm the numbers, and report explicitly that it is model-vs-model.
+* **(b2) A GENUINELY OBSERVED flip rate, which is what route (b) was supposed to be** — using the
+  held-out folds: for a pair (A,B), predict the margin from the fold model, and compare its sign to
+  the sign of the margin computed from **held-out OBSERVED cell times** over the same position
+  n-grams. This is model-vs-data and is a true wrong-sign frequency. The 4 training layouts are the
+  only boards with observed data, so this runs on the 6 pairs among {qwerty, dvorak, azerty, qwertz}
+  — small, and its smallness will be reported as the binding limit, not hidden.
+
+**Registered comparison rule:** convert route (a)'s σ_diff into an implied flip rate for a given gap
+`g` via `Φ(−|g|/σ_diff)` and compare against (b1) and (b2) at the same gap strata. **AGREE** :=
+implied rate within ±15 percentage points of the measured rate in the same stratum. If (a) and (b)
+disagree materially, **that disagreement is the finding**; I will report which I trust and why, and
+will NOT silently pick one.
+
+### 2.3 REGISTERED HANDLING OF UNOBSERVED POSITIONS (the honest gap)
+
+A held-out fold gives residuals only where that layout produced observed cells. Candidate boards put
+27–33% of their corpus mass on position n-grams **no layout observed**. Registered rule: compute
+σ_diff on the observed support, then report a **coverage-scaled** variant that inflates it by
+`1/√(observed mass share)` as an explicit upper bound, and report BOTH. The inflation is a stated
+assumption (unobserved positions are no worse-behaved than observed ones is FALSE in the pessimistic
+direction, so the scaled version is the conservative one). Neither is presented as the truth.
+
+## 3. HOW IT ENTERS THE POSTERIOR
+
+The current posterior is a Student-t on μ with scale `sem = sd_seed/√n`. **Registered change:** the
+posterior scale becomes
+
+    scale² = sem² + σ_diff²
+
+i.e. the seed-noise sem and the layout-differential validation error add in quadrature, since they are
+independent sources (retrain RNG vs. surface-vs-truth). `σ_common` does not appear. The ROPE
+(`floor`) is unchanged and still measured for this design. The new estimand is named
+
+* **LOS_valid** := `P(μ < −F) + ½·P(|μ| ≤ F)` computed with the widened scale.
+
+It is added as a FOURTH estimand beside the existing three, **not** as a silent replacement of
+LOS_design — so no published number changes meaning under me. `df` is kept at `n−1` (conservative).
+
+**Registered structural properties to verify as tests:** (i) `σ_diff = 0` ⇒ `LOS_valid ≡ LOS_design`
+exactly; (ii) `σ_diff → ∞` ⇒ `LOS_valid → 0.5`; (iii) board-vs-itself ⇒ exactly 0.5 for any σ_diff;
+(iv) monotone non-increasing in σ_diff for a fixed margin sign.
+
+## 4. CALIBRATION BARS — PASS/FAIL REGISTERED BEFORE MEASURING
+
+The instrument must still pass all four bars *for LOS_valid* (existing bars for the existing estimands
+must not move at all — verified by re-running the 10 existing tests):
+
+| bar | construction | registered PASS |
+|---|---|---|
+| **null-1** | board vs itself, `d_s ≡ 0` | `LOS_valid = 0.5000` exactly |
+| **null-2** | same-board split-half, 2000 partitions | median ∈ [0.45, 0.55], decided-rate ≤ 0.05 |
+| **null-3** | permutation (sign-flip real margins), 20 000 draws | `P(LOS_valid > 0.95) ≤ 0.05` |
+| **known-big** | any tuned board vs qwerty | `LOS_valid ≥ 0.99` |
+
+**Registered in advance: the known-big bar is the one at risk**, because a large σ_diff shrinks every
+confidence. If known-big FAILS while the nulls pass, the correct report is **the tension, stated, with
+both estimands shipped** — not a tuned σ_diff. I register now that **I will not tune σ_diff to make a
+bar pass**; σ_diff is whatever route (a) measures, and if that breaks known-big I say so and ship
+LOS_design as primary with LOS_valid as the realism bound.
+
+## 5. THE LIVE PAIR
+
+    candidate   = pyu.,vdfnlhieaocstrmkj'-qgwbzx
+    flagship-c3 = pyou'vgdnmheai.cstrlkjz,-wfbxq
+
+Current published verdict: `LOS_design = 1.000` under all three pricings (25/25 seeds, margin
+−1.05 / −0.97 / −1.13 ms/char, ~3.2–3.8× the measured split-half floor), `LOS_typist ≈ 0.70`.
+
+**Registered decision rule, BEFORE the number exists:** the verdict **CHANGES** iff `LOS_valid` falls
+below 0.95 under any of the three pricings (i.e. it stops being DECIDED at the same bar LOS-1 used).
+Both outcomes are publishable and I commit to reporting whichever occurs. **Registered prediction:**
+`LOS_valid` for this pair lands in **0.60–0.95** (i.e. materially below 1.000 but not at equipoise) —
+recorded so a different answer is a refutation of my prior, not a confirmation of it.
+
+Margin-over-floor will be reported beside every probability, and the floor will be **re-measured**
+with `split_half_floor` on my own pipeline (borrowing no constant).
+
+## 6. NEGATIVE CONTROL — MANDATORY, BEFORE ANY NEW NUMBER IS TRUSTED
+
+* **NC1** — my per-seed ms/char reproduces TOURNAMENT-1's published `mspc` for all 13 boards × 25
+  seeds. PASS bar: worst |Δ| ≤ 1e-9.
+* **NC2** — my LOLO fold reproduces `calib`'s published `k03_reconcile_fix.json` held-out wmae/umae
+  for the matching (holdout, seed) cells. PASS bar: worst |Δ| ≤ 1e-6 (same code path, same data,
+  so agreement should be near-exact; a larger gap means a frame difference I must find and report).
+* **NC3** — `LOS_valid` with `σ_diff = 0` equals the published `LOS_design` on the live pair to
+  ≤ 1e-12 (proves the new code is a strict generalization).
+* **D-guard** — `require_finite` on every operand (the empty-intersection nan trap), and the D5
+  provenance assertion (`keybo.__file__` inside MY worktree, branch printed) in every driver.
+
+## 7. WHAT WOULD SHRINK THE UNCERTAINTY
+
+CLOSING-2 predicts layout diversity binds, not compute. **Registered test:** measure σ_diff's
+dependence on the number of training layouts by re-running route (a) with 2- and 3-layout training
+sets (leaving 2 and 1 out respectively) and comparing to the 3-train/1-held-out case. If σ_diff
+*falls* as training layouts increase, CLOSING-2 is confirmed on this new instrument and the
+extrapolation gives a projected σ_diff at more layouts. **If σ_diff does NOT fall with more training
+layouts, CLOSING-2 is REFUTED and I will say so loudly** — it is a registered prediction and refuting
+it is high value.
+
+## 8. HARD CONSTRAINTS I AM BOUND BY
+
+`data/models/k31/` READ-ONLY (never written). No layout adopted; `src/keybo/layouts.py` untouched. No
+code pushed; no branch merged or deleted. Work on local branch `losvar` (worktree
+`/local/home/zegertho/repos/keybo-wt-losvar`, based on `los` @ `108e683`). Ledger writes only, and
+verified ledger-only before any push. Every floor measured, never borrowed. Confidence tags on every
+claim; a script exiting 0 does not make a claim VERIFIED.
+
+## LOSVAR-1 — 🟢 **RESULT: THE VERDICT SURVIVES BUT `1.000` DIES. THE MODEL'S ~9 ms/char HELD-OUT ERROR IS ~95% COMMON-MODE; THE LAYOUT-DIFFERENTIAL PART THAT ACTUALLY THREATENS A PAIRED SIGN IS `sigma_diff` = 0.4900 ms/char, AND `candidate` vs `flagship-c3` GOES `LOS_design` 1.000 → `LOS_valid` 0.949–0.973 (RANGE OVER ALL DEFENSIBLE ERROR SCALES: 0.61–0.96). 🔴 CLOSING-2 IS REFUTED FOR THIS PAIR. 🔴 AND THE BRIEF'S ROUTE (b) MEASURES NOTHING IT CLAIMS: PICK2-1's "MEASURED SIGN-FLIP RATE" CONTAINS NO OBSERVED TIMING** (2026-08-03)
+
+🟢 **THE USER'S QUESTION ("shouldn't LOS have a stddev from the model's error on the validation set?") IS ANSWERED YES, AND THE INSTRUMENT NOW DOES IT.** `keybo.analysis.los` ships a FOURTH estimand `LOS_valid` with posterior scale `sqrt(sem² + sigma_diff²)`; at `sigma_diff=0` it reproduces `LOS_design` **bit-for-bit**, so **no published LOS number changes meaning.** 17 tests pass (10 pre-existing unchanged + 7 new encoding the registered structural properties).
+
+🟢 **THE CORE MEASUREMENT — THE DECOMPOSITION NOBODY HAD DONE (4-fold LOLO × 3 seeds, through the reviewed `validate()` path):** per-position held-out error **7.2–16.9 ms/char** (qwerty 7.23–7.38, azerty ~10.1, qwertz ~8.1, **dvorak 16.67–16.86**); the board-invariant **LEVEL** rms **2.85** (azerty −0.26…−0.57, qwerty +0.58…+0.88, dvorak +3.60…+3.67, qwertz +4.21…+4.36) — **which CANCELS in a paired margin, confirmed to 2.665e-15 over 78 pairs × 12 fold-seeds under exactly-zero-sum renormalized weights**; and the surviving **LAYOUT-DIFFERENTIAL** part `sigma_diff` = **0.4900** for the live pair. ⇒ **~95% of validation error is common-mode; the differential part is ~5% of it, ~19× smaller than the raw wmae.**
+
+🟢 **AND `sigma_diff` SCALES WITH BOARD DISSIMILARITY — that is what makes it a real error term rather than a fudge:** near-clones 0.52–0.57 (arm-B/BALL-1 vs candidate, Hamming 2–4), cross-family **2.4962** (vs qwerty) — **5.1×**. All 78 pairs: min 0.0785, median 0.7410, max 2.9980. **This is precisely why a single scalar error bar is the WRONG instrument** (it would over-punish similar boards and under-punish dissimilar ones) **and why the naive fix destroys the tool: plugging in the raw wmae 9.1224 drives the live pair to 0.5451 AND drags tuned-vs-qwerty at 33.3× the floor down to 0.8500, breaking known-big.**
+
+🟢 **THE LIVE PAIR, floors RE-MEASURED (0.2905 all / 0.3049 observed / 0.2945 common — independently reproducing TOURNAMENT-1's `floor_A` p90 to ≤0.0017 from a fresh RNG, so NOT a fifth floor):**
+
+| pricing | margin | margin/floor | sem | sigma_diff | LOS_design | **LOS_valid** |
+|---|---|---|---|---|---|---|
+| all | −1.0458 | 3.60× | 0.0300 | 0.4900 | 1.0000 | **0.9628** |
+| observed | −0.9713 | 3.19× | 0.0410 | 0.4900 | 1.0000 | **0.9490** |
+| common | −1.1315 | 3.84× | 0.0315 | 0.4900 | 1.0000 | **0.9728** |
+
+**`sigma_diff` is 16× the `sem` (0.4900 vs 0.0300)** ⇒ the posterior was being priced almost entirely by retrain RNG. The margin is **2.1× sigma_diff**: still resolvable against the model's own honest error bar, by ~2σ instead of ~35σ. 25/25 seeds favour `candidate` in every pricing. **Registered decision rule applied literally: min LOS_valid = 0.9490 < 0.95 ⇒ "CHANGED", by 0.001 — too close to headline either way. The defensible statement is DECIDED AT THE BAR WITH NO MARGIN TO SPARE.** Registered prediction was 0.60–0.95; measured 0.949 (top edge) / 0.812–0.849 (secondary).
+
+🟢 **ALL FOUR CALIBRATION BARS RE-RUN, AT BOTH MEASURED sigma VARIANTS. 3 of 4 pass under BOTH:** null-1 **0.5000 exact**; null-2 median **0.50006**, decided-rate **0.0000**; null-3 median 0.5015, **P(LOS>0.95) = 0.00000**. ⚠ **null-2 and null-3 are STRICTLY BETTER than the seed-only instrument (0.002 → 0.0000; 0.00525 → 0.00000) — admitting real error makes nulls HARDER to decide, as it must.** **known-big PASSES on the primary sigma at 0.9996 and FAILS on the all-buckets sigma at 0.9656.** ⚠ **I registered known-big in advance as the bar at risk and that sigma would NOT be tuned to make it pass; it was not.** (A printed null-1 `5.551e-17` was diagnosed, not waved away: **0.5 ulp** at an arbitrary probe sigma=5.0 only, exact 0.000e+00 at every sigma actually used — `t.cdf` rounding in `p_tie = 1 − p_a − p_b`.)
+
+🔴 **REGISTERED PREDICTION FAILURE, STATED LOUDLY: CLOSING-2 IS REFUTED FOR THE PAIR THAT MATTERS.** Single-variable design (eval layout FIXED, train set varies; 84 fits): live-pair sigma_diff is **FLAT** at n_train = 1/2/3 — **0.4494 / 0.4440 / 0.4900, LARGEST at n_train=3.** Same for arm-B-vs-candidate (0.5848/0.5446/0.5691). 🟢 **It IS confirmed cross-family: cand-vs-qwerty falls 4.3525 → 2.7188 → 2.4962 (43%).** **MECHANISM (this is the useful part): raw per-position error DOES fall with more layouts (14.546 → 10.957, −25%), but a near-clone pair's sigma_diff is set by the mass-DIFFERENCE weight vector, concentrated on the handful of positions where two 96%-identical boards differ — and adding azerty/qwertz/dvorak supplies no evidence about those positions.** ⇒ **THE REPLACEMENT PRESCRIPTION IS SHARPER THAN "more layouts": it is observed strokes on two boards from WITHIN the tuned cluster.**
+
+🔴 **THE BRIEF'S ROUTE (b) IS NOT A MEASUREMENT OF WHAT IT CLAIMS — REGISTERED BEFORE MEASURING, BY READING PICK2-1's OWN DRIVER.** `agent-artifacts/pick2/measured_pairwise.py` computes `delta_full` and `delta_co` **both** as `(T2+Tc)` sums over the SAME shipped surface: **no observed duration enters the statistic anywhere.** So the famous 42%/81%/12% is **corpus-subset SENSITIVITY of the model's own margin**, not an empirical wrong-sign frequency, and using it to validate a validation-error estimate **double-counts the model.** ⚠ **This does NOT overturn PICK2-1's conclusion** (a margin that reverses under reweighting IS fragile) **but the evidence label was wrong, and `LOS_typist` is therefore a discount, not a propagation — exactly as PICK2-1 itself said.**
+
+🟠 **I BUILT THE REAL ROUTE (b) AND IT CAME BACK COHORT-CONFOUNDED — reported, not smoothed.** Model-vs-**DATA** flip rate on held-out folds: raw **0.667 (12/18)**. But all six observed margins came out negative, and the cause was **measured**: each held-out layout carries its own cohort level offset, `|level_a − level_b|` rms **3.2183** against a raw margin error rms of **6.1141** ⇒ **~half of route (b)'s apparent error is a between-cohort level difference, not surface error.** De-levelled: flip rate **0.500 (9/18)**, error rms **3.7314**. **A 9/18 rate has a ~0.26–0.74 CI — a coin flip — so route (b) is TOO WEAK TO ADJUDICATE route (a): it neither corroborates nor refutes.** The two routes **DISAGREE by 28–65 pp** and that disagreement is the finding. **I trust (a)**, because (b1) is not a wrong-sign measurement at all, (b2) is ~50% cohort artifact with a coin-flip CI, and (a) prices *this pair's* actual mass difference rather than pooling 27 heterogeneous boards.
+
+🟢 **THE PESSIMISTIC CASE, PRICED RATHER THAN ASSERTED — live-pair `LOS_valid` across every error scale I measured:** 0.4900 → **0.9628** · 1.0287 → **0.8309** · 3.7314 (b2 de-levelled, pessimistic) → **0.6088** · 6.1141 (b2 raw) → 0.5671 · 9.1224 (naive) → 0.5451. ⇒ **the range of defensible answers is 0.61–0.96, ALL above 0.5.** Even the most pessimistic defensible sigma leaves known-big at 0.9919.
+
+🟢 **REALISM-vs-USABILITY TENSION, STATED NOT RESOLVED BY FIAT:** the scoring-bucket sigma (0.4900, error at the wpm the surface is actually queried at — production `target_wpm` 90) keeps known-big at 0.9996; the all-buckets sigma (1.0287, pooled over 40–140 wpm) breaks it at 0.9656. **Both are defensible; a change that improves realism but breaks known-big has made the instrument unusable rather than conservative.** RECOMMENDATION (not installed): ship `LOS_valid` at the scoring-bucket sigma, report all-buckets beside it as a sensitivity, and **keep `LOS_design` as the primary decision gate.** **COST ACROSS THE FIELD: DECIDED falls 66/78 → 49/78** — 17 pairs lose their verdict; but unlike `LOS_typist` (which decided **0/78** and was useless as a gate) `LOS_valid` still discriminates. **No published pairwise claim has been re-adjudicated — that is a human decision per GATESUPPORT-1's precedent.**
+
+🟢 **CONTROLS: NC2 is EXACT — my LOLO fold reproduces `calib`/k03's published held-out wmae AND umae at worst |Δ| = 0.000e+00 over all 12 (holdout,seed) cells, with matching `n_test_cells` (1001/799/2648/1406).** So this decomposition is a new *reading* of a validated measurement, not a new measurement that could be wrong on its own. NC3: `sigma_diff=0` reproduces `LOS_design` **bit-for-bit**. D5 provenance guard **FIRED FOR REAL** (the shared venv resolves `import keybo` to the shared checkout, then on branch `main`, which has no `los.py`).
+
+🔴 **WHAT REMAINS OPEN, honestly:** route (b2) is underpowered (4 layouts ⇒ 6 pairs) and that is the biggest hole; **30–44% of each board's corpus mass has NO residual at all** and no reanalysis of these artifacts can close it; and **sigma_diff is propagated on the BIGRAM channel only** — production scores add a conditioned-trigram term and **I do not assert the bigram value transfers** (a `tristrokes31_cond_v1.tsv` LOLO run is the most tractable next step). `df` left at n−1 (conservative).
+
+⇒ 🟢 **NET: the user was right that the model's validation error belonged in the confidence statement, and right that it had been left out. Putting it in correctly required measuring the common-mode/differential split rather than plugging in the wmae — and the result is that `candidate` over `flagship-c3` is a real but modest call (0.95, or 0.61–0.96 across every defensible error scale) rather than the certainty `1.000` implied. Branch `losvar` @ `891e89c` stays local; `data/models/k31/` never written; `layouts.py` untouched; nothing adopted.**
