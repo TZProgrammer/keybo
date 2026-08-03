@@ -37,7 +37,7 @@ from scipy.stats import kendalltau, spearmanr
 from keybo.data.strokes import StrokeRow, iqr_average
 from keybo.features import bigram_features_from_positions, trigram_features_from_positions
 from keybo.geometry import ROW_STAGGERED_30, Geometry
-from keybo.verdicts import HighWpmRegression, bucket_regression_report
+from keybo.verdicts import HighWpmRegression, bucket_regression_report, calibration_report
 
 
 @dataclass
@@ -879,7 +879,33 @@ def validate(
                 "worst_bucket_rho": float(worst_rho),
                 "bucket_rhos": {str(k): v for k, v in bucket_rhos.items()},
                 # Always present, gated or not: an artifact that merely OMITS a verdict reads the
-                # same whether the gate ran and passed or never ran at all (TAUGATE-1).
+                # same whether the gate ran and passed or never ran at all (TAUGATE-1). The same
+                # rule now covers CALIBRATION (backlog E4 / roadmap 4.2), which had been computed
+                # here per fold and per bucket all along while nothing ever read it as a verdict --
+                # the identical shape as these per-bucket rhos before HIGHWPM-1.
+                "calibration_gate": calibration_report(
+                    {
+                        "pooled": calibration_slope(pred, obs),
+                        # the STRUCTURAL slope: wpm is a model INPUT, so a pooled slope is carried
+                        # by the wpm->duration ramp the model was handed. Centering each bucket
+                        # leaves the part a LAYOUT comparison actually consumes.
+                        "bucket_centered": calibration_slope(
+                            _bucket_centered(test_cells, pred), _bucket_centered(test_cells, obs)
+                        ),
+                        **{f"bucket_{b}": m["slope"] for b, m in bucket_matrix.items()},
+                    },
+                    f"{holdout} seed={seed}",
+                    support={
+                        **{
+                            f"bucket_{b}": {"n_cells": m["n"], "n_participants": m["n_participants"]}
+                            for b, m in bucket_matrix.items()
+                        },
+                        "pooled": {
+                            "n_cells": len(test_cells),
+                            "n_participants": len({s[2] for c in test_cells for s in c.samples}),
+                        },
+                    },
+                ),
                 "high_wpm_gate": bucket_regression_report(
                     bucket_rhos,
                     baseline_buckets or {},

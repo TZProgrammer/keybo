@@ -327,3 +327,136 @@ def require_no_high_wpm_regression(
             f"{ {b: round(d, 4) for b, d in report['deltas'].items()} }."
         )
     return report
+
+#: Calibration slope band reported by :func:`calibration_report` as the CANDIDATE recommendation.
+#:
+#: 1.0 is the only defensible target and it is not a matter of taste: for an MSE-optimal predictor
+#: ``sd(pred) = r * sd(obs)``, hence ``slope(obs~pred) == 1`` at ANY ``r**2``. A low correlation
+#: therefore does NOT license a slope away from 1 — the two are separate defects, and conflating
+#: them is what let a compressed surface read as "well calibrated" for a whole campaign.
+#:
+#: The WIDTH is the part that is a judgement, so it is a REPORTED RECOMMENDATION and NOT a default
+#: threshold: the shipped bigram surface sits at pooled 0.914-0.999 but its bucket-centered slope —
+#: the structural part a layout comparison actually consumes — is well away from 1, so ANY band
+#: tight enough to be meaningful RETROACTIVELY FAILS THE SHIPPED SURFACE. Choosing the number
+#: therefore also decides which past results stand, which makes it a pre-registered human decision
+#: on the GATESUPPORT-1 precedent, not a constant an agent may install.
+CALIBRATION_SLOPE_RECOMMENDED_BAND = (0.90, 1.10)
+
+
+class CalibrationCompressed(ValueError):
+    """A surface's predicted dynamic range is compressed (or expanded) relative to observation.
+
+    Rank metrics are BLIND to this by construction — rho and tau are invariant under every
+    monotone transform, so a surface can hold tau +1.0 while its gaps are wrong by any factor. The
+    optimizer is not: fitness is a frequency-weighted SUM of predicted milliseconds, so relative
+    gaps are load-bearing and a compressed surface trades features at the wrong exchange rate.
+
+    This is backlog E4 / roadmap 4.2, which was diagnosed in a docstring, filed, and never closed:
+    ``calibration_slope`` has been computed per fold and per bucket all along and nothing ever gated
+    on it, exactly as the per-bucket rhos of :class:`HighWpmRegression` were computed and ungated
+    before HIGHWPM-1. Raised (not returned) for the same reason: a miscalibrated surface is
+    indistinguishable from a good one once it is a row in a leaderboard.
+    """
+
+
+def calibration_report(
+    slopes: Mapping[str, float],
+    what: str,
+    *,
+    band: tuple[float, float] = CALIBRATION_SLOPE_RECOMMENDED_BAND,
+    support: Mapping[str, Mapping[str, int]] | None = None,
+) -> dict:
+    """The calibration verdict as a serializable dict — including when it did NOT run.
+
+    ``slopes`` maps a slice name (a wpm bucket, a fold, ``"pooled"``) to ``slope(obs~pred)``, the
+    quantity :func:`keybo.training.validate.calibration_slope` returns. ``gated`` says whether a
+    verdict was reachable at all and ``passed`` is ``None`` when it was not, so an artifact that
+    merely OMITS a calibration verdict cannot read like a passing one — the TAUGATE-1 rule, applied
+    to the one metric this repo measured for a whole campaign without ever reading it as a gate.
+
+    ``support`` optionally maps slice -> {"n_cells": int, "n_participants": int} and is recorded
+    verbatim so a slope can never be read without the evidence behind it. It does NOT change any
+    verdict: a slope from a 12-cell bucket and one from a 900-cell bucket are the same number and
+    very different claims.
+
+    **Deliberately a REPORT, not a threshold.** ``in_band`` is computed against ``band`` and the
+    band travels IN the report rather than being applied as a default gate, because the shipped
+    surface's own structural slope sits outside any meaningful band — so installing a number here
+    would silently re-adjudicate every past result. Use :func:`require_calibration` to enforce a
+    band the human has pre-registered.
+
+    Never raises.
+    """
+    finite = {k: float(v) for k, v in slopes.items() if math.isfinite(float(v))}
+    lo, hi = float(band[0]), float(band[1])
+    out_of_band = sorted(k for k, v in finite.items() if not lo <= v <= hi)
+    # distance from the only defensible target, which is 1.0 -- see the constant's docstring
+    worst = max(finite, key=lambda k: abs(finite[k] - 1.0)) if finite else None
+    report: dict = {
+        "candidate": what,
+        "gated": bool(finite),
+        "passed": None,
+        "band": [lo, hi],
+        "slopes": finite,
+        "n_slices": len(finite),
+        "n_slices_missing": len(slopes) - len(finite),
+        "out_of_band": out_of_band,
+        "worst_slice": worst,
+        "worst_slope": finite.get(worst) if worst is not None else None,
+        "worst_abs_deviation_from_1": abs(finite[worst] - 1.0) if worst is not None else None,
+        "mean_slope": (sum(finite.values()) / len(finite)) if finite else None,
+        # Evidence behind the verdict, never an input to it. ``None`` distinguishes "not supplied"
+        # from "supplied and thin" -- the same absence-is-not-disproof rule as ``gated``.
+        "support": (
+            {str(k): dict(support[k]) for k in sorted(support) if k in finite}
+            if support is not None
+            else None
+        ),
+    }
+    if report["gated"]:
+        report["passed"] = not out_of_band
+    return report
+
+
+def require_calibration(
+    slopes: Mapping[str, float],
+    what: str,
+    *,
+    band: tuple[float, float],
+    support: Mapping[str, Mapping[str, int]] | None = None,
+) -> dict:
+    """Refuse ``slopes`` if any slice's calibration slope falls outside ``band``.
+
+    ``band`` is REQUIRED and has no default, unlike every other gate in this module. That is the
+    point: a calibration band has retroactive force — it decides which past results stand — so it
+    has to arrive from a pre-registered human decision at the call site rather than from a constant
+    an agent chose. :data:`CALIBRATION_SLOPE_RECOMMENDED_BAND` is a recommendation to hand a human,
+    not a default to apply.
+
+    An empty or all-non-finite ``slopes`` is REFUSED, not passed: "not measured" is not "is
+    calibrated" — the same absence-is-not-disproof rule as
+    :func:`require_no_high_wpm_regression`.
+    """
+    report = calibration_report(slopes, what, band=band, support=support)
+    if not report["gated"]:
+        raise CalibrationCompressed(
+            f"{what}: no finite calibration slope was available ({len(slopes)} slices supplied, "
+            f"none usable), so the calibration gate could not run. 'Not measured' is not 'is "
+            f"calibrated' — supply the slices or state explicitly that the result is ungated."
+        )
+    if not report["passed"]:
+        lo, hi = report["band"]
+        detail = ", ".join(f"{k}: {report['slopes'][k]:.4g}" for k in report["out_of_band"])
+        direction = "COMPRESS" if (report["worst_slope"] or 0) > 1 else "over-disperse"
+        raise CalibrationCompressed(
+            f"{what}: {len(report['out_of_band'])} of {report['n_slices']} slices fall outside the "
+            f"pre-registered calibration band [{lo:.4g}, {hi:.4g}] — {detail}. Worst slice: "
+            f"{report['worst_slice']} at {report['worst_slope']:.4g} (predictions {direction} the "
+            f"true range by {report['worst_abs_deviation_from_1']:.4g}). Rank metrics are blind to "
+            f"this — rho and tau are invariant under every monotone transform — while fitness is a "
+            f"frequency-weighted SUM of milliseconds, so the gaps are load-bearing and the search "
+            f"trades features at the wrong exchange rate. All slopes: "
+            f"{ {k: round(v, 4) for k, v in report['slopes'].items()} }."
+        )
+    return report
