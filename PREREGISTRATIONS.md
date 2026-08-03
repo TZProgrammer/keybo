@@ -11883,3 +11883,142 @@ ratios show.**
 🟢 **CONTROLS AND PROCESS: E1a reproduces TOURNAMENT-1's 125 published per-seed values at 0.000e+00; E1b vs shipped `card()` at 1.211e-14; E3 reproduced all EIGHT published sfb-pricing quantities identically, and its T2 matches mine at max|diff| 0.000e+00.** 🟢 **THE RESCUED SEED TABLES EARNED THEIR RESCUE: the whole n=25 1v1 took 4 SECONDS.** ⚠ **HIGH-WPM GATE declared UNGATED-BY-CONSTRUCTION rather than faked — a surface edit has no rho, and claiming a pass would BE the TAUGATE-1 defect.** Branch `sfbprice` @ 82244e5 stays local; `data/models/k31/` never written; `layouts.py` untouched; nothing adopted.
 
 ⇒ 🟢 **NET, AND THIS CLOSES THE ADOPTION QUESTION: the proposed board is `candidate` = `pyu.,vdfnlhieaocstrmkj'-qgwbzx`. The strongest objection raised against it — that the top cluster might be an artifact of a mispriced objective — was tested at the objective level and RESOLVED IN ITS FAVOUR: correcting the price makes the search prefer `candidate` OVER arm-B, and the residual mispricing was working against it all along. What remains is not a measurement gap but a MODEL-CLASS limit (the frame cannot express the raw price at any finite weight) and the standing 4-fold layout-diversity ceiling of CLOSING-2.**
+
+---
+
+## CALIB-1 PREREG (registered BEFORE any new number of mine exists) — WHY are the fitted surface's class contrasts smaller than the raw ones, is the compression UNIFORM or DIFFERENTIAL, and does correcting it help or hurt?
+
+**Arm:** `calib`, worktree `/local/home/zegertho/repos/keybo-wt-calib`, branch `calib`, off `main` @ `8d7160b`.
+Spawned to close **backlog E4** (`agent-artifacts/bigram-experiment-backlog.md:104`, restated as
+roadmap **4.2** "designed, not implemented", `agent-artifacts/gaps-and-roadmap.md:125`).
+
+### 0. WHAT IS ALREADY TRUE BEFORE I MEASURE ANYTHING (stated so it cannot be claimed as a finding later)
+
+**0.1 🟢 E-CONTROL ALREADY GREEN — all six of the parent's ratios reproduce EXACTLY**, from
+`sfbprice`'s `c02_contrast.json` 486 per-pair records (no re-read of the 609 MB stroke frame):
+same-finger 55/+63.00/+41.03/**0.651**, same-hand 168/+20.00/+8.53/**0.427**, dy≥2
+111/+16.50/+6.73/**0.408**, bottom-row 212/+28.75/+8.97/**0.312**, adjacent 61/+32.00/+8.48/**0.265**,
+top-row 326/−6.75/−1.09/**0.162**. **The parent's table contains no arithmetic error.** Two
+definitions had to be recovered to get there and both are recorded as traps: the row classes are
+**either-key** (`row_a==R or row_b==R`), not landing-key; and in `ROW_STAGGERED_31` **y=3 is the TOP
+row and y=1 the BOTTOM** (`slots[0..9]` are y=3 = qwerty `q..p`).
+
+**0.2 🔴 THE PARENT'S "the repo measures this and nothing gates on it" IS TRUE ABOUT THE GATE AND
+FALSE ABOUT THE REPORTING — and the correction matters, because the repo has already read this
+number and drawn the OPPOSITE conclusion from it.** `grep -c calibration_slope PREREGISTRATIONS.md`
+= **0** (the parent's grep is right), but the ledger reports the quantity in prose **twice**:
+**:98** *"Hardened metrics: calibration slope 1.04 on qwerty (no compression)"* and **:356** *"both
+champions hold τ +1.0 with calibration slopes ~1.0 per fold."* So the quantity was measured,
+reported, and **interpreted as evidence of calibration**. E4 is nonetheless genuinely OPEN and
+UNGATED: `tests/training/test_validate.py` asserts only `0.5 < slope < 2.0` (:370) and
+`0.3 < slope < 3.0` (:980) — a slope of 2.9 passes the suite.
+
+**0.3 🔴 THE TWO NUMBERS ARE DIFFERENT ESTIMANDS THAT DISAGREE IN SIGN, AND THIS IS THE CRUX OF THE
+WHOLE ARM.** `calibration_slope` (validate.py:136) is OLS **slope(obs ~ pred)**, and its own
+docstring reads *">1 = predictions COMPRESS the true range."* Measured in
+`agent-artifacts/results_bigram.json`: per-fold pooled **0.914–0.999**, and the per-**bucket** slope
+at the wpm-80 bucket is **0.843/0.852/0.849** (azerty) and **0.892/0.879/0.900** (dvorak) — **every
+one BELOW 1.** By the repo's own metric and its own docstring, **the surface does not compress.**
+Yet the parent's ratio-of-contrasts on the same data says 0.16–0.65.
+
+🟢 **ALGEBRAIC RECONCILIATION, VERIFIED ON THE 486 PAIRS BEFORE THIS PREREG:**
+`slope(raw~pred)` = **1.461839** (identical to `sfbprice`'s affine 1.4618), `slope(pred~raw)` =
+**0.296078**, and their **product = 0.432818 = r² EXACTLY** (r = 0.657889). The two slopes are **not
+reciprocals** (1/1.4618 = 0.684 ≠ 0.296). This is textbook **regression attenuation**, and the
+parent's six ratios (mean **0.398**) live on the **`slope(pred~raw)` = 0.296** side — the *attenuated*
+direction. ⇒ **A ratio of 0.30–0.65 with r² = 0.43 is the arithmetic signature of unexplained
+variance, not of a scale error**, and it is what an MSE-optimal conditional mean is *supposed* to do:
+`E[y|x]` shrinks toward the mean by construction. **The prior probability that "the compression" is
+mostly a defect is therefore LOW, and this prereg is written to give that null a fair chance to win.**
+
+### 1. HYPOTHESES, EACH WITH ITS OWN FALSIFIER (registered now)
+
+- **H-ATTEN (the null, and my stated favourite):** the ratio gap is dominated by regression
+  attenuation — i.e. by `1 − r²`-type unexplained variance — rather than by tunable shrinkage.
+  *Falsifier:* if a per-class **decomposition** attributes < 40% of the mean gap to attenuation,
+  H-ATTEN is refuted.
+- **H-ESTIMAND:** part of the gap is the practice term `b` (`train.py:422` fits `y − bvec`, so
+  `predict()` returns `g` alone) plus median-of-medians-vs-conditional-mean. `sfbprice` measured `b`
+  closing 49% of the same-finger gap. *Falsifier:* if restoring `b` and matching the aggregation
+  moves the mean ratio by < 0.05, H-ESTIMAND owns ~nothing.
+- **H-SHRINK:** γ/α/depth/`n_estimators` regularization is load-bearing. *Falsifier:* retrain with
+  γ=α=0 (the `latspan` recoverability route: R² 0.7732 → 0.9480); if the mean ratio moves < 0.05,
+  tunable shrinkage owns ~nothing. **Registered expectation: it moves the ratio UP but costs
+  held-out accuracy** — that trade-off, if it appears, IS the finding (INVARIANT 3's warning).
+- **H-EIV:** errors-in-variables. The raw side is a **median over samples** with sampling noise; a
+  noisy *target* attenuates nothing on its own, but a noisy *regressor* does. Since here the ratio's
+  denominator is the raw contrast, **raw-side noise inflates the raw contrast and depresses the
+  ratio.** *Instrument:* split-half the samples within each pair, compute the raw contrast on each
+  half, and estimate the noise-corrected (disattenuated) raw contrast. *Falsifier:* if the corrected
+  raw contrasts move the ratios < 0.03, H-EIV owns ~nothing.
+
+### 2. INVARIANT 2 — UNIFORM vs DIFFERENTIAL. **THE DECISION RULE, REGISTERED BEFORE THE NUMBERS.**
+
+🔴 **The six-ratio spread is the WRONG instrument and I register that objection in advance:** each
+ratio is a **ratio estimator with the raw contrast in the denominator**, so a class with a small raw
+contrast (top-row, raw −6.75) has an intrinsically unstable ratio, and comparing 0.651 against 0.162
+partly compares denominators. **The registered instrument instead:**
+
+1. Fit ONE global affine map `raw ≈ a + b·pred` over all 486 pairs (this is `sfbprice`'s 1.4618).
+2. Test each class contrast **in the residuals** of that single global map.
+3. **DECISION RULE — registered:** the compression is **UNIFORM** iff, after the single global
+   affine map, **no class's residual contrast is distinguishable from 0** at Holm-corrected α=0.05
+   across the 6 classes, using a **pair-level bootstrap** (10,000 draws, `default_rng(20260803)`) for
+   each CI. It is **DIFFERENTIAL** iff **≥1 class survives Holm**. I will report all six CIs either way.
+4. **Secondary (reported, not decisive):** the spread of the six ratios against the spread expected
+   under a *uniform-truth* null, simulated by resampling pairs. This answers the parent's exact
+   question ("is 0.651-vs-0.265 more than noise?") in the parent's own currency.
+
+### 3. INVARIANT 3 — THE FIX, AND THE RULE THAT DECIDES WHETHER IT *IS* A FIX
+
+**The candidate fix is a post-hoc affine recalibration of the surface** (the route the repo already
+uses as a design control at ledger:934, and the one `sfbprice` measured as slope 1.4618). Registered
+in advance, because the sign of the answer is genuinely uncertain and I want to be held to it:
+
+- **(a) CALIBRATION MUST MOVE, MEASURED:** post-fix `slope(raw~pred)` on held-out pairs must land in
+  **[0.95, 1.05]**. Measured after the change, never assumed.
+- **(b) TRANSFER MUST NOT REGRESS — the pre-registered decision rule:** the fix is **ADOPTABLE** iff
+  the affine map, **fitted on held-in folds only and applied to held-out predictions**, does not
+  degrade held-out magnitude accuracy: paired per-fold **`wmae`** and **`umae`** deltas (MOR-FIX-1
+  paired deltas, never a mean of ratios) with **mean Δ ≤ 0** and **≥3 of 4 folds non-worse**.
+- 🔴 **REGISTERED PREDICTION, AND IT PREDICTS MY OWN CANDIDATE FIX FAILS THIS TEST.** Expanding
+  predictions by ~1.46× inflates their variance beyond the conditional mean, so squared/absolute
+  error **must rise** unless the compression is genuinely a bias rather than optimal shrinkage.
+  **I predict: (a) PASSES and (b) FAILS — `wmae` gets WORSE.** If that is the outcome, then
+  **"the surface is uncalibrated" and "the surface should be expanded" are DIFFERENT CLAIMS and only
+  the first is true**, and the correct deliverable is a *report surface*, not a rescale.
+- **(c) RANK METRICS ARE UNGATED BY CONSTRUCTION HERE, and I say so now rather than claiming a pass:**
+  a positive-slope affine map is **monotone**, so ρ and τ are **invariant by construction** — they
+  *cannot* adjudicate this fix, and quoting "ρ unchanged" as evidence the fix is safe would be
+  precisely the **TAUGATE-1** defect. The high-wpm gate grades a model's per-bucket ρ, so for the
+  post-hoc map it is likewise **UNGATED-BY-CONSTRUCTION**; only the H-SHRINK **retrain** arm has a
+  real ρ, and only that arm will be gated.
+
+### 4. INVARIANT 4 — BLAST RADIUS. Registered classification rule, so the two lists cannot be drawn to taste
+
+A registered conclusion is **SENSITIVE** iff its verdict depends on a **ratio of ms-denominated
+quantities** or on an **absolute ms threshold** (an affine map with `b≠1`, `a≠0` changes these), and
+**INSENSITIVE** iff it depends only on the **sign/order** of margins (invariant under any positive
+affine map — provable, not measured). Registered predictions: `candidate`'s survival, the
+qwerty-vs-field gap, and the 5-board cluster equivalence are **INSENSITIVE by proof** (order-only);
+**PRICEBAND-1's ms-denominated sfb cap and every "X beats Y by N ms/char" figure are SENSITIVE**.
+I will re-check `candidate` explicitly rather than resting on the proof.
+
+### 5. INVARIANT 5 — THE GATE. Registered as REPORT-NOT-THRESHOLD, following GATESUPPORT-1
+
+I will implement a **visible, enforceable report surface** (slope + its support travelling together,
+per fold AND per bucket, always emitted so a missing verdict cannot read as a pass — the TAUGATE-1
+rule) and **state a recommended threshold as the human's call rather than installing a number that
+silently re-adjudicates history.** ⚠ Registered in advance: **a threshold on `slope(obs~pred)` has
+retroactive force**, and since the shipped folds sit at **0.914–0.999** with wpm-80 buckets at
+**0.84–0.90**, any threshold like "slope ∈ [0.95, 1.05] per bucket" would **retroactively fail the
+shipped surface.** That is exactly why it is the human's decision and not mine.
+
+### 6. CONSTRAINTS BINDING THIS ARM
+
+`data/models/k31/` is **READ-ONLY** (retrains staged in my own dir); `src/keybo/layouts.py`
+untouched; no layout adopted or promoted; **no code pushed**; ledger commits cherry-picked onto a
+fresh base off `origin/main` so the parent's unpushed local HEAD cannot ride along. Env traps
+honoured: `PYTHONPATH` pinned to my worktree with `keybo.__file__` asserted in-worktree (**the D5
+trap is LIVE — a bare `import keybo` resolves to the shared checkout on `main`**), all four thread
+vars set before importing xgboost, `/tmp` **subdir** only, `require_finite` on every aggregate.
