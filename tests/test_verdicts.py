@@ -185,10 +185,62 @@ def test_the_documented_shipped_margin_CLEARS_the_shipped_threshold() -> None:
 
 
 def test_calibration_report_is_a_report_and_never_raises() -> None:
-    r = calibration_report({"80": 2.5, "100": 0.1}, "wildly miscalibrated")
+    r = calibration_report({"80": 2.5, "100": 0.1}, "wildly miscalibrated", band=(0.9, 1.1))
     assert r["gated"] is True
     assert r["passed"] is False
     assert r["out_of_band"] == ["100", "80"]
+
+
+def test_an_ABSENT_BAND_is_UNGATED_not_passing_and_the_slopes_are_still_reported() -> None:
+    """A band decides which PAST results stand, so it cannot arrive from a default.
+
+    Without one, every slope is still MEASURED and reported -- the number is the useful part -- but
+    ``gated`` is False and ``passed`` is None. The failure this prevents is concrete: with a
+    defaulted band, ``validate()`` (which passes no band of its own) wrote a hard ``passed: false``
+    into every fold block of every artifact, adjudicated against a number no human ever chose.
+    """
+    r = calibration_report({"80": 1.46, "100": 0.7}, "no band supplied")
+    assert r["gated"] is False
+    assert r["passed"] is None, "un-adjudicated must be None, never True and never False"
+    assert r["band"] is None
+    assert r["slopes"] == {"80": 1.46, "100": 0.7}, "the slopes are still reported"
+    assert r["out_of_band"] == [], "no band => nothing can be OUT of it"
+    assert r["worst_slice"] == "80", "the worst slice is still identified, band or no band"
+
+
+def test_a_thin_slice_can_be_REPORTED_out_of_band_without_DECIDING_the_verdict() -> None:
+    """The scope half of the human's decision, and the reason it is MEASURED not chosen.
+
+    At this data's r~0.658 a PERFECTLY calibrated 64-cell bucket lands outside [0.90, 1.10] ~49% of
+    the time by chance alone, so letting every slice decide makes the verdict hostage to noise.
+    Narrowing the scope must NOT hide the slice: it stays in ``out_of_band`` and is reported in
+    ``out_of_band_advisory``.
+    """
+    slopes = {"pooled": 1.00, "bucket_centered": 1.02, "bucket_120": 0.71}
+    r = calibration_report(
+        slopes, "thin bucket", band=(0.9, 1.1), deciding=("pooled", "bucket_centered")
+    )
+    assert r["passed"] is True, "a thin bucket must not fail the fold on its own"
+    assert r["out_of_band"] == ["bucket_120"], "the slice is STILL reported out of band"
+    assert r["out_of_band_deciding"] == []
+    assert r["out_of_band_advisory"] == ["bucket_120"]
+    assert r["deciding_slices"] == ["bucket_centered", "pooled"]
+
+
+def test_the_structural_slices_DO_still_decide_so_the_qwerty_fold_still_fails() -> None:
+    """Narrowing the scope must not defang the gate on the defect it exists for.
+
+    These are the shipped surface's MEASURED qwerty-fold slopes (pooled 1.2283, bucket-centered
+    1.4067), reproduced to |diff| = 0.0000 against the CALIB-1 registration.
+    """
+    r = calibration_report(
+        {"pooled": 1.2283, "bucket_centered": 1.4067, "bucket_120": 1.2146},
+        "qwerty fold",
+        band=(0.9, 1.1),
+        deciding=("pooled", "bucket_centered"),
+    )
+    assert r["passed"] is False
+    assert r["out_of_band_deciding"] == ["bucket_centered", "pooled"]
 
 
 def test_an_absent_slope_is_UNGATED_not_passing() -> None:
@@ -215,10 +267,40 @@ def test_require_calibration_refuses_a_COMPRESSED_surface_and_says_which_slice()
     with pytest.raises(CalibrationCompressed) as e:
         require_calibration({"80": 1.00, "120": 1.46}, "compressed at speed", band=(0.9, 1.1))
     msg = str(e.value)
-    assert "1 of 2 slices" in msg
+    assert "1 of 2 DECIDING slices" in msg
     assert "120" in msg and "1.46" in msg
     assert "COMPRESS" in msg, "the message must name the DIRECTION, not just the deviation"
     assert "rho and tau are invariant" in msg
+
+
+def test_an_ADVISORY_out_of_band_slice_is_named_in_the_message_it_did_not_cause() -> None:
+    """Narrowing the deciding scope must never SILENCE a slice, only stop it from gating.
+
+    Without this, `deciding` would be a way to make an inconvenient slice disappear -- the exact
+    failure mode (a verdict that exists and is never read) the whole gate was built against.
+    """
+    with pytest.raises(CalibrationCompressed) as e:
+        require_calibration(
+            {"pooled": 1.46, "bucket_120": 0.71},
+            "compressed, with a thin bucket too",
+            band=(0.9, 1.1),
+            deciding=("pooled",),
+        )
+    msg = str(e.value)
+    assert "1 of 1 DECIDING slices" in msg
+    assert "NOT deciding" in msg and "bucket_120" in msg, "the advisory slice must be named"
+
+
+def test_an_out_of_band_slice_OUTSIDE_the_deciding_scope_does_not_raise() -> None:
+    r = require_calibration(
+        {"pooled": 1.02, "bucket_120": 0.71},
+        "thin bucket only",
+        band=(0.9, 1.1),
+        deciding=("pooled",),
+    )
+    assert r["passed"] is True
+    assert r["out_of_band"] == ["bucket_120"], "still reported"
+    assert r["out_of_band_advisory"] == ["bucket_120"]
 
 
 def test_the_band_is_REQUIRED_so_no_agent_can_install_a_retroactive_threshold() -> None:

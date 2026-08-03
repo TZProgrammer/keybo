@@ -27,7 +27,7 @@ Cells below the sample floor are refused, not printed with a caveat.
 from __future__ import annotations
 
 from collections import Counter, defaultdict
-from collections.abc import Mapping
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 
 import numpy as np
@@ -37,7 +37,12 @@ from scipy.stats import kendalltau, spearmanr
 from keybo.data.strokes import StrokeRow, iqr_average
 from keybo.features import bigram_features_from_positions, trigram_features_from_positions
 from keybo.geometry import ROW_STAGGERED_30, Geometry
-from keybo.verdicts import HighWpmRegression, bucket_regression_report, calibration_report
+from keybo.verdicts import (
+    CALIBRATION_DECIDING_SLICES_RECOMMENDED,
+    HighWpmRegression,
+    bucket_regression_report,
+    calibration_report,
+)
 
 
 @dataclass
@@ -732,6 +737,8 @@ def validate(
     baseline_buckets: Mapping[int, float] | None = None,
     direction: bool = False,
     kitchensink: bool = False,
+    calibration_band: tuple[float, float] | None = None,
+    calibration_deciding: Sequence[str] | None = CALIBRATION_DECIDING_SLICES_RECOMMENDED,
 ) -> dict:
     """Run the full leave-one-layout-out experiment; returns the report dict.
 
@@ -749,6 +756,18 @@ def validate(
     :func:`keybo.verdicts.bucket_regression_report`. Omitting it leaves ``gated: False`` in the
     artifact rather than nothing at all, so an UNGATED result is never mistaken for a passing one
     (HIGHWPM-1: these per-bucket rhos were computed all along and nothing ever gated on them).
+
+    ``calibration_band`` does the same for the CALIBRATION verdict (backlog E4 / roadmap 4.2). Every
+    fold/seed always gains a ``calibration_gate`` block carrying pooled, bucket-centered and
+    per-bucket ``slope(obs~pred)`` with their support; omitting the band leaves ``gated: False`` /
+    ``passed: None`` so an unadjudicated result cannot read as a passing one. It has NO default
+    because a band decides which PAST results stand (GATESUPPORT-1) — see
+    :data:`keybo.verdicts.CALIBRATION_SLOPE_RECOMMENDED_BAND`.
+    ``calibration_deciding`` names which slices may decide ``passed``; it defaults to
+    :data:`keybo.verdicts.CALIBRATION_DECIDING_SLICES_RECOMMENDED` (``pooled`` +
+    ``bucket_centered``) because a thin wpm bucket's slope is mostly sampling noise — a perfectly
+    calibrated 64-cell bucket lands outside [0.90, 1.10] ~49% of the time at this data's r. Every
+    out-of-band slice is still listed in ``out_of_band`` regardless of scope.
 
     Report shape::
 
@@ -895,12 +914,24 @@ def validate(
                         **{f"bucket_{b}": m["slope"] for b, m in bucket_matrix.items()},
                     },
                     f"{holdout} seed={seed}",
+                    # No band unless the CALLER pre-registered one: `calibration_band=None` emits
+                    # every slope with gated=False / passed=None rather than adjudicating against a
+                    # number no human chose (GATESUPPORT-1).
+                    band=calibration_band,
+                    deciding=calibration_deciding,
                     support={
                         **{
                             f"bucket_{b}": {"n_cells": m["n"], "n_participants": m["n_participants"]}
                             for b, m in bucket_matrix.items()
                         },
                         "pooled": {
+                            "n_cells": len(test_cells),
+                            "n_participants": len({s[2] for c in test_cells for s in c.samples}),
+                        },
+                        # The centered slice spans the SAME cells as pooled -- centering removes
+                        # each bucket's mean, it does not drop a cell. Recorded because a slice
+                        # allowed to decide must never be read without its support.
+                        "bucket_centered": {
                             "n_cells": len(test_cells),
                             "n_participants": len({s[2] for c in test_cells for s in c.samples}),
                         },

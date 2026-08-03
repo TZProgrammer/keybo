@@ -343,6 +343,26 @@ def require_no_high_wpm_regression(
 #: on the GATESUPPORT-1 precedent, not a constant an agent may install.
 CALIBRATION_SLOPE_RECOMMENDED_BAND = (0.90, 1.10)
 
+#: The slices whose slopes are allowed to DECIDE ``passed``, recommended to a human alongside the
+#: band. Every slice is still measured and reported; this names only the deciding subset.
+#:
+#: MEASURED reason (gateaudit, 20000 trials/slice at the repo's own r=0.6579, truth slope exactly
+#: 1.0): the band's half-width of 0.10 is only ~0.68 sampling sd at a 64-cell bucket, so a
+#: PERFECTLY calibrated thin bucket lands outside [0.90, 1.10] **49% of the time by chance alone**
+#: (77% at n=12, 59% at n=40, versus 0.9% at the ~2600-cell pooled slice). Deciding on every slice
+#: therefore fires on noise: over the shipped surface's 12 fold x seed cells it flags 12 of 12 with
+#: ~11.7 expected noise-only slice flags, while the deviations it fires on (1.30-2.37 sd for the
+#: non-qwerty folds) do not separate from that noise. The qwerty fold's deviations are 4.09-12.29 sd
+#: on 477-2648 cells, and the two sets do not overlap.
+#:
+#: ``pooled`` alone is NOT sufficient and this is also measured: with a realistic wpm ramp, a true
+#: within-bucket compression of 1.45x reads as pooled 1.0176 (inside the band) while
+#: ``bucket_centered`` recovers 1.4500. wpm is a model INPUT, so a pooled slope is partly carried by
+#: the wpm->duration ramp the model was handed; the centered slice is the part a LAYOUT comparison
+#: consumes. Both are kept for that reason: pooled is what ms-denominated claims rest on, and
+#: bucket_centered is what the search consumes.
+CALIBRATION_DECIDING_SLICES_RECOMMENDED = ("pooled", "bucket_centered")
+
 
 class CalibrationCompressed(ValueError):
     """A surface's predicted dynamic range is compressed (or expanded) relative to observation.
@@ -364,7 +384,8 @@ def calibration_report(
     slopes: Mapping[str, float],
     what: str,
     *,
-    band: tuple[float, float] = CALIBRATION_SLOPE_RECOMMENDED_BAND,
+    band: tuple[float, float] | None = None,
+    deciding: Sequence[str] | None = None,
     support: Mapping[str, Mapping[str, int]] | None = None,
 ) -> dict:
     """The calibration verdict as a serializable dict — including when it did NOT run.
@@ -380,28 +401,47 @@ def calibration_report(
     verdict: a slope from a 12-cell bucket and one from a 900-cell bucket are the same number and
     very different claims.
 
-    **Deliberately a REPORT, not a threshold.** ``in_band`` is computed against ``band`` and the
-    band travels IN the report rather than being applied as a default gate, because the shipped
-    surface's own structural slope sits outside any meaningful band — so installing a number here
-    would silently re-adjudicate every past result. Use :func:`require_calibration` to enforce a
-    band the human has pre-registered.
+    **Deliberately a REPORT, not a threshold — and that now includes the BAND ITSELF.** ``band`` has
+    NO default: omit it and every slope is still measured and reported while ``gated`` is ``False``
+    and ``passed`` is ``None``, because choosing the number decides which past results stand
+    (GATESUPPORT-1). A defaulted band would write a hard ``passed: false`` into every artifact
+    against a number no human picked — the failure this signature exists to prevent.
+    :data:`CALIBRATION_SLOPE_RECOMMENDED_BAND` is the recommendation to hand a human.
+
+    ``deciding`` names the subset of slices whose slopes may DECIDE ``passed``; the rest are
+    measured, reported, and marked advisory. It defaults to every supplied slice, which is the
+    permissive reading and NOT the recommended one —
+    :data:`CALIBRATION_DECIDING_SLICES_RECOMMENDED` explains, with measured false-flag rates, why a
+    thin wpm bucket must not hold a verdict hostage. ``out_of_band`` always lists EVERY out-of-band
+    slice regardless of scope, so narrowing the scope can never hide a slice: the difference lands
+    in ``out_of_band_advisory``, which is reported and does not gate.
 
     Never raises.
     """
     finite = {k: float(v) for k, v in slopes.items() if math.isfinite(float(v))}
-    lo, hi = float(band[0]), float(band[1])
-    out_of_band = sorted(k for k, v in finite.items() if not lo <= v <= hi)
+    have_band = band is not None
+    lo, hi = (float(band[0]), float(band[1])) if have_band else (float("nan"), float("nan"))
+    # EVERY out-of-band slice, always -- narrowing `deciding` must not conceal one.
+    out_of_band = sorted(k for k, v in finite.items() if not lo <= v <= hi) if have_band else []
+    decide_keys = set(finite if deciding is None else deciding) & set(finite)
+    out_of_band_deciding = sorted(k for k in out_of_band if k in decide_keys)
     # distance from the only defensible target, which is 1.0 -- see the constant's docstring
     worst = max(finite, key=lambda k: abs(finite[k] - 1.0)) if finite else None
     report: dict = {
         "candidate": what,
-        "gated": bool(finite),
+        # A band is part of what makes a verdict reachable: slopes with no band are MEASURED, not
+        # adjudicated, so `gated` stays False and `passed` stays None (absence is not disproof).
+        "gated": bool(finite) and have_band,
         "passed": None,
-        "band": [lo, hi],
+        "band": [lo, hi] if have_band else None,
+        "deciding_slices": sorted(decide_keys),
         "slopes": finite,
         "n_slices": len(finite),
         "n_slices_missing": len(slopes) - len(finite),
         "out_of_band": out_of_band,
+        "out_of_band_deciding": out_of_band_deciding,
+        # Out of band but NOT allowed to decide -- reported so a narrowed scope stays auditable.
+        "out_of_band_advisory": sorted(set(out_of_band) - set(out_of_band_deciding)),
         "worst_slice": worst,
         "worst_slope": finite.get(worst) if worst is not None else None,
         "worst_abs_deviation_from_1": abs(finite[worst] - 1.0) if worst is not None else None,
@@ -415,7 +455,7 @@ def calibration_report(
         ),
     }
     if report["gated"]:
-        report["passed"] = not out_of_band
+        report["passed"] = not out_of_band_deciding
     return report
 
 
@@ -424,21 +464,27 @@ def require_calibration(
     what: str,
     *,
     band: tuple[float, float],
+    deciding: Sequence[str] | None = None,
     support: Mapping[str, Mapping[str, int]] | None = None,
 ) -> dict:
-    """Refuse ``slopes`` if any slice's calibration slope falls outside ``band``.
+    """Refuse ``slopes`` if a DECIDING slice's calibration slope falls outside ``band``.
 
     ``band`` is REQUIRED and has no default, unlike every other gate in this module. That is the
     point: a calibration band has retroactive force — it decides which past results stand — so it
     has to arrive from a pre-registered human decision at the call site rather than from a constant
     an agent chose. :data:`CALIBRATION_SLOPE_RECOMMENDED_BAND` is a recommendation to hand a human,
-    not a default to apply.
+    not a default to apply. ``deciding`` is the same, for scope rather than width: see
+    :data:`CALIBRATION_DECIDING_SLICES_RECOMMENDED`.
+
+    An out-of-band slice OUTSIDE ``deciding`` does NOT raise — it is reported in
+    ``out_of_band_advisory``, and the raised message names it anyway so narrowing the scope can
+    never silence a slice.
 
     An empty or all-non-finite ``slopes`` is REFUSED, not passed: "not measured" is not "is
     calibrated" — the same absence-is-not-disproof rule as
     :func:`require_no_high_wpm_regression`.
     """
-    report = calibration_report(slopes, what, band=band, support=support)
+    report = calibration_report(slopes, what, band=band, deciding=deciding, support=support)
     if not report["gated"]:
         raise CalibrationCompressed(
             f"{what}: no finite calibration slope was available ({len(slopes)} slices supplied, "
@@ -447,11 +493,19 @@ def require_calibration(
         )
     if not report["passed"]:
         lo, hi = report["band"]
-        detail = ", ".join(f"{k}: {report['slopes'][k]:.4g}" for k in report["out_of_band"])
+        deciders = report["out_of_band_deciding"]
+        detail = ", ".join(f"{k}: {report['slopes'][k]:.4g}" for k in deciders)
+        advisory = report["out_of_band_advisory"]
+        extra = (
+            " Also out of band but NOT deciding (reported, did not gate): "
+            + ", ".join(f"{k}: {report['slopes'][k]:.4g}" for k in advisory)
+            + "."
+        ) if advisory else ""
         direction = "COMPRESS" if (report["worst_slope"] or 0) > 1 else "over-disperse"
         raise CalibrationCompressed(
-            f"{what}: {len(report['out_of_band'])} of {report['n_slices']} slices fall outside the "
-            f"pre-registered calibration band [{lo:.4g}, {hi:.4g}] — {detail}. Worst slice: "
+            f"{what}: {len(deciders)} of {len(report['deciding_slices'])} DECIDING slices fall "
+            f"outside the pre-registered calibration band [{lo:.4g}, {hi:.4g}] — {detail}.{extra} "
+            f"Worst slice overall: "
             f"{report['worst_slice']} at {report['worst_slope']:.4g} (predictions {direction} the "
             f"true range by {report['worst_abs_deviation_from_1']:.4g}). Rank metrics are blind to "
             f"this — rho and tau are invariant under every monotone transform — while fitness is a "
