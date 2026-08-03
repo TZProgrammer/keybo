@@ -1,0 +1,72 @@
+{
+ "boot_seed": 20260803,
+ "geometry": "ROW_STAGGERED_31",
+ "registered_in": "PREREGISTRATIONS.md FREQCORRECT-1 ADDENDUM 3 (commit 5fc572a)",
+ "sample_asymmetry": {
+  "n_rows_qwerty": 691,
+  "n_rows_nonqwerty": 1511,
+  "n_samples_qwerty": 29156090,
+  "n_samples_nonqwerty": 376138,
+  "qwerty_share_of_samples": 0.9872634736532577
+ },
+ "cross_layout": {
+  "corr_obs": 0.6488726915809426,
+  "rms_obs": 0.14238404879620406,
+  "n_shared": 545,
+  "sd_b_qwerty": 0.18160630109039963,
+  "sd_b_nonqwerty": 0.09086379521804783,
+  "slope_nq_on_q": 0.3246530269951689
+ },
+ "c1_reliability": {
+  "qwerty": {
+   "corr_mean": 0.9924208308612515,
+   "corr_sd": 0.0006660750367184813,
+   "rms_mean": 0.019636242946576205,
+   "n_splits": 8
+  },
+  "nonqwerty": {
+   "corr_mean": 0.9502308763639753,
+   "corr_sd": 0.003515969590981763,
+   "rms_mean": 0.024439972385841727,
+   "n_splits": 8
+  }
+ },
+ "c2_disattenuated": {
+  "corr_obs": 0.6488726915809426,
+  "rel_qwerty": 0.9924208308612515,
+  "rel_nonqwerty": 0.9502308763639753,
+  "sqrt_rel_product": 0.9710967592527284,
+  "corr_true": 0.6681854155092214,
+  "registered_rule": ">=0.90 => b DOES transfer (noise artifact); <=0.80 => genuine layout component",
+  "verdict": "GENUINE LAYOUT-SPECIFIC COMPONENT SURVIVES",
+  "caveat": "reliabilities are HALF-SIZE estimates; using them undercorrects (a full-size estimate is more reliable than a half-size one), so corr_true here is a LOWER BOUND on the disattenuated agreement"
+ },
+ "c3_sample_matched_floor": {
+  "n_splits": 8,
+  "corr_mean": 0.912131212199837,
+  "corr_sd": 0.003153071231991993,
+  "corr_p05": 0.9082185018320834,
+  "rms_mean": 0.022458493904688313,
+  "rms_p95": 0.023193337604194633,
+  "q04_datarich_floor_corr_for_reference": 0.9918637968546737,
+  "q04_datarich_floor_rms_for_reference": 0.020322297194418148,
+  "design": "QWERTY subsampled to non-qwerty's PER-NGRAM sample counts, then split-halved. Both sides are then equally shrunk by the (sum(c)+k) denominator and equally noisy, so this floor MATCHES the cross-layout comparison design. q04's floor did not."
+ },
+ "corrected_verdict": {
+  "cross_layout_corr": 0.6488726915809426,
+  "matched_floor_corr_mean": 0.912131212199837,
+  "matched_floor_corr_p05": 0.9082185018320834,
+  "rms_ratio_cross_over_matched_floor": 6.339875211600042,
+  "rms_ratio_cross_over_q04_floor": 7.006296947340784,
+  "below_matched_floor_p05": true,
+  "verdict": "GENUINE NON-TRANSFER -- cross-layout agreement is below even the sample-matched floor",
+  "note": "q04's JSON emitted 'DISAGREE BEYOND NOISE (contamination)' at a 7.01x rms ratio against a MIS-MATCHED floor. This entry supersedes it."
+ },
+ "c4_placebo_same_layout_matched_size": {
+  "n": 4,
+  "corr_mean": 0.7626167736708841,
+  "rms_mean": 0.1140174362111909,
+  "interpretation": "SAME layout, so any disagreement here is pure noise+shrinkage from the size reduction. If this lands near the cross-layout 0.6489, the cross-layout gap is explained by size alone."
+ },
+ "wall_s": 564.419896364212
+}
