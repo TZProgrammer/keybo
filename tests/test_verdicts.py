@@ -12,12 +12,19 @@ import math
 
 import pytest
 
+import numpy as np
+
+from keybo.training.validate import calibration_slope
 from keybo.verdicts import (
+    CALIBRATION_SLOPE_RECOMMENDED_BAND,
+    CalibrationCompressed,
     EmptyComparison,
     MarginTooSmall,
     all_distinct,
     argmax_finite,
+    calibration_report,
     compare_finite,
+    require_calibration,
     require_finite,
     require_margin,
     reweighting_margin_bound,
@@ -169,3 +176,95 @@ def test_the_documented_shipped_margin_CLEARS_the_shipped_threshold() -> None:
     # tune_lolo's docstring: depth-5 lost ~0.06 rho/ceiling to depth-3, on scores near 0.93
     assert require_margin([0.93, 0.87], "shipped", min_margin=LOLO_MIN_MARGIN) == 0
     assert LOLO_MIN_MARGIN < 0.06 / 0.93
+
+
+# --- the calibration gate (backlog E4 / roadmap 4.2) -------------------------------------------
+# Every test below asserts on the SPECIFIC failure it means to provoke -- the exception type AND a
+# substring of its message -- because a test going red proves nothing until you know WHICH failure
+# you got. CALIB-1 nearly shipped a vacuously-green guard whose mock patched the wrong module.
+
+
+def test_calibration_report_is_a_report_and_never_raises() -> None:
+    r = calibration_report({"80": 2.5, "100": 0.1}, "wildly miscalibrated")
+    assert r["gated"] is True
+    assert r["passed"] is False
+    assert r["out_of_band"] == ["100", "80"]
+
+
+def test_an_absent_slope_is_UNGATED_not_passing() -> None:
+    """The TAUGATE-1 rule: a missing verdict must not read like a passing one."""
+    r = calibration_report({"80": float("nan")}, "nothing measurable")
+    assert r["gated"] is False
+    assert r["passed"] is None, "an unmeasured slice must be None, never True"
+    assert r["n_slices_missing"] == 1
+
+
+def test_require_calibration_refuses_the_unmeasured_case_rather_than_passing_it() -> None:
+    with pytest.raises(CalibrationCompressed) as e:
+        require_calibration({}, "empty", band=(0.9, 1.1))
+    assert "'Not measured' is not 'is calibrated'" in str(e.value)
+
+
+def test_require_calibration_passes_a_calibrated_surface() -> None:
+    r = require_calibration({"80": 1.02, "100": 0.97}, "calibrated", band=(0.9, 1.1))
+    assert r["passed"] is True
+    assert r["worst_abs_deviation_from_1"] == pytest.approx(0.03)
+
+
+def test_require_calibration_refuses_a_COMPRESSED_surface_and_says_which_slice() -> None:
+    with pytest.raises(CalibrationCompressed) as e:
+        require_calibration({"80": 1.00, "120": 1.46}, "compressed at speed", band=(0.9, 1.1))
+    msg = str(e.value)
+    assert "1 of 2 slices" in msg
+    assert "120" in msg and "1.46" in msg
+    assert "COMPRESS" in msg, "the message must name the DIRECTION, not just the deviation"
+    assert "rho and tau are invariant" in msg
+
+
+def test_the_band_is_REQUIRED_so_no_agent_can_install_a_retroactive_threshold() -> None:
+    """The band decides which PAST results stand, so it must arrive from the call site."""
+    with pytest.raises(TypeError):
+        require_calibration({"80": 1.0}, "no band given")  # type: ignore[call-arg]
+
+
+def test_support_travels_with_the_verdict_but_never_changes_it() -> None:
+    slopes = {"80": 1.46, "120": 1.46}
+    thin = {"80": {"n_cells": 900, "n_participants": 120},
+            "120": {"n_cells": 12, "n_participants": 3}}
+    with_support = calibration_report(slopes, "x", support=thin)
+    without = calibration_report(slopes, "x")
+    assert with_support["passed"] == without["passed"]
+    assert with_support["support"]["120"]["n_participants"] == 3
+    assert without["support"] is None, "None distinguishes 'not supplied' from 'supplied and thin'"
+
+
+def test_low_r2_does_not_license_a_slope_away_from_1() -> None:
+    """The identity behind the constant: an MSE-optimal predictor has slope 1 at ANY r^2.
+
+    Built from data rather than asserted: fit the least-squares predictor of `obs` on a noisy
+    feature, and its slope(obs~pred) is 1.0 however weak the correlation is. This is why a low
+    r^2 is a SEPARATE defect from a bad slope, and why the target is 1.0 and not "whatever r^2
+    allows".
+    """
+    rng = np.random.default_rng(20260803)
+    obs = rng.normal(0, 40, 4000)
+    for noise in (10.0, 60.0, 200.0):          # r^2 from ~0.94 down to ~0.04
+        feature = obs + rng.normal(0, noise, obs.size)
+        b, a = np.polyfit(feature, obs, 1)     # the MSE-optimal linear predictor
+        pred = a + b * feature
+        r2 = np.corrcoef(pred, obs)[0, 1] ** 2
+        assert calibration_slope(pred, obs) == pytest.approx(1.0, abs=0.02), (
+            f"an MSE-optimal predictor must be calibrated even at r2={r2:.3f}"
+        )
+        assert r2 < 0.99
+
+
+def test_the_shipped_surfaces_measured_compression_would_be_REFUSED_by_the_recommended_band() -> None:
+    """CALIB-1's measurement, pinned: the pair-level expansion needed is 1.4618.
+
+    Kept as a test so the recommended band's retroactive force is visible in the suite rather than
+    only in the ledger -- this is the number that makes the band a human decision.
+    """
+    with pytest.raises(CalibrationCompressed):
+        require_calibration({"pairs-wpm80": 1.4618}, "shipped k31 bigram surface",
+                            band=CALIBRATION_SLOPE_RECOMMENDED_BAND)
