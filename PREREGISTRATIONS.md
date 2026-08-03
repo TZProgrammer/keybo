@@ -11608,3 +11608,86 @@ No write to `data/models/k31/`. No edit to `src/keybo/layouts.py`. No layout ado
 No branch merged or deleted. The shared checkout's branch not switched. Ledger commits verified to touch ONLY
 `PREREGISTRATIONS.md` before any push (`git push` pushes the BRANCH, not a commit — the accident my parent made
 today and `tournament` caught by auditing first).
+
+## SFBPRICE-1 AMENDMENT — A FOURTH RIVAL EXPLANATION, FOUND BY READING THE TRAINING CODE AND REGISTERED BEFORE MEASURING IT: **H-PRACTICE.** THE CONTRAST COMPARES `g` AGAINST `g+b`, AND `b` DOES **NOT** CANCEL BETWEEN TWO *CLASSES* OF BIGRAM (registered 2026-08-03, still BEFORE any contrast number of mine exists)
+
+Registered as an amendment rather than folded into §0 silently, because it changes what the headline can say and it must be
+timestamped before the measurement. Found by reading `src/keybo/training/train.py` and the shipped model metadata — **no
+contrast of mine had been computed at registration time** (my only numbers so far are the INVARIANT E controls, `c01_econtrol.json`).
+
+### The mechanism, from source (🟡 HIGH — read code + model metadata, not yet measured)
+
+The shipped K31 bigram models are trained with an **additive practice term backfit** (`train.py:406-437`,
+`PRACTICE_SHRINKAGE_K=100`, 2 backfit iterations). The fit is
+
+```
+observed_target(ngram)  =  g(geometry, wpm)  +  b(ngram)
+```
+
+`g` is the XGBoost model; `b` is the shrunk per-**bigram-identity** mean residual. The final booster is fitted to
+`y − b̂`, so **`model.predict()` returns `g` ALONE**. `b` is stored in `metadata.extra["training"]["practice_term"]["values"]`
+and **scoring deliberately ignores it** (`train.py:27-28`: *"scoring deliberately ignores it (layout-independent ⇒
+ranking-irrelevant)"*). Verified present in the shipped artifacts: `bigram_reg31_seed0` carries **724** b values,
+`trigram_cond31_seed0` carries **7,146**; target space **LOGRAT**, so b is a **log-scale** offset and therefore a
+**MULTIPLICATIVE factor on milliseconds**: `raw_ms ≈ model_ms × exp(b)`.
+
+**Therefore PICK2-1's contrast subtracts two quantities that are not the same estimand:**
+its RAW side is the observed interval, which contains `g + b`; its MODEL side is `T2`, which contains `g` only.
+
+🔴 **And the reference implementation states the opposite in its own docstring.** `agent-artifacts/pick2/sfb_pricing.py`
+says: *"the practice term `b` is layout-independent and cancels in the same-finger-vs-other CONTRAST, which is what is
+read here."* **That is false as applied.** `b` is layout-independent in the sense that it cancels when the SAME bigram set
+is scored on TWO LAYOUTS — which is the only claim `train.py` makes for it. It does **not** cancel between **two CLASSES
+of bigram**, because the classes have different frequency profiles and `b` is a *frequency*-driven quantity: rare pairs
+are under-practiced (b > 0, slower than geometry predicts) and common pairs are over-practiced (b < 0). Same-finger pairs
+on a QWERTY-dominated corpus (98.7% of the data) are systematically the *rarer* class. So `median(b | same-finger) >
+median(b | other)` is expected **by construction**, and it inflates the RAW penalty relative to the MODEL penalty **with
+no pricing defect anywhere.**
+
+### The arithmetic that makes this the leading hypothesis, stated as a PREDICTION (not yet measured)
+
+Using pick2's own published medians and `raw_ms = model_ms × exp(b)`, H-PRACTICE requires:
+
+```
+same-finger:  189.00 / 172.4169 = 1.09618  =>  b_same  ≈ +0.0918
+other:        126.00 / 131.3886 = 0.95899  =>  b_other ≈ −0.0419
+contrast needed:  b_same − b_other ≈ +0.1337  (log units)
+```
+
+Both required values sit **inside the shipped b distribution** (seed0 bigram: min −0.4931, p25 −0.0708, median +0.0204,
+p75 +0.1275, max +0.7539) and in the **direction the frequency story predicts**. ⇒ **REGISTERED PREDICTION: the
++22 ms "underprice" is mostly or entirely the practice term, and the K31 surface is NOT mispricing same-finger bigrams.**
+
+### THE DECISIVE FALSIFIER, registered before running it
+
+**H-PRACTICE-TEST:** re-run the pick2 contrast with `b` **restored** to the model side — i.e. compare the raw median
+against `T2[a,b] × exp(b̄(a,b))`, where `b̄(a,b)` is the sample-count-weighted mean of `b(ngram)` over exactly the
+training rows that pooled into position pair `(a,b)` (the same pooling pick2's `agg` dict performs, so the two sides
+aggregate identically).
+
+- **H-PRACTICE CONFIRMED** if the b-restored model penalty lands **INSIDE** pick2's raw bootstrap CI95 [53.00, 73.00].
+  Then "the model underprices same-finger by 35%" is **REFUTED as stated**: it is an estimand mismatch, the fitted
+  surface prices same-finger correctly once compared like-for-like, and INVARIANT A's premise is void.
+- **H-PRACTICE PARTIAL** if it closes ≥50% of the +22 ms gap but stays outside the CI — then a residual underprice
+  exists and INVARIANT A proceeds against the RESIDUAL, not the full +22.
+- **H-PRACTICE REFUTED** if it closes <50% — then the underprice survives its strongest rival and INVARIANT A proceeds
+  against the full +22, with H-PRACTICE eliminated rather than ignored.
+
+**Registered second falsifier, because a single decomposition can be right for the wrong reason:** `b` must ALSO explain
+the two class medians *separately* (not just their difference) — `median(T2 × exp(b̄))` must approach 189.00 for
+same-finger AND 126.00 for other. A fit that repairs the contrast while pushing both levels the wrong way is a
+coincidence, not a mechanism.
+
+### What this does NOT change
+
+- 🟢 **INVARIANTS B, C, D, E still run, and their answers do not depend on which hypothesis wins.** "Does a +63 ms
+  same-finger price change what the search finds / which board wins" is a well-posed **stress test** of the campaign's
+  board choice under a deliberately harsher objective, whether or not +63 is the *correct* price. The re-pricing is
+  simply relabelled: **a robustness probe rather than a bug fix** if H-PRACTICE confirms, **a bug fix** if it does not.
+  I will run the full A→B→C→D pipeline either way and label it with whichever it is.
+- The magnitude is still worth pricing at the FULL +22 in the stress test even under H-PRACTICE, because that is the
+  harshest defensible surcharge; a robustness result that survives the harsher number also survives the smaller one.
+- **If H-PRACTICE CONFIRMS, the correction I report to the campaign is not "reprice the objective" but "PICK2-1's
+  method compared `g` to `g+b`" — and that supersedes the ledger's PICK2-1 headline, ADJUDICATE-1's acceptance of it,
+  and the `+0.0249 ms/char` figure derived from it.** I will say so prominently and in line 1, per my brief's
+  instruction that the single most valuable thing I can return is a correction.
