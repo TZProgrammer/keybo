@@ -1,0 +1,182 @@
+{
+ "floor_all": 0.2904511317043813,
+ "sigma_scoring_bucket": 0.49004378774677937,
+ "sigma_all_buckets": 1.028695981671847,
+ "boot_seed": 20260803,
+ "null_1": {
+  "n_cases": 78,
+  "worst_abs_dev": 5.551115123125783e-17,
+  "bar": "= 0.5000 exactly",
+  "pass": true,
+  "verdict_note": "PASS. Exactly 0.5000 (dev = 0.000e+00, 0 of 13 boards nonzero) at EVERY sigma_diff that is actually used: 0.0, 0.4900 (primary), 1.0287 (all-buckets), 1.0, and 50.0. The single nonzero case is the arbitrary probe sigma_diff=5.0, where the deviation is 5.551e-17 = 0.50 ulp of 0.5 (ulp(0.5)=1.110e-16) on all 13 boards -- i.e. the smallest representable nonzero deviation. MECHANISM: p_a_valid and p_b_valid are each ~0.5 from scipy stats.t.cdf; p_tie_valid = 1 - p_a - p_b picks up a 1-ulp residue, and los_valid = p_a + 0.5*p_tie inherits half of it. This is float64 rounding in the CDF, NOT miscalibration: the exact-0.5 structural guarantee is unit-tested and holds. Reported rather than hidden or tuned away.",
+  "exact_at_sigmas": [
+   0.0,
+   0.49,
+   1.0287,
+   1.0,
+   50.0
+  ],
+  "ulp_of_half": 1.1102230246251565e-16,
+  "los_design_control_worst_dev": 0.0
+ },
+ "null_2_scoring_bucket": {
+  "n": 2000,
+  "sigma": 0.49004378774677937,
+  "median": 0.5000613932719551,
+  "decided_rate": 0.0,
+  "bar": "median in [0.45,0.55] and decided-rate <= 0.05",
+  "pass": true
+ },
+ "null_2_all_buckets": {
+  "n": 2000,
+  "sigma": 1.028695981671847,
+  "median": 0.5000347147363228,
+  "decided_rate": 0.0,
+  "bar": "median in [0.45,0.55] and decided-rate <= 0.05",
+  "pass": true
+ },
+ "null_3_scoring_bucket": {
+  "n": 20000,
+  "sigma": 0.49004378774677937,
+  "median": 0.5015424297410483,
+  "p_gt_0.95": 0.0,
+  "p_lt_0.05": 0.0,
+  "bar": "P(LOS_valid>0.95) <= 0.05",
+  "pass": true
+ },
+ "null_3_all_buckets": {
+  "n": 20000,
+  "sigma": 1.028695981671847,
+  "median": 0.5008793460324019,
+  "p_gt_0.95": 0.0,
+  "p_lt_0.05": 0.0,
+  "bar": "P(LOS_valid>0.95) <= 0.05",
+  "pass": true
+ },
+ "known_big_scoring_bucket": {
+  "n_cases": 6,
+  "min_LOS_valid": 0.9996202751797163,
+  "min_LOS_design": 1.0,
+  "bar": ">= 0.99",
+  "pass": true,
+  "cases": [
+   {
+    "board": "candidate",
+    "pricing": "all",
+    "sigma": 2.4962328485965246,
+    "margin": -9.66672102799471,
+    "m_over_floor": 33.28174681665009,
+    "LOS_design": 1.0,
+    "LOS_valid": 0.9996202751797163
+   },
+   {
+    "board": "flagship-c3",
+    "pricing": "all",
+    "sigma": 2.18076949904131,
+    "margin": -8.620953550141035,
+    "m_over_floor": 29.681253089126773,
+    "LOS_design": 1.0,
+    "LOS_valid": 0.9996855316222741
+   },
+   {
+    "board": "candidate",
+    "pricing": "observed",
+    "sigma": 2.4962328485965246,
+    "margin": -10.469805114496761,
+    "m_over_floor": 34.3438496469161,
+    "LOS_design": 1.0,
+    "LOS_valid": 0.999830761884954
+   },
+   {
+    "board": "flagship-c3",
+    "pricing": "observed",
+    "sigma": 2.18076949904131,
+    "margin": -9.498468162940277,
+    "m_over_floor": 31.157596430553994,
+    "LOS_design": 1.0,
+    "LOS_valid": 0.999885681895184
+   },
+   {
+    "board": "candidate",
+    "pricing": "common",
+    "sigma": 2.4962328485965246,
+    "margin": -10.106830676927734,
+    "m_over_floor": 34.32177516862814,
+    "LOS_design": 1.0,
+    "LOS_valid": 0.9997561551899032
+   },
+   {
+    "board": "flagship-c3",
+    "pricing": "common",
+    "sigma": 2.18076949904131,
+    "margin": -8.975332311394139,
+    "m_over_floor": 30.47932111483971,
+    "LOS_design": 1.0,
+    "LOS_valid": 0.9997909337799866
+   }
+  ]
+ },
+ "known_big_all_buckets": {
+  "n_cases": 6,
+  "min_LOS_valid": 0.965648248482823,
+  "min_LOS_design": 1.0,
+  "bar": ">= 0.99",
+  "pass": false,
+  "cases": [
+   {
+    "board": "candidate",
+    "pricing": "all",
+    "sigma": 5.064063030317447,
+    "margin": -9.66672102799471,
+    "m_over_floor": 33.28174681665009,
+    "LOS_design": 1.0,
+    "LOS_valid": 0.965648248482823
+   },
+   {
+    "board": "flagship-c3",
+    "pricing": "all",
+    "sigma": 4.200750508053226,
+    "margin": -8.620953550141035,
+    "m_over_floor": 29.681253089126773,
+    "LOS_design": 1.0,
+    "LOS_valid": 0.9741572323116733
+   },
+   {
+    "board": "candidate",
+    "pricing": "observed",
+    "sigma": 5.064063030317447,
+    "margin": -10.469805114496761,
+    "m_over_floor": 34.3438496469161,
+    "LOS_design": 1.0,
+    "LOS_valid": 0.9750079269152649
+   },
+   {
+    "board": "flagship-c3",
+    "pricing": "observed",
+    "sigma": 4.200750508053226,
+    "margin": -9.498468162940277,
+    "m_over_floor": 31.157596430553994,
+    "LOS_design": 1.0,
+    "LOS_valid": 0.9832624051835144
+   },
+   {
+    "board": "candidate",
+    "pricing": "common",
+    "sigma": 5.064063030317447,
+    "margin": -10.106830676927734,
+    "m_over_floor": 34.32177516862814,
+    "LOS_design": 1.0,
+    "LOS_valid": 0.971105382712977
+   },
+   {
+    "board": "flagship-c3",
+    "pricing": "common",
+    "sigma": 4.200750508053226,
+    "margin": -8.975332311394139,
+    "m_over_floor": 30.47932111483971,
+    "LOS_design": 1.0,
+    "LOS_valid": 0.9782681839181555
+   }
+  ]
+ }
+}
