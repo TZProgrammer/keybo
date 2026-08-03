@@ -1,0 +1,855 @@
+{
+  "Q1_historical_counterfactual": {
+    "note": "the shipped artifact predates the bucket_centered slice, so only pooled + per-bucket slopes existed. This is what the gate COULD have fired on at the time.",
+    "qwerty_pooled_by_seed": [
+      1.2355506583668359,
+      1.2198889873046905,
+      1.2295372917233702
+    ],
+    "verdicts": {
+      "azerty": {
+        "buckets_only": {
+          "passed_all_seeds": false,
+          "per_seed": [
+            {
+              "n_slices": 5,
+              "out_of_band": [
+                "bucket_100",
+                "bucket_120",
+                "bucket_40",
+                "bucket_80"
+              ],
+              "passed": false,
+              "seed": 0
+            },
+            {
+              "n_slices": 5,
+              "out_of_band": [
+                "bucket_100",
+                "bucket_120",
+                "bucket_40",
+                "bucket_80"
+              ],
+              "passed": false,
+              "seed": 1
+            },
+            {
+              "n_slices": 5,
+              "out_of_band": [
+                "bucket_100",
+                "bucket_120",
+                "bucket_40",
+                "bucket_80"
+              ],
+              "passed": false,
+              "seed": 2
+            }
+          ]
+        },
+        "every_available_slice": {
+          "passed_all_seeds": false,
+          "per_seed": [
+            {
+              "n_slices": 6,
+              "out_of_band": [
+                "bucket_100",
+                "bucket_120",
+                "bucket_40",
+                "bucket_80"
+              ],
+              "passed": false,
+              "seed": 0
+            },
+            {
+              "n_slices": 6,
+              "out_of_band": [
+                "bucket_100",
+                "bucket_120",
+                "bucket_40",
+                "bucket_80"
+              ],
+              "passed": false,
+              "seed": 1
+            },
+            {
+              "n_slices": 6,
+              "out_of_band": [
+                "bucket_100",
+                "bucket_120",
+                "bucket_40",
+                "bucket_80"
+              ],
+              "passed": false,
+              "seed": 2
+            }
+          ]
+        },
+        "pooled_only": {
+          "passed_all_seeds": true,
+          "per_seed": [
+            {
+              "n_slices": 1,
+              "out_of_band": [],
+              "passed": true,
+              "seed": 0
+            },
+            {
+              "n_slices": 1,
+              "out_of_band": [],
+              "passed": true,
+              "seed": 1
+            },
+            {
+              "n_slices": 1,
+              "out_of_band": [],
+              "passed": true,
+              "seed": 2
+            }
+          ]
+        },
+        "support_gated_n400": {
+          "passed_all_seeds": true,
+          "per_seed": [
+            {
+              "n_slices": 1,
+              "out_of_band": [],
+              "passed": true,
+              "seed": 0
+            },
+            {
+              "n_slices": 1,
+              "out_of_band": [],
+              "passed": true,
+              "seed": 1
+            },
+            {
+              "n_slices": 1,
+              "out_of_band": [],
+              "passed": true,
+              "seed": 2
+            }
+          ]
+        }
+      },
+      "dvorak": {
+        "buckets_only": {
+          "passed_all_seeds": false,
+          "per_seed": [
+            {
+              "n_slices": 5,
+              "out_of_band": [
+                "bucket_120",
+                "bucket_60",
+                "bucket_80"
+              ],
+              "passed": false,
+              "seed": 0
+            },
+            {
+              "n_slices": 5,
+              "out_of_band": [
+                "bucket_120",
+                "bucket_60",
+                "bucket_80"
+              ],
+              "passed": false,
+              "seed": 1
+            },
+            {
+              "n_slices": 5,
+              "out_of_band": [
+                "bucket_120",
+                "bucket_60"
+              ],
+              "passed": false,
+              "seed": 2
+            }
+          ]
+        },
+        "every_available_slice": {
+          "passed_all_seeds": false,
+          "per_seed": [
+            {
+              "n_slices": 6,
+              "out_of_band": [
+                "bucket_120",
+                "bucket_60",
+                "bucket_80"
+              ],
+              "passed": false,
+              "seed": 0
+            },
+            {
+              "n_slices": 6,
+              "out_of_band": [
+                "bucket_120",
+                "bucket_60",
+                "bucket_80"
+              ],
+              "passed": false,
+              "seed": 1
+            },
+            {
+              "n_slices": 6,
+              "out_of_band": [
+                "bucket_120",
+                "bucket_60"
+              ],
+              "passed": false,
+              "seed": 2
+            }
+          ]
+        },
+        "pooled_only": {
+          "passed_all_seeds": true,
+          "per_seed": [
+            {
+              "n_slices": 1,
+              "out_of_band": [],
+              "passed": true,
+              "seed": 0
+            },
+            {
+              "n_slices": 1,
+              "out_of_band": [],
+              "passed": true,
+              "seed": 1
+            },
+            {
+              "n_slices": 1,
+              "out_of_band": [],
+              "passed": true,
+              "seed": 2
+            }
+          ]
+        },
+        "support_gated_n400": {
+          "passed_all_seeds": true,
+          "per_seed": [
+            {
+              "n_slices": 1,
+              "out_of_band": [],
+              "passed": true,
+              "seed": 0
+            },
+            {
+              "n_slices": 1,
+              "out_of_band": [],
+              "passed": true,
+              "seed": 1
+            },
+            {
+              "n_slices": 1,
+              "out_of_band": [],
+              "passed": true,
+              "seed": 2
+            }
+          ]
+        }
+      },
+      "qwerty": {
+        "buckets_only": {
+          "passed_all_seeds": false,
+          "per_seed": [
+            {
+              "n_slices": 5,
+              "out_of_band": [
+                "bucket_100",
+                "bucket_120",
+                "bucket_40",
+                "bucket_60",
+                "bucket_80"
+              ],
+              "passed": false,
+              "seed": 0
+            },
+            {
+              "n_slices": 5,
+              "out_of_band": [
+                "bucket_100",
+                "bucket_120",
+                "bucket_40",
+                "bucket_60",
+                "bucket_80"
+              ],
+              "passed": false,
+              "seed": 1
+            },
+            {
+              "n_slices": 5,
+              "out_of_band": [
+                "bucket_100",
+                "bucket_120",
+                "bucket_40",
+                "bucket_60",
+                "bucket_80"
+              ],
+              "passed": false,
+              "seed": 2
+            }
+          ]
+        },
+        "every_available_slice": {
+          "passed_all_seeds": false,
+          "per_seed": [
+            {
+              "n_slices": 6,
+              "out_of_band": [
+                "bucket_100",
+                "bucket_120",
+                "bucket_40",
+                "bucket_60",
+                "bucket_80",
+                "pooled"
+              ],
+              "passed": false,
+              "seed": 0
+            },
+            {
+              "n_slices": 6,
+              "out_of_band": [
+                "bucket_100",
+                "bucket_120",
+                "bucket_40",
+                "bucket_60",
+                "bucket_80",
+                "pooled"
+              ],
+              "passed": false,
+              "seed": 1
+            },
+            {
+              "n_slices": 6,
+              "out_of_band": [
+                "bucket_100",
+                "bucket_120",
+                "bucket_40",
+                "bucket_60",
+                "bucket_80",
+                "pooled"
+              ],
+              "passed": false,
+              "seed": 2
+            }
+          ]
+        },
+        "pooled_only": {
+          "passed_all_seeds": false,
+          "per_seed": [
+            {
+              "n_slices": 1,
+              "out_of_band": [
+                "pooled"
+              ],
+              "passed": false,
+              "seed": 0
+            },
+            {
+              "n_slices": 1,
+              "out_of_band": [
+                "pooled"
+              ],
+              "passed": false,
+              "seed": 1
+            },
+            {
+              "n_slices": 1,
+              "out_of_band": [
+                "pooled"
+              ],
+              "passed": false,
+              "seed": 2
+            }
+          ]
+        },
+        "support_gated_n400": {
+          "passed_all_seeds": false,
+          "per_seed": [
+            {
+              "n_slices": 6,
+              "out_of_band": [
+                "bucket_100",
+                "bucket_120",
+                "bucket_40",
+                "bucket_60",
+                "bucket_80",
+                "pooled"
+              ],
+              "passed": false,
+              "seed": 0
+            },
+            {
+              "n_slices": 6,
+              "out_of_band": [
+                "bucket_100",
+                "bucket_120",
+                "bucket_40",
+                "bucket_60",
+                "bucket_80",
+                "pooled"
+              ],
+              "passed": false,
+              "seed": 1
+            },
+            {
+              "n_slices": 6,
+              "out_of_band": [
+                "bucket_100",
+                "bucket_120",
+                "bucket_40",
+                "bucket_60",
+                "bucket_80",
+                "pooled"
+              ],
+              "passed": false,
+              "seed": 2
+            }
+          ]
+        }
+      },
+      "qwertz": {
+        "buckets_only": {
+          "passed_all_seeds": false,
+          "per_seed": [
+            {
+              "n_slices": 5,
+              "out_of_band": [
+                "bucket_120"
+              ],
+              "passed": false,
+              "seed": 0
+            },
+            {
+              "n_slices": 5,
+              "out_of_band": [
+                "bucket_120"
+              ],
+              "passed": false,
+              "seed": 1
+            },
+            {
+              "n_slices": 5,
+              "out_of_band": [
+                "bucket_120"
+              ],
+              "passed": false,
+              "seed": 2
+            }
+          ]
+        },
+        "every_available_slice": {
+          "passed_all_seeds": false,
+          "per_seed": [
+            {
+              "n_slices": 6,
+              "out_of_band": [
+                "bucket_120"
+              ],
+              "passed": false,
+              "seed": 0
+            },
+            {
+              "n_slices": 6,
+              "out_of_band": [
+                "bucket_120"
+              ],
+              "passed": false,
+              "seed": 1
+            },
+            {
+              "n_slices": 6,
+              "out_of_band": [
+                "bucket_120"
+              ],
+              "passed": false,
+              "seed": 2
+            }
+          ]
+        },
+        "pooled_only": {
+          "passed_all_seeds": true,
+          "per_seed": [
+            {
+              "n_slices": 1,
+              "out_of_band": [],
+              "passed": true,
+              "seed": 0
+            },
+            {
+              "n_slices": 1,
+              "out_of_band": [],
+              "passed": true,
+              "seed": 1
+            },
+            {
+              "n_slices": 1,
+              "out_of_band": [],
+              "passed": true,
+              "seed": 2
+            }
+          ]
+        },
+        "support_gated_n400": {
+          "passed_all_seeds": true,
+          "per_seed": [
+            {
+              "n_slices": 1,
+              "out_of_band": [],
+              "passed": true,
+              "seed": 0
+            },
+            {
+              "n_slices": 1,
+              "out_of_band": [],
+              "passed": true,
+              "seed": 1
+            },
+            {
+              "n_slices": 1,
+              "out_of_band": [],
+              "passed": true,
+              "seed": 2
+            }
+          ]
+        }
+      }
+    }
+  },
+  "Q2_would_it_have_caught_the_misreadings": {
+    "ledger_11919_and_12013": {
+      "claim": "per-fold pooled 0.914-0.999 ... the surface does not compress",
+      "measured_full_range_over_12_cells": [
+        0.9138484672612666,
+        1.2355506583668359
+      ],
+      "measured_range_excluding_qwerty": [
+        0.9138484672612666,
+        0.9992898715598655
+      ],
+      "would_artifact_contradict_it": "YES, decisively. An always-emitted per-fold gate block makes fold-omission visible: you cannot quote a range over 3 of 4 folds when the 4th fold's block sits in the same artifact with passed=False."
+    },
+    "ledger_356": {
+      "claim": "both champions hold tau +1.0 with calibration slopes ~1.0 per fold",
+      "measured_pooled_per_fold": {
+        "azerty": 0.9976801588216291,
+        "dvorak": 0.9188914304408767,
+        "qwerty": 1.228325645798299,
+        "qwertz": 0.9633754527313892
+      },
+      "would_artifact_contradict_it": "YES for the qwerty fold at pooled 1.2283 and bucket_centered 1.4067; '~1.0 per fold' is false of 1 of 4 folds and the artifact would say passed=False on it."
+    },
+    "ledger_98": {
+      "bigram_qwerty_bucket_centered_measured": [
+        1.4144924536442705,
+        1.394499910935851,
+        1.4112026522784331
+      ],
+      "bigram_qwerty_pooled_measured": [
+        1.2355506583668359,
+        1.2198889873046905,
+        1.2295372917233702
+      ],
+      "claim": "calibration slope 1.04 on qwerty (no compression)",
+      "is_about": "the TRIGRAM model (runs/lolo_trigram_v1.json), a different artifact/model",
+      "would_artifact_contradict_it": "NOT DIRECTLY -- it is a trigram claim and I did not re-run the trigram LOLO. But the gate emits passed=False per fold-seed, so the WORD 'no compression' could not have been written beside a passed=False block without the contradiction being visible in the same file."
+    }
+  },
+  "Q3_false_flag_budget": {
+    "bucket_centered_only": {
+      "expected_noise_only_slice_flags_over_the_12_cells": 0.0,
+      "flagged": [
+        "qwerty/seed0:bucket_centered",
+        "qwerty/seed1:bucket_centered",
+        "qwerty/seed2:bucket_centered"
+      ],
+      "fold_seed_cells_failing_of_12": 3
+    },
+    "every_slice": {
+      "expected_noise_only_slice_flags_over_the_12_cells": 11.74,
+      "flagged": [
+        "azerty/seed0:bucket_100,bucket_120,bucket_40,bucket_80",
+        "azerty/seed1:bucket_100,bucket_120,bucket_40,bucket_80",
+        "azerty/seed2:bucket_100,bucket_120,bucket_40,bucket_80",
+        "dvorak/seed0:bucket_120,bucket_60,bucket_80",
+        "dvorak/seed1:bucket_120,bucket_60,bucket_80",
+        "dvorak/seed2:bucket_120,bucket_60",
+        "qwerty/seed0:bucket_100,bucket_120,bucket_40,bucket_60,bucket_80,bucket_centered,pooled",
+        "qwerty/seed1:bucket_100,bucket_120,bucket_40,bucket_60,bucket_80,bucket_centered,pooled",
+        "qwerty/seed2:bucket_100,bucket_120,bucket_40,bucket_60,bucket_80,bucket_centered,pooled",
+        "qwertz/seed0:bucket_120",
+        "qwertz/seed1:bucket_120",
+        "qwertz/seed2:bucket_120"
+      ],
+      "fold_seed_cells_failing_of_12": 12
+    },
+    "pooled_only": {
+      "expected_noise_only_slice_flags_over_the_12_cells": 0.14,
+      "flagged": [
+        "qwerty/seed0:pooled",
+        "qwerty/seed1:pooled",
+        "qwerty/seed2:pooled"
+      ],
+      "fold_seed_cells_failing_of_12": 3
+    },
+    "structural_pair": {
+      "expected_noise_only_slice_flags_over_the_12_cells": 0.14,
+      "flagged": [
+        "qwerty/seed0:bucket_centered,pooled",
+        "qwerty/seed1:bucket_centered,pooled",
+        "qwerty/seed2:bucket_centered,pooled"
+      ],
+      "fold_seed_cells_failing_of_12": 3
+    },
+    "support_gated_n400": {
+      "expected_noise_only_slice_flags_over_the_12_cells": 0.97,
+      "flagged": [
+        "qwerty/seed0:bucket_100,bucket_120,bucket_40,bucket_60,bucket_80,bucket_centered,pooled",
+        "qwerty/seed1:bucket_100,bucket_120,bucket_40,bucket_60,bucket_80,bucket_centered,pooled",
+        "qwerty/seed2:bucket_100,bucket_120,bucket_40,bucket_60,bucket_80,bucket_centered,pooled"
+      ],
+      "fold_seed_cells_failing_of_12": 3
+    }
+  },
+  "Q4_band_width_needed_per_slice_for_5pct_false_flag": {
+    "azerty/bucket_100": {
+      "band_halfwidth_for_5pct_false_flag": 0.1826,
+      "implied_band": [
+        0.817,
+        1.183
+      ],
+      "n_cells": 153,
+      "sd": 0.0932,
+      "slope": 0.8181655005523473
+    },
+    "azerty/bucket_120": {
+      "band_halfwidth_for_5pct_false_flag": 0.285,
+      "implied_band": [
+        0.715,
+        1.285
+      ],
+      "n_cells": 64,
+      "sd": 0.1454,
+      "slope": 0.7226230175650561
+    },
+    "azerty/bucket_40": {
+      "band_halfwidth_for_5pct_false_flag": 0.1341,
+      "implied_band": [
+        0.866,
+        1.134
+      ],
+      "n_cells": 282,
+      "sd": 0.0684,
+      "slope": 1.1621651015561394
+    },
+    "azerty/bucket_60": {
+      "band_halfwidth_for_5pct_false_flag": 0.1346,
+      "implied_band": [
+        0.865,
+        1.135
+      ],
+      "n_cells": 280,
+      "sd": 0.0687,
+      "slope": 1.0424632543221852
+    },
+    "azerty/bucket_80": {
+      "band_halfwidth_for_5pct_false_flag": 0.1513,
+      "implied_band": [
+        0.849,
+        1.151
+      ],
+      "n_cells": 222,
+      "sd": 0.0772,
+      "slope": 0.8434398299418543
+    },
+    "azerty/pooled": {
+      "band_halfwidth_for_5pct_false_flag": 0.071,
+      "implied_band": [
+        0.929,
+        1.071
+      ],
+      "n_cells": 1001,
+      "sd": 0.0362,
+      "slope": 0.9992898715598655
+    },
+    "dvorak/bucket_100": {
+      "band_halfwidth_for_5pct_false_flag": 0.1876,
+      "implied_band": [
+        0.812,
+        1.188
+      ],
+      "n_cells": 145,
+      "sd": 0.0957,
+      "slope": 0.9071341885860619
+    },
+    "dvorak/bucket_120": {
+      "band_halfwidth_for_5pct_false_flag": 0.2557,
+      "implied_band": [
+        0.744,
+        1.256
+      ],
+      "n_cells": 79,
+      "sd": 0.1305,
+      "slope": 0.8258855810128971
+    },
+    "dvorak/bucket_40": {
+      "band_halfwidth_for_5pct_false_flag": 0.1731,
+      "implied_band": [
+        0.827,
+        1.173
+      ],
+      "n_cells": 170,
+      "sd": 0.0883,
+      "slope": 1.0283859340007482
+    },
+    "dvorak/bucket_60": {
+      "band_halfwidth_for_5pct_false_flag": 0.1548,
+      "implied_band": [
+        0.845,
+        1.155
+      ],
+      "n_cells": 212,
+      "sd": 0.079,
+      "slope": 0.8773667376863428
+    },
+    "dvorak/bucket_80": {
+      "band_halfwidth_for_5pct_false_flag": 0.1623,
+      "implied_band": [
+        0.838,
+        1.162
+      ],
+      "n_cells": 193,
+      "sd": 0.0828,
+      "slope": 0.8920101449620943
+    },
+    "dvorak/pooled": {
+      "band_halfwidth_for_5pct_false_flag": 0.0795,
+      "implied_band": [
+        0.921,
+        1.079
+      ],
+      "n_cells": 799,
+      "sd": 0.0405,
+      "slope": 0.9232345972379902
+    },
+    "qwerty/bucket_100": {
+      "band_halfwidth_for_5pct_false_flag": 0.0979,
+      "implied_band": [
+        0.902,
+        1.098
+      ],
+      "n_cells": 527,
+      "sd": 0.05,
+      "slope": 1.2475017464713742
+    },
+    "qwerty/bucket_120": {
+      "band_halfwidth_for_5pct_false_flag": 0.1029,
+      "implied_band": [
+        0.897,
+        1.103
+      ],
+      "n_cells": 477,
+      "sd": 0.0525,
+      "slope": 1.2145887076375734
+    },
+    "qwerty/bucket_40": {
+      "band_halfwidth_for_5pct_false_flag": 0.0966,
+      "implied_band": [
+        0.903,
+        1.097
+      ],
+      "n_cells": 541,
+      "sd": 0.0493,
+      "slope": 1.6060176914072675
+    },
+    "qwerty/bucket_60": {
+      "band_halfwidth_for_5pct_false_flag": 0.0954,
+      "implied_band": [
+        0.905,
+        1.095
+      ],
+      "n_cells": 555,
+      "sd": 0.0487,
+      "slope": 1.340485147847538
+    },
+    "qwerty/bucket_80": {
+      "band_halfwidth_for_5pct_false_flag": 0.096,
+      "implied_band": [
+        0.904,
+        1.096
+      ],
+      "n_cells": 548,
+      "sd": 0.049,
+      "slope": 1.289650222121891
+    },
+    "qwerty/pooled": {
+      "band_halfwidth_for_5pct_false_flag": 0.0436,
+      "implied_band": [
+        0.956,
+        1.044
+      ],
+      "n_cells": 2648,
+      "sd": 0.0223,
+      "slope": 1.2355506583668359
+    },
+    "qwertz/bucket_100": {
+      "band_halfwidth_for_5pct_false_flag": 0.1448,
+      "implied_band": [
+        0.855,
+        1.145
+      ],
+      "n_cells": 242,
+      "sd": 0.0739,
+      "slope": 1.0044962392404677
+    },
+    "qwertz/bucket_120": {
+      "band_halfwidth_for_5pct_false_flag": 0.2179,
+      "implied_band": [
+        0.782,
+        1.218
+      ],
+      "n_cells": 108,
+      "sd": 0.1112,
+      "slope": 0.7625167524591486
+    },
+    "qwertz/bucket_40": {
+      "band_halfwidth_for_5pct_false_flag": 0.1176,
+      "implied_band": [
+        0.882,
+        1.118
+      ],
+      "n_cells": 366,
+      "sd": 0.06,
+      "slope": 1.0626611852901093
+    },
+    "qwertz/bucket_60": {
+      "band_halfwidth_for_5pct_false_flag": 0.1174,
+      "implied_band": [
+        0.883,
+        1.117
+      ],
+      "n_cells": 367,
+      "sd": 0.0599,
+      "slope": 0.9939063526214207
+    },
+    "qwertz/bucket_80": {
+      "band_halfwidth_for_5pct_false_flag": 0.1252,
+      "implied_band": [
+        0.875,
+        1.125
+      ],
+      "n_cells": 323,
+      "sd": 0.0639,
+      "slope": 0.987481404312073
+    },
+    "qwertz/pooled": {
+      "band_halfwidth_for_5pct_false_flag": 0.0599,
+      "implied_band": [
+        0.94,
+        1.06
+      ],
+      "n_cells": 1406,
+      "sd": 0.0306,
+      "slope": 0.9640731850448419
+    }
+  }
+}

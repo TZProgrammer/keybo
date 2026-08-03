@@ -1,0 +1,517 @@
+{
+  "arms": {
+    "1_no_band_default": {
+      "azerty": {
+        "band": null,
+        "deciding_slices": [
+          "bucket_centered",
+          "pooled"
+        ],
+        "gated": false,
+        "n_slices_reported": 7,
+        "out_of_band": [],
+        "out_of_band_advisory": [],
+        "out_of_band_deciding": [],
+        "passed": null,
+        "slopes": {
+          "bucket_100": 0.8181655005523473,
+          "bucket_120": 0.7226230175650561,
+          "bucket_40": 1.1621651015561394,
+          "bucket_60": 1.0424632543221852,
+          "bucket_80": 0.8434398299418543,
+          "bucket_centered": 1.0405395569758396,
+          "pooled": 0.9992898715598655
+        },
+        "support_keys": [
+          "bucket_100",
+          "bucket_120",
+          "bucket_40",
+          "bucket_60",
+          "bucket_80",
+          "bucket_centered",
+          "pooled"
+        ]
+      },
+      "dvorak": {
+        "band": null,
+        "deciding_slices": [
+          "bucket_centered",
+          "pooled"
+        ],
+        "gated": false,
+        "n_slices_reported": 7,
+        "out_of_band": [],
+        "out_of_band_advisory": [],
+        "out_of_band_deciding": [],
+        "passed": null,
+        "slopes": {
+          "bucket_100": 0.9071341885860619,
+          "bucket_120": 0.8258855810128971,
+          "bucket_40": 1.0283859340007482,
+          "bucket_60": 0.8773667376863428,
+          "bucket_80": 0.8920101449620943,
+          "bucket_centered": 0.9324366531448224,
+          "pooled": 0.9232345972379902
+        },
+        "support_keys": [
+          "bucket_100",
+          "bucket_120",
+          "bucket_40",
+          "bucket_60",
+          "bucket_80",
+          "bucket_centered",
+          "pooled"
+        ]
+      },
+      "qwerty": {
+        "band": null,
+        "deciding_slices": [
+          "bucket_centered",
+          "pooled"
+        ],
+        "gated": false,
+        "n_slices_reported": 7,
+        "out_of_band": [],
+        "out_of_band_advisory": [],
+        "out_of_band_deciding": [],
+        "passed": null,
+        "slopes": {
+          "bucket_100": 1.2475017464713742,
+          "bucket_120": 1.2145887076375734,
+          "bucket_40": 1.6060176914072675,
+          "bucket_60": 1.340485147847538,
+          "bucket_80": 1.289650222121891,
+          "bucket_centered": 1.4144924536442705,
+          "pooled": 1.2355506583668359
+        },
+        "support_keys": [
+          "bucket_100",
+          "bucket_120",
+          "bucket_40",
+          "bucket_60",
+          "bucket_80",
+          "bucket_centered",
+          "pooled"
+        ]
+      },
+      "qwertz": {
+        "band": null,
+        "deciding_slices": [
+          "bucket_centered",
+          "pooled"
+        ],
+        "gated": false,
+        "n_slices_reported": 7,
+        "out_of_band": [],
+        "out_of_band_advisory": [],
+        "out_of_band_deciding": [],
+        "passed": null,
+        "slopes": {
+          "bucket_100": 1.0044962392404677,
+          "bucket_120": 0.7625167524591486,
+          "bucket_40": 1.0626611852901093,
+          "bucket_60": 0.9939063526214207,
+          "bucket_80": 0.987481404312073,
+          "bucket_centered": 1.02290828433157,
+          "pooled": 0.9640731850448419
+        },
+        "support_keys": [
+          "bucket_100",
+          "bucket_120",
+          "bucket_40",
+          "bucket_60",
+          "bucket_80",
+          "bucket_centered",
+          "pooled"
+        ]
+      }
+    },
+    "2_band_scoped_recommended": {
+      "azerty": {
+        "band": [
+          0.9,
+          1.1
+        ],
+        "deciding_slices": [
+          "bucket_centered",
+          "pooled"
+        ],
+        "gated": true,
+        "n_slices_reported": 7,
+        "out_of_band": [
+          "bucket_100",
+          "bucket_120",
+          "bucket_40",
+          "bucket_80"
+        ],
+        "out_of_band_advisory": [
+          "bucket_100",
+          "bucket_120",
+          "bucket_40",
+          "bucket_80"
+        ],
+        "out_of_band_deciding": [],
+        "passed": true,
+        "slopes": {
+          "bucket_100": 0.8181655005523473,
+          "bucket_120": 0.7226230175650561,
+          "bucket_40": 1.1621651015561394,
+          "bucket_60": 1.0424632543221852,
+          "bucket_80": 0.8434398299418543,
+          "bucket_centered": 1.0405395569758396,
+          "pooled": 0.9992898715598655
+        },
+        "support_keys": [
+          "bucket_100",
+          "bucket_120",
+          "bucket_40",
+          "bucket_60",
+          "bucket_80",
+          "bucket_centered",
+          "pooled"
+        ]
+      },
+      "dvorak": {
+        "band": [
+          0.9,
+          1.1
+        ],
+        "deciding_slices": [
+          "bucket_centered",
+          "pooled"
+        ],
+        "gated": true,
+        "n_slices_reported": 7,
+        "out_of_band": [
+          "bucket_120",
+          "bucket_60",
+          "bucket_80"
+        ],
+        "out_of_band_advisory": [
+          "bucket_120",
+          "bucket_60",
+          "bucket_80"
+        ],
+        "out_of_band_deciding": [],
+        "passed": true,
+        "slopes": {
+          "bucket_100": 0.9071341885860619,
+          "bucket_120": 0.8258855810128971,
+          "bucket_40": 1.0283859340007482,
+          "bucket_60": 0.8773667376863428,
+          "bucket_80": 0.8920101449620943,
+          "bucket_centered": 0.9324366531448224,
+          "pooled": 0.9232345972379902
+        },
+        "support_keys": [
+          "bucket_100",
+          "bucket_120",
+          "bucket_40",
+          "bucket_60",
+          "bucket_80",
+          "bucket_centered",
+          "pooled"
+        ]
+      },
+      "qwerty": {
+        "band": [
+          0.9,
+          1.1
+        ],
+        "deciding_slices": [
+          "bucket_centered",
+          "pooled"
+        ],
+        "gated": true,
+        "n_slices_reported": 7,
+        "out_of_band": [
+          "bucket_100",
+          "bucket_120",
+          "bucket_40",
+          "bucket_60",
+          "bucket_80",
+          "bucket_centered",
+          "pooled"
+        ],
+        "out_of_band_advisory": [
+          "bucket_100",
+          "bucket_120",
+          "bucket_40",
+          "bucket_60",
+          "bucket_80"
+        ],
+        "out_of_band_deciding": [
+          "bucket_centered",
+          "pooled"
+        ],
+        "passed": false,
+        "slopes": {
+          "bucket_100": 1.2475017464713742,
+          "bucket_120": 1.2145887076375734,
+          "bucket_40": 1.6060176914072675,
+          "bucket_60": 1.340485147847538,
+          "bucket_80": 1.289650222121891,
+          "bucket_centered": 1.4144924536442705,
+          "pooled": 1.2355506583668359
+        },
+        "support_keys": [
+          "bucket_100",
+          "bucket_120",
+          "bucket_40",
+          "bucket_60",
+          "bucket_80",
+          "bucket_centered",
+          "pooled"
+        ]
+      },
+      "qwertz": {
+        "band": [
+          0.9,
+          1.1
+        ],
+        "deciding_slices": [
+          "bucket_centered",
+          "pooled"
+        ],
+        "gated": true,
+        "n_slices_reported": 7,
+        "out_of_band": [
+          "bucket_120"
+        ],
+        "out_of_band_advisory": [
+          "bucket_120"
+        ],
+        "out_of_band_deciding": [],
+        "passed": true,
+        "slopes": {
+          "bucket_100": 1.0044962392404677,
+          "bucket_120": 0.7625167524591486,
+          "bucket_40": 1.0626611852901093,
+          "bucket_60": 0.9939063526214207,
+          "bucket_80": 0.987481404312073,
+          "bucket_centered": 1.02290828433157,
+          "pooled": 0.9640731850448419
+        },
+        "support_keys": [
+          "bucket_100",
+          "bucket_120",
+          "bucket_40",
+          "bucket_60",
+          "bucket_80",
+          "bucket_centered",
+          "pooled"
+        ]
+      }
+    },
+    "3_band_every_slice_as_branch": {
+      "azerty": {
+        "band": [
+          0.9,
+          1.1
+        ],
+        "deciding_slices": [
+          "bucket_100",
+          "bucket_120",
+          "bucket_40",
+          "bucket_60",
+          "bucket_80",
+          "bucket_centered",
+          "pooled"
+        ],
+        "gated": true,
+        "n_slices_reported": 7,
+        "out_of_band": [
+          "bucket_100",
+          "bucket_120",
+          "bucket_40",
+          "bucket_80"
+        ],
+        "out_of_band_advisory": [],
+        "out_of_band_deciding": [
+          "bucket_100",
+          "bucket_120",
+          "bucket_40",
+          "bucket_80"
+        ],
+        "passed": false,
+        "slopes": {
+          "bucket_100": 0.8181655005523473,
+          "bucket_120": 0.7226230175650561,
+          "bucket_40": 1.1621651015561394,
+          "bucket_60": 1.0424632543221852,
+          "bucket_80": 0.8434398299418543,
+          "bucket_centered": 1.0405395569758396,
+          "pooled": 0.9992898715598655
+        },
+        "support_keys": [
+          "bucket_100",
+          "bucket_120",
+          "bucket_40",
+          "bucket_60",
+          "bucket_80",
+          "bucket_centered",
+          "pooled"
+        ]
+      },
+      "dvorak": {
+        "band": [
+          0.9,
+          1.1
+        ],
+        "deciding_slices": [
+          "bucket_100",
+          "bucket_120",
+          "bucket_40",
+          "bucket_60",
+          "bucket_80",
+          "bucket_centered",
+          "pooled"
+        ],
+        "gated": true,
+        "n_slices_reported": 7,
+        "out_of_band": [
+          "bucket_120",
+          "bucket_60",
+          "bucket_80"
+        ],
+        "out_of_band_advisory": [],
+        "out_of_band_deciding": [
+          "bucket_120",
+          "bucket_60",
+          "bucket_80"
+        ],
+        "passed": false,
+        "slopes": {
+          "bucket_100": 0.9071341885860619,
+          "bucket_120": 0.8258855810128971,
+          "bucket_40": 1.0283859340007482,
+          "bucket_60": 0.8773667376863428,
+          "bucket_80": 0.8920101449620943,
+          "bucket_centered": 0.9324366531448224,
+          "pooled": 0.9232345972379902
+        },
+        "support_keys": [
+          "bucket_100",
+          "bucket_120",
+          "bucket_40",
+          "bucket_60",
+          "bucket_80",
+          "bucket_centered",
+          "pooled"
+        ]
+      },
+      "qwerty": {
+        "band": [
+          0.9,
+          1.1
+        ],
+        "deciding_slices": [
+          "bucket_100",
+          "bucket_120",
+          "bucket_40",
+          "bucket_60",
+          "bucket_80",
+          "bucket_centered",
+          "pooled"
+        ],
+        "gated": true,
+        "n_slices_reported": 7,
+        "out_of_band": [
+          "bucket_100",
+          "bucket_120",
+          "bucket_40",
+          "bucket_60",
+          "bucket_80",
+          "bucket_centered",
+          "pooled"
+        ],
+        "out_of_band_advisory": [],
+        "out_of_band_deciding": [
+          "bucket_100",
+          "bucket_120",
+          "bucket_40",
+          "bucket_60",
+          "bucket_80",
+          "bucket_centered",
+          "pooled"
+        ],
+        "passed": false,
+        "slopes": {
+          "bucket_100": 1.2475017464713742,
+          "bucket_120": 1.2145887076375734,
+          "bucket_40": 1.6060176914072675,
+          "bucket_60": 1.340485147847538,
+          "bucket_80": 1.289650222121891,
+          "bucket_centered": 1.4144924536442705,
+          "pooled": 1.2355506583668359
+        },
+        "support_keys": [
+          "bucket_100",
+          "bucket_120",
+          "bucket_40",
+          "bucket_60",
+          "bucket_80",
+          "bucket_centered",
+          "pooled"
+        ]
+      },
+      "qwertz": {
+        "band": [
+          0.9,
+          1.1
+        ],
+        "deciding_slices": [
+          "bucket_100",
+          "bucket_120",
+          "bucket_40",
+          "bucket_60",
+          "bucket_80",
+          "bucket_centered",
+          "pooled"
+        ],
+        "gated": true,
+        "n_slices_reported": 7,
+        "out_of_band": [
+          "bucket_120"
+        ],
+        "out_of_band_advisory": [],
+        "out_of_band_deciding": [
+          "bucket_120"
+        ],
+        "passed": false,
+        "slopes": {
+          "bucket_100": 1.0044962392404677,
+          "bucket_120": 0.7625167524591486,
+          "bucket_40": 1.0626611852901093,
+          "bucket_60": 0.9939063526214207,
+          "bucket_80": 0.987481404312073,
+          "bucket_centered": 1.02290828433157,
+          "pooled": 0.9640731850448419
+        },
+        "support_keys": [
+          "bucket_100",
+          "bucket_120",
+          "bucket_40",
+          "bucket_60",
+          "bucket_80",
+          "bucket_centered",
+          "pooled"
+        ]
+      }
+    }
+  },
+  "checks": {
+    "1_is_ungated_and_passed_is_None": true,
+    "1_reports_every_slope_without_a_band": true,
+    "2_fails_qwerty": true,
+    "2_passes_the_other_three": true,
+    "2_relegates_them_to_advisory": true,
+    "2_still_REPORTS_the_thin_buckets_it_did_not_gate_on": true,
+    "3_reproduces_the_branch_all_four_fail": true,
+    "bucket_centered_support_now_recorded": true
+  },
+  "n_rows": 2202,
+  "provenance": {
+    "keybo__file__": "/local/home/zegertho/repos/keybo-wt-gateaudit/src/keybo/__init__.py"
+  }
+}
