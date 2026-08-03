@@ -12590,3 +12590,52 @@ SERVED frame (`features/schema.py`) has 20 columns and NO `log_freq` at all. Tho
 therefore properties of an EXPERIMENTAL model, not of any shipped `k31` artifact, and must not be
 requoted as "the model's frequency feature ranks 3rd" — the shipped model HAS no frequency
 feature.**
+
+### FREQCORRECT-1 ADDENDUM (registered BEFORE measuring its consequence) — **THE +9.906 MAY BE A DOUBLE-COUNT, NOT A DECOMPOSITION FINDING**
+
+Found by reading `validate.py` AFTER committing the prereg above and BEFORE running any
+measurement of my own. Registering it here so the causal order is in git, because it changes what
+INVARIANT C is even asking.
+
+🟢 **`_predict_cells` (`validate.py:539-591`) ALREADY ADDS `b`.** Lines 574-577:
+```
+practice = (model.metadata.extra.get("training") or {}).get("practice_term")
+if practice:
+    values = practice.get("values", {})
+    pred = pred + np.array([values.get(c.ngram, 0.0) for c in cells])
+```
+Its own docstring says so: *"g(geometry, wpm) + b(ngram) per cell — the model's full prediction"*.
+This code is on `main` and is byte-identical in CALIB-1's own worktree.
+
+⇒ **CALIB-1's `practice_b` variant is therefore `pred_te * exp(b)` where `pred_te` ALREADY CONTAINS
+`b` — i.e. `g + b` then multiplied by `exp(b)` again.** If so, the `practice_b` arm measures
+**`b` APPLIED TWICE**, and:
+- its `+9.906 d_wmae` is **not** evidence that restoring `b` hurts held-out prediction;
+- CALIB-1's `base` arm was **already** the b-inclusive model, so the entire framing "b is a level
+  shift that helps the contrast and hurts the level" needs re-deriving;
+- **the parent's INVARIANT C premise — "RESTORING b to the prediction WORSENS held-out error" —
+  may rest on an arithmetic artefact rather than on a property of the decomposition.**
+
+**REGISTERED PREDICTIONS, with the numbers that decide it:**
+- **A1** — the shipped/LOLO `base` arm's prediction differs from `g`-alone by exactly `exp(b)`.
+  Instrument: recompute cell predictions with the practice block bypassed and compare. *Bar:*
+  worst `|pred_base − pred_g_alone·exp(b)|` < 1e-6 ms ⇒ double-count CONFIRMED.
+- **A2** — the CORRECT three-way comparison is `g` alone vs `g+b` (the shipped path) vs `g+2b`
+  (CALIB-1's arm). I register that I will report **all three** `d_wmae` values against a stated
+  baseline, and that **the sign of "does b help or hurt held-out magnitude" must be read off
+  `g` vs `g+b`, never off `g+b` vs `g+2b`.**
+- **A3** — registered prediction: **`d_wmae(g+2b vs g+b) ≈ d_wmae(g+b vs g)` in magnitude and
+  sign** if the effect is a near-linear level move, because both steps add the same `b`. If
+  instead `g+b` BEATS `g` while `g+2b` loses to `g+b`, then `b` is **helping** at its fitted
+  magnitude and merely overshoots when doubled — **the opposite of the brief's premise**, and I
+  register that as the outcome I would then report in line 1.
+- **A4** — this does NOT touch FREQGEO-1's `B_spread = 0.0` (a property of `b` itself, computed
+  from metadata, not through `_predict_cells`), nor the RANKING claim. It bears on
+  **MAGNITUDE/CORRECTNESS only.** Registered so I cannot later let it stand in for row (i).
+
+⚠ **I register the alternative reading too, so I am not free to pick after the fact:** if the
+LOLO models in `k03` were trained in a path where the metadata practice block is absent or empty,
+then `_predict_cells` adds nothing, `base` IS `g` alone, and CALIB-1's arm is a correct
+single-application of `b`. **Discriminator:** `len(bmap)` and `n_ngrams` on a freshly trained LOLO
+model, plus A1's numeric bar. I will report whichever holds, and if the double-count is refuted I
+will say so as prominently as I would say the opposite.
