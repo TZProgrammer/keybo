@@ -11691,3 +11691,157 @@ coincidence, not a mechanism.
   method compared `g` to `g+b`" — and that supersedes the ledger's PICK2-1 headline, ADJUDICATE-1's acceptance of it,
   and the `+0.0249 ms/char` figure derived from it.** I will say so prominently and in line 1, per my brief's
   instruction that the single most valuable thing I can return is a correction.
+
+## SFBPRICE-1 — 🟢 **RESULT: `candidate` SURVIVES THE CORRECTED SAME-FINGER PRICE UNDER FOUR PRICINGS WITH ZERO LOSSES, AND ITS RANK IMPROVES 3/13 → 2/13. THE UNDERPRICE WAS WORKING *AGAINST* THE PROPOSED BOARD. 🔴 AND THE DEFECT IS MISDIAGNOSED: SAME-FINGER IS THE MODEL'S *BEST*-PRICED CLASS CONTRAST OF SIX (0.651 vs 0.265–0.408) — THE COMPRESSION IS UNIVERSAL, PICK2-1's METHOD COMPARES `g` TO `g+b`, AND ADJUDICATE-1's `+0.0249` IS WRONG BY EXACTLY 1.4896×** (2026-08-03)
+
+Child `sfbprice`, worktree `/local/home/zegertho/repos/keybo-wt-sfbprice`, branch `sfbprice` @ `1744271`
+(3 commits: PREREG `181da61` @ 00:00:21Z, AMENDMENT `730ec36` @ 00:06:21Z, drivers `1744271`; **NOTHING
+PUSHED**). Causal order provable in git: the first contrast number exists at **00:13:31Z**, 7 min after
+the amendment and 13 min after the prereg. `data/models/k31/` never written; `src/keybo/layouts.py`
+untouched; no layout adopted; no branch merged or deleted; shared checkout left on `main`.
+Artifacts: `/local/home/zegertho/agent/state/sfbprice/artifacts/c0{1..8}_*.json` + report.md + index.
+
+### 🟢 THE ANSWER, BOTH HALVES OF INVARIANT D, SEPARATELY — AND THEY DO NOT COLLAPSE
+- **D1 (the OBJECTIVE question) = YES.** Correcting the price DOES change what the objective wants.
+  Measured with **zero search noise** on a fixed pool: the **OLD surface prefers `arm-B` (sfb 2.5391);
+  the CORRECTED surface prefers `candidate` (sfb 1.7365)** — and the **top-5 reverses exactly by sfb**
+  (OLD: arm-B, F(2.5), BALL-1, F(2.0), candidate → NEW: candidate, F(2.0), F(2.5), arm-B, BALL-1). The
+  2-opt sfb gradient rises **+1.2292 → +1.3801** ms/char per pp with the shift **+0.1509 CONSTANT**
+  across four unrelated base boards. The shadow price moves decisively: under correction **every sfb
+  cap from 1.8 to 3.0 costs +0.0000**, i.e. **the sfb constraint is SLACK at `candidate`** — PRICEBAND-1's
+  interior optimum moves **~2.46 → ~1.74**.
+- **D2 (the ADOPTION question) = NO.** `candidate` takes **0 losses** under all four pricings
+  (uncorrected / same-finger-additive / affine-unweighted / affine-weighted), still beats `keybo-lsb`
+  by **1.96–2.44× the measured floor** with **0/25 signs against**, and its **rank IMPROVES 3/13 → 2/13**.
+- 🟢 **THE ASYMMETRY IS THE RESULT, and it is the opposite of the hypothesis: the more completely the
+  defect is corrected, the MORE `candidate` gains on arm-B — `arm-B − candidate` goes −0.0114 →
+  +0.1100 → +0.2810 → +0.3101 ms/char, MONOTONE in correction completeness.** The mispricing was
+  working AGAINST the proposed board. `tournament`'s prediction of survival is CONFIRMED by re-pricing
+  and re-search (not re-arithmetic), and its mechanism-strengthens-the-pick reading is vindicated.
+- 🟢 **Was the high-sfb cluster an ARTIFACT? NO — but it is no longer PREFERRED.** Both are true and
+  they are different claims: a converged corrected search still *reaches* **sfb 2.6568**, so high-sfb
+  boards remain genuine optima; the corrected objective simply stops *choosing* them.
+
+### 🔴 FOUR CORRECTIONS, IN DESCENDING ORDER OF CONSEQUENCE
+1. **"SAME-FINGER IS UNDERPRICED BY 35%" IS TRUE BUT MISLEADING — IT IS THE *BEST*-PRICED OF SIX CLASS
+   CONTRASTS.** Running PICK2-1's own contrast on five OTHER partitions of the same 486 pairs:
+   same-finger **0.651** vs same-hand **0.344**, bottom-row-landing **0.297**, top-row-landing **0.341**,
+   dy≥2 **0.408**, adjacent-finger **0.265**. 0.651 sits **OUTSIDE [0.265, 0.408] on the HIGH side.**
+   ⇒ the defect is not "the objective undercharges same-finger" but **"the objective undercharges
+   STRUCTURE, and same-finger least of all"** — so a same-finger-only correction is a targeted
+   intervention nothing in the data licenses. (The consistent version was run: see the affine arm.)
+2. **PICK2-1's METHOD SUBTRACTS TWO DIFFERENT ESTIMANDS: `g` vs `g + b`.** The shipped K31 models carry
+   an additive **practice-term backfit** (`train.py:406-437`); the booster is fitted to `y − b̂`, so
+   `predict()` returns **`g` alone** while the raw side contains `g + b` (**724** b values on
+   `bigram_reg31_seed0`, **7,146** on `trigram_cond31_seed0`). `pick2/sfb_pricing.py`'s docstring
+   asserts *"`b` … cancels in the same-finger-vs-other CONTRAST"* — **it cancels across LAYOUTS (the
+   only claim `train.py` makes), NOT across two CLASSES**, because `b` is frequency-driven and
+   same-finger pairs are the rarer class on a 98.7%-QWERTY corpus. Measured `b̄` median **+0.0301** same
+   vs **−0.0137** other; restoring `b` moves the model penalty **+41.03 → +51.80**, closing **49.0%**
+   of the gap ⇒ **the "35% underprice" is ~18% once the estimand is matched.** (Registered in the
+   AMENDMENT before measuring; my own predicted magnitude of +0.1337 log units was **3× too big** —
+   the truth is +0.0438, so by my own rule H-PRACTICE is REFUTED by 1.2 ms while its second falsifier
+   passes. Honest verdict: a real mechanism worth about half the gap.)
+3. **ADJUDICATE-1's `+0.0249 ms/char` IS WRONG BY EXACTLY 1.4896× — the documented ledger:10816
+   convention trap firing a THIRD time, this time inside the ledger's own adjudication.** It multiplied
+   the **kmstats** sfb difference (+0.1133 pp, *letters-only* denominator) by a price whose denominator
+   is *space-inclusive*. Verified `kmstats/oxey` = **1.4895989071** on 6 of 7 boards. Correct pp
+   **+0.0761** ⇒ **+0.0167 ms/char**; my directly measured shift **+0.0168**. The CONCLUSION is
+   unaffected (survival was predicted and the true cost is *smaller*) but **the number must not be
+   requoted.**
+4. **THE RETRAIN ROUTE CANNOT REACH +63 — THE MODEL CLASS CANNOT EXPRESS IT.** Up-weighting same-finger
+   training rows: w=1 → **+41.0282** (ratio 0.6512), w=4 → **+44.1970**, w=16 → **+47.5383**. A **16×**
+   up-weight buys only **30%** of the needed +21.97 and the trend is strongly **concave** ⇒ no finite
+   weight reaches the raw price. Not a fitting failure that emphasis fixes; **the feature frame cannot
+   represent it.** This corroborates correction 1 by a completely different route (a retrain, not a
+   re-contrast). 🟢 Positive control, byte-exact: my **w=1 seed0 = +39.2930 vs the SHIPPED seed0 model
+   +39.2930, |diff| 0.0000**, and my w=1 seed-mean **+41.0282 / 0.6512** reproduces the published
+   +41.03 / 0.651 through an independent retrain.
+
+### 🟢 WHAT WAS CHANGED, AND THE PROOF IT TOOK (INVARIANT A — all gates, to float precision)
+An explicit **additive surcharge** `T2'[a,b] = T2[a,b] + 21.9718` on the **96** ordered cells where the
+model's own `same_finger` feature fires (mask derived FROM `features.classify`, so the corrected cells
+cannot drift from the feature's meaning). Chosen for auditability over elegance — a retrain cannot be
+*shown* to have hit a target price, this can:
+**A1** corrected penalty **+63.0000**, |err| **0.000e+00** · **A2** exactly 96/96 mask cells, max change
+OUTSIDE the mask **0.000e+00** · **A3** Δms/char equals `DELTA × same-finger corpus share` to worst
+**6.35e-14** over 13 boards (which is what makes the whole delta-family closed form) · **A4** through the
+SEARCH's own `TableTrigramScorer.from_table` evaluator, parity vs shipped `card()` **1.211e-14** ·
+🔴 **A5 FAILS HONESTLY: one DELTA represents the class badly** — per-pair residual median +12.80
+[p25 +1.12, p75 +27.84], sd 27.13, and **22% are NEGATIVE** (already priced above raw, so a uniform
+surcharge overcharges them). Two further limits stated not hidden: `Tc` is **uncorrected** (it carries
+`bg1_/bg2_same_finger`) so every number is a **lower bound**; and of the +21.97 gap only **16.58** is
+same-finger-priced-too-fast, the other **5.39** is the `other` class over-charged — so charging all
+21.97 to same-finger **deliberately overcorrects by ~33%** as the harshest defensible stress test.
+
+### 🟢 THE CONSISTENCY ARM — the correction that does NOT privilege same-finger, and it strengthens the answer
+A global affine expansion `raw ~ a + b·model` fitted over all 486 supported pairs: **slope 1.4618**
+(weighted 1.5078), intercept −60.70, R² 0.4328 — **slope > 1 is correction 1's compression measured a
+third way.** It lands same-finger at ratio **0.952 / 0.982 as a CONSEQUENCE rather than a target**, while
+lifting same-hand 0.344→0.503, bottom-row 0.297→0.433, top-row 0.341→0.498, dy≥2 0.408→0.596, adjacent
+0.265→0.387. **`candidate` still takes 0 losses, still ranks 2/13, and gains MORE on arm-B (+0.2810 /
++0.3101) than under the same-finger-only correction (+0.1100).** The board choice is therefore not an
+artifact of correcting only its best axis.
+
+### 🟢 TWO MEASURED FLOORS — I BORROWED NOTHING, AND ONE OF THEM IS NEW
+- **FLOOR-S** (split-half same-board placebo, truth = 0 by construction, 26,000 draws): **p90 = 0.2905**
+  uncorrected / 0.2925 corrected / 0.3239–0.3276 affine. 🟢 **A genuine reproduction of TOURNAMENT-1's
+  0.2921 (agrees to 0.0016) from a fresh measurement with a different RNG** — the FIFTH floor measured
+  in this campaign turns out to be the same one, which is itself worth knowing.
+- 🟢 **FLOOR-D — NEW, and it is the floor this design actually needs.** DELTA is *estimated*, so its
+  sampling error propagates into every corrected margin. Bootstrapping DELTA over position pairs (2,000
+  draws): point **+21.9718**, sd **5.3471**, CI95 **[+11.4950, +31.7866]** ⇒ propagated,
+  **FLOOR-D = 0.0218 ms/char**. **The same-finger-only correction's effect on the headline pair
+  (+0.0168) is BELOW it** — under that correction the effect on the decision is *not even resolvable*.
+  The affine arms' shifts (+0.0601 / +0.0661) ARE above FLOOR-D, and they move in `candidate`'s favour.
+- **Margin-vs-floor is reported BEFORE every p-value**, per TOURNAMENT-1's lesson.
+
+### 🟢 THE FLIP POINT — the closed form, because A3 makes the margin EXACTLY linear in DELTA (verified numerically to 7.4e-15)
+Rather than test one point, solve for the DELTA at which `candidate` loses: **vs arm-B, BALL-1, F(2.5),
+F(2.0), dvorak and qwerty it NEVER flips** (candidate's same-finger share is *lower*, so the surcharge
+helps it forever); vs semimak **+816.6 ms = 37.2×** the measured DELTA; vs keybo-lsb **+924.8 ms =
+42.1×**; vs flagship-c3/graphite 112×/117×; vs colemak/colemak-dh 636×/729×. **The nearest flip needs a
+same-finger surcharge 37× the entire measured discrepancy.**
+
+### 🔴 A SEARCH-DESIGN DEFECT I FOUND IN MY OWN FIRST ARM, AND REPORT INSTEAD OF ITS NUMBER
+My registered 12-seed single-restart A/B is **UNDERPOWERED**: per-seed ms/char **sd 0.8702** against a
+**0.2527** signal (**noise 3.4× the signal**, spread 8.1×), neither arm converged (7–8 *distinct* boards
+from 12 seeds; negative-control gap +0.2633 = FAIL). It reported d(median sfb) = **+0.3168** — *higher*
+sfb under correction, opposite to my registered prediction. **Quoting that would have been TOURNAMENT-1's
+"significance without resolution" in a search-noise disguise.** Re-run **pooled (best-of-8 × 6
+replicates = 96 searches, shared seed blocks)**: negative control **PASSES** (gap **+0.0076**), and the
+paired d(sfb) **REVERSES to −0.2478** (sd 0.3807, +2/−4, p=0.1717) — the registered direction. 🔴 **But
+|−0.2478| is 0.49× the per-arm noise sd, so it is BELOW ITS OWN FLOOR and I report it as unresolved by
+the search**; the noise-free instruments (D1 above) carry that answer. 🟢 **The corrected search
+independently rediscovers `F(2.0)` (`pyu.,gdfnlhieaocstrmkj'-qbwzvx`) as its best board in 3 separate
+replicates** — a published board of `candidate`'s family. 🟢 Positive control: my **0.8702**
+independently reproduces the campaign's registered **0.883** search-seed floor from a different code path.
+
+### 🟢 NEGATIVE CONTROLS (INVARIANT E) — the pipeline reproduced published numbers before quoting new ones
+**E1a: TOURNAMENT-1's 125 published per-seed ms/char reproduced at 0.000e+00 — byte-exact.** E1b vs the
+shipped `TimeSurface.card()` worst rel dev **1.211e-14** (`seed_totals` 1.158e-14). **E3: PICK2-1
+reproduced EXACTLY on all eight published quantities** (raw +63.00, model +41.0282, ratio 0.651, CI95
+[53.00, 73.00], 55/431 pairs, 230,373/3,637,554 samples) — and `pick2`'s `T2` vs mine **max|diff|
+0.000e+00**. E2: all 22 rescued tables identified by sha256 in the artifact, not merely by name. E2b:
+layout-independence confirmed (across-board sd 2.8964 vs within-board seed sd 0.4325 = 6.70×).
+⭐ **The rescued seed tables earned their rescue: the entire n=25 1v1 took 4 SECONDS because they existed.**
+
+### ⚠ HIGH-WPM GATE: UNGATED BY CONSTRUCTION, STATED RATHER THAN FAKED
+The gate grades a **model's** per-bucket rho against a baseline. The reported correction is a post-hoc
+**surface edit** with no refit — it has no rho, so the gate is structurally unreachable, and claiming a
+pass would be precisely the TAUGATE-1 defect (a gate reporting a pass while checking nothing). The
+retrain arm *could* be gated but it **failed to reach the target price**, so gating it would grade a
+model nobody is proposing. Per the repo's own rule, **"not measured" is not "did not regress."** No
+azerty-b120 support question arose, because the gate never ran.
+
+### WHAT REMAINS OPEN
+Which of the four pricings is *correct* is a modelling decision this arm cannot settle (the affine arm is
+the most internally consistent but R²=0.4328 says an affine map does not fully describe the compression);
+all four agree on `candidate`, which is why the ship answer is robust while the right price is not.
+`Tc` uncorrected ⇒ lower bound. A5's heterogeneity unexplained (a per-finger or per-distance price would
+be better than one number and might favour different boards). ~51% of the raw−model gap unattributed
+after the practice term's 49%. The search needs ~4× the replicates to resolve d(sfb). And everything
+here is model-internal: 🟢 **the compression finding independently supports CLOSING-2's registered
+prediction that the binding constraint is training-layout diversity — a model fitted on 98.7% QWERTY
+compresses EVERY structural contrast toward its QWERTY-conditional mean, which is exactly what the six
+ratios show.**
