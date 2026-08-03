@@ -12681,3 +12681,51 @@ the distribution of `β_freq^equal-n`.
 is impossible (it is bounded by the minimum), so instead I register a **within-design placebo**: the
 equal-`n` design applied to PERMUTED frequency must give 0 within CI. If it does not, the
 subsampling itself manufactures a slope and neither reading is available.
+
+### FREQCORRECT-1 ADDENDUM 3 (registered BEFORE measuring) — **A FLAW IN MY OWN Q04 FLOOR, AND THE CORRECTED TEST**
+
+Registered after `q04` produced numbers but **BEFORE** I run the correction, and before any
+cross-layout non-transfer claim enters `report.md`. The flawed reading exists only in my
+`memory.md` (tagged as partial) and is corrected here rather than published.
+
+🔴 **THE FLAW.** `q04` compared `b` fitted on QWERTY-only against `b` fitted on NON-QWERTY-only
+(corr **0.6489**, rms **0.142384**) against a floor built by **split-halving the QWERTY rows**
+(corr **0.991864**, rms **0.020322**), and its own JSON emitted *"DISAGREE BEYOND NOISE
+(contamination)"* at a 7.01× rms ratio. **That floor is NOT design-matched, so the verdict string is
+not trustworthy and I am not publishing it.** Three measured reasons:
+- **QWERTY is ~98.7% of the SAMPLES.** So `b_nonqwerty` is estimated from ~1.3% of the data and is
+  vastly noisier than either qwerty half (each of which holds ~49% of the samples). A floor built
+  from two data-rich estimates cannot bound the agreement of one data-rich and one data-poor
+  estimate.
+- **DIFFERENTIAL SHRINKAGE, visible in the numbers:** `sd(b_qwerty) = 0.181606` vs
+  `sd(b_nonqwerty) = 0.090864` (a factor ~2), and `slope(b_nq ~ b_q) = 0.324653`. The estimator is
+  `b = Σ(c·r)/(Σc + 100)`, so a low-count population is shrunk toward 0 HARDER. Much of the
+  disagreement is therefore the **shrinkage denominator**, not the layout.
+- Correlation is scale-invariant, so differential shrinkage alone cannot explain `corr = 0.6489` —
+  but **differential NOISE can**, and that is exactly what the mis-matched floor fails to capture.
+
+**THE CORRECTED TEST, registered:**
+- **C-1 — reliability of BOTH sides.** Split-half `b_nonqwerty` by the same samples-within-row
+  method to get `rel_nq`, alongside the measured `rel_q = 0.991864`.
+- **C-2 — DISATTENUATION.** The standard correction: `corr_true = corr_obs / sqrt(rel_q · rel_nq)`.
+  **Registered rule:** if `corr_true` reaches ~1.0 (≥0.90), the apparent non-transfer is **pure
+  measurement noise** and `b` **DOES** transfer ⇒ my memory.md's "b does not transfer" is WRONG and
+  I say so. If `corr_true` stays well below 1 (≤0.80), a genuine layout-specific component survives.
+- **C-3 — the SAMPLE-MATCHED floor, which is the honest instrument.** Subsample the QWERTY rows to
+  **non-qwerty's per-ngram sample counts**, fit `b` on that matched subsample, and split-half IT.
+  Both estimates are then equally shrunk and equally noisy, so the floor finally matches the
+  comparison design. Compare `corr(b_qwerty_matched_half1, half2)` against the cross-layout 0.6489.
+  **This floor, not q04's, is the one any non-transfer claim must clear.**
+- **C-4 — placebo:** `b_qwerty` split against a *matched-size* qwerty subsample must give the
+  matched floor, not the data-rich floor. Guards against the subsampling itself creating the gap.
+
+⚠ **REGISTERED PREDICTION, and it goes against my own draft finding:** I predict the disattenuated
+correlation rises **substantially** toward 1 and the sample-matched floor lands **far below** 0.9919
+— i.e. **most or all of the apparent "non-transfer" is a noise-and-shrinkage artifact of comparing
+98.7% of the data against 1.3%.** I register this now so that if it holds I cannot claim credit for
+having "found contamination", and if it fails the surviving layout-specific component is a real
+result rather than a rescued one.
+
+🟢 **This does not touch any other finding.** P2/P3/N3 (`b` holds no recoverable geometry
+out-of-fold), `R_encode = 1.0614`, the A1 double-count, and the equal-`n` survival of INVARIANT B are
+all independent of q04's floor.
