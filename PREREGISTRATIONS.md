@@ -12446,3 +12446,147 @@ not as a footnote.
 
 ⇒ 🟢 **NET VERDICT ON THE USER'S PROPOSAL: the two-model A−B difference (and its sharper SHAP-subtraction variant) is WELL-POSED and IDENTIFIED — I was wrong to doubt that — but it is IRRELEVANT TO THE DECISION IT WAS MEANT TO IMPROVE, because `b` is constant across every board in the adoption field. It could only matter for cross-coverage magnitude claims (qwerty-vs-field percentages), which CALIB-1 already showed are the one sensitive quantity and which the correction makes MORE favourable, not less.**
 ⚠ **NOT DONE, and not to be inferred: the SHAP arm itself (TreeSHAP additivity check, interventional-vs-conditional spread), the head-to-head vs the incumbent `b`, the retrain, the layout re-evaluation, and the re-optimization. Per the brief's own rule — only retrain IF it wins — nothing has won, so nothing was retrained. Anyone resuming should start from the cancellation result and ask whether the ~0.0044-log-unit cross-coverage residual justifies the work.**
+
+---
+
+## FREQCORRECT-1 (PREREG) — **IS THE GEOMETRY/PRACTICE DECOMPOSITION *CORRECT*, INDEPENDENT OF RANKING?**
+
+**Registered by `freqcorrect` at the timestamp of this commit, BEFORE any number of mine exists.**
+Causal order is verifiable in git. The only prior numbers I rely on are OTHER agents' published
+values (CALIB-1 `k03`, FREQGEO-1 `f1`/`f2`, SFBPRICE-1 `c02`), each of which I either reproduce as a
+negative control or explicitly tag as borrowed.
+
+### §0. WHY THIS ARM EXISTS — the parent's own correction, restated
+FREQGEO-1 proved `B_spread = 0.0` EXACTLY within every equal-coverage board group. The parent banked
+that as *"therefore the practice-term form is irrelevant"*. **That inference is TOO STRONG.**
+Cancellation is a statement about **RANKING INVARIANCE**. It is silent on whether the surface has
+**CORRECTLY** separated geometry from practice. A term can cancel exactly in every pairwise
+comparison and the model can still be wrong about *why* typing takes the time it does — which
+corrupts every ABSOLUTE ms/char claim and every "you will save N hours/year" statement.
+
+### §1. THE THREE CLAIMS, SEPARATED (INVARIANT A) — registered as distinct estimands
+| # | claim | status entering this arm |
+|---|---|---|
+| (i) | **RANKING** — does `b` change which board wins? | **ANSWERED NO** for equal coverage (FREQGEO-1, `B_spread = 0.0`) |
+| (ii) | **CORRECTNESS** — is the geometry/practice split RIGHT? | **OPEN — this arm** |
+| (iii) | **MAGNITUDE** — are the absolute ms/char values right? | CALIB-1: cross-coverage residual ≈1.1 ms/char |
+I register in advance that **no finding of mine may be reported against more than one of these
+rows**, and that every headline number will name its row.
+
+### §2. THE PRIMARY HYPOTHESIS — **H-SATURATED**, and it is a claim about IDENTIFIABILITY, not fit
+`fit_practice_term` (`train.py:277-294`) is `b[ngram] = Σ(count·resid) / (Σcount + 100)` — a
+per-ngram LOOKUP keyed on the ngram **STRING**. Frequency enters ONLY as the shrinkage denominator,
+never as a variable.
+
+**H-SATURATED:** within a single layout, the map `ngram → physical positions` is a **BIJECTION**.
+Therefore a per-ngram intercept is an **UNCONSTRAINED FUNCTION OF GEOMETRY** within that layout: it
+can absorb *any* geometric signal whatsoever, and nothing in its functional form prevents it. The
+estimand "practice" is identified **only** by the same ngram appearing at DIFFERENT geometry in a
+DIFFERENT layout — i.e. identification rests entirely on cross-layout repetition, of which the data
+is **98.7% one layout**.
+
+**PREDICTIONS, registered before measuring (each with the number that would refute it):**
+- **P1** — within-layout, `ngram → positions` is one-to-one (0 ngrams with ≥2 geometries per layout).
+  *Refuted if* any layout has an ngram at two geometries in material quantity.
+- **P2** — `b` is **substantially predictable from geometry alone**. Instrument: regress fitted `b`
+  on the SERVED 20-feature geometric frame, out-of-fold. *Registered threshold:* **R² ≥ 0.30 ⇒ `b`
+  is materially geometric ⇒ the "practice" label is WRONG for that share.** R² < 0.10 ⇒ H-SATURATED
+  is refuted and `b` is genuinely ngram-idiosyncratic.
+- **P3** — the geometric share of `b` is **NOT** removable by the shrinkage: it survives at k=100.
+
+### §3. THE DIRECT CONTAMINATION TEST (INVARIANT B) — **matched-geometry frequency dependence**
+At (near-)identical geometry, timing must not depend on corpus frequency IF the surface is purely
+biomechanical. **Design, registered:** group cells by EXACT served-geometry feature vector (the 19
+non-wpm columns) **within** a wpm bucket **and within** a layout; inside each group regress the
+observed target on log-frequency; pool the within-group slopes.
+- **PRIMARY ESTIMAND:** the pooled within-group slope `β_freq`, with a **bootstrap CI95 over
+  GROUPS** (groups are the independent unit, not cells).
+- **DECISION RULE, registered:** CI95 excluding 0 ⇒ **frequency-dependent timing AT MATCHED
+  GEOMETRY EXISTS** ⇒ a practice effect is real and the *estimand* is legitimate. CI95 containing 0
+  ⇒ **NULL**, which I register in advance as a **POSITIVE result for the current model's
+  correctness** and will report as such plainly.
+- **THE SECOND HALF, and it is the one that decides CORRECTNESS:** compare `β_freq` measured at
+  matched geometry against the frequency-dependence **the fitted `b` actually encodes** (regress `b`
+  on log-freq over the same support). **If `b` encodes MUCH MORE than the matched-geometry design
+  licenses, `b` is absorbing something that is not practice.** Registered ratio
+  `R_encode = slope(b ~ logfreq) / β_freq`; **R_encode ≥ 2 or ≤ 0.5 ⇒ MIS-ATTRIBUTION.**
+- **CONFOUNDS I NAME NOW because I cannot fully control them:** participant mix per group,
+  per-ngram sample count (noise differs), bigram position-within-word, and word-level context. I
+  will control what the data carries (sample count, wpm bucket, layout) and NAME the rest.
+
+### §4. INVARIANT C — **EXPLAIN THE +9.906 d_wmae**, as a decomposition, not a narrative
+CALIB-1 measured `practice_b` (restoring `b` to the prediction) at mean `d_wmae` **+9.906**
+(azerty +12.57, dvorak +7.60, qwerty +6.22, qwertz +13.24; **0 of 12 cells better**).
+Registered rival explanations, each with a discriminating measurement:
+- **C1 LEVEL SHIFT (benign).** `mean b = −0.127` log ⇒ restoring it multiplies every prediction by
+  ≈0.881, a pure level move. **Discriminator:** re-center `b` to zero mean (`b − b̄`) and re-measure
+  `d_wmae`. If the penalty largely vanishes, the +9.906 is an ARTEFACT OF THE LEVEL, not evidence
+  about the decomposition. **Registered prediction: ≥60% of the penalty is level.**
+- **C2 MIS-TRANSFER.** `b` is fitted on qwerty-dominant held-in data; the held-out layout's ngrams
+  get a `b` learned at OTHER geometry. **Discriminator:** split the held-out cells by whether their
+  ngram was SEEN in the held-in folds; compare `d_wmae` on seen vs unseen (`b = 0` for unseen ⇒ they
+  are a built-in placebo). **Registered prediction: the penalty concentrates on SEEN ngrams.**
+- **C3 GENUINE GEOMETRIC SIGNAL ABSORBED.** `b` took signal `g` then cannot recover, so `g + b`
+  double-counts nothing but `g` alone is *deliberately* mis-levelled. **Discriminator:** P2's R².
+- **C4 SOMETHING ELSE** — reported if C1–C3 leave >40% unexplained.
+
+### §5. INVARIANT D — the qwerty-worst-fold link, tested rather than asserted
+CALIB-1: per-fold bucket-centered slope azerty 1.042 / dvorak 0.925 / qwertz 1.022 / **QWERTY
+1.407** — the worst fold is the layout the corpus is 98.7% composed of. **Registered rival:**
+qwerty is also the fold with the FEWEST training cells and the MOST test cells, so "worst-calibrated
+on the practised layout" may be a support artefact. **Discriminator:** does the qwerty fold's excess
+track its `b`-exposure (share of test mass whose ngram carries a large |b|) or its support (n
+cells)? I register in advance that with **4 folds** this is `n = 4` and **cannot be resolved
+statistically** — I will report it as a MECHANISM CHECK with the sample size stated, never as a
+test, and if the two explanations are indistinguishable at n=4 I will say **COINCIDENTAL-OR-
+UNRESOLVED** rather than pick one.
+
+### §6. NEGATIVE CONTROLS — mandatory, registered before measuring
+- **N1** — reproduce FREQGEO-1's `B(candidate) = −0.12673429794113286` from my own code path.
+  Bar: |diff| < 1e-9.
+- **N2** — reproduce CALIB-1's `practice_b` mean `d_wmae = +9.906533936853519` (and its four per-fold
+  values) from my own LOLO. Bar: within 0.10 absolute (seed-identical re-run should be much closer).
+- **N3** — a **PLACEBO practice term**: `b` refitted on SHUFFLED ngram labels (same shrinkage, same
+  counts). It must show near-zero geometric R² in P2 and a much smaller `d_wmae`. If the placebo
+  reproduces the real term's behaviour, my P2 instrument is measuring shrinkage arithmetic, not
+  contamination, and I will say so.
+- **N4** — matched-geometry design run on a **PERMUTED log-frequency** column: `β_freq` must be 0
+  within CI. Guards against the grouping itself manufacturing a slope.
+
+### §7. WHAT I WILL **NOT** DO (registered as a constraint on myself)
+**No retrain / re-optimization / field re-evaluation unless** I have evidence the decomposition is
+wrong **AND** a candidate fix that beats the incumbent on HELD-OUT CROSS-LAYOUT transfer (paired
+per-fold, MOR-FIX-1, mean Δ ≤ 0 AND ≥3 of 4 folds non-worse, on BOTH wmae and umae), with a
+**matched-complexity placebo** and a **same-config reseed** arm. **An audit ending in "the current
+decomposition is defensible, here is the proof" is a COMPLETE deliverable** and I register that I
+will report that outcome as a result, not as a failure. `data/models/k31/` is READ-ONLY;
+`src/keybo/layouts.py` untouched; no layout adopted; nothing pushed but ledger lines.
+
+### §8. WHAT WOULD FALSIFY MY CONCLUSION (INVARIANT E) — registered in both directions
+- If I conclude **WRONG**: refuted by (a) P2's R² < 0.10 out-of-fold, (b) the matched-geometry
+  `β_freq` CI95 matching what `b` encodes (`R_encode ∈ [0.5, 2]`), or (c) my proposed correct form
+  failing the §7 held-out bar — in which case the incumbent stands and I say so.
+- If I conclude **CORRECT/DEFENSIBLE**: refuted by (a) a matched-geometry null that is merely
+  UNDERPOWERED (I must report the CI width against the effect size `b` implies, not just "p > 0.05"),
+  (b) the +9.906 surviving both the re-centering and the seen/unseen split, or (c) a demonstration
+  that `b`'s geometric share changes any absolute ms/char claim by more than the ≈1.1 ms/char
+  cross-coverage residual already known.
+
+### §9. FLOORS AND CONFIDENCE — registered discipline
+**I will MEASURE any floor I use and borrow no constant.** Four distinct measured floors exist in
+this project and the floor is a property of the **COMPARISON DESIGN**; the parent has mixed them
+twice. Every uncertainty I publish will name its design. **No p-value without its floor beside it.**
+Every claim carries 🟢 VERIFIED / 🟡 HIGH / 🟠 INFERRED / 🔴 UNCERTAIN, and a script exiting 0 does
+not make a claim VERIFIED.
+
+### §10. HONESTY CLAUSE
+If any number in my brief disagrees with what I measure, **the brief is wrong and I say so
+prominently, in line 1 if it is load-bearing.** If my own registered predictions (P1–P3, C1–C2, §5)
+fail, I report the failure as the result. I additionally register one correction I have ALREADY
+found by reading code, so it cannot look like a post-hoc rescue: **FREQGEO-1's `f2`/`f3` numbers
+(R²(log-freq ~ geometry) = 0.0328/0.1139, and `log_freq` ranking 3rd by mean|SHAP|) were computed on
+a 21-column matrix = `BIGRAM_FEATURE_NAMES + ["log_freq"]`, i.e. freqgeo's OWN augmented model. The
+SERVED frame (`features/schema.py`) has 20 columns and NO `log_freq` at all. Those numbers are
+therefore properties of an EXPERIMENTAL model, not of any shipped `k31` artifact, and must not be
+requoted as "the model's frequency feature ranks 3rd" — the shipped model HAS no frequency
+feature.**
