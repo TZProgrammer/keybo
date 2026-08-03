@@ -12,20 +12,45 @@ Two corrections found by the real-data LOLO harness (2026-07-04/05, arm R1W — 
 ``agent-artifacts/OQ1-frequency-feature.md``) are built in for bigram training:
 
 - **Additive practice term.** Frequent bigrams are fast partly because they are practiced —
-  a layout-independent effect. Left unmodeled, the geometry model absorbs it (frequent
-  bigrams' qwerty positions look "fast" — omitted-variable bias); modeled as a raw freq
+  an effect that is *approximately*, but measurably NOT exactly, layout-independent (see the
+  caveat below). Left unmodeled, the geometry model absorbs it (frequent bigrams' qwerty
+  positions look "fast" — omitted-variable bias); modeled as a raw freq
   feature it becomes a per-position memorization key (98.7% of the data is qwerty). The fix:
   fit ``time = g(geometry, wpm) + b(bigram)`` by backfitting — b is the shrunk per-bigram
   mean residual, g refits on the residualized target ``y − b̂``. b is keyed by bigram
   identity, so it cancels exactly in layout comparisons; its only job is cleaning g's
-  training target. Measured: pooled out-of-sample layout tau +0.667 → +1.0.
+  training target. Measured: pooled out-of-sample layout tau +0.667 → +1.0, and including b
+  cuts held-out magnitude error ~64% (wmae 28.74 → 9.12, better on 12/12 fold×seed cells and
+  4/4 folds) while moving the calibration slope to ~1.0 (pooled 0.948 → 0.999).
+
+  ⚠ **"Layout-independent" is an approximation, and the deviation is measured.** Fitting b on
+  qwerty-only vs non-qwerty-only data gives a disattenuated correlation of **0.6682** between
+  the two estimates — below the 0.80 bar a pre-registered test set for "layout-independent" —
+  at **1.249× matched-noise rms**. So the *effect* carries a real layout-specific component.
+  Two things this does NOT undermine, both measured: the identity-keyed **cancellation** below
+  (structural, exact), and the attribution itself — b encodes almost exactly the frequency
+  dependence an independent geometry-differenced measurement licenses (ratio **1.0614**,
+  CI95 [0.976, 1.166]), and it is not absorbing geometry (R²(b ~ served geometry) = −0.015
+  out-of-fold). Why the layout-specific part exists is OPEN; the leading untested reading is
+  that practice attaches to motor sequences as much as to letter pairs, which would make the
+  residual real rather than a defect. Deciding it needs a 5th training layout, because the
+  ngram→geometry bijection rules out a within-layout instrument.
 - **Layout balance weights.** Inverse-layout-share example weights (capped) stop the 98.7%
   qwerty majority from dominating the fit. Measured: composes with the practice term
   (rho/ceiling .928 → .931).
 
 Both are on by default and controllable (``practice_term=False`` / ``layout_weights=False``).
 The fitted practice term is stored in the model metadata (``extra["practice_term"]``) for
-inspection; scoring deliberately ignores it (layout-independent ⇒ ranking-irrelevant).
+inspection; scoring deliberately ignores it — and the reason is STRUCTURAL, not the
+(approximate) layout-independence above. Because b is keyed by NGRAM IDENTITY, its
+frequency-weighted total depends only on the corpus and the charset: measured bit-identical
+(spread 0.0) across all ten campaign boards, across 200 random permutations of a fixed
+charset, and at both bigram and trigram level. The optimizer's only moves — 2-opt swap and
+3-opt triple permutation — are charset-PRESERVING, so b is a constant offset over the entire
+reachable search space and cannot change any ranking a search can reach.
+⚠ It does NOT cancel across DIFFERENT charsets: the residual is 4.45e-3 log units (bigram) /
+1.80e-3 (trigram) ≈ 1 ms/char, which is material for cross-charset magnitude claims (e.g.
+qwerty-vs-tuned percentages) even though it is inert for ranking within a charset.
 
 A third correction (T-REL, 2026-07-10): models train in the **LOGRAT target space** —
 ``log(ms * wpm / 12000)``, time as a log-multiple of the typist's session-mean keystroke.
