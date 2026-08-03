@@ -1,0 +1,76 @@
+{
+  "B_monotone_nonlinearity_at_slope_exactly_1": {
+    "centre_over_edge_local_slope": 1622.9632921490975,
+    "in_band": true,
+    "kendall_tau": 1.0,
+    "local_slope_at_centre": 2.72662049100435,
+    "local_slope_near_edge": 0.0016800259772935533,
+    "max_abs_gap_error_units": 0.760998623307392,
+    "r2": 0.8899101620804203,
+    "slope_obs_on_pred": 1.0,
+    "spearman_rho": 1.0,
+    "verdict": "PASSES the gate at slope 1.000000 while the local exchange rate is wrong by a large factor between the middle and the tails of the range."
+  },
+  "C2_between_bucket_ramp_props_up_the_pooled_slope": {
+    "between_bucket_sd_ms": 23.53720459187964,
+    "bucket_centered_in_band": false,
+    "bucket_centered_slope": 1.4499999999999997,
+    "per_bucket_slopes": {
+      "0": 1.45,
+      "1": 1.45,
+      "2": 1.4499999999999997,
+      "3": 1.4499999999999995,
+      "4": 1.4500000000000002
+    },
+    "pooled_in_band": true,
+    "pooled_slope": 1.0176373387693085,
+    "true_within_bucket_compression": 1.45,
+    "verdict": "pooled is carried by the ramp the model was HANDED; bucket_centered recovers the true within-bucket compression. This VALIDATES the branch's stated reason for adding the bucket_centered slice.",
+    "within_bucket_sd_ms": 6.0
+  },
+  "C2b_masking_vs_ramp_strength": {
+    "ramp_sd=0.0": {
+      "bucket_centered": 1.45,
+      "pooled": 1.45,
+      "pooled_in_band": false
+    },
+    "ramp_sd=12.0": {
+      "bucket_centered": 1.45,
+      "pooled": 1.0378095147926898,
+      "pooled_in_band": true
+    },
+    "ramp_sd=25.0": {
+      "bucket_centered": 1.45,
+      "pooled": 1.0106774251889645,
+      "pooled_in_band": true
+    },
+    "ramp_sd=3.0": {
+      "bucket_centered": 1.45,
+      "pooled": 1.2718002540651832,
+      "pooled_in_band": false
+    },
+    "ramp_sd=50.0": {
+      "bucket_centered": 1.45,
+      "pooled": 1.002373427780557,
+      "pooled_in_band": true
+    },
+    "ramp_sd=6.0": {
+      "bucket_centered": 1.45,
+      "pooled": 1.1259792279559633,
+      "pooled_in_band": false
+    }
+  },
+  "C_opposite_buckets_CAN_hide_in_the_pooled_slope": {
+    "bucket1_slope": 0.8351648351648352,
+    "bucket2_slope": 2.610520792338974,
+    "buckets_in_band": [
+      false,
+      false
+    ],
+    "n_hiding_pairs_found": 10322,
+    "pooled_in_band": true,
+    "pooled_slope_analytic": 1.0000022572861467,
+    "pooled_slope_measured": 1.002168009213391,
+    "verdict": "A POOLED-ONLY gate can pass while EVERY bucket is out of band."
+  }
+}

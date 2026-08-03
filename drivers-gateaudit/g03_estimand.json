@@ -1,0 +1,261 @@
+{
+  "A_identity_negative_control": {
+    "r=0.3": {
+      "in_band": true,
+      "product": 0.08625516680710335,
+      "product_minus_r2": -1.3877787807814457e-17,
+      "r2": 0.08625516680710336,
+      "sd_pred_over_sd_obs": 0.2936922995366125,
+      "slope_obs_on_pred": 1.0,
+      "slope_pred_on_obs": 0.08625516680710335
+    },
+    "r=0.5": {
+      "in_band": true,
+      "product": 0.25245678080921996,
+      "product_minus_r2": 5.551115123125783e-17,
+      "r2": 0.2524567808092199,
+      "sd_pred_over_sd_obs": 0.502450774513504,
+      "slope_obs_on_pred": 1.0,
+      "slope_pred_on_obs": 0.25245678080921996
+    },
+    "r=0.657889": {
+      "in_band": true,
+      "product": 0.436812004965151,
+      "product_minus_r2": -1.1102230246251565e-16,
+      "r2": 0.4368120049651511,
+      "sd_pred_over_sd_obs": 0.6609175477812277,
+      "slope_obs_on_pred": 0.9999999999999996,
+      "slope_pred_on_obs": 0.43681200496515116
+    },
+    "r=0.9": {
+      "in_band": true,
+      "product": 0.8112765978466573,
+      "product_minus_r2": -1.1102230246251565e-16,
+      "r2": 0.8112765978466574,
+      "sd_pred_over_sd_obs": 0.9007089418045418,
+      "slope_obs_on_pred": 1.0,
+      "slope_pred_on_obs": 0.8112765978466573
+    }
+  },
+  "B_miss_monotone_nonlinearity": {
+    "in_band": false,
+    "kendall_tau": 1.0,
+    "max_abs_gap_error": 1.1933849157956646,
+    "note": "tanh warp, rescaled to slope 1",
+    "r2": 0.8899101555624642,
+    "slope_obs_on_pred": 1.5360504191984123,
+    "worst_local_slope_ratio_center_vs_edge": 1587.6394853819074
+  },
+  "C_miss_opposite_buckets_cancel": {
+    "bucket1_slope": 1.45,
+    "bucket2_slope": 0.6896551724137931,
+    "buckets_in_band": [
+      false,
+      false
+    ],
+    "pooled_in_band": false,
+    "pooled_slope": 0.8286253622252644
+  },
+  "D_miss_level_and_scatter": {
+    "note_scatter": "OLS slope is invariant to an additive constant; a +50ms level error is INVISIBLE to it. Level matters for ms-denominated claims, not rankings.",
+    "offset_ms": 50.0,
+    "slope_with_50ms_offset": 1.0,
+    "slope_with_huge_scatter": 1.0
+  },
+  "E_false_flag_thin_slice_noise": {
+    "r=0.5/n=100": {
+      "band_halfwidth_in_sds": 0.571090221361143,
+      "false_flag_rate": 0.5677,
+      "slope_mean": 1.0006630025258423,
+      "slope_sd_analytic": 0.17496355305594127,
+      "slope_sd_measured": 0.17510368109903696
+    },
+    "r=0.5/n=12": {
+      "band_halfwidth_in_sds": 0.17350889514380025,
+      "false_flag_rate": 0.8514,
+      "slope_mean": 1.0096927376481675,
+      "slope_sd_analytic": 0.5477225575051661,
+      "slope_sd_measured": 0.5763393278317073
+    },
+    "r=0.5/n=20": {
+      "band_halfwidth_in_sds": 0.23963231328480034,
+      "false_flag_rate": 0.8073,
+      "slope_mean": 1.0027805318511975,
+      "slope_sd_analytic": 0.408248290463863,
+      "slope_sd_measured": 0.4173059911212855
+    },
+    "r=0.5/n=200": {
+      "band_halfwidth_in_sds": 0.8163729796669553,
+      "false_flag_rate": 0.41545,
+      "slope_mean": 0.9991128955001248,
+      "slope_sd_analytic": 0.12309149097933272,
+      "slope_sd_measured": 0.12249303013531347
+    },
+    "r=0.5/n=40": {
+      "band_halfwidth_in_sds": 0.3513302881279031,
+      "false_flag_rate": 0.7188,
+      "slope_mean": 0.9973669152758088,
+      "slope_sd_analytic": 0.2809757434745082,
+      "slope_sd_measured": 0.28463244809566385
+    },
+    "r=0.5/n=400": {
+      "band_halfwidth_in_sds": 1.1473042225802879,
+      "false_flag_rate": 0.24955,
+      "slope_mean": 0.9989787352398849,
+      "slope_sd_analytic": 0.08681986202598489,
+      "slope_sd_measured": 0.08716084019554983
+    },
+    "r=0.5/n=64": {
+      "band_halfwidth_in_sds": 0.45219507486090643,
+      "false_flag_rate": 0.6513,
+      "slope_mean": 0.9985516498294074,
+      "slope_sd_analytic": 0.21997067253202993,
+      "slope_sd_measured": 0.22114349659991242
+    },
+    "r=0.5/n=900": {
+      "band_halfwidth_in_sds": 1.7251401109803828,
+      "false_flag_rate": 0.0837,
+      "slope_mean": 0.9997929534273858,
+      "slope_sd_analytic": 0.057799284063968726,
+      "slope_sd_measured": 0.05796630625159532
+    },
+    "r=0.657889/n=100": {
+      "band_halfwidth_in_sds": 0.8608921935247832,
+      "false_flag_rate": 0.38745,
+      "slope_mean": 0.999817922633345,
+      "slope_sd_analytic": 0.11563667123237564,
+      "slope_sd_measured": 0.1161585628864472
+    },
+    "r=0.657889/n=12": {
+      "band_halfwidth_in_sds": 0.26430894591172405,
+      "false_flag_rate": 0.77165,
+      "slope_mean": 0.9978050415681162,
+      "slope_sd_analytic": 0.3620000405943408,
+      "slope_sd_measured": 0.3783451205370808
+    },
+    "r=0.657889/n=20": {
+      "band_halfwidth_in_sds": 0.36209335927654984,
+      "false_flag_rate": 0.7055,
+      "slope_mean": 0.9983499206764882,
+      "slope_sd_analytic": 0.2698188995422099,
+      "slope_sd_measured": 0.27617186959682605
+    },
+    "r=0.657889/n=200": {
+      "band_halfwidth_in_sds": 1.2253484956003735,
+      "false_flag_rate": 0.2209,
+      "slope_mean": 1.0000441645663791,
+      "slope_sd_analytic": 0.08135345919346422,
+      "slope_sd_measured": 0.08160943630244868
+    },
+    "r=0.657889/n=40": {
+      "band_halfwidth_in_sds": 0.5288816131813642,
+      "false_flag_rate": 0.5899,
+      "slope_mean": 0.9999224566768664,
+      "slope_sd_analytic": 0.18570210255187036,
+      "slope_sd_measured": 0.18907823132378018
+    },
+    "r=0.657889/n=400": {
+      "band_halfwidth_in_sds": 1.752637329611225,
+      "false_flag_rate": 0.08015,
+      "slope_mean": 1.0000591674025099,
+      "slope_sd_analytic": 0.05738086399245145,
+      "slope_sd_measured": 0.057056869844363235
+    },
+    "r=0.657889/n=64": {
+      "band_halfwidth_in_sds": 0.6818747962663427,
+      "false_flag_rate": 0.49145,
+      "slope_mean": 0.9998942120929237,
+      "slope_sd_analytic": 0.1453827148344319,
+      "slope_sd_measured": 0.14665448928096125
+    },
+    "r=0.657889/n=900": {
+      "band_halfwidth_in_sds": 2.6190907485509873,
+      "false_flag_rate": 0.00885,
+      "slope_mean": 1.000281253615113,
+      "slope_sd_analytic": 0.03820062345575966,
+      "slope_sd_measured": 0.038181189428172745
+    },
+    "r=0.8/n=100": {
+      "band_halfwidth_in_sds": 1.3148877057963828,
+      "false_flag_rate": 0.1852,
+      "slope_mean": 1.0002519197313287,
+      "slope_sd_analytic": 0.07576144084141578,
+      "slope_sd_measured": 0.0760521218345664
+    },
+    "r=0.8/n=12": {
+      "band_halfwidth_in_sds": 0.3978517058980484,
+      "false_flag_rate": 0.67065,
+      "slope_mean": 0.9984679413435229,
+      "slope_sd_analytic": 0.23717082451262836,
+      "slope_sd_measured": 0.2513499339515853
+    },
+    "r=0.8/n=20": {
+      "band_halfwidth_in_sds": 0.5508151371280084,
+      "false_flag_rate": 0.5725,
+      "slope_mean": 1.0010032734375403,
+      "slope_sd_analytic": 0.17677669529663684,
+      "slope_sd_measured": 0.18154911377600755
+    },
+    "r=0.8/n=200": {
+      "band_halfwidth_in_sds": 1.8794350554502912,
+      "false_flag_rate": 0.05935,
+      "slope_mean": 1.0001241539410122,
+      "slope_sd_analytic": 0.0533001790889026,
+      "slope_sd_measured": 0.05320747833770779
+    },
+    "r=0.8/n=40": {
+      "band_halfwidth_in_sds": 0.8121372928278748,
+      "false_flag_rate": 0.40995,
+      "slope_mean": 0.9997286334383855,
+      "slope_sd_analytic": 0.12166606584807188,
+      "slope_sd_measured": 0.12313189023963969
+    },
+    "r=0.8/n=400": {
+      "band_halfwidth_in_sds": 2.6647014780518554,
+      "false_flag_rate": 0.0085,
+      "slope_mean": 1.0002380238233366,
+      "slope_sd_analytic": 0.0375941030337814,
+      "slope_sd_measured": 0.03752765584575324
+    },
+    "r=0.8/n=64": {
+      "band_halfwidth_in_sds": 1.037583257704518,
+      "false_flag_rate": 0.2928,
+      "slope_mean": 1.0003212419629532,
+      "slope_sd_analytic": 0.09525009525014284,
+      "slope_sd_measured": 0.09637780800476052
+    },
+    "r=0.8/n=900": {
+      "band_halfwidth_in_sds": 3.9702912302402904,
+      "false_flag_rate": 0.0,
+      "slope_mean": 0.9998987653585995,
+      "slope_sd_analytic": 0.02502782415997499,
+      "slope_sd_measured": 0.025187069210020594
+    }
+  },
+  "F_false_flag_errors_in_variables": {
+    "pred_noise_sd=0.0": {
+      "deming_slope_lam1": 1.0456053796852516,
+      "in_band": true,
+      "ols_slope_obs_on_pred": 0.9987498273272236,
+      "truth": 1.0
+    },
+    "pred_noise_sd=0.1": {
+      "deming_slope_lam1": 1.03860605820942,
+      "in_band": true,
+      "ols_slope_obs_on_pred": 0.987324293782202,
+      "truth": 1.0
+    },
+    "pred_noise_sd=0.2": {
+      "deming_slope_lam1": 1.0229568332976537,
+      "in_band": true,
+      "ols_slope_obs_on_pred": 0.9588915419398754,
+      "truth": 1.0
+    },
+    "pred_noise_sd=0.4": {
+      "deming_slope_lam1": 0.9661930463114767,
+      "in_band": false,
+      "ols_slope_obs_on_pred": 0.8608136175667584,
+      "truth": 1.0
+    }
+  }
+}
