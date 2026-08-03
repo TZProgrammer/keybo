@@ -14,9 +14,10 @@ A1  is CALIB-1's `practice_b` arm a DOUBLE-COUNT? `_predict_cells` already adds 
 """
 import json
 import time
+from collections import defaultdict
 
 import numpy as np
-from _guard import ART, BOOT_SEED, CELL_KW, SEEDS, assert_d5, load_rows
+from _guard import ART, BOOT_SEED, CELL_KW, SEEDS, SHIPPED, assert_d5, load_rows
 
 t0 = time.time()
 
@@ -48,8 +49,6 @@ rows = load_rows()
 log(f"  {len(rows)} rows; layouts {sorted({r.layout for r in rows})}")
 
 # ============================================================ P1 — bijection ngram -> geometry
-from collections import defaultdict  # noqa: E402
-
 by_ln = defaultdict(set)
 by_n_geom = defaultdict(set)
 by_n_lay = defaultdict(set)
@@ -89,53 +88,63 @@ log(f"  b: n={len(bmap_full)} mean={out['b_full']['mean_b']:.6f} sd={out['b_full
     f"range [{out['b_full']['min_b']:.4f}, {out['b_full']['max_b']:.4f}]")
 
 # ============================================================ N1 — reproduce FREQGEO-1's B
-# B = the FREQUENCY-WEIGHTED mean of b over the ngrams a board can type, using the trigram
-# first-transition marginal weighting freqgeo used, over the SEED-MEAN b (its stated recipe).
-log("N1: reproducing FREQGEO-1's B(candidate)")
-bmaps = [bmap_full]
-for s in (1, 2):
-    m = train_bigram_model(rows, target_wpm=90.0, geometry=G, random_state=s, n_jobs=48)
-    bmaps.append(m.metadata.extra["training"]["practice_term"]["values"])
-allng = set().union(*[set(b) for b in bmaps])
-b_seedmean = {ng: float(np.mean([b.get(ng, 0.0) for b in bmaps])) for ng in allng}
-out["b_seedmean"] = {"n_ngrams": len(b_seedmean),
-                     "mean": float(np.mean(list(b_seedmean.values())))}
+# freqgeo's recipe, reproduced from its committed driver: b is the SEED-MEAN of the values stored
+# in the THREE SHIPPED models' metadata (NOT a fresh training run), the weighting is the trigram
+# first-transition marginal, and coverage is "every char of the bigram is on the board".
+log("N1: reproducing FREQGEO-1's B(candidate) from the SHIPPED model metadata")
+import gzip  # noqa: E402
+
+
+def shipped_b(stem):
+    """The practice term stored in a SHIPPED k31 model. READ-ONLY: gzip.open never writes."""
+    m = json.loads(gzip.open(f"{SHIPPED}/{stem}.meta.json.gz").read())
+    return m["extra"]["training"]["practice_term"]["values"]
+
+
+b_shipped_seeds = [shipped_b(f"bigram_reg31_seed{s}") for s in (0, 1, 2)]
+allk = set().union(*[set(b) for b in b_shipped_seeds])
+b_seedmean = {k: float(np.mean([b.get(k, 0.0) for b in b_shipped_seeds])) for k in allk}
+out["b_seedmean_shipped"] = {
+    "n_ngrams": len(b_seedmean),
+    "mean": float(np.mean(list(b_seedmean.values()))),
+    "sd": float(np.std(list(b_seedmean.values()), ddof=1)),
+    "min": float(min(b_seedmean.values())), "max": float(max(b_seedmean.values())),
+}
+log(f"  shipped seed-mean b: n={len(b_seedmean)} mean={out['b_seedmean_shipped']['mean']:.6f} "
+    f"sd={out['b_seedmean_shipped']['sd']:.6f}")
 
 d = production_corpus_dir(None)
 tri = {k: v for k, v in load_frequencies(str(d / "trigrams.txt")).items() if len(k) == 3}
-from keybo.layouts import LAYOUTS  # noqa: E402
-
-cand = LAYOUTS["candidate"] if "candidate" in LAYOUTS else None
-out["n1_layout_keys_sample"] = sorted(LAYOUTS)[:40]
-
-
-def B_of_board(lay30, bm):
-    """freq-weighted mean b over the corpus trigrams this board can type, weighting each
-    trigram by its frequency and keying b on the FIRST TRANSITION (a->b) -- freqgeo's
-    trigram-marginal convention, which is the one that reproduced calib's published value."""
-    chars = set(lay30) | {" "}
-    num = 0.0
-    den = 0.0
-    for ng, f in tri.items():
-        if not set(ng) <= chars:
-            continue
-        num += f * bm.get(ng[:2], 0.0)
-        den += f
-    return num / den, den
+bi_marg = defaultdict(int)
+for ng, f in tri.items():
+    bi_marg[ng[:2]] += f
+bi_marg = dict(bi_marg)
+CANDIDATE = "pyu.,vdfnlhieaocstrmkj'-qgwbzx"   # freqgeo's literal (candidate is not in layouts.py)
 
 
-if cand is not None:
-    B_cand, mass = B_of_board(cand, b_seedmean)
-    published = -0.12673429794113286
-    out["n1_neg_control"] = {"B_candidate": B_cand, "published": published,
-                             "abs_diff": abs(B_cand - published), "bar": 1e-9,
-                             "passes": bool(abs(B_cand - published) < 1e-9)}
-    log(f"N1: B(candidate) = {B_cand:.17f} vs published {published:.17f} "
-        f"|diff| = {abs(B_cand - published):.3e} => "
-        f"{'PASS' if abs(B_cand - published) < 1e-9 else 'FAIL'}")
-else:
-    out["n1_neg_control"] = {"error": "candidate not in LAYOUTS"}
-    log("N1: candidate NOT FOUND in LAYOUTS")
+def B_of_board(lay30, bm, freqs=None):
+    """freq-weighted mean b over the bigrams this board can type -- freqgeo's `cov` + `B`."""
+    freqs = bi_marg if freqs is None else freqs
+    ch = set(lay30) | {" "}
+    c = {ng: f for ng, f in freqs.items() if all(x in ch for x in ng)}
+    den = sum(c.values())
+    return (sum(f * bm.get(ng, 0.0) for ng, f in c.items()) / den, den) if den else (0.0, 0)
+
+
+B_cand, mass = B_of_board(CANDIDATE, b_seedmean)
+published = -0.12673429794113286
+out["n1_neg_control"] = {"B_candidate": B_cand, "published": published,
+                         "abs_diff": abs(B_cand - published), "bar": 1e-9,
+                         "passes": bool(abs(B_cand - published) < 1e-9),
+                         "cov_mass_frac": float(mass / sum(bi_marg.values())),
+                         "recipe": ("seed-mean b from the 3 SHIPPED k31 bigram models' metadata, "
+                                    "trigram first-transition marginal weighting")}
+log(f"N1: B(candidate) = {B_cand:.17f} vs published {published:.17f} "
+    f"|diff| = {abs(B_cand - published):.3e} => "
+    f"{'PASS' if abs(B_cand - published) < 1e-9 else 'FAIL'}")
+
+# The shipped b is the object every published number rests on, so P2 audits THAT one.
+# (The freshly-trained full-data b above is kept as a same-pipeline cross-check.)
 
 # ================================================== P2 — is b predictable from GEOMETRY alone?
 # One row per distinct (layout, ngram): the served 19 non-wpm geometric columns -> b.

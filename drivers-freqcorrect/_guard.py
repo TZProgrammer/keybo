@@ -61,9 +61,32 @@ def sha(path):
     return hashlib.sha256(open(path, "rb").read()).hexdigest()
 
 
-def load_rows():
-    """The 2202 bistroke rows. Asserts the frame has not drifted."""
+def load_rows(cache=True):
+    """The 2202 bistroke rows. Asserts the frame has not drifted.
+
+    Parsing the 609 MB TSV costs ~230 s and every driver needs the same rows, so the parsed
+    objects are pickled to /tmp on first use. The cache key carries the source file's SIZE and
+    MTIME, so an edited or replaced TSV can never be served from a stale pickle. /tmp is tmpfs
+    here (a reboot wipes it), which is fine: this is pure derived data and a miss only costs the
+    230 s parse again.
+    """
+    import pickle
+
     from keybo.data.strokes import load_strokes
-    rows = load_strokes(BI, ngram_len=2, wpm_threshold=0, min_samples=1)
+
+    st = os.stat(BI)
+    path = os.path.join(CACHE, f"rows_bi2_{st.st_size}_{int(st.st_mtime)}.pkl")
+    if cache and os.path.exists(path):
+        with open(path, "rb") as fh:
+            rows = pickle.load(fh)
+        print(f"  rows from cache {path}")
+    else:
+        rows = load_strokes(BI, ngram_len=2, wpm_threshold=0, min_samples=1)
+        if cache:
+            tmp = path + ".tmp"
+            with open(tmp, "wb") as fh:
+                pickle.dump(rows, fh, protocol=pickle.HIGHEST_PROTOCOL)
+            os.replace(tmp, path)   # atomic: a killed writer cannot leave a half-written pickle
+            print(f"  rows cached to {path}")
     assert len(rows) == 2202, f"frame drift: {len(rows)} != 2202"
     return rows
