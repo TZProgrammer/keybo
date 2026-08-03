@@ -1,0 +1,674 @@
+{
+ "floor_all": 0.2904511317043813,
+ "sensitivity": [
+  {
+   "basis": "sigma_diff primary (scoring bucket)",
+   "sigma": 0.49,
+   "LOS_valid_live": 0.9627801707251011,
+   "LOS_valid_knownbig": 0.9999999999999998,
+   "implied_flip_live": 0.01641241503944079
+  },
+  {
+   "basis": "sigma_diff all-buckets",
+   "sigma": 1.0287,
+   "LOS_valid_live": 0.8308519925493744,
+   "LOS_valid_knownbig": 0.9999999990146009,
+   "implied_flip_live": 0.1546739455721095
+  },
+  {
+   "basis": "route-b2 de-levelled err rms (PESSIMISTIC)",
+   "sigma": 3.7314,
+   "LOS_valid_live": 0.608823780132569,
+   "LOS_valid_knownbig": 0.9918589964737621,
+   "implied_flip_live": 0.3896384721893029
+  },
+  {
+   "basis": "route-b2 raw err rms (cohort-confounded)",
+   "sigma": 6.1141,
+   "LOS_valid_live": 0.5671088394334398,
+   "LOS_valid_knownbig": 0.9363218829989828,
+   "implied_flip_live": 0.4320953971171866
+  },
+  {
+   "basis": "raw held-out wmae (the NAIVE fix)",
+   "sigma": 9.1224,
+   "LOS_valid_live": 0.5451328996309228,
+   "LOS_valid_knownbig": 0.8499544947341544,
+   "implied_flip_live": 0.4543662992465665
+  }
+ ],
+ "matrix": [
+  {
+   "pair": "arm-B vs BALL-1",
+   "margin": -0.07726013777800858,
+   "m_over_floor": 0.2660004708008619,
+   "sigma": 0.14913382128411773,
+   "LOS_design": 0.5,
+   "LOS_valid": 0.5362377294152875
+  },
+  {
+   "pair": "arm-B vs F(2.5)",
+   "margin": -0.029253838813157244,
+   "m_over_floor": 0.10071862568238003,
+   "sigma": 0.07848695109342385,
+   "LOS_design": 0.5,
+   "LOS_valid": 0.5006101318066614
+  },
+  {
+   "pair": "arm-B vs F(2.0)",
+   "margin": 0.036551983056517655,
+   "m_over_floor": 0.1258455522002233,
+   "sigma": 0.7583306938658524,
+   "LOS_design": 0.49999999996021605,
+   "LOS_valid": 0.48237908400416357
+  },
+  {
+   "pair": "arm-B vs candidate",
+   "margin": -0.01142437359338487,
+   "m_over_floor": 0.03933320392434381,
+   "sigma": 0.569102836485025,
+   "LOS_design": 0.5000000000016687,
+   "LOS_valid": 0.5069207408648302
+  },
+  {
+   "pair": "arm-B vs keybo-lsb",
+   "margin": -0.7202293050639241,
+   "m_over_floor": 2.4796918532821124,
+   "sigma": 1.1325410081566658,
+   "LOS_design": 0.9999999999989101,
+   "LOS_valid": 0.7277390723369731
+  },
+  {
+   "pair": "arm-B vs flagship-c3",
+   "margin": -1.05719185144706,
+   "m_over_floor": 3.6398269314476654,
+   "sigma": 0.9576067133433346,
+   "LOS_design": 1.0,
+   "LOS_valid": 0.8490224858387173
+  },
+  {
+   "pair": "arm-B vs colemak",
+   "margin": -4.114206926577571,
+   "m_over_floor": 14.164885164795901,
+   "sigma": 1.3139771211973963,
+   "LOS_design": 1.0,
+   "LOS_valid": 0.9974099816101449
+  },
+  {
+   "pair": "arm-B vs colemak-dh",
+   "margin": -4.7134210468928925,
+   "m_over_floor": 16.22793142252299,
+   "sigma": 1.10196270093159,
+   "LOS_design": 1.0,
+   "LOS_valid": 0.9998381851035764
+  },
+  {
+   "pair": "arm-B vs graphite",
+   "margin": -4.299790059209117,
+   "m_over_floor": 14.803833037171318,
+   "sigma": 1.4077391232629852,
+   "LOS_design": 1.0,
+   "LOS_valid": 0.9969427860730813
+  },
+  {
+   "pair": "arm-B vs semimak",
+   "margin": -3.5595331969621316,
+   "m_over_floor": 12.255187907427382,
+   "sigma": 0.8603907102997101,
+   "LOS_design": 1.0,
+   "LOS_valid": 0.9997402362109589
+  },
+  {
+   "pair": "arm-B vs dvorak",
+   "margin": -1.1045056945898022,
+   "m_over_floor": 3.8027247065918086,
+   "sigma": 0.8173620646957861,
+   "LOS_design": 1.0,
+   "LOS_valid": 0.8923781033765794
+  },
+  {
+   "pair": "arm-B vs qwerty",
+   "margin": -9.678145401588095,
+   "m_over_floor": 33.32108002057444,
+   "sigma": 2.998000296287825,
+   "LOS_design": 1.0,
+   "LOS_valid": 0.9981564757447369
+  },
+  {
+   "pair": "BALL-1 vs F(2.5)",
+   "margin": 0.04800629896485134,
+   "m_over_floor": 0.1652818451184819,
+   "sigma": 0.08467373211081047,
+   "LOS_design": 0.5,
+   "LOS_valid": 0.49788775510988836
+  },
+  {
+   "pair": "BALL-1 vs F(2.0)",
+   "margin": 0.11381212083452624,
+   "m_over_floor": 0.3918460230010853,
+   "sigma": 0.7313920832107652,
+   "LOS_design": 0.499999896384849,
+   "LOS_valid": 0.44361604419665646
+  },
+  {
+   "pair": "BALL-1 vs candidate",
+   "margin": 0.06583576418462371,
+   "m_over_floor": 0.22666726687651811,
+   "sigma": 0.5193163667569184,
+   "LOS_design": 0.499999999176411,
+   "LOS_valid": 0.45753777806215845
+  },
+  {
+   "pair": "BALL-1 vs keybo-lsb",
+   "margin": -0.6429691672859156,
+   "m_over_floor": 2.2136913824812505,
+   "sigma": 1.0587243732096299,
+   "LOS_design": 0.9999999997565029,
+   "LOS_valid": 0.7177024338099864
+  },
+  {
+   "pair": "BALL-1 vs flagship-c3",
+   "margin": -0.9799317136690513,
+   "m_over_floor": 3.373826460646803,
+   "sigma": 0.9098337525905211,
+   "LOS_design": 0.9999999999999999,
+   "LOS_valid": 0.8419916770881594
+  },
+  {
+   "pair": "BALL-1 vs colemak",
+   "margin": -4.036946788799563,
+   "m_over_floor": 13.89888469399504,
+   "sigma": 1.2358228095781367,
+   "LOS_design": 1.0,
+   "LOS_valid": 0.998093505713654
+  },
+  {
+   "pair": "BALL-1 vs colemak-dh",
+   "margin": -4.636160909114884,
+   "m_over_floor": 15.961930951722128,
+   "sigma": 0.9961663277797591,
+   "LOS_design": 1.0,
+   "LOS_valid": 0.9999347880452202
+  },
+  {
+   "pair": "BALL-1 vs graphite",
+   "margin": -4.222529921431109,
+   "m_over_floor": 14.537832566370456,
+   "sigma": 1.3565761389438156,
+   "LOS_design": 1.0,
+   "LOS_valid": 0.9973123890415487
+  },
+  {
+   "pair": "BALL-1 vs semimak",
+   "margin": -3.482273059184123,
+   "m_over_floor": 11.989187436626521,
+   "sigma": 0.8119146660692852,
+   "LOS_design": 1.0,
+   "LOS_valid": 0.9998160663186098
+  },
+  {
+   "pair": "BALL-1 vs dvorak",
+   "margin": -1.0272455568117937,
+   "m_over_floor": 3.536724235790947,
+   "sigma": 0.7994308374312593,
+   "LOS_design": 1.0,
+   "LOS_valid": 0.8802949860648647
+  },
+  {
+   "pair": "BALL-1 vs qwerty",
+   "margin": -9.600885263810087,
+   "m_over_floor": 33.05507954977358,
+   "sigma": 2.9426466644316585,
+   "LOS_design": 1.0,
+   "LOS_valid": 0.9983021597172372
+  },
+  {
+   "pair": "F(2.5) vs F(2.0)",
+   "margin": 0.0658058218696749,
+   "m_over_floor": 0.22656417788260336,
+   "sigma": 0.7637343787834852,
+   "LOS_design": 0.4999999996495255,
+   "LOS_valid": 0.4684899571600172
+  },
+  {
+   "pair": "F(2.5) vs candidate",
+   "margin": 0.017829465219772373,
+   "m_over_floor": 0.06138542175803623,
+   "sigma": 0.5592505723415306,
+   "LOS_design": 0.49999999999752176,
+   "LOS_valid": 0.48906195580491346
+  },
+  {
+   "pair": "F(2.5) vs keybo-lsb",
+   "margin": -0.6909754662507669,
+   "m_over_floor": 2.378973227599732,
+   "sigma": 1.1104711574029404,
+   "LOS_design": 0.9999999999956596,
+   "LOS_valid": 0.7231469592374669
+  },
+  {
+   "pair": "F(2.5) vs flagship-c3",
+   "margin": -1.0279380126339026,
+   "m_over_floor": 3.5391083057652852,
+   "sigma": 0.943444603493228,
+   "LOS_design": 1.0,
+   "LOS_valid": 0.8455555139935751
+  },
+  {
+   "pair": "F(2.5) vs colemak",
+   "margin": -4.084953087764415,
+   "m_over_floor": 14.064166539113524,
+   "sigma": 1.2890203831513976,
+   "LOS_design": 1.0,
+   "LOS_valid": 0.9976208544669196
+  },
+  {
+   "pair": "F(2.5) vs colemak-dh",
+   "margin": -4.684167208079735,
+   "m_over_floor": 16.12721279684061,
+   "sigma": 1.0579629265105375,
+   "LOS_design": 1.0,
+   "LOS_valid": 0.9998874244544147
+  },
+  {
+   "pair": "F(2.5) vs graphite",
+   "margin": -4.27053622039596,
+   "m_over_floor": 14.703114411488936,
+   "sigma": 1.3995593575004266,
+   "LOS_design": 1.0,
+   "LOS_valid": 0.9969158698353928
+  },
+  {
+   "pair": "F(2.5) vs semimak",
+   "margin": -3.530279358148974,
+   "m_over_floor": 12.154469281745001,
+   "sigma": 0.8433451731270906,
+   "LOS_design": 1.0,
+   "LOS_valid": 0.9997674163829415
+  },
+  {
+   "pair": "F(2.5) vs dvorak",
+   "margin": -1.075251855776645,
+   "m_over_floor": 3.7020060809094293,
+   "sigma": 0.8261460339654505,
+   "LOS_design": 1.0,
+   "LOS_valid": 0.8841318944890311
+  },
+  {
+   "pair": "F(2.5) vs qwerty",
+   "margin": -9.648891562774937,
+   "m_over_floor": 33.22036139489206,
+   "sigma": 2.993151039784276,
+   "LOS_design": 1.0,
+   "LOS_valid": 0.9981359063554378
+  },
+  {
+   "pair": "F(2.0) vs candidate",
+   "margin": -0.047976356649902525,
+   "m_over_floor": 0.16517875612456712,
+   "sigma": 0.23657688547049083,
+   "LOS_design": 0.5,
+   "LOS_valid": 0.5375500048691231
+  },
+  {
+   "pair": "F(2.0) vs keybo-lsb",
+   "margin": -0.7567812881204418,
+   "m_over_floor": 2.6055374054823353,
+   "sigma": 0.523553230266475,
+   "LOS_design": 0.9999999999999989,
+   "LOS_valid": 0.8900599441566521
+  },
+  {
+   "pair": "F(2.0) vs flagship-c3",
+   "margin": -1.0937438345035775,
+   "m_over_floor": 3.7656724836478883,
+   "sigma": 0.45551278308862553,
+   "LOS_design": 1.0,
+   "LOS_valid": 0.9757502227980934
+  },
+  {
+   "pair": "F(2.0) vs colemak",
+   "margin": -4.1507589096340896,
+   "m_over_floor": 14.290730716996126,
+   "sigma": 0.725641667802496,
+   "LOS_design": 1.0,
+   "LOS_valid": 0.999994609132506
+  },
+  {
+   "pair": "F(2.0) vs colemak-dh",
+   "margin": -4.749973029949411,
+   "m_over_floor": 16.353776974723214,
+   "sigma": 0.7413775590592673,
+   "LOS_design": 1.0,
+   "LOS_valid": 0.9999990301056176
+  },
+  {
+   "pair": "F(2.0) vs graphite",
+   "margin": -4.336342042265635,
+   "m_over_floor": 14.92967858937154,
+   "sigma": 0.6824938117795821,
+   "LOS_design": 1.0,
+   "LOS_valid": 0.9999988160192897
+  },
+  {
+   "pair": "F(2.0) vs semimak",
+   "margin": -3.5960851800186493,
+   "m_over_floor": 12.381033459627606,
+   "sigma": 0.4613617008140123,
+   "LOS_design": 1.0,
+   "LOS_valid": 0.9999999404544961
+  },
+  {
+   "pair": "F(2.0) vs dvorak",
+   "margin": -1.14105767764632,
+   "m_over_floor": 3.9285702587920324,
+   "sigma": 0.4047262464943363,
+   "LOS_design": 1.0,
+   "LOS_valid": 0.9878689925264992
+  },
+  {
+   "pair": "F(2.0) vs qwerty",
+   "margin": -9.714697384644612,
+   "m_over_floor": 33.44692557277466,
+   "sigma": 2.3223631828840374,
+   "LOS_design": 1.0,
+   "LOS_valid": 0.9998254041163845
+  },
+  {
+   "pair": "candidate vs keybo-lsb",
+   "margin": -0.7088049314705392,
+   "m_over_floor": 2.4403586493577683,
+   "sigma": 0.5981533051607403,
+   "LOS_design": 0.9999999999999993,
+   "LOS_valid": 0.8501474345817904
+  },
+  {
+   "pair": "candidate vs flagship-c3",
+   "margin": -1.045767477853675,
+   "m_over_floor": 3.6004937275233213,
+   "sigma": 0.4900437877467793,
+   "LOS_design": 1.0,
+   "LOS_valid": 0.9627701700704261
+  },
+  {
+   "pair": "candidate vs colemak",
+   "margin": -4.102782552984187,
+   "m_over_floor": 14.12555196087156,
+   "sigma": 0.7999202461400542,
+   "LOS_design": 1.0,
+   "LOS_valid": 0.9999778200581948
+  },
+  {
+   "pair": "candidate vs colemak-dh",
+   "margin": -4.701996673299508,
+   "m_over_floor": 16.188598218598646,
+   "sigma": 0.6894196447009948,
+   "LOS_design": 1.0,
+   "LOS_valid": 0.9999996229997306
+  },
+  {
+   "pair": "candidate vs graphite",
+   "margin": -4.288365685615733,
+   "m_over_floor": 14.764499833246974,
+   "sigma": 0.8497471895411632,
+   "LOS_design": 1.0,
+   "LOS_valid": 0.999973713349952
+  },
+  {
+   "pair": "candidate vs semimak",
+   "margin": -3.5481088233687466,
+   "m_over_floor": 12.215854703503037,
+   "sigma": 0.4398779401521726,
+   "LOS_design": 1.0,
+   "LOS_valid": 0.999999965958582
+  },
+  {
+   "pair": "candidate vs dvorak",
+   "margin": -1.0930813209964174,
+   "m_over_floor": 3.7633915026674654,
+   "sigma": 0.4670109051139781,
+   "LOS_design": 1.0,
+   "LOS_valid": 0.9735125986707898
+  },
+  {
+   "pair": "candidate vs qwerty",
+   "margin": -9.66672102799471,
+   "m_over_floor": 33.28174681665009,
+   "sigma": 2.4962328485965246,
+   "LOS_design": 1.0,
+   "LOS_valid": 0.9996202751797163
+  },
+  {
+   "pair": "keybo-lsb vs flagship-c3",
+   "margin": -0.3369625463831358,
+   "m_over_floor": 1.160135078165553,
+   "sigma": 0.31971782265803445,
+   "LOS_design": 0.9848258932992773,
+   "LOS_valid": 0.7630178668824223
+  },
+  {
+   "pair": "keybo-lsb vs colemak",
+   "margin": -3.3939776215136477,
+   "m_over_floor": 11.68519331151379,
+   "sigma": 0.21427551486504146,
+   "LOS_design": 1.0,
+   "LOS_valid": 0.9999999999999005
+  },
+  {
+   "pair": "keybo-lsb vs colemak-dh",
+   "margin": -3.9931917418289684,
+   "m_over_floor": 13.748239569240877,
+   "sigma": 0.3814838890098448,
+   "LOS_design": 1.0,
+   "LOS_valid": 0.9999999997315644
+  },
+  {
+   "pair": "keybo-lsb vs graphite",
+   "margin": -3.5795607541451933,
+   "m_over_floor": 12.324141183889205,
+   "sigma": 0.3836791980175473,
+   "LOS_design": 1.0,
+   "LOS_valid": 0.9999999973743576
+  },
+  {
+   "pair": "keybo-lsb vs semimak",
+   "margin": -2.8393038918982074,
+   "m_over_floor": 9.77549605414527,
+   "sigma": 0.40864130913758423,
+   "LOS_design": 1.0,
+   "LOS_valid": 0.9999994655251097
+  },
+  {
+   "pair": "keybo-lsb vs dvorak",
+   "margin": -0.3842763895258781,
+   "m_over_floor": 1.3230328533096967,
+   "sigma": 0.5645346246966444,
+   "LOS_design": 0.9993663775144173,
+   "LOS_valid": 0.7215513331832979
+  },
+  {
+   "pair": "keybo-lsb vs qwerty",
+   "margin": -8.95791609652417,
+   "m_over_floor": 30.841388167292326,
+   "sigma": 1.9796170359991554,
+   "LOS_design": 1.0,
+   "LOS_valid": 0.9999253243691959
+  },
+  {
+   "pair": "flagship-c3 vs colemak",
+   "margin": -3.057015075130512,
+   "m_over_floor": 10.525058233348238,
+   "sigma": 0.45148660150219005,
+   "LOS_design": 1.0,
+   "LOS_valid": 0.9999992731084686
+  },
+  {
+   "pair": "flagship-c3 vs colemak-dh",
+   "margin": -3.656229195445833,
+   "m_over_floor": 12.588104491075326,
+   "sigma": 0.47730867857352494,
+   "LOS_design": 1.0,
+   "LOS_valid": 0.9999999195607454
+  },
+  {
+   "pair": "flagship-c3 vs graphite",
+   "margin": -3.2425982077620574,
+   "m_over_floor": 11.164006105723653,
+   "sigma": 0.5715491523538495,
+   "LOS_design": 1.0,
+   "LOS_valid": 0.9999924519541841
+  },
+  {
+   "pair": "flagship-c3 vs semimak",
+   "margin": -2.5023413455150716,
+   "m_over_floor": 8.615360975979716,
+   "sigma": 0.12464557451488141,
+   "LOS_design": 1.0,
+   "LOS_valid": 0.9999999999999984
+  },
+  {
+   "pair": "flagship-c3 vs dvorak",
+   "margin": -0.04731384314274237,
+   "m_over_floor": 0.1628977751441437,
+   "sigma": 0.41241692698421667,
+   "LOS_design": 0.5000000007516995,
+   "LOS_valid": 0.5350026212800845
+  },
+  {
+   "pair": "flagship-c3 vs qwerty",
+   "margin": -8.620953550141035,
+   "m_over_floor": 29.681253089126773,
+   "sigma": 2.18076949904131,
+   "LOS_design": 1.0,
+   "LOS_valid": 0.9996855316222741
+  },
+  {
+   "pair": "colemak vs colemak-dh",
+   "margin": -0.599214120315321,
+   "m_over_floor": 2.0630462577270863,
+   "sigma": 0.40071644829896197,
+   "LOS_design": 0.9999999999999547,
+   "LOS_valid": 0.8786341016954979
+  },
+  {
+   "pair": "colemak vs graphite",
+   "margin": -0.1855831326315456,
+   "m_over_floor": 0.6389478723754141,
+   "sigma": 0.39362852792190367,
+   "LOS_design": 0.5173500350678528,
+   "LOS_valid": 0.6378521078486976
+  },
+  {
+   "pair": "colemak vs semimak",
+   "margin": 0.5546737296154401,
+   "m_over_floor": 1.9096972573685214,
+   "sigma": 0.5441022512470449,
+   "LOS_design": 2.1599543133255626e-05,
+   "LOS_valid": 0.19221289242120493
+  },
+  {
+   "pair": "colemak vs dvorak",
+   "margin": 3.0097012319877696,
+   "m_over_floor": 10.362160458204094,
+   "sigma": 0.6964605179801938,
+   "LOS_design": 1.665374634114371e-30,
+   "LOS_valid": 0.00019149972797673397
+  },
+  {
+   "pair": "colemak vs qwerty",
+   "margin": -5.563938475010523,
+   "m_over_floor": 19.156194855778534,
+   "sigma": 1.8279211829578839,
+   "LOS_design": 1.0,
+   "LOS_valid": 0.9970037586778862
+  },
+  {
+   "pair": "colemak-dh vs graphite",
+   "margin": 0.4136309876837754,
+   "m_over_floor": 1.4240983853516724,
+   "sigma": 0.7407159317168397,
+   "LOS_design": 0.010173118007910405,
+   "LOS_valid": 0.3056000937082693
+  },
+  {
+   "pair": "colemak-dh vs semimak",
+   "margin": 1.1538878499307612,
+   "m_over_floor": 3.9727435150956083,
+   "sigma": 0.4814867431911929,
+   "LOS_design": 3.5472280472692193e-14,
+   "LOS_valid": 0.02355834135357799
+  },
+  {
+   "pair": "colemak-dh vs dvorak",
+   "margin": 3.6089153523030904,
+   "m_over_floor": 12.42520671593118,
+   "sigma": 0.7157157078928272,
+   "LOS_design": 1.5394196483539783e-31,
+   "LOS_valid": 3.0255171147229233e-05
+  },
+  {
+   "pair": "colemak-dh vs qwerty",
+   "margin": -4.964724354695202,
+   "m_over_floor": 17.093148598051446,
+   "sigma": 2.171716161081852,
+   "LOS_design": 1.0,
+   "LOS_valid": 0.9837021096230858
+  },
+  {
+   "pair": "graphite vs semimak",
+   "margin": 0.7402568622469857,
+   "m_over_floor": 2.548645129743935,
+   "sigma": 0.6882025056859405,
+   "LOS_design": 1.3350432049497482e-13,
+   "LOS_valid": 0.16693013908107596
+  },
+  {
+   "pair": "graphite vs dvorak",
+   "margin": 3.195284364619315,
+   "m_over_floor": 11.001108330579509,
+   "sigma": 0.7632536434100984,
+   "LOS_design": 8.385316134131365e-35,
+   "LOS_valid": 0.00024793854527218695
+  },
+  {
+   "pair": "graphite vs qwerty",
+   "margin": -5.378355342378978,
+   "m_over_floor": 18.517246983403123,
+   "sigma": 1.7430115960528012,
+   "LOS_design": 1.0,
+   "LOS_valid": 0.9972631013915056
+  },
+  {
+   "pair": "semimak vs dvorak",
+   "margin": 2.4550275023723294,
+   "m_over_floor": 8.452463200835574,
+   "sigma": 0.4090982517309274,
+   "LOS_design": 2.653920489989565e-32,
+   "LOS_valid": 5.321969583758473e-06
+  },
+  {
+   "pair": "semimak vs qwerty",
+   "margin": -6.118612204625963,
+   "m_over_floor": 21.065892113147058,
+   "sigma": 2.2918971306818907,
+   "LOS_design": 1.0,
+   "LOS_valid": 0.9930168550351077
+  },
+  {
+   "pair": "dvorak vs qwerty",
+   "margin": -8.573639706998293,
+   "m_over_floor": 29.51835531398263,
+   "sigma": 2.2166097130102744,
+   "LOS_design": 1.0,
+   "LOS_valid": 0.9996114997061016
+  }
+ ],
+ "decided_design": 66,
+ "decided_valid": 49,
+ "sigma_all78": {
+  "min": 0.07848695109342385,
+  "p50": 0.7410467453880535,
+  "max": 2.998000296287825,
+  "mean": 0.9399473396679846
+ }
+}
