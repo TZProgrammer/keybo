@@ -11413,3 +11413,198 @@ Artifacts: `state/tournament/artifacts/{tournament,secondary,g0_parity}.json`, `
 
 🟢 **PROCESS: `tournament`'s pre-push audit CAUGHT that its branch held a 514-line DRIVER commit — pushing the branch would have shipped code, THE EXACT ACCIDENT I MADE EARLIER TODAY. It cherry-picked the 2 ledger commits onto a fresh branch off origin/main instead.** Ledger-only verified (one file, 230 insertions). **Causal order PROVABLE in git: prereg `35ba851` @ 18:13:33 vs first number 18:14:52.** Nothing adopted, `layouts.py` untouched, `data/models/k31/` never written.
 ⚠ **REUSABLE ASSET AT RISK: per-seed (T2, Tc) tables, LAYOUT-INDEPENDENT, 5.0 MB, at `/local/home/zegertho/agent/workspaces/tournament/tables/tables_seed{3..24}.npz` — any future board comparison at n=25 needs ZERO retraining. THEY DIE WITH THE WORKSPACE. Copy to durable storage before reaping (publishing to S3 is user-gated; a local copy is not).**
+
+## SFBPRICE-1 — PREREGISTRATION: IF SAME-FINGER IS PRICED AT THE RAW +63 ms INSTEAD OF THE FITTED +41, DOES THE SEARCH STILL WANT A HIGH-SFB BOARD, AND DOES `candidate` SURVIVE? (registered 2026-08-02, BEFORE any number of mine exists)
+
+Child `sfbprice`, worktree `/local/home/zegertho/repos/keybo-wt-sfbprice`, branch `sfbprice` off `main` @ `cf2ffcb`.
+Brief: PICK2-1's reproduced defect (K31 prices same-finger at **0.651x** the raw timings: raw **+63.00** ms vs model
+**+41.03**, model OUTSIDE the raw bootstrap CI95 [53.00, 73.00]) may mean the campaign's high-sfb cluster (arm-B /
+BALL-1 sfb 2.5391) is an ARTIFACT of a cheap penalty, and that the proposed `candidate` (sfb 1.7365) rests on a
+mispriced objective. ADJUDICATE-1 predicts survival from a STATIC re-pricing (+0.0249 ms/char = ~3% of candidate's
+gap over keybo-lsb). This registers the decision rule for testing that by RE-PRICING and RE-SEARCHING, not by
+re-arithmetic.
+
+### 0. THE PREMISE I WILL TEST FIRST, BECAUSE TWO RIVAL EXPLANATIONS PRODUCE THE SAME 0.651x AND NEITHER IS AN UNDERPRICE
+
+Registered BEFORE measuring, as the thing most likely to overturn my parent's framing. The `pick2` contrast is
+`median(raw) − median(raw)` vs `median(T2) − median(T2)` over POSITION PAIRS at serve bucket 80, MIN_N=30. Three
+mechanisms can produce a model penalty smaller than the raw one, and only the first is a pricing defect:
+
+- **H-PRICE (the brief's reading):** the fitted surface genuinely undercharges same-finger transitions.
+- **H-SHRINK (regression to the mean):** XGBoost with `min_child_weight=6` + shrinkage is a CONDITIONAL MEAN
+  estimator; conditional means are compressed relative to the raw class extremes ON EVERY CONTRAST, not just
+  same-finger. If the model compresses the top-vs-bottom-row contrast, or the alternate-vs-same-hand contrast, by a
+  similar factor, then 0.651x is a property of the ESTIMATOR and "same-finger is 35% too cheap" is a mislabel.
+  **Falsifier, registered:** compute the same raw-vs-model median contrast for ≥3 OTHER partitions of the same 486
+  position pairs (same-hand-vs-alternate, bottom-row-vs-home, dy≥2-vs-dy0, adjacent-vs-not). If same-finger's ratio
+  is INSIDE the spread of the others, H-PRICE is not identified and I will say so in line 1 of my report.
+- **H-AGG (the estimand differs):** the raw median is over PAIRS of per-pair medians of pooled samples, while the
+  model number is a median over PAIRS of a conditional mean of an IQR-mean in LOGRAT space, both unweighted by
+  sample count. Same-finger pairs are 55/486 with 6.0% of the samples, so the two medians are taken over very
+  differently-supported cells. **Falsifier, registered:** recompute the contrast (a) sample-weighted, (b) on
+  matched support (only pairs with n ≥ the same-finger median n), (c) as a within-pair paired difference
+  `raw − model` per pair rather than a difference of medians. If the +63/+41 gap is not stable in sign and rough
+  magnitude across all three, the 0.651x is an aggregation artifact.
+
+**This is not a delay tactic and it does not gate the rest.** I run INVARIANTS A-C regardless, because the adoption
+question ("does the pick change?") is answerable and interesting under EITHER reading. But which of H-PRICE /
+H-SHRINK / H-AGG holds decides whether the correction is a FIX or a STRESS TEST, and I will label it as whichever
+it turns out to be.
+
+### 1. INVARIANT A — the correction, and the proof that it took
+
+**Route (chosen for auditability over elegance):** an EXPLICIT ADDITIVE SURCHARGE on the millisecond surface, applied
+to the bigram half `T2` at exactly the position pairs the model's own `same_finger` feature fires on:
+
+```
+T2'[a,b] = T2[a,b] + DELTA   for all (a,b) with a != b and geometry.same_finger(a[0], b[0])
+DELTA = raw_penalty − model_penalty   (measured, not assumed)
+```
+
+Rationale, stated because it is a choice and not the only one: a retrain with `same_finger` emphasized cannot be
+shown to have hit a TARGET price (the knob is a hyperparameter, the price is an outcome — "present ≠ effective"),
+whereas an additive surcharge is checkable to machine precision by re-running the pick2 contrast on `T2'`. The
+surcharge lands on the bigram term because that is where `same_finger` is a first-class feature and where pick2
+measured the deficit; the trigram increment `Tc` is left untouched and that is a LIMITATION I will report, not hide
+(a same-finger bigram inside a trigram is still charged by `Tc`'s own `bg1_same_finger`/`bg2_same_finger` columns,
+which I do not correct — so my correction is a LOWER BOUND on the full re-pricing).
+
+**PROOF GATES (all must be reported, pass or fail):**
+- **A1 — the price is corrected:** re-run the pick2 contrast on `T2'` and require model penalty within 0.01 ms of
+  the raw +63.00. A number, not an assertion.
+- **A2 — nothing else moved:** exactly `count(same_finger pairs)` cells of `T2` differ from `T2'`, all by exactly
+  DELTA, and every other cell is bit-identical. Asserted on the arrays.
+- **A3 — the surcharge is visible in ms/char:** report each board's ms/char before and after; require the change to
+  equal `DELTA × (same-finger corpus share)` to within float noise — i.e. the surcharge's effect on the objective is
+  ANALYTICALLY predictable, which is the property that makes it auditable.
+- **A4 — the effective price is measured through the SEARCH's own evaluator**, not just the table I edited: the
+  gauge scorer is built by `from_table`, so I verify `GaugeTrigramScorer.parity_rel_dev` and that the search
+  objective's board ordering changes in the direction A3 predicts.
+- **A5 — magnitude sanity:** DELTA is a MEDIAN-CONTRAST correction applied UNIFORMLY to 55/486 pairs. If the raw
+  contrast is heterogeneous across same-finger pairs (e.g. index-column repositions vs pinky reaches), a uniform
+  DELTA overcharges some and undercharges others. I will report the spread of per-pair `raw − model` residuals
+  within the same-finger class, so a reader can see how well one number represents the class.
+
+**Secondary route, run as a robustness arm if time allows and reported as such:** a MULTIPLICATIVE re-pricing
+(`T2'[a,b] = T2[a,b] × raw/model` on the same cells) — same target price, different shape. If B/C conclusions differ
+between additive and multiplicative, the conclusion is shape-dependent and I will say so.
+
+### 2. INVARIANT B — does the search still find a high-sfb board?
+
+**Objective, named explicitly because the default is the wrong one:** `--gauge-objective`, i.e. the REPORTED gauge
+(`T2 + Tcond` over blend-v1, seed-averaged, C30M charset), built through `TableTrigramScorer.from_table` on the
+CORRECTED triple table `T2'[:,:,None] + Tc`. The repo's DEFAULT optimize objective is the bigram table and ranks
+layouts INVERTED to the reported gauge (spearman 0.672); running it would answer a different question. I will state
+in the report which objective every number came from.
+
+**Design (a paired A/B, so the sfb difference is attributable to the price and not to search luck):**
+- N = 12 restart seeds, identical seed set for both arms, `--start` = C30M (`qwerty30m`), SA + 2-opt + 3-opt polish.
+- **ARM-OLD:** search the UNCORRECTED gauge. **ARM-NEW:** search the CORRECTED gauge. Same code, same seeds, same
+  budget; the ONLY difference is the 55 edited cells.
+- **Metric:** `sfb` of the argmin board per arm, computed by `kmstats.KmStats.stats()[’sfb’]` (the same estimator
+  that produced 2.5391 / 1.7365, so my numbers are commensurable with the ledger's). Report the full per-seed
+  distribution, not just the best.
+
+**REGISTERED DECISION RULE for "is the cluster an artifact":**
+- **ARTIFACT** if `median(sfb | ARM-NEW)` falls below `min(sfb | ARM-OLD)` AND the ARM-NEW distribution excludes the
+  2.539 region entirely — i.e. correcting the price makes the search stop wanting high sfb.
+- **REAL** if the ARM-NEW sfb distribution overlaps ARM-OLD's and still reaches ≥ 2.0 — the search wants a high-sfb
+  board even when charged the raw price.
+- **PARTIAL** anything else, reported as a shift with the magnitude quoted (Δmedian sfb and the direction).
+- 🔴 **Registered in advance, because it is the most likely outcome and the easiest to over-read:** a DOWNWARD shift
+  in searched sfb is the MECHANICALLY GUARANTEED direction of any positive surcharge on same-finger cells. Finding
+  it confirms only that my arithmetic works. The falsifiable content is the MAGNITUDE — whether the shift is large
+  enough to leave the 2.539 cluster, and whether it lands at or below `candidate`'s 1.7365.
+- 🔴 **Registered negative control against my own search:** the ARM-OLD argmin must land in the known plateau
+  (ms/char within ~0.5 of the field's 253.9-254.1 under the shipped surface). If ARM-OLD cannot reproduce the
+  known optimum region, my search is not calibrated and NO sfb number from either arm is reportable.
+
+### 3. INVARIANT C — the 1v1, with a floor I measure myself
+
+**Field (13 boards, EXACTLY the TOURNAMENT-1 field, strings verified against `_guard.py` on branch `tournament` and
+the registry — NOT transcribed from my brief):** arm-B, BALL-1, F(2.5), F(2.0), candidate, keybo-lsb, flagship-c3,
+colemak, colemak-dh (registry-pinned variant), graphite, semimak, dvorak, qwerty. Plus keybo-c30m and keybo-lsb+lm
+as brief-named extras, reported separately so the 13-board matrix stays comparable to TOURNAMENT-1.
+
+**Instrument:** the 22 rescued layout-independent `(T2, Tc)` tables at
+`/local/home/zegertho/agent/state/keybo-optimization/artifacts/seed-tables/tables_seed{3..24}.npz` plus the 3
+shipped seeds = n=25, ZERO retraining. Paired per-seed margins (MOR-FIX-1): `margin(A,B) = mean_s[x_s(A) − x_s(B)]`,
+never a mean of ratios.
+
+**MY OWN FLOOR — and it must be a DIFFERENT floor from tournament's 0.2921, because my comparison design differs.**
+The floor is a property of the design, and mine introduces a knob tournament's did not: DELTA is ESTIMATED from
+data, so its sampling error propagates into every corrected margin. I therefore measure TWO floors and report both:
+- **FLOOR-S (split-half same-board placebo), for continuity with TOURNAMENT-1:** partition the 25 seeds into two
+  disjoint halves of 12, same board both sides, |mean(H1) − mean(H2)|; 2000 partitions × field. Truth is exactly 0
+  by construction. p90 = the floor. I expect this to land near 0.29 and if it does NOT I have a discrepancy to
+  report against tournament.
+- 🟢 **FLOOR-D (the floor this design actually needs — NEW, and the reason I do not borrow):** bootstrap DELTA
+  itself (resampling position pairs, exactly as pick2 bootstrapped the raw penalty), rebuild the corrected surface
+  per bootstrap draw, and recompute the `candidate` vs `keybo-lsb` corrected margin. The spread of the CORRECTED
+  margin under DELTA's own uncertainty is the resolution of any claim of the form "the corrected price does/doesn't
+  flip the pick". A corrected-margin shift smaller than this is not a result. **Nobody in this campaign has measured
+  this floor, and it is the one that gates my headline.**
+
+**REPORTING ORDER, non-negotiable per TOURNAMENT-1's lesson (21/30 cleared Holm with every margin below the floor):**
+for every pair I report `|margin| vs floor` FIRST and the p-value SECOND. A Holm-significant p on a sub-floor margin
+is recorded as `TIED`, not as a win.
+
+**REGISTERED VERDICT RULE for `candidate` SURVIVES:**
+- **SURVIVES** iff under the CORRECTED price (a) no board in the field beats `candidate` with a margin ≥ FLOOR-S that
+  is also ≥ FLOOR-D, and (b) `candidate` still beats `keybo-lsb` by ≥ both floors with ≥20/25 signs.
+- **DOES NOT SURVIVE** if some board beats it above both floors, OR if the `candidate`-vs-`keybo-lsb` margin drops
+  below either floor (the pick would then be inside the tie, and "propose candidate" would be a judgement with no
+  measured support over the published flagship).
+- Reported either way with the numbers, and with the ARM-NEW searched board added to the field as a 14th entry so
+  the question "does the corrected search find something that beats candidate" gets a measured answer.
+
+**High-wpm gate:** honored where it applies (it grades a MODEL against a baseline per wpm bucket; my correction is a
+post-hoc surface edit, not a retrain, so the gate's own `_per_bucket_rho` path is only reachable for the retrain arm
+if I run one). I will read the `support` dict and, per GATESUPPORT-1, if a refusal comes ONLY from azerty b120
+(64 cells / 23 participants — the cell that refuses the SHIPPED geometry) I will report it as instability, not as a
+verdict on my change.
+
+### 4. INVARIANT D — the two questions, kept separate
+
+Reported as two independent lines, never collapsed:
+- **D1 (the OBJECTIVE question):** does correcting the price change WHAT THE SEARCH FINDS? Answered by §2.
+- **D2 (the ADOPTION question):** does correcting the price change WHICH EXISTING BOARD WINS? Answered by §3.
+Registered prediction, so I cannot claim either outcome as expected after the fact: **D1 = YES (shifted), D2 = NO
+(pick unaffected)** — mechanically, because a uniform surcharge on same-finger cells is a monotone penalty in sfb,
+and `candidate` already carries the LOWEST sfb of the tied cluster, so the surcharge can only help it against the
+cluster; the only board it can lose to is `keybo-lsb` (sfb 1.6231, LOWER than candidate's 1.7365), and closing a
+0.60-0.91 ms/char gap needs the surcharge to be worth ~0.7 ms/char, which at a 0.11 pp sfb difference requires a
+per-pp price ~6.3 ms/char — i.e. ~5-7x PRICEBAND-1's measured in-band +0.9022/+1.3439. **If D2 comes back YES I
+have refuted my own prediction and that is the headline.**
+
+### 5. INVARIANT E — the negative control
+
+**E1 (the load-bearing one):** with DELTA set to 0 my corrected pipeline must reproduce a PUBLISHED number
+bit-for-bit or to float noise. Specifically: TOURNAMENT-1's `tournament.json` per-seed `mspc["all"]` for the 5
+cluster boards over 25 seeds (125 values), and `TimeSurface.card()`'s `ms_per_char` through the SHIPPED code path.
+Target: ≤1e-9 relative. **If E1 fails, no other number in my report is reportable and I will say so instead of
+patching around it.**
+**E2:** the rescued seed tables must reproduce the shipped seeds 0-2 tables I rebuild myself from
+`data/models/k31/` (read-only), so the artifact I inherited is the artifact tournament described.
+**E3:** re-derive PICK2-1's `+63.00 / +41.03 / 0.651x / CI [53,73]` from the raw TSV with my own code before
+correcting anything. If I cannot reproduce it, the defect itself is in question and that supersedes my whole task.
+
+### 6. GATES (each REFUSES rather than degrades)
+
+- **G-D5 (env):** every driver asserts `keybo.__file__` is inside MY worktree and prints the resolved checkout's
+  branch. The shared checkout is on `main` and other agents move it; a naive import measures someone else's branch.
+- **G-THREADS:** all four thread env vars pinned BEFORE importing xgboost.
+- **G-FINITE:** `require_finite` on every score vector and every intersection; an empty set intersection is the
+  documented silent path into a nan cascade (pick2 printed "fastest = qwerty" for 27 boards this way).
+- **G-CHARSET:** every scored board asserted an exact C30M permutation where the table path demands it; the 4
+  non-C30M community boards (qwerty, colemak, colemak-dh, dvorak) are scored through the position-indexed path that
+  TOURNAMENT-1 used, and their charset difference is disclosed with the number.
+- **G-SUPPORT:** any per-pair estimate from fewer than MIN_N=30 raw samples is dropped, matching pick2.
+- **G-SENTINEL:** long runs detached, polled via a sentinel file I create, never a process-name match.
+
+### 7. WHAT I WILL NOT DO
+
+No write to `data/models/k31/`. No edit to `src/keybo/layouts.py`. No layout adopted or promoted. No code pushed.
+No branch merged or deleted. The shared checkout's branch not switched. Ledger commits verified to touch ONLY
+`PREREGISTRATIONS.md` before any push (`git push` pushes the BRANCH, not a commit — the accident my parent made
+today and `tournament` caught by auditing first).
