@@ -98,25 +98,50 @@ log(f"  corr(b_qwerty, b_nonqwerty) = {r_agree:.4f}  rms diff = "
 
 # ============================================== the MEASURED FLOOR: split-half of QWERTY, matched n
 log("MEASURED FLOOR: split-half of the QWERTY data (design-matched, truth = same quantity)")
+# ⚠ THE SPLIT MUST BE OVER SAMPLES WITHIN EACH ROW, NOT OVER ROWS. A StrokeRow is unique per
+# (layout, ngram) -- P1's bijection -- so splitting the ROW LIST gives the two halves DISJOINT
+# ngram sets and `set(b1) & set(b2)` is EMPTY BY CONSTRUCTION. The first version of this driver
+# did exactly that, skipped all 40 splits on its own `len(sh) < 20` guard, and died on
+# np.percentile of an empty list. Splitting each row's SAMPLES keeps every ngram in both halves,
+# which is what "the two halves estimate the SAME quantity" requires.
+import copy as _copy  # noqa: E402
+
 rng = np.random.default_rng(BOOT_SEED)
-NS = 40
+NS = 12          # each split costs 2 b-fits (~23 s); 12 gives a usable floor distribution
 floor_r = []
 floor_rms = []
+
+
+def split_samples(subset, rng):
+    """Two row-lists with the SAME ngrams, each carrying a random half of every row's samples."""
+    h1, h2 = [], []
+    for r in subset:
+        if len(r.samples) < 4:          # too thin to halve into two estimable cells
+            continue
+        idx = rng.permutation(len(r.samples))
+        a, b = idx[: len(idx) // 2], idx[len(idx) // 2:]
+        r1, r2 = _copy.copy(r), _copy.copy(r)
+        r1.samples = [r.samples[j] for j in a]
+        r2.samples = [r.samples[j] for j in b]
+        h1.append(r1)
+        h2.append(r2)
+    return h1, h2
+
+
 for i in range(NS):
-    perm = rng.permutation(len(qrows))
-    h1 = [qrows[j] for j in perm[: len(qrows) // 2]]
-    h2 = [qrows[j] for j in perm[len(qrows) // 2:]]
+    h1, h2 = split_samples(qrows, rng)
     b1, _, _ = fit_b_on(h1, seed=i)
     b2, _, _ = fit_b_on(h2, seed=i)
     sh = sorted(set(b1) & set(b2))
     if len(sh) < 20:
+        log(f"  split {i}: SKIPPED, only {len(sh)} shared ngrams")
         continue
     a = np.array([b1[n] for n in sh])
     bb = np.array([b2[n] for n in sh])
     floor_r.append(float(np.corrcoef(a, bb)[0, 1]))
     floor_rms.append(float(np.sqrt(((bb - a) ** 2).mean())))
-    if i < 3 or i == NS - 1:
-        log(f"  split {i}: n_shared={len(sh)} corr={floor_r[-1]:.4f} rms={floor_rms[-1]:.6f}")
+    log(f"  split {i}: n_shared={len(sh)} corr={floor_r[-1]:.4f} rms={floor_rms[-1]:.6f}")
+assert floor_r, "FLOOR EMPTY -- every split was skipped; refusing to publish a floorless comparison"
 floor_r = np.array(floor_r)
 floor_rms = np.array(floor_rms)
 out["measured_floor_split_half_qwerty"] = {
