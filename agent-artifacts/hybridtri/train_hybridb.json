@@ -1,0 +1,97 @@
+{
+ "stamp": "2026-07-05.3+hybrid-b.1",
+ "seeds": [
+  0,
+  1,
+  2
+ ],
+ "models": {
+  "0": {
+   "path": "/tmp/hybridtri_wk/models/hybridb_mono_seed0.json",
+   "stamp": "2026-07-05.3+hybrid-b.1",
+   "n_columns": 18,
+   "interp_frame": {
+    "frame": "hybrid-b",
+    "monotone_constraints": [
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     -1,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ]
+   },
+   "target_space": "LOGRAT"
+  },
+  "1": {
+   "path": "/tmp/hybridtri_wk/models/hybridb_mono_seed1.json",
+   "stamp": "2026-07-05.3+hybrid-b.1",
+   "n_columns": 18,
+   "interp_frame": {
+    "frame": "hybrid-b",
+    "monotone_constraints": [
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     -1,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ]
+   },
+   "target_space": "LOGRAT"
+  },
+  "2": {
+   "path": "/tmp/hybridtri_wk/models/hybridb_mono_seed2.json",
+   "stamp": "2026-07-05.3+hybrid-b.1",
+   "n_columns": 18,
+   "interp_frame": {
+    "frame": "hybrid-b",
+    "monotone_constraints": [
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     -1,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ]
+   },
+   "target_space": "LOGRAT"
+  }
+ }
+}
