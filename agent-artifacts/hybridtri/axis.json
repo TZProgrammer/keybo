@@ -1,0 +1,196 @@
+{
+ "prereg": "agent-artifacts/hybridtri/HYBRIDTRI-preregistration.md @ 5a5d3c3 \u00a76",
+ "pair": [
+  "flagship-c3",
+  "graphite"
+ ],
+ "wpm": 90.0,
+ "resolution_axis": {
+  "served bigram (20c)": {
+   "n_cells": 961,
+   "n_columns": 20,
+   "order": 2,
+   "n_positions": 31,
+   "includes_space": true,
+   "tol": 0.0,
+   "distinct_feature_rows": 765,
+   "resolution": 0.7960457856399584,
+   "collapsed_cells": 380,
+   "collapsed_share": 0.39542143600416235,
+   "mass_share_collapsed": 0.39542143600416235,
+   "largest_group": 4,
+   "weighted": false,
+   "floor_wmae": null,
+   "floor_wmae_at_group_mean": null,
+   "floor_wrmse": null,
+   "floor_umae": null,
+   "floor_umae_at_group_mean": null,
+   "target_is_self_generated": false,
+   "groups_with_target_spread": null,
+   "n_collapse_groups": null,
+   "max_group_target_spread": null
+  },
+  "served trigram (46c)": {
+   "n_cells": 29791,
+   "n_columns": 46,
+   "order": 3,
+   "n_positions": 31,
+   "includes_space": true,
+   "tol": 0.0,
+   "distinct_feature_rows": 28006,
+   "resolution": 0.9400825752744117,
+   "collapsed_cells": 3570,
+   "collapsed_share": 0.11983484945117653,
+   "mass_share_collapsed": 0.11983484945117653,
+   "largest_group": 2,
+   "weighted": false,
+   "floor_wmae": null,
+   "floor_wmae_at_group_mean": null,
+   "floor_wrmse": null,
+   "floor_umae": null,
+   "floor_umae_at_group_mean": null,
+   "target_is_self_generated": false,
+   "groups_with_target_spread": null,
+   "n_collapse_groups": null,
+   "max_group_target_spread": null
+  }
+ },
+ "resolution_axis_verdict": {
+  "trigram_resolution": 0.9400825752744117,
+  "bigram_resolution": 0.7960457856399584,
+  "trigram_is_worse_on_resolution": false,
+  "trigram_largest_group": 2,
+  "bigram_largest_group": 4
+ },
+ "splitpairs_axis": {
+  "T2 (served bigram, 20c)": {
+   "n_columns": 20,
+   "gap_ms_per_char": 0.9981034921613343,
+   "N1_splitpairs_raw": 7,
+   "N1_conflict_mass_ms": 0.17429034022367934,
+   "N2_pair_opportunities": 17,
+   "N2_conflicts_per_opportunity": 0.4117647058823529,
+   "N3_total_abs_attrib_ms": 1.5920600005809982,
+   "N3_conflict_mass_share_of_abs": 0.10947473095239797,
+   "N3_conflict_mass_share_of_gap": 0.1746215112886379,
+   "n_groups": 4,
+   "top_pairs": [
+    {
+     "a": "bottom",
+     "b": "top",
+     "ms_a": 0.745312201464654,
+     "ms_b": -0.04590348656210329,
+     "conflict_ms": 0.04590348656210329
+    },
+    {
+     "a": "lateral",
+     "b": "ring",
+     "ms_a": -0.1362065864509128,
+     "ms_b": 0.04328076547504706,
+     "conflict_ms": 0.04328076547504706
+    },
+    {
+     "a": "lateral",
+     "b": "pinky",
+     "ms_a": -0.1362065864509128,
+     "ms_b": 0.03527796374206967,
+     "conflict_ms": 0.03527796374206967
+    },
+    {
+     "a": "lateral",
+     "b": "middle",
+     "ms_a": -0.1362065864509128,
+     "ms_b": 0.030152536061109684,
+     "conflict_ms": 0.030152536061109684
+    },
+    {
+     "a": "home",
+     "b": "top",
+     "ms_a": 0.014196764153890049,
+     "ms_b": -0.04590348656210329,
+     "conflict_ms": 0.014196764153890049
+    },
+    {
+     "a": "index",
+     "b": "lateral",
+     "ms_a": 0.0050342545746205215,
+     "ms_b": -0.1362065864509128,
+     "conflict_ms": 0.0050342545746205215
+    }
+   ]
+  },
+  "Tcond (served trigram, 46c)": {
+   "n_columns": 46,
+   "gap_ms_per_char": 2.1953401540909567,
+   "N1_splitpairs_raw": 51,
+   "N1_conflict_mass_ms": 3.046478541228924,
+   "N2_pair_opportunities": 99,
+   "N2_conflicts_per_opportunity": 0.5151515151515151,
+   "N3_total_abs_attrib_ms": 4.246085801979346,
+   "N3_conflict_mass_share_of_abs": 0.7174792699216733,
+   "N3_conflict_mass_share_of_gap": 1.387702281831767,
+   "n_groups": 25,
+   "top_pairs": [
+    {
+     "a": "bg1_bottom",
+     "b": "bg1_top",
+     "ms_a": -0.23365590217135077,
+     "ms_b": 0.40639856935133284,
+     "conflict_ms": 0.23365590217135077
+    },
+    {
+     "a": "bg1_bottom",
+     "b": "bg2_bottom",
+     "ms_a": -0.23365590217135077,
+     "ms_b": 0.7381605097234633,
+     "conflict_ms": 0.23365590217135077
+    },
+    {
+     "a": "bg1_bottom",
+     "b": "bg2_bottom",
+     "ms_a": -0.23365590217135077,
+     "ms_b": 0.7381605097234633,
+     "conflict_ms": 0.23365590217135077
+    },
+    {
+     "a": "bg1_index",
+     "b": "bg1_pinky",
+     "ms_a": 0.1932561975365651,
+     "ms_b": -0.1676152799055978,
+     "conflict_ms": 0.1676152799055978
+    },
+    {
+     "a": "bg1_distance",
+     "b": "bg2_distance",
+     "ms_a": 0.2538869358303682,
+     "ms_b": -0.12500916840646475,
+     "conflict_ms": 0.12500916840646475
+    },
+    {
+     "a": "bg1_dx",
+     "b": "bg2_distance",
+     "ms_a": 0.387404853005262,
+     "ms_b": -0.12500916840646475,
+     "conflict_ms": 0.12500916840646475
+    }
+   ]
+  }
+ },
+ "splitpairs_axis_verdict": {
+  "N1_trigram_worse": true,
+  "N1_ratio": 7.285714285714286,
+  "N2_trigram_worse": true,
+  "N2_ratio": 1.251082251082251,
+  "N3_trigram_worse_vs_abs": true,
+  "N3_ratio_vs_abs": 6.5538345121272705,
+  "N3_trigram_worse_vs_gap": true,
+  "REGISTERED_trigram_worst_on_splitpairs": true
+ },
+ "H_D": {
+  "registered": "split-pairs YES, resolution NO",
+  "splitpairs_yes": true,
+  "resolution_no": true,
+  "holds": true
+ },
+ "what_to_build": "TOOL: grouped/Owen-Shapley attribution over blocks"
+}
