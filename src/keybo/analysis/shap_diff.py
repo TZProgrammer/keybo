@@ -93,14 +93,11 @@ import xgboost as xgb
 from keybo.analysis.timecard import TimeSurface, default_surface
 from keybo.features import (
     bigram_features_from_positions,
-    interp_features_from_positions,
-    interp_wpm_features_from_positions,
     trigram_features_from_positions,
 )
+from keybo.features.ngram import replacement_frame
 from keybo.features.schema import (
     BIGRAM_FEATURE_NAMES,
-    BIGRAM_INTERP_FEATURE_NAMES,
-    BIGRAM_INTERP_WPM_FEATURE_NAMES,
     TRIGRAM_FEATURE_NAMES,
 )
 from keybo.models.xgboost_model import XGBoostTypingModel
@@ -137,7 +134,16 @@ CHANNELS = ("t2", "tcond", "both")
 #: ``"interp-wpm"`` is the 11-column pace-adapting variant: the same ten mechanistic columns with
 #: ``wpm`` restored. It CANNOT reach CONSTFRAC == 0 (``wpm`` is constant on any fixed-WPM serve
 #: grid, so TreeSHAP can credit it again) and exists to price that trade against the high-wpm gate.
-FRAMES = ("served", "interp", "interp-wpm")
+FRAMES = ("served", "interp", "interp-wpm", "hybridb")
+
+#: ``FRAMES`` name -> the ``interp`` flag value ``keybo.features.ngram.replacement_frame`` wants.
+#: One mapping, so a frame's builder / name list / stamp here are the SAME objects training fitted
+#: with rather than a parallel spelling of them.
+_REPLACEMENT_BY_FRAME_NAME: dict[str, object] = {
+    "interp": True,
+    "interp-wpm": "wpm",
+    "hybridb": "hybridb",
+}
 
 #: Column -> (block, sub-block) for the served BIGRAM frame. Blocks are the primary reporting
 #: unit; the bigram frame's blocks are atomic (no second level) because they are already only
@@ -191,6 +197,42 @@ _INTERP_BLOCKS: dict[str, tuple[str, str]] = {
 #: OWN one-column block precisely so its (artifactual) credit is never mixed into a mechanism block.
 _INTERP_WPM_BLOCKS: dict[str, tuple[str, str]] = {**_INTERP_BLOCKS, "wpm": ("WPM", "")}
 
+#: Column -> (block, sub-block) for HYBRIDB-1's 18-column frame. Registered before any hybrid-B
+#: attribution number existed (HYBRIDB-1 §3), because :func:`block_map` refuses an unknown frame.
+#:
+#: ⚠ THE PARTITION IS THE MEASUREMENT HERE, so the choice is stated rather than assumed. hybrid-B
+#: carries interp.1's ordinal summary of a property BESIDE the served one-hots that ordinal was
+#: built to replace — ``bottom_bias`` with ``{bottom, home, top}``, ``finger_load`` and
+#: ``off_home_column`` with ``{pinky, ring, middle, index, lateral}``. Two partitions were
+#: available and they answer different questions:
+#:
+#:   (a) keep interp.1's four mechanism blocks and give the one-hots their own ``ROW``/``FINGER``
+#:       blocks (the served frame's names). Then a block sum is NOT invariant to redistribution
+#:       between an ordinal and its one-hots, which is exactly the non-uniqueness blocks exist to
+#:       contain — the number would move with TreeSHAP's arbitrary split.
+#:   (b) put each ordinal in the SAME block as the one-hots describing the same property. Then a
+#:       block sum IS invariant to that redistribution, at the cost of a wider block.
+#:
+#: (b) is registered, because a block whose sum is not invariant to the leakage it was drawn to
+#: absorb is not a block. The cost is honest and reported: ``ROWCOST`` is 6 columns wide and
+#: ``CONTACT`` 8, against interp.1's uniform 1-3 — i.e. hybrid-B's attribution table hides MORE
+#: than interp.1's, which is the interpretability price of the resolution it buys, made visible in
+#: the partition rather than argued about.
+#:
+#: ``SPAN`` and ``DIRECTION`` are interp.1's verbatim: no added one-hot describes a span or a
+#: direction, so those two blocks are unchanged and stay 3 and 1 columns wide.
+_HYBRIDB_BLOCKS: dict[str, tuple[str, str]] = {
+    # ROWCOST: interp.1's three row ordinals + the served row one-hot they summarise.
+    **{n: ("ROWCOST", "ordinal") for n in ("row_load", "row_arrival", "bottom_bias")},
+    **{n: ("ROWCOST", "onehot") for n in ("bottom", "home", "top")},
+    # CONTACT: interp.1's three contact ordinals + the served finger one-hots.
+    **{n: ("CONTACT", "ordinal") for n in ("hand_conflict", "finger_load", "off_home_column")},
+    **{n: ("CONTACT", "onehot") for n in ("pinky", "ring", "middle", "index", "lateral")},
+    # unchanged from interp.1 -- no added column describes a span or a direction.
+    **{n: ("SPAN", "") for n in ("row_span", "lateral_span", "same_hand_travel")},
+    "roll_inward": ("DIRECTION", ""),
+}
+
 #: Tie-break order for equal-magnitude blocks, so a report reads the same way every run.
 _BLOCK_ORDER = (
     "TRI_LEVEL",
@@ -219,7 +261,13 @@ def block_map(feature_names: Sequence[str]) -> dict[str, tuple[str, str]]:
     knows). A widened frame must be taught to this map on purpose.
     """
     names = list(feature_names)
-    for spec in (_T2_BLOCKS, _TCOND_BLOCKS, _INTERP_BLOCKS, _INTERP_WPM_BLOCKS):
+    for spec in (
+        _T2_BLOCKS,
+        _TCOND_BLOCKS,
+        _INTERP_BLOCKS,
+        _INTERP_WPM_BLOCKS,
+        _HYBRIDB_BLOCKS,
+    ):
         if set(names) == set(spec):
             return {n: spec[n] for n in names}
     raise ValueError(
@@ -823,29 +871,24 @@ def _shap_tables(
     n = len(positions)
     if frame not in FRAMES:
         raise ValueError(f"frame must be one of {FRAMES}, got {frame!r}")
-    if frame in ("interp", "interp-wpm"):
-        # INTERPFRAME-1's 10-column basis, or its 11-column pace-adapting variant. Order 2 only:
-        # both are re-expressions of the BIGRAM columns with no trigram counterpart, so an order-3
-        # request would otherwise featurize with `interp` and assert against the served trigram
-        # list — i.e. fail confusingly instead of stating what is missing.
+    if frame in _REPLACEMENT_BY_FRAME_NAME:
+        # A REPLACEMENT basis: INTERPFRAME-1's 10-column frame, its 11-column pace-adapting
+        # variant, or HYBRIDB-1's 18-column frame. Order 2 only: all are re-expressions of the
+        # BIGRAM columns with no trigram counterpart, so an order-3 request would otherwise
+        # featurize with the bigram builder and assert against the served TRIGRAM list — i.e. fail
+        # confusingly instead of stating what is missing.
         if order != 2:
             raise ValueError(
-                f"frame={frame!r} is a bigram-only frame (INTERPFRAME-1 is a POC on the T2 "
-                f"channel); got order={order}"
+                f"frame={frame!r} is a bigram-only frame (these are POCs on the T2 channel); "
+                f"got order={order}"
             )
-        builder = (
-            interp_wpm_features_from_positions
-            if frame == "interp-wpm"
-            else interp_features_from_positions
+        # Resolved through the ONE registry keybo.training.train fits from, so the frame this
+        # attribution featurizes can never be a different frame than the one that was trained.
+        builder, expected_names, _mono, _stamp, _tag = replacement_frame(
+            _REPLACEMENT_BY_FRAME_NAME[frame]
         )
-        rows = [
-            builder(geometry, (a, b), wpm=target_wpm) for a in positions for b in positions
-        ]
-        expected = list(
-            BIGRAM_INTERP_WPM_FEATURE_NAMES
-            if frame == "interp-wpm"
-            else BIGRAM_INTERP_FEATURE_NAMES
-        )
+        rows = [builder(geometry, (a, b), wpm=target_wpm) for a in positions for b in positions]
+        expected = list(expected_names)
     elif order == 2:
         rows = [
             bigram_features_from_positions(geometry, (a, b), wpm=target_wpm)
@@ -1273,29 +1316,39 @@ def shap_diff(
     # xgboost code path from `pred_contribs` — under the gauge's own weights, so comparing a
     # TreeSHAP-anchored gap against them is a genuine external tie rather than a restatement.
     shipped_t2, shipped_tc = surface._T2, surface._Tc
-    if frame in ("interp", "interp-wpm"):
+    if frame in _REPLACEMENT_BY_FRAME_NAME:
         # ⚠ The T2 anchor must be THE ATTRIBUTED MODEL'S OWN predict()-side table, not
-        # `surface._T2`. An interp model is a different fit, so its table differs from the
-        # production one by a MODEL difference (~ms), not by float32 noise (~1e-5) — anchoring to
-        # the production table would book that model difference as an attribution residual and
+        # `surface._T2`. A replacement-basis model is a different fit, so its table differs from
+        # the production one by a MODEL difference (~ms), not by float32 noise (~1e-5) — anchoring
+        # to the production table would book that model difference as an attribution residual and
         # fail the external bar for a reason that has nothing to do with the attribution. Built
         # from `predict_ms` here, which is the same independent code path the shipped anchor uses,
         # so the external tie stays a genuine cross-check of the TreeSHAP walk.
+        #
+        # ⚠ THE BUILDER MUST BE THE FRAME'S OWN. This site hard-coded the 10-column
+        # `interp_features_from_positions` while its guard admitted `frame="interp-wpm"` too, so an
+        # interp-wpm run would have anchored on a 10-column matrix. `predict_ms` on an 11-column
+        # model raises on the shape, so it was caught-by-luck rather than silent -- the same
+        # luck INTERPFRAME-1 recorded for its own frame-mismatch near-miss, and it would NOT have
+        # held for two frames of equal width. Resolved through the ONE registry now.
         positions = [*geometry.slots, geometry.space_position]
         n_pos = len(positions)
+        anchor_builder = replacement_frame(_REPLACEMENT_BY_FRAME_NAME[frame])[0]
         vecs = np.vstack(
-            [
-                interp_features_from_positions(geometry, (a, b), wpm=target_wpm)
-                for a in positions
-                for b in positions
-            ]
+            [anchor_builder(geometry, (a, b), wpm=target_wpm) for a in positions for b in positions]
         )
-        # `wpm=target_wpm` is REQUIRED here, not optional: the interp frame has no wpm column, so
-        # `to_ms` cannot recover the pace from the matrix and refuses to guess. Passing the SAME
-        # `target_wpm` the features were built at is what keeps this anchor comparable to the
-        # TreeSHAP side, whose ms conversion divides by that same constant.
+        # `wpm=` is passed only when the frame HAS no wpm column: `to_ms` cannot recover the pace
+        # from such a matrix and refuses to guess, and it equally REFUSES an explicit pace when the
+        # column IS present (two sources for one quantity). The condition is "no wpm column", not
+        # "is a replacement frame" -- interp-wpm carries one. Passing the SAME `target_wpm` the
+        # features were built at is what keeps this anchor comparable to the TreeSHAP side, whose
+        # ms conversion divides by that same constant.
+        needs_wpm = "wpm" not in replacement_frame(_REPLACEMENT_BY_FRAME_NAME[frame])[1]
         shipped_t2 = np.mean(
-            [m.predict_ms(vecs, wpm=target_wpm).reshape(n_pos, n_pos) for m in bigram_models],
+            [
+                m.predict_ms(vecs, wpm=target_wpm if needs_wpm else None).reshape(n_pos, n_pos)
+                for m in bigram_models
+            ],
             axis=0,
         )
     norm_true = 1.0 / max(covered_true, 1)

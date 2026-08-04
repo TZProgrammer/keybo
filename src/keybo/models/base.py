@@ -92,11 +92,12 @@ class TypingModel(ABC):
         schema's "wpm" column), so the conversion can never use a different pace than the
         prediction did.
 
-        ``wpm`` overrides that recovery, and exists for the one frame that has NO ``wpm``
+        ``wpm`` overrides that recovery, and exists for the frames that have NO ``wpm``
         column: INTERPFRAME-1's interpretability frame drops it deliberately (it is a CONSTANT
-        column at a fixed scoring WPM, and TreeSHAP credits constants as main effects). For such
-        a model the pace is not recoverable from ``X``, so the caller must state it — which is
-        the honest shape, because the model is only valid at the pace it was trained for.
+        column at a fixed scoring WPM, and TreeSHAP credits constants as main effects), and
+        HYBRIDB-1's 18-column frame inherits that choice. For such a model the pace is not
+        recoverable from ``X``, so the caller must state it — which is the honest shape, because
+        the model is only valid at the pace it was trained for.
 
         ⚠ For a frame that DOES carry ``wpm``, passing this argument is REFUSED rather than
         honoured: two sources for the same quantity is exactly how a prediction ends up converted

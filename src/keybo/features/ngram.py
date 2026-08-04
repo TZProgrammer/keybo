@@ -19,9 +19,16 @@ from keybo.features import classify as C
 from keybo.features.schema import (
     BIGRAM_DIRECTION_FEATURE_NAMES,
     BIGRAM_FEATURE_NAMES,
+    BIGRAM_HYBRIDB_FEATURE_NAMES,
+    BIGRAM_HYBRIDB_MONOTONE,
     BIGRAM_INTERP_FEATURE_NAMES,
+    BIGRAM_INTERP_MONOTONE,
     BIGRAM_INTERP_WPM_FEATURE_NAMES,
+    BIGRAM_INTERP_WPM_MONOTONE,
     BIGRAM_KITCHENSINK_FEATURE_NAMES,
+    FEATURE_VERSION_HYBRIDB,
+    FEATURE_VERSION_INTERP,
+    FEATURE_VERSION_INTERP_WPM,
     TRIGRAM_DIRECTION_FEATURE_NAMES,
     TRIGRAM_FEATURE_NAMES,
     TRIGRAM_KITCHENSINK_FEATURE_NAMES,
@@ -307,6 +314,119 @@ def interp_wpm_features_from_positions(
     """
     row = interp_wpm_row_from_positions(geometry, positions[0], positions[1], wpm)
     return np.array([row[name] for name in BIGRAM_INTERP_WPM_FEATURE_NAMES], dtype=np.float64)
+
+
+# --- hybrid-B (HYBRIDB-1) -----------------------------------------------------------------
+
+
+def hybridb_row_from_positions(geometry: Geometry, a: Position, b: Position) -> dict[str, float]:
+    """hybrid-B's eighteen features for one ORDERED bigram ``a -> b``.
+
+    interp.1's ten ordinals PLUS the served ROW and FINGER one-hots. Both halves are taken from
+    the EXISTING row builders rather than re-derived — :func:`interp_row_from_positions` for the
+    ordinals and :func:`_placement_row_from_positions` for the one-hots — so a hybrid-B column is
+    provably the SAME quantity the frame it came from carries. Re-spelling ``float(by == 1)`` here
+    would make "hybrid-B contains the served ``bottom`` column" a claim rather than a fact.
+
+    Returns an ordered dict keyed by
+    :data:`~keybo.features.schema.BIGRAM_HYBRIDB_FEATURE_NAMES` exactly (a test pins
+    ``list(row) == the name list``).
+
+    ⚠ There is NO ``wpm`` key, for the same reason interp.1 has none — so, like interp.1, a model
+    on this frame cannot span a WPM range and the LOGRAT->ms conversion cannot recover the pace
+    from the matrix. Callers must state it.
+    """
+    row = interp_row_from_positions(geometry, a, b)
+    placement = _placement_row_from_positions(geometry, a, b)
+    for name in BIGRAM_HYBRIDB_FEATURE_NAMES:
+        if name not in row:
+            # KeyError-by-construction if the schema's one-hot list ever names a column
+            # ``_placement_row_from_positions`` does not build. Explicit, because the silent
+            # version (``placement.get(name, 0.0)``) would emit a zero column that reads as a
+            # measured feature.
+            row[name] = placement[name]
+    return row
+
+
+def hybridb_features_from_positions(
+    geometry: Geometry, positions: tuple[Position, Position], wpm: float = 0.0
+) -> np.ndarray:
+    """hybrid-B feature vector from recorded key positions (training AND serving path).
+
+    ``wpm`` is accepted and IGNORED, exactly as :func:`interp_features_from_positions` does it and
+    for the same reason: every caller in the training and attribution stack passes ``wpm=``, and a
+    frame that could not drop into those call sites would have to be threaded through a second code
+    path — which is how a frame ends up featurized differently at train and at serve time.
+    """
+    del wpm  # not a column in this frame (see schema); accepted for call-shape parity only
+    row = hybridb_row_from_positions(geometry, positions[0], positions[1])
+    return np.array([row[name] for name in BIGRAM_HYBRIDB_FEATURE_NAMES], dtype=np.float64)
+
+
+def hybridb_features(layout: Layout, bigram: str, wpm: float = 0.0) -> np.ndarray:
+    """hybrid-B feature vector for a bigram on a layout."""
+    return hybridb_features_from_positions(
+        layout.geometry, (layout.pos(bigram[0]), layout.pos(bigram[1])), wpm
+    )
+
+
+# --- the REPLACEMENT-basis frame registry -------------------------------------------------
+#
+# ``direction`` and ``kitchensink`` WIDEN the served frame; the frames below REPLACE it, and are
+# selected by the string-or-bool ``interp`` flag threaded through training and validation.
+#
+# Resolved in ONE place because the four things that must agree — the builder, the name list, the
+# monotone tuple and the version stamp — were previously re-derived at each of three call sites by
+# a chain of ``if interp == "wpm"`` tests. Two of these frames differ by a SINGLE column, so a
+# wrong pick at one site produces a plausible-looking number rather than an error; the guard in
+# ``keybo.training.validate._predict_cells`` exists because exactly that happened once and surfaced
+# only as an xgboost shape error, which was luck. A dict makes the four values impossible to
+# desynchronize and makes an unknown flag a KeyError at the boundary instead of a silent fallback
+# to the 10-column frame.
+_REPLACEMENT_FRAMES: dict[object, tuple] = {
+    True: (
+        interp_features_from_positions,
+        BIGRAM_INTERP_FEATURE_NAMES,
+        BIGRAM_INTERP_MONOTONE,
+        FEATURE_VERSION_INTERP,
+        "interp",
+    ),
+    "wpm": (
+        interp_wpm_features_from_positions,
+        BIGRAM_INTERP_WPM_FEATURE_NAMES,
+        BIGRAM_INTERP_WPM_MONOTONE,
+        FEATURE_VERSION_INTERP_WPM,
+        "interp-wpm",
+    ),
+    "hybridb": (
+        hybridb_features_from_positions,
+        BIGRAM_HYBRIDB_FEATURE_NAMES,
+        BIGRAM_HYBRIDB_MONOTONE,
+        FEATURE_VERSION_HYBRIDB,
+        "hybrid-b",
+    ),
+}
+
+#: The legal values of the ``interp`` flag, ``False`` (the served frame) excluded.
+REPLACEMENT_FRAME_FLAGS = tuple(_REPLACEMENT_FRAMES)
+
+
+def replacement_frame(interp) -> tuple:
+    """``(builder, names, monotone, version_stamp, tag)`` for one ``interp`` flag value.
+
+    ``interp=True`` selects INTERPFRAME-1's 10-column frame, ``"wpm"`` its 11-column pace-adapting
+    variant, ``"hybridb"`` HYBRIDB-1's 18-column frame. ``False`` is NOT a member: the served frame
+    is not a replacement basis and callers branch on it before reaching here.
+
+    Raises :class:`ValueError` on anything else, listing the legal values — a typo must not resolve
+    to a frame.
+    """
+    if interp is False or interp not in _REPLACEMENT_FRAMES:
+        raise ValueError(
+            f"interp must be False (the served frame) or one of "
+            f"{list(REPLACEMENT_FRAME_FLAGS)!r}; got {interp!r}"
+        )
+    return _REPLACEMENT_FRAMES[interp]
 
 
 def _trigram_level_from_positions(

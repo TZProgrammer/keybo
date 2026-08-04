@@ -181,8 +181,13 @@ def test_shap_diff_refuses_interp_on_the_tcond_channel():
 
 def test_frames_lists_exactly_the_supported_frames():
     """Pinned so a frame cannot be added without a deliberate edit here: every frame needs a
-    block partition, a stamp and a featurizer, and FRAMES is the list a caller reads."""
-    assert FRAMES == ("served", "interp", "interp-wpm")
+    block partition, a stamp and a featurizer, and FRAMES is the list a caller reads.
+
+    ``hybridb`` (HYBRIDB-1) added deliberately: it has a registered block partition
+    (``_HYBRIDB_BLOCKS``), a stamp (``FEATURE_VERSION_HYBRIDB``) and a featurizer resolved through
+    ``keybo.features.ngram.replacement_frame``. This tripwire fired on that edit, which is it
+    working."""
+    assert FRAMES == ("served", "interp", "interp-wpm", "hybridb")
 
 
 # --- the card() bar is SCOPED, not dropped ------------------------------------------------

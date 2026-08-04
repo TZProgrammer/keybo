@@ -72,22 +72,15 @@ import numpy as np
 from keybo.data.strokes import StrokeRow, iqr_average
 from keybo.features import (
     bigram_features_from_positions,
-    interp_features_from_positions,
-    interp_wpm_features_from_positions,
     trigram_features_from_positions,
 )
+from keybo.features.ngram import REPLACEMENT_FRAME_FLAGS, replacement_frame
 from keybo.features.schema import (
     BIGRAM_DIRECTION_FEATURE_NAMES,
     BIGRAM_FEATURE_NAMES,
-    BIGRAM_INTERP_FEATURE_NAMES,
-    BIGRAM_INTERP_MONOTONE,
-    BIGRAM_INTERP_WPM_FEATURE_NAMES,
-    BIGRAM_INTERP_WPM_MONOTONE,
     BIGRAM_KITCHENSINK_FEATURE_NAMES,
     FEATURE_VERSION,
     FEATURE_VERSION_DIRECTION,
-    FEATURE_VERSION_INTERP,
-    FEATURE_VERSION_INTERP_WPM,
     FEATURE_VERSION_KITCHENSINK,
     TRIGRAM_DIRECTION_FEATURE_NAMES,
     TRIGRAM_FEATURE_NAMES,
@@ -131,9 +124,7 @@ def normalize_target_space(target_space: str) -> str:
     """
     normalized = str(target_space).upper()
     if normalized not in _TARGET_SPACES:
-        raise ValueError(
-            f"unknown target_space {target_space!r} (known: {sorted(_TARGET_SPACES)})"
-        )
+        raise ValueError(f"unknown target_space {target_space!r} (known: {sorted(_TARGET_SPACES)})")
     return normalized
 
 
@@ -184,13 +175,16 @@ def _rows_to_examples(
     :data:`TRIGRAM_KITCHENSINK_FEATURE_NAMES`). It implies ``direction``, so the three trainable
     frames are narrow / widened / kitchen-sink and each has its own version stamp.
 
-    ``interp=True`` builds INTERPFRAME-1's 10-column interpretability frame
-    (:data:`BIGRAM_INTERP_FEATURE_NAMES`). Unlike the two flags above it is NOT a widening: it
-    REPLACES the served columns, so it is mutually exclusive with both and bigram-only. ⚠ It has
-    no ``wpm`` column, so the WPM group still selects the TARGET (each group is a separate
-    example at its own observed pace) but no longer appears as an input — which is exactly the
-    constant-column artifact the frame exists to remove, and equally exactly why a model on this
-    frame cannot span a WPM range.
+    ``interp`` selects a REPLACEMENT basis rather than a widening, so it is mutually exclusive
+    with both flags above and is bigram-only. ``True`` = INTERPFRAME-1's 10-column
+    interpretability frame, ``"wpm"`` = its 11-column pace-adapting variant, ``"hybridb"`` =
+    HYBRIDB-1's 18-column frame (interp.1's ordinals + the served row/finger one-hots). The
+    ``interp``-to-frame mapping lives in ONE place, :func:`keybo.features.ngram.replacement_frame`.
+
+    ⚠ Neither ``True`` nor ``"hybridb"`` has a ``wpm`` column, so the WPM group still selects the
+    TARGET (each group is a separate example at its own observed pace) but no longer appears as an
+    input — which is exactly the constant-column artifact those frames exist to remove, and equally
+    exactly why a model on either cannot span a WPM range.
     """
     by_wpm: dict[int, list[int]] = defaultdict(list)
     for wpm, duration, _pid, _hold in row.samples:
@@ -199,15 +193,12 @@ def _rows_to_examples(
     for wpm, durations in by_wpm.items():
         target = _group_target(durations, wpm, target_space)
         if interp:
-            # `interp` is a STRING-OR-TRUE flag, not a plain bool: "wpm" selects the
-            # pace-adapting variant. Compared explicitly so a typo raises rather than silently
-            # selecting the 10-column frame -- the two differ by exactly one column and a wrong
-            # pick would look entirely plausible in the output.
-            builder = (
-                interp_wpm_features_from_positions
-                if interp == "wpm"
-                else interp_features_from_positions
-            )
+            # `interp` is a STRING-OR-TRUE flag, not a plain bool. Resolved through the ONE
+            # registry in keybo.features.ngram so the builder here and the name list / monotone
+            # tuple / version stamp chosen in `_fit_model` cannot disagree, and so an unknown
+            # flag raises rather than silently selecting the 10-column frame -- two of these
+            # frames differ by a single column, so a wrong pick reads as a plausible number.
+            builder = replacement_frame(interp)[0]
             vec = builder(geometry, row.positions, wpm=wpm)
         elif ngram == "bigram":
             vec = bigram_features_from_positions(
@@ -366,10 +357,12 @@ def _train(
     **params,
 ) -> XGBoostTypingModel:
     target_space = normalize_target_space(target_space)
-    if interp not in (False, True, "wpm"):
+    if interp is not False and interp not in REPLACEMENT_FRAME_FLAGS:
         raise ValueError(
-            f"interp must be False, True (the 10-column frame) or 'wpm' (the 11-column "
-            f"pace-adapting variant); got {interp!r}"
+            f"interp must be False (the served frame) or one of "
+            f"{list(REPLACEMENT_FRAME_FLAGS)!r}: True = INTERPFRAME-1's 10-column frame, "
+            f"'wpm' = its 11-column pace-adapting variant, 'hybridb' = HYBRIDB-1's 18-column "
+            f"frame; got {interp!r}"
         )
     if interp:
         # REFUSED, not silently ignored. `interp` REPLACES the served columns rather than widening
@@ -378,12 +371,13 @@ def _train(
         # the wrong matrix.
         if direction or kitchensink:
             raise ValueError(
-                "interp=True REPLACES the served frame (10 columns), so it cannot be combined "
-                "with direction=/kitchensink=, which WIDEN it"
+                f"interp={interp!r} selects a REPLACEMENT basis "
+                f"({replacement_frame(interp)[4]}), so it cannot be combined with "
+                f"direction=/kitchensink=, which WIDEN the served frame"
             )
         if ngram != "bigram":
             raise ValueError(
-                f"interp=True is a bigram-only frame (INTERPFRAME-1 is a T2-channel POC); "
+                f"interp={interp!r} ({replacement_frame(interp)[4]}) is a bigram-only frame; "
                 f"got ngram={ngram!r}"
             )
 
@@ -412,20 +406,22 @@ def _train(
         # (The refusals above already make an illegal combination unreachable; this ordering is
         # what keeps that true if a later flag is added.)
         #
-        # ``interp == "wpm"`` selects the 11-column pace-adapting variant. Resolved ONCE into
-        # ``wide`` and used for the name list, the stamp AND the constraint tuple, so those three
-        # can never disagree — a model stamped ``interp.1`` while carrying the 11-column constraint
-        # tuple would be exactly the train/serve skew the stamp exists to prevent.
-        wide = interp == "wpm"
-        names = BIGRAM_INTERP_WPM_FEATURE_NAMES if wide else BIGRAM_INTERP_FEATURE_NAMES
-        stamp = FEATURE_VERSION_INTERP_WPM if wide else FEATURE_VERSION_INTERP
+        # The name list, the stamp AND the constraint tuple come from ONE registry lookup, so
+        # they can never disagree — a model stamped ``interp.1`` while carrying the 11-column
+        # constraint tuple would be exactly the train/serve skew the stamp exists to prevent, and
+        # it is the same lookup ``_rows_to_examples`` used to pick the builder.
+        _, names, constraints, stamp, _tag = replacement_frame(interp)
         # The monotone constraints ride WITH the frame, because they are part of what the frame
         # CLAIMS: each sign is the mechanism its column name asserts (see BIGRAM_INTERP_MONOTONE).
         # A caller can turn them off to price the constraint itself (INTERPFRAME-1 §5d) -- and
         # `monotone=False` must then be visible in the artifact, or two models with different
         # constraint sets would be indistinguishable after saving.
+        #
+        # ⚠ hybrid-B's tuple is PARTIAL: its ten interp columns are constrained and its eight
+        # added one-hots carry 0 (see BIGRAM_HYBRIDB_MONOTONE for why, and for the registered
+        # consequence that MONOFRAC cannot reach 1.0 on that frame). xgboost reads 0 as
+        # "unconstrained", so a partial tuple is expressed rather than special-cased here.
         if monotone:
-            constraints = BIGRAM_INTERP_WPM_MONOTONE if wide else BIGRAM_INTERP_MONOTONE
             # xgboost maps the tuple to columns POSITIONALLY, so a length mismatch would silently
             # constrain the wrong columns rather than raising.
             assert len(constraints) == len(names), "one constraint per column"
@@ -439,9 +435,7 @@ def _train(
         stamp = FEATURE_VERSION_KITCHENSINK
     elif direction:
         names = (
-            BIGRAM_DIRECTION_FEATURE_NAMES
-            if ngram == "bigram"
-            else TRIGRAM_DIRECTION_FEATURE_NAMES
+            BIGRAM_DIRECTION_FEATURE_NAMES if ngram == "bigram" else TRIGRAM_DIRECTION_FEATURE_NAMES
         )
         stamp = FEATURE_VERSION_DIRECTION
     else:
@@ -516,7 +510,7 @@ def _train(
     # `monotone` flag, so the record cannot drift from the fit.
     frame_tag = (
         {
-            "frame": "interp-wpm" if interp == "wpm" else "interp",
+            "frame": replacement_frame(interp)[4],
             "monotone_constraints": list(params.get("monotone_constraints") or ()),
         }
         if interp
@@ -589,11 +583,18 @@ def train_bigram_model(
     external-project channels) and stamps ``FEATURE_VERSION_KITCHENSINK``. It implies
     ``direction`` and takes precedence over it, so the three model populations stay disjoint.
 
-    ``interp=True`` trains on INTERPFRAME-1's 10-column INTERPRETABILITY frame and stamps
-    ``FEATURE_VERSION_INTERP``. Unlike ``direction``/``kitchensink`` it REPLACES the served
-    columns rather than widening them, so combining it with either is REFUSED, and it applies
-    ``BIGRAM_INTERP_MONOTONE`` unless ``monotone=False`` (which exists to price the constraint
-    itself -- INTERPFRAME-1 §5d -- and is recorded in the artifact).
+    ``interp`` trains on a REPLACEMENT basis and stamps that frame's own version: ``True`` ->
+    INTERPFRAME-1's 10-column frame / ``FEATURE_VERSION_INTERP``, ``"wpm"`` -> its 11-column
+    pace-adapting variant, ``"hybridb"`` -> HYBRIDB-1's 18-column frame /
+    ``FEATURE_VERSION_HYBRIDB``. Unlike ``direction``/``kitchensink`` these REPLACE the served
+    columns rather than widening them, so combining them with either is REFUSED, and each applies
+    its own monotone tuple unless ``monotone=False`` (which exists to price the constraint itself
+    -- INTERPFRAME-1 §5d -- and is recorded in the artifact).
+
+    ⚠ ``interp=1`` selects the ``True`` frame, because ``1 == True`` in Python. Pre-existing
+    behaviour of this string-or-bool flag, noted rather than special-cased: the only values a
+    caller writes are ``False``/``True``/``"wpm"``/``"hybridb"``, and anything outside that set
+    that is not ``1`` raises.
 
     ``progress`` is consumed here (feature-build bar), never forwarded into ``**params`` --
     XGBoost silently ignores unknown keyword params, so a leak would be invisible.

@@ -37,10 +37,9 @@ from scipy.stats import kendalltau, spearmanr
 from keybo.data.strokes import StrokeRow, iqr_average
 from keybo.features import (
     bigram_features_from_positions,
-    interp_features_from_positions,
-    interp_wpm_features_from_positions,
     trigram_features_from_positions,
 )
+from keybo.features.ngram import replacement_frame
 from keybo.geometry import ROW_STAGGERED_30, Geometry
 from keybo.verdicts import HighWpmRegression, bucket_regression_report
 
@@ -565,20 +564,19 @@ def _predict_cells(
     model with the narrow frame relocates the exact train/serve skew the version stamp exists to
     prevent into this harness — so the caller threads it explicitly rather than inferring it.
 
-    ``interp`` selects INTERPFRAME-1's 10-column frame, which has NO ``wpm`` column — so the pace
-    that ``to_ms`` needs is passed EXPLICITLY from each cell's own bucket midpoint (``Cell.wpm``),
-    the same value the served frame would have put in that column. This keeps the per-cell pace
-    identical between frames, which is what makes the two arms' ms errors comparable at all.
+    ``interp`` selects a REPLACEMENT basis (see :func:`keybo.features.ngram.replacement_frame`).
+    Two of them — the 10-column ``interp.1`` and the 18-column ``hybridb`` — have NO ``wpm``
+    column, so the pace that ``to_ms`` needs is passed EXPLICITLY from each cell's own bucket
+    midpoint (``Cell.wpm``), the same value the served frame would have put in that column. This
+    keeps the per-cell pace identical between frames, which is what makes the arms' ms errors
+    comparable at all.
     """
     if interp:
-        # Bound as a no-kwargs closure so the comprehension below stays ONE expression: the interp
+        # Bound as a no-kwargs closure so the comprehension below stays ONE expression: these
         # featurizers take no direction=/kitchensink= (their frames have no widening to select),
-        # and a branch inside the loop would re-test `interp` per cell.
-        _builder = (
-            interp_wpm_features_from_positions
-            if interp == "wpm"
-            else interp_features_from_positions
-        )
+        # and a branch inside the loop would re-test `interp` per cell. Resolved through the ONE
+        # registry, so this cannot select a different frame than train.py fitted.
+        _builder = replacement_frame(interp)[0]
 
         def featurize(g, positions, wpm, direction=False, kitchensink=False):
             del direction, kitchensink  # not selectable on this frame
@@ -780,8 +778,10 @@ def validate(
 ) -> dict:
     """Run the full leave-one-layout-out experiment; returns the report dict.
 
-    ``interp=True`` trains AND evaluates every fold on INTERPFRAME-1's 10-column
-    interpretability frame (``FEATURE_VERSION_INTERP``), with ``monotone`` selecting whether its
+    ``interp`` trains AND evaluates every fold on one REPLACEMENT basis — ``True`` =
+    INTERPFRAME-1's 10-column interpretability frame (``FEATURE_VERSION_INTERP``), ``"wpm"`` its
+    11-column pace-adapting variant, ``"hybridb"`` = HYBRIDB-1's 18-column frame
+    (``FEATURE_VERSION_HYBRIDB``) — with ``monotone`` selecting whether its
     registered constraints are applied. Threaded into the fold model and :func:`_predict_cells`
     together for the same reason ``direction`` is: training and eval must agree on the frame or
     the model is scored on a matrix it was not fitted for. Bigram-only, and ``_train`` refuses

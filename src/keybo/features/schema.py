@@ -366,3 +366,90 @@ BIGRAM_INTERP_WPM_MONOTONE = (*BIGRAM_INTERP_MONOTONE, -1)
 
 #: The FIFTH population's stamp.
 FEATURE_VERSION_INTERP_WPM = f"{FEATURE_VERSION}+interp-wpm.1"
+
+# --- hybrid-B: interp.1's ordinals PLUS the served ROW and FINGER one-hots (HYBRIDB-1) --------
+#
+# The one hybrid EXPLOIT-1 §g singled out and never trained. Its premise is a MEASURED trade, not
+# a hope: interp.1's cost is a FEATURE-RESOLUTION FLOOR (INTERPFRAME-1 §j H3 — ten ordinals index
+# only 378 of 961 position cells, so 817 cells are featurewise IDENTICAL and MUST get the same
+# prediction), and EXPLOIT-1 §g measured which columns buy that resolution back per unit of
+# interpretability lost:
+#
+#   frame                        cols  distinct rows  searchable null space  MAXCORR
+#   served                         20            765                 0.0000   0.9813  (bar: FAIL)
+#   interp.1                       10            378                 3.2565   0.7037  (bar: PASS)
+#   hybrid-A  (+row one-hots)      13            447                 1.4509   0.7037  (bar: PASS)
+#   hybrid-B  (+row+finger)        18            573                 0.9377   0.7079  (bar: PASS)
+#   hybrid-C  (+ALL served)        30            771                 0.0000   0.9813  (bar: FAIL)
+#
+# hybrid-B is the knee: a 71% cut in the searchable null space while still clearing INTERPFRAME-1's
+# registered MAXCORR bar (<= 0.7850). hybrid-C reaches a zero floor only by re-importing the exact
+# ``dx``/``distance`` collinearity interp.1 existed to remove.
+#
+# ⚠ THREE THINGS THIS FRAME IS NOT, stated here because each is a claim a reader would otherwise
+# infer from the table above:
+#
+# 1. **NOT an elimination of the null space.** 0.9377 ms of searchable within-class spread in the
+#    TRUTH remains. EXPLOIT-1's R2 measured that a ZERO-MODEL-ERROR surface on interp.1 is still
+#    exploitable at 2.6x its own floor, so exploitability is a property of the COLLAPSE and a 71%
+#    cut is not a 100% cut. Whether what remains is exploitable is a MEASURED question
+#    (HYBRIDB-1 §5), not one this table answers.
+# 2. **NOT interp.1's interpretability.** interp.1 replaced the ROW and FINGER blocks precisely
+#    because they are the failure modes 1 and 2 of the served frame: ``bottom+home+top == 1`` on
+#    every letter key (exactly collinear, so TreeSHAP's split of their credit is not unique), and
+#    the finger block is not even a one-hot (``lateral`` co-fires with ``index`` at |x|==1 and with
+#    ``pinky`` at |x|==6). Re-admitting them re-admits those defects. hybrid-B keeps the ORDINAL
+#    summaries (``bottom_bias``, ``finger_load``, ``off_home_column``) BESIDE the one-hots they
+#    replaced, so the same physical property is now described twice — which is why its worst
+#    correlated pair is ``off_home_column``/``lateral`` (0.7079) rather than interp.1's
+#    ``hand_conflict``/``same_hand_travel`` (0.7037), and why it carries TWO pairs |r| > 0.7 where
+#    interp.1 carried one.
+# 3. **NOT monotone-complete.** See :data:`BIGRAM_HYBRIDB_MONOTONE`.
+#
+# ⚠ Kept OUT of every list above for the reason ``_BIGRAM_DIRECTION_NAMES`` is: this is a SIXTH
+# model population with its own stamp. It reuses ``_BIGRAM_INTERP_NAMES`` and names eight columns
+# that also appear in ``_BIGRAM_PLACEMENT_NAMES``, but it does NOT extend either list — appending
+# to a shared prefix would silently widen the version-locked served frame.
+
+#: The eight served one-hots hybrid-B adds back, by NAME. Both blocks are quoted from
+#: ``_BIGRAM_PLACEMENT_NAMES`` rather than re-spelled, so a rename there cannot leave this frame
+#: silently referring to columns that no longer exist (a test asserts the containment).
+_HYBRIDB_ROW_ONEHOTS = ["bottom", "home", "top"]
+_HYBRIDB_FINGER_ONEHOTS = ["pinky", "ring", "middle", "index", "lateral"]
+
+#: interp.1's ten ordinals, then the row one-hots, then the finger one-hots. ``wpm`` is ABSENT for
+#: the same reason it is absent from interp.1 (a constant column at a fixed scoring WPM), which
+#: carries the same consequence: a model on this frame is valid at the ONE scoring WPM it was
+#: trained for, and the LOGRAT->ms conversion cannot recover the pace from the matrix, so callers
+#: must state it.
+BIGRAM_HYBRIDB_FEATURE_NAMES = [
+    *_BIGRAM_INTERP_NAMES,
+    *_HYBRIDB_ROW_ONEHOTS,
+    *_HYBRIDB_FINGER_ONEHOTS,
+]
+
+#: Monotone constraint per column of :data:`BIGRAM_HYBRIDB_FEATURE_NAMES`, in the SAME ORDER.
+#:
+#: ⚠ **The ten interp columns keep their constraints; the eight added one-hots are DELIBERATELY
+#: UNCONSTRAINED (0).** Registered in HYBRIDB-1 §1 before measuring, for two reasons that are not
+#: post-hoc:
+#:
+#: 1. ``{bottom, home, top}`` are EXACTLY COLLINEAR (they sum to 1 on every letter key), so any
+#:    sign assignment over all three is self-contradictory — "raise ``bottom``, hold ``home`` and
+#:    ``top`` fixed" is not a reachable perturbation, and a monotone constraint is a statement about
+#:    exactly that perturbation.
+#: 2. ADJ-2 PINKY-MONO measured a constrained **binary indicator** on this repo's data learning
+#:    exactly zero magnitude, and INTERPFRAME-1 §5 explicitly scoped its NON-reproduction of that
+#:    result to *graded geometry* columns. These eight are binary indicators.
+#:
+#: ⚠ **CONSEQUENCE, registered rather than discovered:** ``MONOFRAC`` (the share of attribution
+#: mass on verified-monotone columns) CANNOT reach interp.1's 1.0000 on this frame, and will fall
+#: below INTERPFRAME-1's >= 0.90 bar to the exact extent the eight unconstrained one-hots attract
+#: attribution mass. The FAILURE is structural; the MAGNITUDE is the measurement.
+BIGRAM_HYBRIDB_MONOTONE = (
+    *BIGRAM_INTERP_MONOTONE,
+    *((0,) * (len(_HYBRIDB_ROW_ONEHOTS) + len(_HYBRIDB_FINGER_ONEHOTS))),
+)
+
+#: The SIXTH population's stamp.
+FEATURE_VERSION_HYBRIDB = f"{FEATURE_VERSION}+hybrid-b.1"

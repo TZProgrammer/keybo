@@ -270,5 +270,8 @@ def test_validate_forwards_the_interp_STRING_and_trains_the_right_frame():
 
 
 def test_an_unknown_interp_value_is_REFUSED():
-    with pytest.raises(ValueError, match="interp must be False, True"):
+    # Matches on the LEGAL-VALUE LIST rather than the prose, so adding a frame updates the list
+    # (which is the point of the assertion) without rewriting the regex. `"wmp"` is the realistic
+    # typo: a near-miss of `"wpm"` must NOT fall back to the 10-column frame.
+    with pytest.raises(ValueError, match=r"interp must be False.*'wpm', 'hybridb'"):
         train_bigram_model(_rows(), target_wpm=90.0, geometry=G, interp="wmp", n_estimators=10)
