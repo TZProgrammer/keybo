@@ -94,11 +94,13 @@ from keybo.analysis.timecard import TimeSurface, default_surface
 from keybo.features import (
     bigram_features_from_positions,
     interp_features_from_positions,
+    interp_wpm_features_from_positions,
     trigram_features_from_positions,
 )
 from keybo.features.schema import (
     BIGRAM_FEATURE_NAMES,
     BIGRAM_INTERP_FEATURE_NAMES,
+    BIGRAM_INTERP_WPM_FEATURE_NAMES,
     TRIGRAM_FEATURE_NAMES,
 )
 from keybo.models.xgboost_model import XGBoostTypingModel
@@ -132,7 +134,10 @@ CHANNELS = ("t2", "tcond", "both")
 #: therefore to THAT model's table — not to ``TimeSurface._T2``. Comparing the two frames'
 #: attributions is comparing two explanations of two (nearly identical) surfaces, and the
 #: ``resid_gap_vs_shipped`` / ``resid_table_vs_shipped`` residuals are what price "nearly".
-FRAMES = ("served", "interp")
+#: ``"interp-wpm"`` is the 11-column pace-adapting variant: the same ten mechanistic columns with
+#: ``wpm`` restored. It CANNOT reach CONSTFRAC == 0 (``wpm`` is constant on any fixed-WPM serve
+#: grid, so TreeSHAP can credit it again) and exists to price that trade against the high-wpm gate.
+FRAMES = ("served", "interp", "interp-wpm")
 
 #: Column -> (block, sub-block) for the served BIGRAM frame. Blocks are the primary reporting
 #: unit; the bigram frame's blocks are atomic (no second level) because they are already only
@@ -182,6 +187,10 @@ _INTERP_BLOCKS: dict[str, tuple[str, str]] = {
     "roll_inward": ("DIRECTION", ""),
 }
 
+#: The pace-adapting variant's partition: the same four blocks plus ``WPM``, which is kept as its
+#: OWN one-column block precisely so its (artifactual) credit is never mixed into a mechanism block.
+_INTERP_WPM_BLOCKS: dict[str, tuple[str, str]] = {**_INTERP_BLOCKS, "wpm": ("WPM", "")}
+
 #: Tie-break order for equal-magnitude blocks, so a report reads the same way every run.
 _BLOCK_ORDER = (
     "TRI_LEVEL",
@@ -210,7 +219,7 @@ def block_map(feature_names: Sequence[str]) -> dict[str, tuple[str, str]]:
     knows). A widened frame must be taught to this map on purpose.
     """
     names = list(feature_names)
-    for spec in (_T2_BLOCKS, _TCOND_BLOCKS, _INTERP_BLOCKS):
+    for spec in (_T2_BLOCKS, _TCOND_BLOCKS, _INTERP_BLOCKS, _INTERP_WPM_BLOCKS):
         if set(names) == set(spec):
             return {n: spec[n] for n in names}
     raise ValueError(
@@ -814,22 +823,29 @@ def _shap_tables(
     n = len(positions)
     if frame not in FRAMES:
         raise ValueError(f"frame must be one of {FRAMES}, got {frame!r}")
-    if frame == "interp":
-        # INTERPFRAME-1's 10-column basis. Order 2 only: the frame is a re-expression of the
-        # BIGRAM columns, and there is no trigram counterpart, so an order-3 request would
-        # otherwise featurize with `interp` and assert against the served trigram list — i.e.
-        # fail confusingly instead of stating what is missing.
+    if frame in ("interp", "interp-wpm"):
+        # INTERPFRAME-1's 10-column basis, or its 11-column pace-adapting variant. Order 2 only:
+        # both are re-expressions of the BIGRAM columns with no trigram counterpart, so an order-3
+        # request would otherwise featurize with `interp` and assert against the served trigram
+        # list — i.e. fail confusingly instead of stating what is missing.
         if order != 2:
             raise ValueError(
-                f"frame='interp' is a bigram-only frame (INTERPFRAME-1 is a POC on the T2 "
+                f"frame={frame!r} is a bigram-only frame (INTERPFRAME-1 is a POC on the T2 "
                 f"channel); got order={order}"
             )
+        builder = (
+            interp_wpm_features_from_positions
+            if frame == "interp-wpm"
+            else interp_features_from_positions
+        )
         rows = [
-            interp_features_from_positions(geometry, (a, b), wpm=target_wpm)
-            for a in positions
-            for b in positions
+            builder(geometry, (a, b), wpm=target_wpm) for a in positions for b in positions
         ]
-        expected = list(BIGRAM_INTERP_FEATURE_NAMES)
+        expected = list(
+            BIGRAM_INTERP_WPM_FEATURE_NAMES
+            if frame == "interp-wpm"
+            else BIGRAM_INTERP_FEATURE_NAMES
+        )
     elif order == 2:
         rows = [
             bigram_features_from_positions(geometry, (a, b), wpm=target_wpm)
@@ -1164,19 +1180,19 @@ def shap_diff(
         )
     if frame not in FRAMES:
         raise ValueError(f"frame must be one of {FRAMES}, got {frame!r}")
-    if frame == "interp":
+    if frame in ("interp", "interp-wpm"):
         # Both refusals rather than defaults, because both silent alternatives are wrong in a way
         # that still RECONCILES: defaulting to the shipped bigram models would attribute the
-        # SERVED frame while reporting `frame='interp'`, and decomposing Tcond would mix a
+        # SERVED frame while reporting a non-served frame, and decomposing Tcond would mix a
         # 10-column T2 explanation with a 46-column trigram one under one headline.
         if bigram_models is None:
             raise ValueError(
-                "frame='interp' has no shipped artifact (no data/models/k31 model carries "
-                "FEATURE_VERSION_INTERP), so bigram_models= must be supplied explicitly"
+                f"frame={frame!r} has no shipped artifact (no data/models/k31 model carries "
+                f"an INTERPFRAME stamp), so bigram_models= must be supplied explicitly"
             )
         if channel != "t2":
             raise ValueError(
-                f"frame='interp' is bigram-only (INTERPFRAME-1 is a T2-channel POC); "
+                f"frame={frame!r} is bigram-only (INTERPFRAME-1 is a T2-channel POC); "
                 f"got channel={channel!r} -- use channel='t2'"
             )
     want_t2 = channel in ("t2", "both")
@@ -1257,7 +1273,7 @@ def shap_diff(
     # xgboost code path from `pred_contribs` — under the gauge's own weights, so comparing a
     # TreeSHAP-anchored gap against them is a genuine external tie rather than a restatement.
     shipped_t2, shipped_tc = surface._T2, surface._Tc
-    if frame == "interp":
+    if frame in ("interp", "interp-wpm"):
         # ⚠ The T2 anchor must be THE ATTRIBUTED MODEL'S OWN predict()-side table, not
         # `surface._T2`. An interp model is a different fit, so its table differs from the
         # production one by a MODEL difference (~ms), not by float32 noise (~1e-5) — anchoring to

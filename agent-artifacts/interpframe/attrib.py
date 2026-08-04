@@ -23,7 +23,11 @@ from __future__ import annotations
 import numpy as np
 
 from keybo.analysis.shap_diff import _lmdi_channel, _shap_tables
-from keybo.features import bigram_features_from_positions, interp_features_from_positions
+from keybo.features import (
+    bigram_features_from_positions,
+    interp_features_from_positions,
+    interp_wpm_features_from_positions,
+)
 
 REL_TOL = 1e-9
 ADD_TOL = 1e-5
@@ -80,8 +84,12 @@ def t2_attribution(
     # A different xgboost code path (predict, not pred_contribs) over the same cells and weights.
     positions = [*geometry.slots, geometry.space_position]
     n_pos = len(positions)
-    featurize = interp_features_from_positions if frame == "interp" else bigram_features_from_positions
+    featurize = {
+        "interp": interp_features_from_positions,
+        "interp-wpm": interp_wpm_features_from_positions,
+    }.get(frame, bigram_features_from_positions)
     vecs = np.vstack([featurize(geometry, (a, b), wpm=target_wpm) for a in positions for b in positions])
+    # `wpm=` ONLY for the frame with no wpm column; to_ms refuses it on the other two.
     kw = {"wpm": target_wpm} if frame == "interp" else {}
     own_table = np.mean(
         [m.predict_ms(vecs, **kw).reshape(n_pos, n_pos) for m in models], axis=0

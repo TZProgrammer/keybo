@@ -264,3 +264,63 @@ def test_wpm_is_accepted_and_IGNORED_not_appended():
     hi = interp_features_from_positions(G, ((-4, 3), (2, 1)), wpm=120.0)
     assert len(lo) == 10
     assert np.array_equal(lo, hi)
+
+
+# --- the interp-wpm VARIANT (§11): the same ten columns with wpm restored -------------------
+
+
+def test_the_variant_is_interp_plus_wpm_last():
+    from keybo.features import BIGRAM_INTERP_WPM_FEATURE_NAMES as W
+
+    assert W[:-1] == BIGRAM_INTERP_FEATURE_NAMES
+    assert W[-1] == "wpm"
+    assert len(W) == 11
+
+
+def test_the_variant_constraints_extend_the_base_with_minus_one_for_wpm():
+    """-1 because higher WPM means a shorter inter-key interval; it is the one column whose
+    direction is an identity of the target's own definition, log(ms*wpm/12000)."""
+    from keybo.features import BIGRAM_INTERP_WPM_MONOTONE as WM
+
+    assert WM[:-1] == BIGRAM_INTERP_MONOTONE
+    assert WM[-1] == -1
+
+
+def test_the_variant_has_its_own_FIFTH_stamp():
+    from keybo.features import FEATURE_VERSION_INTERP_WPM as VW
+
+    others = {
+        FEATURE_VERSION,
+        FEATURE_VERSION_DIRECTION,
+        FEATURE_VERSION_KITCHENSINK,
+        FEATURE_VERSION_INTERP,
+    }
+    assert VW not in others
+    assert len({*others, VW}) == 5
+
+
+def test_the_variant_row_is_the_base_row_plus_wpm():
+    from keybo.features import interp_wpm_row_from_positions
+
+    base = interp_row_from_positions(G, (-4, 3), (2, 1))
+    wide = interp_wpm_row_from_positions(G, (-4, 3), (2, 1), wpm=90.0)
+    assert {k: v for k, v in wide.items() if k != "wpm"} == base
+    assert wide["wpm"] == 90.0
+
+
+def test_the_variant_vector_DOES_vary_with_wpm_unlike_the_base():
+    """The whole difference between the two frames, in one assertion."""
+    from keybo.features import interp_wpm_features_from_positions
+
+    lo = interp_wpm_features_from_positions(G, ((-4, 3), (2, 1)), wpm=60.0)
+    hi = interp_wpm_features_from_positions(G, ((-4, 3), (2, 1)), wpm=120.0)
+    assert len(lo) == 11
+    assert not np.array_equal(lo, hi)
+    assert np.array_equal(lo[:-1], hi[:-1])  # only wpm moves
+
+
+def test_the_variant_shares_no_NON_wpm_name_with_a_served_frame():
+    from keybo.features import BIGRAM_INTERP_WPM_FEATURE_NAMES as W
+
+    served = set(BIGRAM_FEATURE_NAMES) | set(TRIGRAM_FEATURE_NAMES)
+    assert (set(W) & served) == {"wpm"}, "only wpm may be shared, and it means the same thing"

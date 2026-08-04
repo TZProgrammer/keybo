@@ -20,6 +20,7 @@ from keybo.features.schema import (
     BIGRAM_DIRECTION_FEATURE_NAMES,
     BIGRAM_FEATURE_NAMES,
     BIGRAM_INTERP_FEATURE_NAMES,
+    BIGRAM_INTERP_WPM_FEATURE_NAMES,
     BIGRAM_KITCHENSINK_FEATURE_NAMES,
     TRIGRAM_DIRECTION_FEATURE_NAMES,
     TRIGRAM_FEATURE_NAMES,
@@ -259,6 +260,19 @@ def interp_row_from_positions(geometry: Geometry, a: Position, b: Position) -> d
     }
 
 
+def interp_wpm_row_from_positions(
+    geometry: Geometry, a: Position, b: Position, wpm: float
+) -> dict[str, float]:
+    """:func:`interp_row_from_positions` plus ``wpm`` — the pace-adapting variant (§11).
+
+    Exists because the 10-column frame's high-wpm cost traces to exactly one dropped column; see
+    :data:`keybo.features.schema.BIGRAM_INTERP_WPM_FEATURE_NAMES` for the trade it makes.
+    """
+    row = interp_row_from_positions(geometry, a, b)
+    row["wpm"] = float(wpm)
+    return row
+
+
 def interp_features_from_positions(
     geometry: Geometry, positions: tuple[Position, Position], wpm: float = 0.0
 ) -> np.ndarray:
@@ -281,6 +295,18 @@ def interp_features(layout: Layout, bigram: str, wpm: float = 0.0) -> np.ndarray
     return interp_features_from_positions(
         layout.geometry, (layout.pos(bigram[0]), layout.pos(bigram[1])), wpm
     )
+
+
+def interp_wpm_features_from_positions(
+    geometry: Geometry, positions: tuple[Position, Position], wpm: float = 0.0
+) -> np.ndarray:
+    """Interp+wpm feature vector from recorded key positions.
+
+    Unlike :func:`interp_features_from_positions`, ``wpm`` is a REAL column here, so the LOGRAT->ms
+    conversion recovers the pace from the matrix exactly as it does on the served frame.
+    """
+    row = interp_wpm_row_from_positions(geometry, positions[0], positions[1], wpm)
+    return np.array([row[name] for name in BIGRAM_INTERP_WPM_FEATURE_NAMES], dtype=np.float64)
 
 
 def _trigram_level_from_positions(

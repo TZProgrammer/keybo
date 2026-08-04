@@ -334,3 +334,35 @@ BIGRAM_INTERP_MONOTONE = (1, 1, 1, 1, 1, 1, 1, 1, 1, -1)
 #: Stamped by anything trained on the interpretability frame — the FOURTH population. Must equal
 #: none of the other three, or ``keybo.models.base``'s load guard could not tell them apart.
 FEATURE_VERSION_INTERP = f"{FEATURE_VERSION}+interp.1"
+
+# --- interp.1 PLUS wpm: the variant that recovers PACE ADAPTATION (INTERPFRAME-1 §11) --------
+#
+# Added AFTER the first result, and why is the whole point. Dropping ``wpm`` is what makes
+# ``CONSTFRAC`` reach 0, and it worked: the -0.0922 ms/char constant-column artifact is gone. But
+# the same drop costs pace adaptation, and the high-wpm non-regression gate REFUSED the 10-column
+# frame STRUCTURALLY in the b100/b120 buckets on all four folds — a cost SRROLL-1's precedent calls
+# "worse than a plain null".
+#
+# So this is the same ten mechanistic columns with ``wpm`` restored, isolating ONE question: is the
+# constant-column artifact the PRICE of pace adaptation, or can a frame have both? It is a
+# genuinely different trade rather than a patch — it trades M2 (which it CANNOT win, by
+# construction: ``wpm`` is constant on any fixed-WPM serve grid) for the high-wpm gate.
+#
+# ⚠ Its existence also sharpens WHOSE defect the artifact is. A column that is constant at SERVE
+# but informative at TRAIN is not a frame defect at all — it is the ATTRIBUTION TOOL crediting a
+# main effect to a column that cannot vary in the population being explained. That is a TOOL fix
+# (report constant columns apart, or attribute over a grid that spans WPM), and INTERPFRAME-1 §9
+# classifies it accordingly rather than claiming the frame solved it.
+_BIGRAM_INTERP_WPM_NAMES = [*_BIGRAM_INTERP_NAMES, "wpm"]
+
+#: interp.1 + ``wpm`` (last, per the convention the other frames follow).
+BIGRAM_INTERP_WPM_FEATURE_NAMES = [*_BIGRAM_INTERP_WPM_NAMES]
+
+#: Constraints for :data:`BIGRAM_INTERP_WPM_FEATURE_NAMES`, in the same order. ``wpm`` gets **-1**:
+#: higher WPM means a shorter inter-key interval, so "faster typist => less time per key" is the
+#: mechanism — and it is the one column here whose direction is not a posture claim but an identity
+#: of the target's own definition (``log(ms*wpm/12000)``).
+BIGRAM_INTERP_WPM_MONOTONE = (*BIGRAM_INTERP_MONOTONE, -1)
+
+#: The FIFTH population's stamp.
+FEATURE_VERSION_INTERP_WPM = f"{FEATURE_VERSION}+interp-wpm.1"

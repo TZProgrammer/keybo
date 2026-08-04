@@ -73,6 +73,7 @@ from keybo.data.strokes import StrokeRow, iqr_average
 from keybo.features import (
     bigram_features_from_positions,
     interp_features_from_positions,
+    interp_wpm_features_from_positions,
     trigram_features_from_positions,
 )
 from keybo.features.schema import (
@@ -80,10 +81,13 @@ from keybo.features.schema import (
     BIGRAM_FEATURE_NAMES,
     BIGRAM_INTERP_FEATURE_NAMES,
     BIGRAM_INTERP_MONOTONE,
+    BIGRAM_INTERP_WPM_FEATURE_NAMES,
+    BIGRAM_INTERP_WPM_MONOTONE,
     BIGRAM_KITCHENSINK_FEATURE_NAMES,
     FEATURE_VERSION,
     FEATURE_VERSION_DIRECTION,
     FEATURE_VERSION_INTERP,
+    FEATURE_VERSION_INTERP_WPM,
     FEATURE_VERSION_KITCHENSINK,
     TRIGRAM_DIRECTION_FEATURE_NAMES,
     TRIGRAM_FEATURE_NAMES,
@@ -195,7 +199,16 @@ def _rows_to_examples(
     for wpm, durations in by_wpm.items():
         target = _group_target(durations, wpm, target_space)
         if interp:
-            vec = interp_features_from_positions(geometry, row.positions, wpm=wpm)
+            # `interp` is a STRING-OR-TRUE flag, not a plain bool: "wpm" selects the
+            # pace-adapting variant. Compared explicitly so a typo raises rather than silently
+            # selecting the 10-column frame -- the two differ by exactly one column and a wrong
+            # pick would look entirely plausible in the output.
+            builder = (
+                interp_wpm_features_from_positions
+                if interp == "wpm"
+                else interp_features_from_positions
+            )
+            vec = builder(geometry, row.positions, wpm=wpm)
         elif ngram == "bigram":
             vec = bigram_features_from_positions(
                 geometry, row.positions, wpm=wpm, direction=direction, kitchensink=kitchensink
@@ -353,6 +366,11 @@ def _train(
     **params,
 ) -> XGBoostTypingModel:
     target_space = normalize_target_space(target_space)
+    if interp not in (False, True, "wpm"):
+        raise ValueError(
+            f"interp must be False, True (the 10-column frame) or 'wpm' (the 11-column "
+            f"pace-adapting variant); got {interp!r}"
+        )
     if interp:
         # REFUSED, not silently ignored. `interp` REPLACES the served columns rather than widening
         # them, so every combination below would produce a frame whose stamp lies about its
@@ -393,15 +411,25 @@ def _train(
         # mutually exclusive and the first matching branch wins, so the most specific goes first.
         # (The refusals above already make an illegal combination unreachable; this ordering is
         # what keeps that true if a later flag is added.)
-        names = BIGRAM_INTERP_FEATURE_NAMES
-        stamp = FEATURE_VERSION_INTERP
+        #
+        # ``interp == "wpm"`` selects the 11-column pace-adapting variant. Resolved ONCE into
+        # ``wide`` and used for the name list, the stamp AND the constraint tuple, so those three
+        # can never disagree — a model stamped ``interp.1`` while carrying the 11-column constraint
+        # tuple would be exactly the train/serve skew the stamp exists to prevent.
+        wide = interp == "wpm"
+        names = BIGRAM_INTERP_WPM_FEATURE_NAMES if wide else BIGRAM_INTERP_FEATURE_NAMES
+        stamp = FEATURE_VERSION_INTERP_WPM if wide else FEATURE_VERSION_INTERP
         # The monotone constraints ride WITH the frame, because they are part of what the frame
         # CLAIMS: each sign is the mechanism its column name asserts (see BIGRAM_INTERP_MONOTONE).
         # A caller can turn them off to price the constraint itself (INTERPFRAME-1 §5d) -- and
         # `monotone=False` must then be visible in the artifact, or two models with different
         # constraint sets would be indistinguishable after saving.
         if monotone:
-            params = {**params, "monotone_constraints": tuple(BIGRAM_INTERP_MONOTONE)}
+            constraints = BIGRAM_INTERP_WPM_MONOTONE if wide else BIGRAM_INTERP_MONOTONE
+            # xgboost maps the tuple to columns POSITIONALLY, so a length mismatch would silently
+            # constrain the wrong columns rather than raising.
+            assert len(constraints) == len(names), "one constraint per column"
+            params = {**params, "monotone_constraints": tuple(constraints)}
     elif kitchensink:
         names = (
             BIGRAM_KITCHENSINK_FEATURE_NAMES
@@ -488,7 +516,7 @@ def _train(
     # `monotone` flag, so the record cannot drift from the fit.
     frame_tag = (
         {
-            "frame": "interp",
+            "frame": "interp-wpm" if interp == "wpm" else "interp",
             "monotone_constraints": list(params.get("monotone_constraints") or ()),
         }
         if interp

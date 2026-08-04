@@ -179,8 +179,10 @@ def test_shap_diff_refuses_interp_on_the_tcond_channel():
         shap_diff(a, b, frame="interp", channel="both", bigram_models=_toy_interp_models(1))
 
 
-def test_frames_lists_exactly_the_two_supported_frames():
-    assert FRAMES == ("served", "interp")
+def test_frames_lists_exactly_the_supported_frames():
+    """Pinned so a frame cannot be added without a deliberate edit here: every frame needs a
+    block partition, a stamp and a featurizer, and FRAMES is the list a caller reads."""
+    assert FRAMES == ("served", "interp", "interp-wpm")
 
 
 # --- the card() bar is SCOPED, not dropped ------------------------------------------------

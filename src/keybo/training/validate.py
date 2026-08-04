@@ -38,6 +38,7 @@ from keybo.data.strokes import StrokeRow, iqr_average
 from keybo.features import (
     bigram_features_from_positions,
     interp_features_from_positions,
+    interp_wpm_features_from_positions,
     trigram_features_from_positions,
 )
 from keybo.geometry import ROW_STAGGERED_30, Geometry
@@ -571,11 +572,17 @@ def _predict_cells(
     """
     if interp:
         # Bound as a no-kwargs closure so the comprehension below stays ONE expression: the interp
-        # featurizer takes no direction=/kitchensink= (its frame has no widening to select), and a
-        # branch inside the loop would re-test `interp` per cell.
+        # featurizers take no direction=/kitchensink= (their frames have no widening to select),
+        # and a branch inside the loop would re-test `interp` per cell.
+        _builder = (
+            interp_wpm_features_from_positions
+            if interp == "wpm"
+            else interp_features_from_positions
+        )
+
         def featurize(g, positions, wpm, direction=False, kitchensink=False):
             del direction, kitchensink  # not selectable on this frame
-            return interp_features_from_positions(g, positions, wpm=wpm)
+            return _builder(g, positions, wpm=wpm)
 
     elif len(cells[0].positions) == 3:
         featurize = trigram_features_from_positions
@@ -608,9 +615,11 @@ def _predict_cells(
                 for c in cells
             ]
         )
-    # The interp frame carries no wpm column, so the pace is stated rather than recovered (and
-    # to_ms REFUSES the argument on any frame that does carry one, so this cannot double up).
-    return model.to_ms(pred, X, np.array([c.wpm for c in cells]) if interp else None)
+    # The 10-column interp frame carries no wpm column, so the pace is stated rather than
+    # recovered. The 'wpm' VARIANT does carry it, and to_ms REFUSES the argument there -- so the
+    # condition is "no wpm column", not "is an interp frame".
+    needs_wpm = "wpm" not in model.metadata.feature_names
+    return model.to_ms(pred, X, np.array([c.wpm for c in cells]) if needs_wpm else None)
 
 
 def _distance(positions) -> float:
@@ -823,7 +832,7 @@ def validate(
             "train_params": dict(train_params or {}),
             "direction": bool(direction),
             "kitchensink": bool(kitchensink),
-            "interp": bool(interp),
+            "interp": interp if isinstance(interp, str) else bool(interp),
             # Recorded even when interp is False, so an arm's config can never be mistaken for
             # another's: `monotone` is inert without `interp`, and a reader must be able to see
             # that from the artifact rather than infer it.
