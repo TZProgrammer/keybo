@@ -1,0 +1,756 @@
+{
+  "layout_a": {
+    "name": "flagship-c3",
+    "layout": "pyou'vgdnmheai.cstrlkjz,-wfbxq"
+  },
+  "layout_b": {
+    "name": "graphite",
+    "layout": "bldwz'foujnrtsgyhaeixqmcvkp,.-"
+  },
+  "corpus": "default",
+  "target_wpm": 90.0,
+  "weighting": "trigram-marginal",
+  "ms_per_char": {
+    "own_support": {
+      "a": 254.97612006596876,
+      "b": 258.16956395111595
+    },
+    "common_support": {
+      "a": 254.97612006596873,
+      "b": 258.16956395111595
+    },
+    "shipped_card": {
+      "a": 254.9761188060974,
+      "b": 258.1695631301549
+    }
+  },
+  "gap": {
+    "total": 3.193443885147218,
+    "t2_bigram_channel": 0.9981034921613627,
+    "tcond_trigram_channel": 2.1953403929858695,
+    "decomposed_share_pct": 31.2547684587027,
+    "sign_convention": "positive = layout_a is faster"
+  },
+  "coverage": {
+    "covered_mass_a": 887147352,
+    "covered_mass_b": 887147352,
+    "covered_mass_common": 887147352,
+    "corpus_total_mass": 1000000000,
+    "pct_a": 88.7147352,
+    "pct_b": 88.7147352,
+    "common_support_is_noop": true,
+    "coverage_cost_ms_per_char": -2.842170943040401e-14
+  },
+  "residuals": {
+    "additivity_log_abs": 3.9651058614254e-07,
+    "log_walk_vs_predict_abs": 3.056944811868911e-08,
+    "cell_lmdi_rel": 1.4560408914322534e-16,
+    "feature_sum_vs_gap_t2_rel": 2.1134318869277818e-14,
+    "channel_split_rel": 4.450009214596511e-15,
+    "gap_vs_shipped_card_abs_ms_per_char": 4.389103196444921e-07,
+    "t2_table_vs_shipped_abs_ms": 3.5637651166098294e-05,
+    "reconciles": true
+  },
+  "contributions": [
+    {
+      "feature": "bottom",
+      "ms_per_char": 0.745312201464654,
+      "favours": "a",
+      "share_of_gap_t2_pct": 74.67283776862689,
+      "log_a": -0.014145014267088085,
+      "log_b": -0.008887395709880818,
+      "log_delta": 0.005257618557207267,
+      "top_bigrams": [
+        {
+          "bigram": "\u2423c",
+          "ms_per_char": 0.15379903715437493
+        },
+        {
+          "bigram": "\u2423f",
+          "ms_per_char": -0.12425580237734671
+        },
+        {
+          "bigram": "\u2423b",
+          "ms_per_char": -0.12030784915747857
+        },
+        {
+          "bigram": "\u2423w",
+          "ms_per_char": -0.11461692214268966
+        },
+        {
+          "bigram": "\u2423p",
+          "ms_per_char": 0.11264922608739508
+        },
+        {
+          "bigram": "\u2423m",
+          "ms_per_char": 0.098584811125814
+        }
+      ]
+    },
+    {
+      "feature": "dx",
+      "ms_per_char": 0.1678204009367888,
+      "favours": "a",
+      "share_of_gap_t2_pct": 16.81392783962501,
+      "log_a": -0.001638047754772508,
+      "log_b": -0.0003939669422472623,
+      "log_delta": 0.0012440808125252457,
+      "top_bigrams": [
+        {
+          "bigram": "th",
+          "ms_per_char": -0.04775780668766307
+        },
+        {
+          "bigram": "in",
+          "ms_per_char": 0.04317530363878663
+        },
+        {
+          "bigram": "en",
+          "ms_per_char": 0.03329194524139249
+        },
+        {
+          "bigram": "an",
+          "ms_per_char": 0.027678000657727266
+        },
+        {
+          "bigram": "it",
+          "ms_per_char": 0.02713408044677274
+        },
+        {
+          "bigram": "me",
+          "ms_per_char": -0.02329119635076604
+        }
+      ]
+    },
+    {
+      "feature": "lateral",
+      "ms_per_char": -0.1362065864509128,
+      "favours": "b",
+      "share_of_gap_t2_pct": -13.64653941406032,
+      "log_a": -0.005314192185573959,
+      "log_b": -0.006262072854120441,
+      "log_delta": -0.000947880668546482,
+      "top_bigrams": [
+        {
+          "bigram": "\u2423c",
+          "ms_per_char": -0.05757563528351814
+        },
+        {
+          "bigram": "\u2423w",
+          "ms_per_char": -0.03954036697783275
+        },
+        {
+          "bigram": "ng",
+          "ms_per_char": 0.03003838846825611
+        },
+        {
+          "bigram": "\u2423.",
+          "ms_per_char": -0.021904307887131845
+        },
+        {
+          "bigram": "ec",
+          "ms_per_char": -0.019562480085925576
+        },
+        {
+          "bigram": "\u2423g",
+          "ms_per_char": 0.018766400398851947
+        }
+      ]
+    },
+    {
+      "feature": "wpm",
+      "ms_per_char": -0.09218157967904322,
+      "favours": "b",
+      "share_of_gap_t2_pct": -9.23567349508284,
+      "log_a": 0.08393957513132884,
+      "log_b": 0.08325732101126093,
+      "log_delta": -0.0006822541200679072,
+      "top_bigrams": [
+        {
+          "bigram": "\u2423c",
+          "ms_per_char": -0.018585834153191542
+        },
+        {
+          "bigram": "\u2423w",
+          "ms_per_char": 0.017454057249981454
+        },
+        {
+          "bigram": "\u2423f",
+          "ms_per_char": 0.015883033064086435
+        },
+        {
+          "bigram": "\u2423b",
+          "ms_per_char": 0.014898907444191064
+        },
+        {
+          "bigram": "\u2423p",
+          "ms_per_char": -0.014070366402397762
+        },
+        {
+          "bigram": "\u2423m",
+          "ms_per_char": -0.012107569553860182
+        }
+      ]
+    },
+    {
+      "feature": "same_hand",
+      "ms_per_char": 0.085528435777107,
+      "favours": "a",
+      "share_of_gap_t2_pct": 8.569094933421962,
+      "log_a": -0.008069574109037327,
+      "log_b": -0.00744309271547419,
+      "log_delta": 0.0006264813935631369,
+      "top_bigrams": [
+        {
+          "bigram": "of",
+          "ms_per_char": 0.02484156467815646
+        },
+        {
+          "bigram": "fo",
+          "ms_per_char": 0.02163174698636217
+        },
+        {
+          "bigram": "fi",
+          "ms_per_char": 0.0191717691938826
+        },
+        {
+          "bigram": "if",
+          "ms_per_char": 0.016631895808257746
+        },
+        {
+          "bigram": "lf",
+          "ms_per_char": -0.013719993501923428
+        },
+        {
+          "bigram": "ef",
+          "ms_per_char": 0.013666330259120642
+        }
+      ]
+    },
+    {
+      "feature": "angle",
+      "ms_per_char": 0.06813263487055896,
+      "favours": "a",
+      "share_of_gap_t2_pct": 6.826209446779893,
+      "log_a": -0.0027155374703600917,
+      "log_b": -0.002220716926560773,
+      "log_delta": 0.0004948205437993185,
+      "top_bigrams": [
+        {
+          "bigram": "nd",
+          "ms_per_char": 0.040860608432869705
+        },
+        {
+          "bigram": "io",
+          "ms_per_char": 0.025697235813191423
+        },
+        {
+          "bigram": "ke",
+          "ms_per_char": -0.022110183030674906
+        },
+        {
+          "bigram": "ho",
+          "ms_per_char": -0.02032390756485634
+        },
+        {
+          "bigram": "f.",
+          "ms_per_char": 0.0172710355146804
+        },
+        {
+          "bigram": "nt",
+          "ms_per_char": 0.016132018938821775
+        }
+      ]
+    },
+    {
+      "feature": "top",
+      "ms_per_char": -0.04590348656210329,
+      "favours": "b",
+      "share_of_gap_t2_pct": -4.599070830090042,
+      "log_a": -0.0033370827050813743,
+      "log_b": -0.003684431954361678,
+      "log_delta": -0.0003473492492803037,
+      "top_bigrams": [
+        {
+          "bigram": "\u2423w",
+          "ms_per_char": 0.04279342177231147
+        },
+        {
+          "bigram": "\u2423f",
+          "ms_per_char": 0.04169503635644054
+        },
+        {
+          "bigram": "\u2423b",
+          "ms_per_char": 0.03526470700646594
+        },
+        {
+          "bigram": "\u2423p",
+          "ms_per_char": -0.03457116889748073
+        },
+        {
+          "bigram": "\u2423m",
+          "ms_per_char": -0.02903192208874195
+        },
+        {
+          "bigram": "n\u2423",
+          "ms_per_char": 0.02400888209199298
+        }
+      ]
+    },
+    {
+      "feature": "dy",
+      "ms_per_char": 0.04454101067026298,
+      "favours": "a",
+      "share_of_gap_t2_pct": 4.46256435530656,
+      "log_a": 0.0019995945495700452,
+      "log_b": 0.0023087666044446994,
+      "log_delta": 0.0003091720548746542,
+      "top_bigrams": [
+        {
+          "bigram": "\u2423w",
+          "ms_per_char": 0.05874855825669078
+        },
+        {
+          "bigram": "\u2423f",
+          "ms_per_char": 0.05646051541128996
+        },
+        {
+          "bigram": "\u2423b",
+          "ms_per_char": 0.04643890498134133
+        },
+        {
+          "bigram": "\u2423p",
+          "ms_per_char": -0.04510263016671388
+        },
+        {
+          "bigram": "\u2423m",
+          "ms_per_char": -0.03816252505517767
+        },
+        {
+          "bigram": "nd",
+          "ms_per_char": 0.02461197392736861
+        }
+      ]
+    },
+    {
+      "feature": "ring",
+      "ms_per_char": 0.04328076547504706,
+      "favours": "a",
+      "share_of_gap_t2_pct": 4.336300375156878,
+      "log_a": -0.0002570673786093151,
+      "log_b": 3.0241783154460045e-05,
+      "log_delta": 0.00028730916176377514,
+      "top_bigrams": [
+        {
+          "bigram": "in",
+          "ms_per_char": -0.02242355180409544
+        },
+        {
+          "bigram": "ou",
+          "ms_per_char": 0.019527107665627107
+        },
+        {
+          "bigram": "on",
+          "ms_per_char": -0.017032561961561967
+        },
+        {
+          "bigram": "ll",
+          "ms_per_char": 0.01692479620017585
+        },
+        {
+          "bigram": "an",
+          "ms_per_char": -0.01577306056832453
+        },
+        {
+          "bigram": "\u2423.",
+          "ms_per_char": 0.012524158195741028
+        }
+      ]
+    },
+    {
+      "feature": "pinky",
+      "ms_per_char": 0.03527796374206967,
+      "favours": "a",
+      "share_of_gap_t2_pct": 3.5344995803667927,
+      "log_a": -0.00011975571116647618,
+      "log_b": 0.00017638084630549255,
+      "log_delta": 0.0002961365574719687,
+      "top_bigrams": [
+        {
+          "bigram": "th",
+          "ms_per_char": -0.021268218966233817
+        },
+        {
+          "bigram": "in",
+          "ms_per_char": 0.020271404314222034
+        },
+        {
+          "bigram": "\u2423i",
+          "ms_per_char": 0.018244552621524482
+        },
+        {
+          "bigram": "on",
+          "ms_per_char": 0.016066006268331524
+        },
+        {
+          "bigram": "an",
+          "ms_per_char": 0.01360370512931912
+        },
+        {
+          "bigram": "\u2423b",
+          "ms_per_char": 0.01147114236402456
+        }
+      ]
+    },
+    {
+      "feature": "middle",
+      "ms_per_char": 0.030152536061109684,
+      "favours": "a",
+      "share_of_gap_t2_pct": 3.0209829239065464,
+      "log_a": -0.00012943085063159515,
+      "log_b": 8.561945007456352e-05,
+      "log_delta": 0.00021505030070615867,
+      "top_bigrams": [
+        {
+          "bigram": "\u2423b",
+          "ms_per_char": -0.012083524986486184
+        },
+        {
+          "bigram": "\u2423m",
+          "ms_per_char": 0.009902671426979917
+        },
+        {
+          "bigram": "om",
+          "ms_per_char": 0.006810591628234819
+        },
+        {
+          "bigram": "it",
+          "ms_per_char": 0.005692306563715638
+        },
+        {
+          "bigram": "am",
+          "ms_per_char": 0.005159278499761249
+        },
+        {
+          "bigram": "\u2423,",
+          "ms_per_char": 0.004670509684338772
+        }
+      ]
+    },
+    {
+      "feature": "scissor",
+      "ms_per_char": 0.026968450388527722,
+      "favours": "a",
+      "share_of_gap_t2_pct": 2.7019693448951236,
+      "log_a": -0.000755473110815464,
+      "log_b": -0.0005735684252358749,
+      "log_delta": 0.00018190468557958907,
+      "top_bigrams": [
+        {
+          "bigram": "op",
+          "ms_per_char": 0.013475384704761256
+        },
+        {
+          "bigram": "po",
+          "ms_per_char": 0.01268747738408834
+        },
+        {
+          "bigram": "f,",
+          "ms_per_char": 0.0046295407870658375
+        },
+        {
+          "bigram": "jo",
+          "ms_per_char": -0.002508806098825995
+        },
+        {
+          "bigram": "o.",
+          "ms_per_char": 0.00155868089198968
+        },
+        {
+          "bigram": ".j",
+          "ms_per_char": 0.0013981614808511902
+        }
+      ]
+    },
+    {
+      "feature": "outwards",
+      "ms_per_char": 0.023564558526699492,
+      "favours": "a",
+      "share_of_gap_t2_pct": 2.3609333813341498,
+      "log_a": -0.0008277929620139699,
+      "log_b": -0.0006506599973555928,
+      "log_delta": 0.00017713296465837714,
+      "top_bigrams": [
+        {
+          "bigram": "nd",
+          "ms_per_char": 0.014071745607195535
+        },
+        {
+          "bigram": "io",
+          "ms_per_char": 0.009072748287115674
+        },
+        {
+          "bigram": "ke",
+          "ms_per_char": -0.0056529954609544145
+        },
+        {
+          "bigram": "ho",
+          "ms_per_char": -0.005338361963758343
+        },
+        {
+          "bigram": "fi",
+          "ms_per_char": 0.0049777837473579
+        },
+        {
+          "bigram": "if",
+          "ms_per_char": 0.003919796617189181
+        }
+      ]
+    },
+    {
+      "feature": "same_finger",
+      "ms_per_char": -0.02159506172710629,
+      "favours": "b",
+      "share_of_gap_t2_pct": -2.163609475039792,
+      "log_a": -0.01135494110999374,
+      "log_b": -0.011495452666814955,
+      "log_delta": -0.00014051155682121529,
+      "top_bigrams": [
+        {
+          "bigram": "rn",
+          "ms_per_char": -0.035851134569409665
+        },
+        {
+          "bigram": "ey",
+          "ms_per_char": -0.03198378994411334
+        },
+        {
+          "bigram": "ue",
+          "ms_per_char": 0.03092583374092806
+        },
+        {
+          "bigram": "e.",
+          "ms_per_char": 0.02666122251058124
+        },
+        {
+          "bigram": "ui",
+          "ms_per_char": -0.016049616529998794
+        },
+        {
+          "bigram": "',",
+          "ms_per_char": -0.013632536543357042
+        }
+      ]
+    },
+    {
+      "feature": "home",
+      "ms_per_char": 0.014196764153890049,
+      "favours": "a",
+      "share_of_gap_t2_pct": 1.4223739587512503,
+      "log_a": 0.0033375200899838464,
+      "log_b": 0.003527953949891455,
+      "log_delta": 0.0001904338599076085,
+      "top_bigrams": [
+        {
+          "bigram": "in",
+          "ms_per_char": 0.04230797523652537
+        },
+        {
+          "bigram": "\u2423c",
+          "ms_per_char": -0.03955589379922199
+        },
+        {
+          "bigram": "on",
+          "ms_per_char": 0.03257106642291753
+        },
+        {
+          "bigram": "an",
+          "ms_per_char": 0.031766952153349313
+        },
+        {
+          "bigram": "en",
+          "ms_per_char": 0.024472232633064583
+        },
+        {
+          "bigram": "al",
+          "ms_per_char": -0.020417427099410124
+        }
+      ]
+    },
+    {
+      "feature": "index",
+      "ms_per_char": 0.0050342545746205215,
+      "favours": "a",
+      "share_of_gap_t2_pct": 0.5043820219202917,
+      "log_a": 0.0004805293108637596,
+      "log_b": 0.0004990322762627637,
+      "log_delta": 1.8502965399004112e-05,
+      "top_bigrams": [
+        {
+          "bigram": "\u2423f",
+          "ms_per_char": 0.017999054758033338
+        },
+        {
+          "bigram": "\u2423w",
+          "ms_per_char": 0.01673051920403374
+        },
+        {
+          "bigram": "\u2423i",
+          "ms_per_char": -0.011215316694305507
+        },
+        {
+          "bigram": "th",
+          "ms_per_char": 0.010378218890805585
+        },
+        {
+          "bigram": "\u2423c",
+          "ms_per_char": -0.009231761007433918
+        },
+        {
+          "bigram": "\u2423b",
+          "ms_per_char": -0.008434223873084885
+        }
+      ]
+    },
+    {
+      "feature": "distance",
+      "ms_per_char": 0.004503706143674803,
+      "favours": "a",
+      "share_of_gap_t2_pct": 0.4512263687127438,
+      "log_a": -0.0009689867152380434,
+      "log_b": -0.0009502076891323374,
+      "log_delta": 1.8779026105706048e-05,
+      "top_bigrams": [
+        {
+          "bigram": "\u2423w",
+          "ms_per_char": -0.020386633968916976
+        },
+        {
+          "bigram": "\u2423f",
+          "ms_per_char": -0.020049705595807554
+        },
+        {
+          "bigram": "\u2423p",
+          "ms_per_char": 0.019792759403678667
+        },
+        {
+          "bigram": "\u2423c",
+          "ms_per_char": 0.012058678681873748
+        },
+        {
+          "bigram": "an",
+          "ms_per_char": 0.01147701270160219
+        },
+        {
+          "bigram": "\u2423i",
+          "ms_per_char": -0.011180999358927819
+        }
+      ]
+    },
+    {
+      "feature": "adjacent",
+      "ms_per_char": 0.0007680635861591358,
+      "favours": "a",
+      "share_of_gap_t2_pct": 0.07695229925465118,
+      "log_a": -0.00010300310286098624,
+      "log_b": -0.00010557688894142929,
+      "log_delta": -2.5737860804430517e-06,
+      "top_bigrams": [
+        {
+          "bigram": "he",
+          "ms_per_char": -0.005404037063448848
+        },
+        {
+          "bigram": "nd",
+          "ms_per_char": -0.0031902652048340268
+        },
+        {
+          "bigram": "op",
+          "ms_per_char": 0.003091630888607467
+        },
+        {
+          "bigram": "e,",
+          "ms_per_char": 0.003076646127571732
+        },
+        {
+          "bigram": "nt",
+          "ms_per_char": -0.0022019983003355413
+        },
+        {
+          "bigram": "ap",
+          "ms_per_char": 0.0021991755258543386
+        }
+      ]
+    },
+    {
+      "feature": "lsb",
+      "ms_per_char": -0.000646970135823575,
+      "favours": "b",
+      "share_of_gap_t2_pct": -0.06481994511637074,
+      "log_a": -0.0013534061954764243,
+      "log_b": -0.001384579182603219,
+      "log_delta": -3.1172987126794685e-05,
+      "top_bigrams": [
+        {
+          "bigram": "ct",
+          "ms_per_char": -0.03076549403243515
+        },
+        {
+          "bigram": "ay",
+          "ms_per_char": 0.01682090912182435
+        },
+        {
+          "bigram": "yo",
+          "ms_per_char": 0.008285379893905613
+        },
+        {
+          "bigram": "',",
+          "ms_per_char": 0.008027488927957734
+        },
+        {
+          "bigram": "y,",
+          "ms_per_char": 0.007505111248770392
+        },
+        {
+          "bigram": "tc",
+          "ms_per_char": -0.005041291577970949
+        }
+      ]
+    },
+    {
+      "feature": "inwards",
+      "ms_per_char": -0.0004445696548390682,
+      "favours": "b",
+      "share_of_gap_t2_pct": -0.04454143867149148,
+      "log_a": 3.554857331716599e-05,
+      "log_b": 3.237770484471181e-05,
+      "log_delta": -3.170868472454181e-06,
+      "top_bigrams": [
+        {
+          "bigram": "op",
+          "ms_per_char": -0.0004632011383000165
+        },
+        {
+          "bigram": "po",
+          "ms_per_char": -0.0003115464777638372
+        },
+        {
+          "bigram": "ct",
+          "ms_per_char": -0.00017895676780618078
+        },
+        {
+          "bigram": "f,",
+          "ms_per_char": 0.00013430092975289976
+        },
+        {
+          "bigram": "ns",
+          "ms_per_char": 0.00012610357310096826
+        },
+        {
+          "bigram": "nt",
+          "ms_per_char": 0.0001180614434880334
+        }
+      ]
+    }
+  ]
+}

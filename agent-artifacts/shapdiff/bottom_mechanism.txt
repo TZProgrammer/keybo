@@ -1,0 +1,49 @@
+keybo: /local/home/zegertho/repos/keybo-wt-shapdiff/src/keybo/__init__.py
+row layout of the 30 slots: ['top', 'top', 'top', 'top', 'top', 'top', 'top', 'top', 'top', 'top'] ...
+
+14 of 30 chars change ROW between the boards:
+   '.': flagship home    -> graphite bottom
+   'b': flagship bottom  -> graphite top
+   'c': flagship home    -> graphite bottom
+   'f': flagship bottom  -> graphite top
+   'g': flagship top     -> graphite home
+   'j': flagship bottom  -> graphite top
+   'l': flagship home    -> graphite top
+   'm': flagship top     -> graphite bottom
+   'n': flagship top     -> graphite home
+   'p': flagship top     -> graphite bottom
+   'v': flagship top     -> graphite bottom
+   'w': flagship bottom  -> graphite top
+   'y': flagship top     -> graphite home
+   'z': flagship bottom  -> graphite top
+
+flagship-c3: corpus mass by LANDING-KEY row (T2's second key), share of covered:
+   top      25.416%
+   home     51.701%
+   bottom    7.705%
+   space    15.178%
+
+graphite: corpus mass by LANDING-KEY row (T2's second key), share of covered:
+   top      20.342%
+   home     52.575%
+   bottom   11.905%
+   space    15.178%
+
+bottom contribution: +0.7453 ms/char
+ALL bottom top-bigrams by |ms/char| (top 14):
+   '␣c' +0.15380
+   '␣f' -0.12426
+   '␣b' -0.12031
+   '␣w' -0.11462
+   '␣p' +0.11265
+   '␣m' +0.09858
+   'om' +0.06229
+   '␣.' +0.06014
+   'of' -0.05768
+   'ec' +0.05340
+   'ic' +0.05092
+   'in' -0.05050
+   'am' +0.04882
+   'ac' +0.04870
+
+bottom: space-initiated bigrams sum +0.08326 | all others +0.66205

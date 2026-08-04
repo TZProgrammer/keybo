@@ -1,0 +1,24 @@
+keybo: /local/home/zegertho/repos/keybo-wt-shapdiff/src/keybo/__init__.py
+bottom       mean SHAP where=1: +0.11055 logs | where=0: -0.02334 | cells on:  310 | mean ms on  152.59 off  135.61
+home         mean SHAP where=1: +0.01425 logs | where=0: -0.00817 | cells on:  310 | mean ms on  136.46 off  143.29
+top          mean SHAP where=1: +0.00861 logs | where=0: -0.00650 | cells on:  310 | mean ms on  136.39 off  143.32
+lateral      mean SHAP where=1: +0.02860 logs | where=0: -0.00712 | cells on:  186 | mean ms on  143.43 off  140.52
+same_finger  mean SHAP where=1: +0.13759 logs | where=0: -0.01520 | cells on:  126 | mean ms on  170.36 off  136.67
+scissor      mean SHAP where=1: +0.06759 logs | where=0: -0.00101 | cells on:   24 | mean ms on  177.79 off  140.15
+lsb          mean SHAP where=1: +0.05846 logs | where=0: -0.00180 | cells on:   32 | mean ms on  155.96 off  140.57
+
+=> a POSITIVE mean SHAP where the one-hot is 1 means the model prices that class SLOW.
+
+=== frame blind spots, measured over all 870 ordered slot pairs ===
+  inwards    changes under pair REVERSAL in   0 / 870 ordered pairs
+  outwards   changes under pair REVERSAL in   0 / 870 ordered pairs
+  same_finger changes under pair REVERSAL in   0 / 870 ordered pairs
+  lsb        changes under pair REVERSAL in   0 / 870 ordered pairs
+  scissor    changes under pair REVERSAL in   0 / 870 ordered pairs
+  dx         changes under pair REVERSAL in   0 / 870 ordered pairs
+  distance   changes under pair REVERSAL in   0 / 870 ordered pairs
+  angle      changes under pair REVERSAL in   0 / 870 ordered pairs
+  dy         changes under pair REVERSAL in   0 / 870 ordered pairs
+
+  hand-identity channel: BIGRAM_FEATURE_NAMES = ['bottom', 'home', 'top', 'pinky', 'ring', 'middle', 'index', 'lateral', 'same_hand', 'same_finger', 'adjacent', 'scissor', 'lsb', 'dx', 'dy', 'distance', 'angle', 'inwards', 'outwards', 'wpm']
+  -> no L/R column; `same_hand` is relational only, finger one-hots are hand-agnostic.

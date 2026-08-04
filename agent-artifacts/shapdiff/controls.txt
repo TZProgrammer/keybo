@@ -1,0 +1,54 @@
+===== NEGATIVE CONTROL 1: bigram-table weighting (must FAIL) =====
+SHAP-DIFF  flagship-c3 -> graphite   corpus=default  wpm=90
+  weighting: bigram-table
+
+RECONCILIATION (checked before any interpretation)
+  ms/char shipped card()  flagship-c3: 254.9761   graphite: 258.1696   <- what `keybo analyze` prints
+  ms/char own-support     flagship-c3: 254.9761   graphite: 258.1696
+  ms/char common-support  flagship-c3: 258.6848   graphite: 261.9339
+  gap (b-a; +ve = flagship-c3 faster) : +3.2491 ms/char
+    T2 bigram channel   : +1.0538  (32.4% of gap)  <- decomposed
+    Tcond trigram channel: +2.1953  <- NOT bigram-decomposable
+  coverage flagship-c3: 88.715%   graphite: 88.715%
+  common support is a no-op: True   coverage cost: -5.567e-02 ms/char
+  residuals:
+    R1 TreeSHAP walk vs predict (log, abs) 3.965e-07
+    R2 per-cell LMDI identity (rel)        1.456e-16
+    R3 sum(features) vs gap_T2 (rel)       2.107e-16
+    R4 channel split vs total (rel)        4.374e-15
+    R5 gap vs shipped card (abs ms/char)   5.567e-02
+    log walk-vs-predict, weighted (abs)    3.138e-08
+    T2 table vs shipped _T2 (abs ms)       3.564e-05
+  RECONCILES: False
+
+!! RECONCILIATION FAILED — the feature table below explains NOTHING. !!
+
+control 'bigram-table' failed reconciliation, as required
+CTRL1 rc=
+
+===== NEGATIVE CONTROL 2: shuffled SHAP deltas (must FAIL) =====
+SHAP-DIFF  flagship-c3 -> graphite   corpus=default  wpm=90
+  weighting: trigram-marginal
+
+RECONCILIATION (checked before any interpretation)
+  ms/char shipped card()  flagship-c3: 254.9761   graphite: 258.1696   <- what `keybo analyze` prints
+  ms/char own-support     flagship-c3: 254.9761   graphite: 258.1696
+  ms/char common-support  flagship-c3: 254.9761   graphite: 258.1696
+  gap (b-a; +ve = flagship-c3 faster) : +3.1934 ms/char
+    T2 bigram channel   : +0.9981  (31.3% of gap)  <- decomposed
+    Tcond trigram channel: +2.1953  <- NOT bigram-decomposable
+  coverage flagship-c3: 88.715%   graphite: 88.715%
+  common support is a no-op: True   coverage cost: -2.842e-14 ms/char
+  residuals:
+    R1 TreeSHAP walk vs predict (log, abs) 3.965e-07
+    R2 per-cell LMDI identity (rel)        2.807e-01
+    R3 sum(features) vs gap_T2 (rel)       5.867e-02
+    R4 channel split vs total (rel)        4.450e-15
+    R5 gap vs shipped card (abs ms/char)   4.389e-07
+    log walk-vs-predict, weighted (abs)    3.057e-08
+    T2 table vs shipped _T2 (abs ms)       3.564e-05
+  RECONCILES: False
+
+!! RECONCILIATION FAILED — the feature table below explains NOTHING. !!
+
+control 'shuffle' failed reconciliation, as required
