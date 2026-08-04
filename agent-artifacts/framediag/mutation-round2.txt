@@ -1,0 +1,8 @@
+=== RE-CHECK after the M20 vacuity fix, plus new mutations on the new assertions ===
+M20 exceeds_exact hard-coded False (RETEST)    RED   rc=1  FAILED tests/analysis/test_frame_collapse.py::test_exceeds_exact_detects_a_count_above_the_exact_count
+M20b exceeds_exact hard-coded True             RED   rc=1  FAILED tests/analysis/test_frame_collapse.py::test_quantization_never_exceeds_the_exact_count_and_the_bar_is_not_vacuous
+M20c exceeds_exact: > becomes >=               RED   rc=1  FAILED tests/analysis/test_frame_collapse.py::test_quantization_never_exceeds_the_exact_count_and_the_bar_is_not_vacuous
+M21b rises: > becomes >=                       !!!! GREEN -- TEST IS VACUOUS
+M29 CLI !!BUG branch removed                   RED   rc=1  FAILED tests/cli/test_frame_collapse_cli.py::test_sweep_formatter_shouts_when_the_exact_count_is_exceeded
+M30 CLI rise-note branch removed               RED   rc=1  FAILED tests/cli/test_frame_collapse_cli.py::test_tolerance_sweep_flags_a_rise_as_real_and_not_as_a_bug
+M31 sweep_verdict counts drops the exact entry RED   rc=1  FAILED tests/analysis/test_frame_collapse.py::test_exceeds_exact_detects_a_count_above_the_exact_count
