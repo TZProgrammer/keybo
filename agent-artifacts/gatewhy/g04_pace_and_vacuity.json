@@ -1,0 +1,131 @@
+{
+ "prereg": "GATEWHY-preregistration.md @ 569b68d \u00a76.1/\u00a77.1/\u00a77.2",
+ "H_PACE_numeric": {
+  "distinct_cell_wpm_per_bucket": {
+   "40": [
+    50.0
+   ],
+   "60": [
+    70.0
+   ],
+   "80": [
+    90.0
+   ],
+   "100": [
+    110.0
+   ],
+   "120": [
+    130.0
+   ]
+  },
+  "exactly_one_wpm_per_bucket": true,
+  "n_trials": 200,
+  "max_abs_rho_difference_under_any_pace": 0.0
+ },
+ "H_PACE_empirical": {
+  "n_fold_seed_cells": 12,
+  "max_abs_bucket_rho_difference": 0.0,
+  "max_abs_wmae_difference": 11.567087699742363,
+  "confounded_pooled_wmae": 25.478762735622023,
+  "fixed_pooled_wmae": 16.012294242270094,
+  "confounded_tau": [
+   0.3333333333333334,
+   0.3333333333333334,
+   0.3333333333333334
+  ],
+  "fixed_tau": [
+   1.0,
+   1.0,
+   1.0
+  ],
+  "wpm_const_used": 72.69299654601069
+ },
+ "VACUITY_identity": {
+  "n_fold_bucket_cells": 20,
+  "max_abs_sum_of_incumbent_deltas": 3.3306690738754696e-16,
+  "note": "each incumbent bucket's 3 seed-deltas are deviations from their own mean => sum == 0"
+ },
+ "VACUITY_impossibility": {
+  "adversarial_trials_algebra": 200000,
+  "found_3_of_3_negative_deviations": null,
+  "adversarial_trials_through_shipped_gate": 3000,
+  "n_trials_where_incumbent_failed_structurally": 0,
+  "loso_scaling_factor_dev_over_delta": 1.5
+ },
+ "VACUITY_loso_ratio": {
+  "min": 1.4999999999976785,
+  "max": 1.5000000000037517,
+  "max_abs_deviation_from_1p5": 3.751665644813329e-12
+ },
+ "H_BASIS_provenance": {
+  "confounded_structural": {
+   "azerty": [
+    120
+   ],
+   "dvorak": [
+    80,
+    100
+   ],
+   "qwerty": [
+    100,
+    120
+   ],
+   "qwertz": [
+    100
+   ]
+  },
+  "fixed_structural": {
+   "azerty": [
+    120
+   ],
+   "dvorak": [
+    80,
+    100
+   ],
+   "qwerty": [
+    100,
+    120
+   ],
+   "qwertz": [
+    100
+   ]
+  },
+  "verdicts_agree": true,
+  "fixed_folds_failing": 4,
+  "fixed_arm_magnitudes": {
+   "pooled_wmae": 16.012294242270094,
+   "delta_wmae_vs_CUR": 6.074126470256811,
+   "delta_rho_vs_CUR": -0.015163422527145328,
+   "tau_heldout": [
+    1.0,
+    1.0,
+    1.0
+   ]
+  },
+  "arm_config": {
+   "seeds": [
+    0,
+    1,
+    2
+   ],
+   "holdouts": [
+    "azerty",
+    "dvorak",
+    "qwerty",
+    "qwertz"
+   ],
+   "wpm_lo": 40,
+   "wpm_hi": 140,
+   "bucket_width": 20,
+   "min_cell_samples": 10,
+   "n_boot": 10,
+   "train_params": {
+    "n_jobs": 8
+   },
+   "direction": false,
+   "kitchensink": false,
+   "interp": false,
+   "monotone": true
+  }
+ }
+}
