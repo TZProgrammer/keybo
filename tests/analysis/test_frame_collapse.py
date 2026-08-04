@@ -25,7 +25,7 @@ from keybo.analysis.frame_collapse import (
     sweep_verdict,
     tolerance_sweep,
 )
-from keybo.geometry import Geometry, ROW_STAGGERED_30, ROW_STAGGERED_31
+from keybo.geometry import ROW_STAGGERED_30, ROW_STAGGERED_31, Geometry
 
 # --- tiny synthetic geometries and frames ------------------------------------------------------
 #
@@ -152,8 +152,11 @@ def test_total_collapse_floor_at_group_mean_is_the_mean_absolute_deviation():
     """One group over everything: the mean-based floor IS the target's MAD about its weighted mean."""
     t = np.array([1.0, 5.0, 6.0, 100.0])
     r = frame_collapse(
-        _constant, Geometry(slots=((-2, 2), (-1, 2), (1, 2), (2, 2))), order=1,
-        include_space=False, target=t,
+        _constant,
+        Geometry(slots=((-2, 2), (-1, 2), (1, 2), (2, 2))),
+        order=1,
+        include_space=False,
+        target=t,
     )
     assert r.distinct_feature_rows == 1
     assert r.collapsed_cells == 4
@@ -214,8 +217,13 @@ def test_distinct_rows_is_NOT_monotone_between_two_nonzero_tolerances():
     assert len(group_cells(X, tol=0.75)[1]) == 2
 
     # Reported as a RISE, and explicitly NOT as an exact-count violation: the two are different.
-    rs = tolerance_sweep(lambda _g, c: np.array([c[0][0] * 0.1]), TWO_SLOT, tols=[0.0, 0.5, 0.75],
-                         order=1, include_space=False)
+    rs = tolerance_sweep(
+        lambda _g, c: np.array([c[0][0] * 0.1]),
+        TWO_SLOT,
+        tols=[0.0, 0.5, 0.75],
+        order=1,
+        include_space=False,
+    )
     v = sweep_verdict(rs)
     assert v["exceeds_exact"] is False
 
@@ -244,18 +252,36 @@ def test_exceeds_exact_detects_a_count_above_the_exact_count():
     # A step that stays EQUAL is not a rise. ⚠ Found by mutation M21b: relaxing ``>`` to ``>=`` in the
     # rise detector left the suite green, because every real sweep either rises strictly or is flat —
     # and on a FLAT sweep nothing asserted that ``rises`` stays empty.
-    equal = sweep_verdict([replace(base, tol=0.0, distinct_feature_rows=5),
-                           replace(base, tol=1e-6, distinct_feature_rows=5)])
+    equal = sweep_verdict(
+        [
+            replace(base, tol=0.0, distinct_feature_rows=5),
+            replace(base, tol=1e-6, distinct_feature_rows=5),
+        ]
+    )
     assert equal["rises"] == []
     assert equal["flat"] is True
     assert equal["exceeds_exact"] is False
     # ...and a strict FALL is not a rise either.
-    assert sweep_verdict([replace(base, tol=0.0, distinct_feature_rows=5),
-                          replace(base, tol=1e-6, distinct_feature_rows=4)])["rises"] == []
+    assert (
+        sweep_verdict(
+            [
+                replace(base, tol=0.0, distinct_feature_rows=5),
+                replace(base, tol=1e-6, distinct_feature_rows=4),
+            ]
+        )["rises"]
+        == []
+    )
 
     # and it stays False on the same pair the legal way round, so it is not a constant either.
-    assert sweep_verdict([replace(base, tol=0.0, distinct_feature_rows=7),
-                          replace(base, tol=1e-6, distinct_feature_rows=5)])["exceeds_exact"] is False
+    assert (
+        sweep_verdict(
+            [
+                replace(base, tol=0.0, distinct_feature_rows=7),
+                replace(base, tol=1e-6, distinct_feature_rows=5),
+            ]
+        )["exceeds_exact"]
+        is False
+    )
 
 
 def test_served_and_interp_frames_are_tolerance_flat_so_the_headline_needs_no_tolerance():
@@ -287,8 +313,12 @@ def test_grouping_refuses_non_finite_rows_rather_than_reporting_them_as_resolved
 def test_negative_weights_are_refused_because_errors_would_cancel():
     with pytest.raises(ValueError, match="must be >= 0"):
         frame_collapse(
-            _constant, TWO_SLOT, order=1, include_space=False,
-            target=np.array([1.0, 2.0]), weights=np.array([1.0, -1.0]),
+            _constant,
+            TWO_SLOT,
+            order=1,
+            include_space=False,
+            target=np.array([1.0, 2.0]),
+            weights=np.array([1.0, -1.0]),
         )
 
 
@@ -326,8 +356,12 @@ def test_weights_move_the_mass_share_away_from_the_cell_share():
 def test_zero_weight_removes_a_cell_from_the_floor_entirely():
     """A cell weighted 0 contributes nothing: the floor equals the remaining cells' own floor."""
     r = frame_collapse(
-        _constant, Geometry(slots=((-1, 2), (1, 2), (2, 2))), order=1, include_space=False,
-        target=np.array([0.0, 1.0, 1000.0]), weights=np.array([1.0, 1.0, 0.0]),
+        _constant,
+        Geometry(slots=((-1, 2), (1, 2), (2, 2))),
+        order=1,
+        include_space=False,
+        target=np.array([0.0, 1.0, 1000.0]),
+        weights=np.array([1.0, 1.0, 0.0]),
     )
     assert r.floor_wmae == pytest.approx(0.5, abs=1e-12)
 
@@ -337,8 +371,12 @@ def test_mismatched_target_and_weight_lengths_are_refused():
         frame_collapse(_constant, TWO_SLOT, order=1, include_space=False, target=np.zeros(5))
     with pytest.raises(ValueError, match="weights has"):
         frame_collapse(
-            _constant, TWO_SLOT, order=1, include_space=False,
-            target=np.zeros(2), weights=np.zeros(7),
+            _constant,
+            TWO_SLOT,
+            order=1,
+            include_space=False,
+            target=np.zeros(2),
+            weights=np.zeros(7),
         )
 
 
@@ -371,8 +409,7 @@ def test_cell_space_identity_is_what_separates_765_from_775():
     assert no_space.includes_space is False
     assert no_space.distinct_feature_rows == 775
     assert (
-        frame_collapse(interp, ROW_STAGGERED_31, order=2, include_space=False)
-        .distinct_feature_rows
+        frame_collapse(interp, ROW_STAGGERED_31, order=2, include_space=False).distinct_feature_rows
         == 422
     )
 
@@ -435,13 +472,16 @@ def test_trigram_frame_runs_at_order_three_over_its_own_cell_space():
     assert r.largest_group == 2
     # Better resolved than the SERVED BIGRAM frame (0.796) despite a 31x larger cell space.
     assert r.resolution == pytest.approx(0.9400825752744117)
-    assert r.resolution > frame_collapse(
-        lambda g, c: __import__(
-            "keybo.features", fromlist=["bigram_features_from_positions"]
-        ).bigram_features_from_positions(g, c, wpm=90.0),
-        ROW_STAGGERED_30,
-        order=2,
-    ).resolution
+    assert (
+        r.resolution
+        > frame_collapse(
+            lambda g, c: __import__(
+                "keybo.features", fromlist=["bigram_features_from_positions"]
+            ).bigram_features_from_positions(g, c, wpm=90.0),
+            ROW_STAGGERED_30,
+            order=2,
+        ).resolution
+    )
 
 
 def test_the_trigram_direction_channel_adds_columns_but_ZERO_resolution():
@@ -452,14 +492,20 @@ def test_the_trigram_direction_channel_adds_columns_but_ZERO_resolution():
     """
     from keybo.features import trigram_features_from_positions
 
-    base, direction, sink = (
-        frame_collapse(
+    def _diagnose(**kw):
+        # A real function, not a lambda closing over a loop variable: ruff B023 flags that shape, and
+        # it is correct-by-luck here only because generator unpacking happens to evaluate eagerly
+        # enough. If it ever bound late, all three calls would featurize the SAME frame and the
+        # 46/52/69-column assertion below would pass for entirely the wrong reason.
+        return frame_collapse(
             lambda g, c: trigram_features_from_positions(g, c, wpm=90.0, **kw),
             ROW_STAGGERED_30,
             order=3,
         )
-        for kw in ({}, {"direction": True}, {"kitchensink": True})
-    )
+
+    base = _diagnose()
+    direction = _diagnose(direction=True)
+    sink = _diagnose(kitchensink=True)
     assert (base.n_columns, direction.n_columns, sink.n_columns) == (46, 52, 69)
     assert base.distinct_feature_rows == direction.distinct_feature_rows == 28006
     assert sink.distinct_feature_rows == 28006
@@ -477,7 +523,9 @@ def test_self_generated_target_flag_fires_on_a_frame_scored_against_its_own_outp
     """
     geom = Geometry(slots=((-2, 2), (-1, 2), (1, 2), (2, 2)))
     feat = lambda _g, c: np.array([float(abs(c[0][0]))])  # noqa: E731  cells 0,3 and 1,2 collapse
-    rows = np.array([feature_matrix(feat, geom, order=1, include_space=False)[i, 0] for i in range(4)])
+    rows = np.array(
+        [feature_matrix(feat, geom, order=1, include_space=False)[i, 0] for i in range(4)]
+    )
     r = frame_collapse(feat, geom, order=1, include_space=False, target=10.0 * rows)
     assert r.collapsed_cells == 4
     assert r.n_collapse_groups == 2
@@ -524,9 +572,7 @@ def test_report_names_the_cell_space_and_warns_on_a_self_generated_target():
     rows = np.array([1.0, 2.0, 2.0, 1.0])
     text = format_report(
         {
-            "selfgen": frame_collapse(
-                feat, geom, order=1, include_space=False, target=10.0 * rows
-            ),
+            "selfgen": frame_collapse(feat, geom, order=1, include_space=False, target=10.0 * rows),
             "honest": frame_collapse(
                 feat, geom, order=1, include_space=False, target=np.array([1.0, 2.0, 30.0, 40.0])
             ),
@@ -576,15 +622,29 @@ def test_report_omits_floor_columns_when_no_target_was_supplied():
 
 def test_as_dict_round_trips_every_reported_field():
     d = frame_collapse(
-        _constant, TWO_SLOT, order=1, include_space=False,
-        target=np.array([1.0, 5.0]), weights=np.array([1.0, 3.0]),
+        _constant,
+        TWO_SLOT,
+        order=1,
+        include_space=False,
+        target=np.array([1.0, 5.0]),
+        weights=np.array([1.0, 3.0]),
     ).as_dict()
     assert d["n_cells"] == 2
     assert d["distinct_feature_rows"] == 1
     assert d["weighted"] is True
     assert d["includes_space"] is False
     assert d["tol"] == 0.0
-    for key in ("floor_wmae", "floor_wmae_at_group_mean", "floor_wrmse", "floor_umae",
-                "target_is_self_generated", "max_group_target_spread", "resolution",
-                "mass_share_collapsed", "n_positions", "order", "largest_group"):
+    for key in (
+        "floor_wmae",
+        "floor_wmae_at_group_mean",
+        "floor_wrmse",
+        "floor_umae",
+        "target_is_self_generated",
+        "max_group_target_spread",
+        "resolution",
+        "mass_share_collapsed",
+        "n_positions",
+        "order",
+        "largest_group",
+    ):
         assert key in d, key

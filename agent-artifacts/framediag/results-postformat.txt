@@ -1,0 +1,30 @@
+=== MUTATION TESTING: keybo.analysis.frame_collapse + keybo.cli.frame_collapse ===
+
+M1 median floor -> use the group MEAN          RED   rc=1  FAILED tests/analysis/test_frame_collapse.py::test_known_answer_floor_distinguishes_median_from_mean_estimator
+M2 mean floor -> use the group MEDIAN          RED   rc=1  FAILED tests/analysis/test_frame_collapse.py::test_known_answer_floor_distinguishes_median_from_mean_estimator
+M3 weighted median -> UNWEIGHTED median        RED   rc=1  FAILED tests/analysis/test_frame_collapse.py::test_known_answer_floor_distinguishes_median_from_mean_estimator
+M4 wrmse: drop the sqrt                        RED   rc=1  FAILED tests/analysis/test_frame_collapse.py::test_known_answer_floor_distinguishes_median_from_mean_estimator
+M5 ignore caller weights (force uniform)       RED   rc=1  FAILED tests/analysis/test_frame_collapse.py::test_known_answer_floor_distinguishes_median_from_mean_estimator
+M6 mass share -> cell share                    RED   rc=1  FAILED tests/analysis/test_frame_collapse.py::test_weights_move_the_mass_share_away_from_the_cell_share
+M7 accept negative weights                     RED   rc=1  FAILED tests/analysis/test_frame_collapse.py::test_negative_weights_are_refused_because_errors_would_cancel
+M8 tol ignored (always exact)                  RED   rc=1  FAILED tests/analysis/test_frame_collapse.py::test_quantization_never_exceeds_the_exact_count_and_the_bar_is_not_vacuous
+M9 tol: round(x/tol) -> round(x*tol)           RED   rc=1  FAILED tests/analysis/test_frame_collapse.py::test_distinct_rows_is_NOT_monotone_between_two_nonzero_tolerances
+M10 allow non-finite feature rows              RED   rc=1  FAILED tests/analysis/test_frame_collapse.py::test_grouping_refuses_non_finite_rows_rather_than_reporting_them_as_resolved
+M11 collapsed = sizes>=1 (every cell)          RED   rc=1  FAILED tests/analysis/test_frame_collapse.py::test_zero_collapse_frame_has_perfect_resolution_and_exactly_zero_floors
+M12 include_space ignored (always on)          RED   rc=1  FAILED tests/analysis/test_frame_collapse.py::test_known_answer_floor_distinguishes_median_from_mean_estimator
+M13 include_space ignored (always off)         RED   rc=1  FAILED tests/analysis/test_frame_collapse.py::test_zero_collapse_frame_has_perfect_resolution_and_exactly_zero_floors
+M14 cell order: product -> permutations-ish reverse RED   rc=1  FAILED tests/analysis/test_frame_collapse.py::test_weights_move_the_mass_share_away_from_the_cell_share
+M15 includes_space field hard-coded True       RED   rc=1  FAILED tests/analysis/test_frame_collapse.py::test_cell_space_identity_is_what_separates_765_from_775
+M16 flag hard-coded False                      RED   rc=1  FAILED tests/analysis/test_frame_collapse.py::test_self_generated_target_flag_fires_on_a_frame_scored_against_its_own_output
+M17 flag hard-coded True                       RED   rc=1  FAILED tests/analysis/test_frame_collapse.py::test_zero_collapse_frame_has_perfect_resolution_and_exactly_zero_floors
+M18 flag drops the n_cg>0 guard                RED   rc=1  FAILED tests/analysis/test_frame_collapse.py::test_zero_collapse_frame_has_perfect_resolution_and_exactly_zero_floors
+M19 spreads include SINGLETON groups           RED   rc=1  FAILED tests/analysis/test_frame_collapse.py::test_zero_collapse_frame_has_perfect_resolution_and_exactly_zero_floors
+M20 exceeds_exact hard-coded False             RED   rc=1  FAILED tests/analysis/test_frame_collapse.py::test_exceeds_exact_detects_a_count_above_the_exact_count
+M21 rises never detected                       RED   rc=1  FAILED tests/analysis/test_frame_collapse.py::test_exceeds_exact_detects_a_count_above_the_exact_count
+M22 flat hard-coded True                       RED   rc=1  FAILED tests/analysis/test_frame_collapse.py::test_quantization_never_exceeds_the_exact_count_and_the_bar_is_not_vacuous
+M23 CLI mixed-order refusal removed            RED   rc=1  FAILED tests/cli/test_frame_collapse_cli.py::test_mixed_order_frames_are_refused_rather_than_silently_sharing_a_cell_space
+M24 CLI --no-space ignored                     RED   rc=1  FAILED tests/cli/test_frame_collapse_cli.py::test_no_space_flag_selects_the_other_961_cell_space
+M25 CLI floor/no-space refusal removed         RED   rc=1  FAILED tests/cli/test_frame_collapse_cli.py::test_floor_refuses_a_cell_space_the_surface_cannot_target
+M26 CLI geometry mismatch refusal removed      RED   rc=1  FAILED tests/cli/test_frame_collapse_cli.py::test_floor_refuses_a_cell_space_the_surface_cannot_target
+M27 report never warns on self-gen target      RED   rc=1  FAILED tests/analysis/test_frame_collapse.py::test_report_names_the_cell_space_and_warns_on_a_self_generated_target
+M28 report always shows floor columns          RED   rc=1  FAILED tests/analysis/test_frame_collapse.py::test_report_omits_floor_columns_when_no_target_was_supplied

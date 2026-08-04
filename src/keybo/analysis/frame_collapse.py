@@ -226,8 +226,10 @@ def feature_matrix(
     """
     if order < 1:
         raise ValueError(f"order must be >= 1, got {order}")
-    pos = list(positions) if positions is not None else cell_positions(
-        geometry, include_space=include_space
+    pos = (
+        list(positions)
+        if positions is not None
+        else cell_positions(geometry, include_space=include_space)
     )
     if not pos:
         raise ValueError("empty position list: no cells to diagnose")
@@ -442,8 +444,10 @@ def frame_collapse(
 
     Costs one featurizer call per cell and one ``np.unique`` — ~2 s for a 961-cell bigram frame.
     """
-    pos = list(positions) if positions is not None else cell_positions(
-        geometry, include_space=include_space
+    pos = (
+        list(positions)
+        if positions is not None
+        else cell_positions(geometry, include_space=include_space)
     )
     X = feature_matrix(featurizer, geometry, order=order, positions=pos)
     n_cells = X.shape[0]
@@ -466,8 +470,13 @@ def frame_collapse(
     mass_share = float(w[is_collapsed].sum() / w_total) if w_total > 0 else 0.0
 
     floors: dict[str, float | None] = dict.fromkeys(
-        ("floor_wmae", "floor_wmae_at_group_mean", "floor_wrmse", "floor_umae",
-         "floor_umae_at_group_mean")
+        (
+            "floor_wmae",
+            "floor_wmae_at_group_mean",
+            "floor_wrmse",
+            "floor_umae",
+            "floor_umae_at_group_mean",
+        )
     )
     provenance: dict = {"target_is_self_generated": False}
     if target is not None:
@@ -595,9 +604,7 @@ def format_report(results: dict[str, FrameCollapse], *, target_name: str = "") -
             f"{r.collapsed_cells:>10}{r.mass_share_collapsed:>9.1%}{r.largest_group:>9}"
         )
         if r.floor_wmae is not None:
-            row += (
-                f"{r.floor_wmae:>13.4f}{r.floor_wmae_at_group_mean:>13.4f}{r.floor_wrmse:>13.4f}"
-            )
+            row += f"{r.floor_wmae:>13.4f}{r.floor_wmae_at_group_mean:>13.4f}{r.floor_wrmse:>13.4f}"
         lines.append(row)
     lines += [
         "",

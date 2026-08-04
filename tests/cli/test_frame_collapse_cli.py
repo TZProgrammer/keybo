@@ -59,8 +59,9 @@ def test_json_output_carries_the_published_counts(capsys):
 def test_no_space_flag_selects_the_other_961_cell_space(capsys):
     """The 765-vs-775 distinction, reachable from the command line."""
     with_space = json.loads(_run(capsys, "--frame", "served", "--json"))
-    no_space = json.loads(_run(capsys, "--frame", "served", "--geometry", "k31", "--no-space",
-                               "--json"))
+    no_space = json.loads(
+        _run(capsys, "--frame", "served", "--geometry", "k31", "--no-space", "--json")
+    )
     assert with_space["frames"]["served"]["n_cells"] == 961
     assert no_space["frames"]["served"]["n_cells"] == 961
     assert with_space["frames"]["served"]["distinct_feature_rows"] == 765
@@ -160,8 +161,12 @@ def test_sweep_formatter_shouts_when_the_exact_count_is_exceeded():
     assert "that is impossible" in out
     # a legal sweep through the SAME formatter must not print it
     assert "!! BUG" not in _format_sweep(
-        {"ok": [replace(base, tol=0.0, distinct_feature_rows=9),
-                replace(base, tol=1e-6, distinct_feature_rows=3)]}
+        {
+            "ok": [
+                replace(base, tol=0.0, distinct_feature_rows=9),
+                replace(base, tol=1e-6, distinct_feature_rows=3),
+            ]
+        }
     )
 
 

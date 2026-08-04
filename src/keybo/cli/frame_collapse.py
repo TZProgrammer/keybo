@@ -208,8 +208,10 @@ def _surface_target(order: int, wpm: float, corpus: str | None):
     if order == 2:
         return surface, surface._T2.ravel(), f"production T2 surface @ {wpm:g} WPM"
     if order == 3:
-        return surface, surface.triple_ms_table().ravel(), (
-            f"production T2+Tcond surface @ {wpm:g} WPM"
+        return (
+            surface,
+            surface.triple_ms_table().ravel(),
+            (f"production T2+Tcond surface @ {wpm:g} WPM"),
         )
     raise SystemExit(f"--floor has no surface target defined for order {order}")
 
@@ -296,9 +298,7 @@ def run(args: argparse.Namespace) -> int:
                 _json.dumps(
                     {
                         "target": target_name or None,
-                        "frames": {
-                            s: [r.as_dict() for r in rs] for s, rs in sweeps.items()
-                        },
+                        "frames": {s: [r.as_dict() for r in rs] for s, rs in sweeps.items()},
                     },
                     indent=1,
                 )
