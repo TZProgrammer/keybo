@@ -160,3 +160,54 @@ a pipe tail (`cmd | tail; rc=$?` captures tail's rc — a known campaign harness
 `FEATURE_VERSION` untouched · `data/models/k31/` unmodified · `layouts.py` untouched · no CODE push ·
 no branch merge/delete · additive files only where possible; any edit to an existing file is reported.
 Full suite must be >= the base branch's 1393 passed / 3 skipped / 0 failed.
+
+---
+
+## §8 — ADDENDUM 1: CORRECTING MY OWN T-MONO BAR (registered BEFORE the corrected result is written up)
+
+**A BAR I REGISTERED IN §3/§4 IS FALSE AS STATED, AND THE CODE IS RIGHT — SO THE BAR MOVES, NOT THE
+CODE** (the campaign's standing rule from INTERPFRAME-1's `wpm`-equality correction).
+
+§3 registered: *"Quantization is an explicit COARSENING: it can only MERGE groups, never split them,
+so `distinct_rows(tol)` is NON-INCREASING in tol."* §4 registered T-MONO to pin that.
+
+🟢 **MEASURED COUNTEREXAMPLE on the real served frame:** the sweep reads
+`0.25 -> 765, 0.5 -> 701, 0.75 -> 709, 1.0 -> 649`. **0.5 -> 0.75 RISES by 8 rows.** Minimal scalar
+instance, verified: with `x=0.3, y=0.4`, `round(x/0.5) == round(y/0.5) == 1` (MERGED) but
+`round(x/0.75) = 0 != 1 = round(y/0.75)` (SPLIT). **Mechanism: the grid's bin BOUNDARIES move with
+`tol`, so the family of quantized partitions is NOT a nested refinement chain — a coarser grid can
+split a pair a finer grid merged.**
+
+**WHAT IS ACTUALLY TRUE, AND IT IS THE CLAIM THE 765-vs-775 ARGUMENT NEEDS (so that result stands
+unweakened):** for ANY `tol >= 0`, exact-equal rows have equal quantizations, so the quantized
+partition IS a coarsening **of the EXACT partition** specifically:
+
+    distinct_rows(tol)  <=  distinct_rows(exact)      for every tol >= 0.       [TRUE, kept]
+    distinct_rows(t2)   <=  distinct_rows(t1) for t2 > t1 > 0.                  [FALSE, retracted]
+
+The retracted clause was never needed: the 765-vs-775 prediction (§3) rests only on the surviving
+clause — no tolerance can take 765 UP to 775 — and that is exactly what the measurement shows (765 at
+every tolerance from exact to 1e-3, and never above 765 anywhere in the widened sweep to tol=10).
+
+**REGISTERED REPLACEMENTS, decided before the corrected numbers are written up:**
+* **T-MONO is REPLACED by T-COARSENING:** for a registered tol list spanning
+  `{0, 1e-12, 1e-6, 1e-3, 0.01, 0.1, 0.5, 1.0, 2.0, 5.0, 10.0}`, assert
+  `distinct_rows(tol) <= distinct_rows(exact)` for every tol — the true guarantee — and assert it is
+  NOT vacuous by requiring at least one tol in the list to be strictly less.
+* **T-NONMONOTONE (new, positive test):** pin the non-monotonicity as REAL with the `0.3/0.4` scalar
+  counterexample, so a future contributor cannot "fix" the docstring into the false monotone claim.
+  This is the same defensive shape INTERPFRAME-1 used for the sign-disagreement it could not license.
+* **Non-monotonicity must be REPORTED, not hidden:** `tolerance_sweep`'s human output must FLAG a rise
+  rather than call it a bug, and the module docstring must carry the counterexample.
+* **Registered non-claim (new, non-claim 9):** a `tol>0` grouping is a QUANTIZATION, not an
+  equivalence up to `tol` — two rows within `tol` of each other may land in different bins (and two
+  rows up to `2*tol` apart may share one). Single-linkage-within-`tol` IS monotone in `tol` (verified
+  on a 60x3 random matrix: 60,60,60,59,53,41,25,8,2,1,1) but is a CHAINING relation, not equality,
+  and costs `O(n^2 C)` — infeasible at the 29791-cell trigram space. Quantization is kept as the
+  shipped rule with `tol=0` (exact) the default; the monotone alternative is documented as
+  deliberately NOT shipped, with its reason.
+
+⇒ **The practical guidance is unchanged and is now the DOCUMENTED reason `tol=0` is the default:** a
+nonzero tolerance is a parameter whose value must be reported beside any number it produced, and on
+these frames it buys nothing (flat to 1e-3, and only bites at `tol >= 0.5`, i.e. half a key width —
+far outside "float noise" territory).
