@@ -374,7 +374,7 @@ log(
 )
 
 per_seed = []
-for i, m in enumerate(models):
+for m in models:
     r = shap_diff(LAY_A, LAY_B, channel="t2", target_wpm=WPM, frame="hybridb", bigram_models=(m,))
     o = [c.feature for c in r.t2.contributions]
     ix = {n: j for j, n in enumerate(o)}
