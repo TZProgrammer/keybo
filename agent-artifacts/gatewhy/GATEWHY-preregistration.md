@@ -319,3 +319,49 @@ frame whose *only* change is the seed.
   perturbation of this size — including served-basis ones — genuinely moves high-wpm ρ", i.e. a
   BOTH verdict with the frame-defect half generalized beyond interpretability.
 * I register both readings NOW so neither can be chosen after the fact.
+
+---
+
+# §8 AMENDMENT 3 — THE PARTITION RULE, registered before the partition is computed
+
+SEEDNOISE has landed (`9e429e3`): the served frame merely reseeded is **structurally refused on
+azerty b120**. Both halves of the answer are therefore live, and §3's rule says report BOTH with the
+partition quantified. This section fixes the partition arithmetic BEFORE running it, so the split
+cannot be chosen to favour a story.
+
+## §8.1 The partition, defined
+
+A refused (fold, bucket) row is classified into exactly one of:
+* **NOISE-PROVEN** — SEEDNOISE is *also* structurally refused at that same (fold, bucket). The gate
+  refuses the shipped incumbent there, so a candidate's refusal at that cell carries no information
+  about the candidate. (Established, not inferred: the same instrument, the same folds, the same
+  baseline, and the only change is a seed.)
+* **NOISE-SUSPECT** — SEEDNOISE shows *noise-level* (some-but-not-all-seeds) regression there.
+* **SURVIVES** — SEEDNOISE is clean at that cell, so the refusal discriminates something real.
+
+**Registered decision rule for the headline (fixed now):**
+* If, for EVERY interp arm, removing the NOISE-PROVEN rows drops it below 4/4 folds **and** the
+  served-basis arm (CUR-NOWPM) is *also* still refused on the surviving folds ⇒ the "4/4 structural"
+  claim is **not** a frame-specific property, and the honest verdict is **GATE ARTIFACT for the 4/4
+  PATTERN, real ρ movement for the residual, and NOT interpretability-specific**.
+* If removing NOISE-PROVEN rows leaves an interp arm at 4/4 while CUR-NOWPM drops below ⇒ there IS an
+  interpretability-specific residual, and I say so.
+* I state now that I expect the first (because SEEDNOISE refuses only azerty b120, and azerty[120] is
+  exactly one of each arm's refused rows) — **and that this expectation, if it holds, only demotes ONE
+  fold per arm**. So the partition will probably show 3/4 folds surviving for every arm. **That is a
+  quantitative demotion of the "4/4" claim, not an exoneration of the frames**, and I register that
+  reading in advance so I cannot inflate it later.
+
+## §8.2 The SEEDNOISE floor is a LOWER bound on this gate's instability, and I register why
+
+SEEDNOISE has **3 seeds**, one reseed of one frame. It found 1 structural + 2 noise cells. A 3-seed
+sample cannot bound the false-refusal RATE — it establishes **existence** (the gate CAN refuse the
+incumbent) and nothing more. I will therefore NOT quote a false-refusal *probability*, and I will not
+claim the surviving rows are "clean" — only that they are not proven-noisy by THIS control. Registered
+as the honest limit of the instrument, before its number is used.
+
+## §8.3 The bootstrap I will report beside the registered verdict (INVARIANT 8)
+
+Resample WHICH SEEDS fill the incumbent baseline (all 3 choose-2 subsets, and the 3 singletons), and
+report how often each arm's structural verdict survives, per fold. This prices the verdict's
+dependence on the baseline's seed composition — the exact fragility SEEDNOISE demonstrates.
