@@ -1,0 +1,114 @@
+{
+ "prereg": "agent-artifacts/gatefolds/GATEFOLDS-preregistration.md",
+ "question": "do buckets that agree LESS with the volume-weighted rest take a MORE NEGATIVE rho hit?",
+ "independence": "anchor agreement is OBSERVED-only leave-one-bucket-out (no model); rho delta is a trained model's per-bucket Spearman minus the incumbent's. Different code paths, so the correlation is not an identity (prereg invariant 6).",
+ "null": "permute rho-delta labels WITHIN each fold, preserving fold-level rho levels",
+ "n_perm": 20000,
+ "correction": "my first pass zero-filled deltas for non-refused buckets, biasing the statistic up to +0.43/+0.48/+0.56; these numbers use every bucket's REAL delta",
+ "arms": {
+  "CUR-INVARIANT": {
+   "high": {
+    "n_cells": 12,
+    "spearman": 0.3636363636363637,
+    "null_sd": 0.19520803166383738,
+    "obs_over_null_sd": 1.862814560123081,
+    "one_sided_p": 0.00715
+   },
+   "all": {
+    "n_cells": 20,
+    "spearman": 0.39097744360902253,
+    "null_sd": 0.15106606594058924,
+    "obs_over_null_sd": 2.5881222309898826,
+    "one_sided_p": 0.05455
+   }
+  },
+  "CUR-NOWPM": {
+   "high": {
+    "n_cells": 12,
+    "spearman": 0.3636363636363637,
+    "null_sd": 0.19352280735352245,
+    "obs_over_null_sd": 1.879036215985035,
+    "one_sided_p": 0.00855
+   },
+   "all": {
+    "n_cells": 20,
+    "spearman": 0.39097744360902253,
+    "null_sd": 0.15136168937447325,
+    "obs_over_null_sd": 2.5830673879553028,
+    "one_sided_p": 0.05435
+   }
+  },
+  "HYBRIDB": {
+   "high": {
+    "n_cells": 12,
+    "spearman": 0.34965034965034975,
+    "null_sd": 0.22540127665239373,
+    "obs_over_null_sd": 1.5512350011644733,
+    "one_sided_p": 0.0567
+   },
+   "all": {
+    "n_cells": 20,
+    "spearman": 0.17142857142857143,
+    "null_sd": 0.15789644989674015,
+    "obs_over_null_sd": 1.0857025065521164,
+    "one_sided_p": 0.1231
+   }
+  },
+  "INTERP": {
+   "high": {
+    "n_cells": 12,
+    "spearman": 0.3076923076923077,
+    "null_sd": 0.2255700374326641,
+    "obs_over_null_sd": 1.3640655079651627,
+    "one_sided_p": 0.1488
+   },
+   "all": {
+    "n_cells": 20,
+    "spearman": 0.022556390977443608,
+    "null_sd": 0.13750635924103993,
+    "obs_over_null_sd": 0.16403889319695886,
+    "one_sided_p": 0.07355
+   }
+  },
+  "INTERP-NOMONO": {
+   "high": {
+    "n_cells": 12,
+    "spearman": 0.6853146853146854,
+    "null_sd": 0.2003043755746388,
+    "obs_over_null_sd": 3.421366524563607,
+    "one_sided_p": 0.05145
+   },
+   "all": {
+    "n_cells": 20,
+    "spearman": 0.3578947368421052,
+    "null_sd": 0.13785823218071966,
+    "obs_over_null_sd": 2.5961071107667886,
+    "one_sided_p": 0.00905
+   }
+  },
+  "CUR": {
+   "high": {
+    "n_cells": 12,
+    "spearman": -0.17241441596845056,
+    "null_sd": 0.2562365705540164,
+    "obs_over_null_sd": -0.6728720088458429,
+    "one_sided_p": 0.7326
+   },
+   "all": {
+    "n_cells": 20,
+    "spearman": 0.040153183161181015,
+    "null_sd": 0.15597331789275048,
+    "obs_over_null_sd": 0.2574362314251142,
+    "one_sided_p": 0.8069
+   }
+  }
+ },
+ "verdict": {
+  "n_arms_positive_sign": 5,
+  "n_arms": 6,
+  "arms_at_or_above_2_null_sd": [
+   "INTERP-NOMONO"
+  ],
+  "reading": "directionally consistent with the anchor mechanism on every arm, but only 1 of 6 arms reach 2 null-sd at n=12 -- SUGGESTIVE, NOT ESTABLISHED"
+ }
+}

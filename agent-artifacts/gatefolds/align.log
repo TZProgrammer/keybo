@@ -1,0 +1,25 @@
+[tree] keybo.__file__ = /local/home/zegertho/repos/keybo-wt-gatefolds/src/keybo/__init__.py
+[tree] branch = gatefolds  HEAD = 394a624
+[tree] threads = OMP=1
+
+========================================================================================================
+ALIGNMENT: Spearman(anchor agreement, rho delta) over the HIGH (fold,bucket) cells
+floor FIRST: the within-fold permutation null sd, then the statistic
+========================================================================================================
+  CUR-INVARIANT   n=12  null sd 0.1952   observed +0.3636   obs/null_sd  1.86   one-sided p 0.0072
+  CUR-NOWPM       n=12  null sd 0.1935   observed +0.3636   obs/null_sd  1.88   one-sided p 0.0086
+  HYBRIDB         n=12  null sd 0.2254   observed +0.3497   obs/null_sd  1.55   one-sided p 0.0567
+  INTERP          n=12  null sd 0.2256   observed +0.3077   obs/null_sd  1.36   one-sided p 0.1488
+  INTERP-NOMONO   n=12  null sd 0.2003   observed +0.6853   obs/null_sd  3.42   one-sided p 0.0515
+  CUR             n=12  null sd 0.2562   observed -0.1724   obs/null_sd -0.67   one-sided p 0.7326
+
+========================================================================================================
+WHAT THIS DOES AND DOES NOT ESTABLISH
+========================================================================================================
+  sign is POSITIVE on 5/6 arms (the direction the anchor mechanism predicts)
+  but only 1/6 arms reach 2 null-sd: ['INTERP-NOMONO']
+  => DIRECTIONALLY CONSISTENT, NOT ESTABLISHED. n=12 cells per arm is too few to settle it,
+     and I report it as SUGGESTIVE rather than as the mechanism's proof. The mechanism's
+     actual evidence is the CUR-INVARIANT control (4/4, a decisive design), not this rho.
+
+wrote /local/home/zegertho/repos/keybo-wt-gatefolds/agent-artifacts/gatefolds/align.json
