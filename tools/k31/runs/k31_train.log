@@ -1,0 +1,13 @@
+[     0.0s] loading bistrokes31_v1.tsv
+[   404.3s] 2202 bigram rows
+[   960.0s] LOLO gate: taus [1.0, 1.0] rho/ceiling 1.0135 (baseline 1.0236) => PASS
+[   975.3s] saved bigram_reg31_seed0
+[   990.8s] saved bigram_reg31_seed1
+[  1007.4s] saved bigram_reg31_seed2
+[  1010.6s] loading tristrokes31_cond_v1.tsv
+[  1399.2s] 16643 cond-trigram rows
+[  2611.1s] trigram LOLO sanity: taus [1.0, 1.0] rho/ceiling 0.9892 (direct-LOGRAT baseline 0.9928)
+[  2667.7s] saved trigram_cond31_seed0
+[  2724.6s] saved trigram_cond31_seed1
+[  2781.7s] saved trigram_cond31_seed2
+[  2781.7s] ALL-DONE

@@ -1,0 +1,13 @@
+[     0.0s] stage B: K31 BUF2-BOTH extraction
+[     0.6s] char maps built (31 keys each): qwerty+"'", azerty+'ù', dvorak+'-', qwertz+'ä'
+[     0.8s] 62095 qualifying files
+[    58.9s]   10000/62095 files
+[   121.9s]   20000/62095 files
+[   192.8s]   30000/62095 files
+[   269.3s]   40000/62095 files
+[   353.7s]   50000/62095 files
+[   445.2s]   60000/62095 files
+[   463.5s] extraction done: 29532228 bigram occ, 27672132 cond-trigram occ
+[   503.7s] wrote bistrokes31_v1.tsv + tristrokes31_cond_v1.tsv
+[   503.7s] bigram rows: 2202 total = 2111 plain + 91 quote-slot (220009 quote occurrences)
+[   503.7s] ALL-DONE
