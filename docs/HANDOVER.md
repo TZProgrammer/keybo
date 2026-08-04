@@ -29,9 +29,32 @@ frame-collapse` and every layout comparison run fine. Only *retraining* is block
 
 ### 1.2 BLOCKER — every branch with this session's code is LOCAL-ONLY
 
-`origin` has **only `main`** plus ledger-staging branches. All 14 branches below exist on **one machine**
-and a fresh clone loses them. Push them (or bundle: `git bundle create keybo-work.bundle --all`) **before
-decommissioning this host.**
+`origin` has **only `main`** plus ledger-staging branches. Measured: **90 of 91 local branches have no remote
+counterpart**, and **268 commits are unreachable from any remote ref**. All 14 branches in §3 exist on **one
+machine**, and a fresh clone loses them.
+
+**A verified bundle now exists** (this was the migration's real blocker, so it is done, not left as a step):
+
+```
+/local/home/zegertho/agent/state/keybo-optimization/artifacts/keybo-all-branches.bundle
+99,976,986 bytes   md5 8e096f94d25ec82c7da9d496a90b97c9   91 branches
+```
+
+It was validated by **actually cloning from it**, not by trusting `git bundle verify`: all **91/91 branch
+tips byte-identical**, file content md5-matched on 7 probe paths across 6 branches (`main:PREREGISTRATIONS.md`
+13,730L, `tcond:shap_diff.py` 1,390L, `framediag:frame_collapse.py` 634L, `pacefix:schema.py` 455L,
+`los:los.py` 301L, `productize:compare.py` 154L, `main:docs/HANDOVER.md`), **`git fsck` clean** (0
+non-dangling complaints), and a **negative control** confirming an absent path still fails — so the passes
+are real and not a vacuously-succeeding probe.
+
+Restore on the laptop with either:
+```bash
+git clone keybo-all-branches.bundle keybo                                   # fresh, all 91 branches
+git fetch ../keybo-all-branches.bundle 'refs/heads/*:refs/heads/*'          # into an existing clone
+```
+
+⚠ **Copy that file off this host before it is decommissioned.** It is the only copy of ~60 branches. It is
+*not* in git (100 MB), so it travels the same way as the data in §1.1.
 
 ### 1.3 Rescued artifact not in git
 
@@ -130,6 +153,17 @@ still: **not adoptable for anything** (SPLITPAIRS 24 vs the incumbent's 7).
 
 ## 7. OPEN ITEMS
 
+### 6.8 A registered bar too loose to separate signal from float noise (self-caught)
+`PACEFIX-1` registered "rank identity BREAKS iff rho(b40,b120) < 1.000000 AND rank-identical < 5/5". Its
+`depth6` arm returned rho = 0.9999998566886138 — which satisfies that bar **literally** while being a
+**1.4e-07** break, ~77,000× below the same gate's measured 0.0108 reseed floor. `n_rank_identical` is equally
+brittle: that same 1.4e-07 flips it 5/5 → 1/5 while changing nothing material. The agent reported **both**
+readings rather than banking the letter of its own bar, and filed a prereg addendum.
+
+**Rule earned: state a break as Δ divided by the measured floor, never as a fixed-decimal threshold or an
+identity count.** A 6-decimal bar cannot distinguish a real re-ordering from float noise. This is the eighth
+instance in this section and the only one an agent caught **against itself** before it reached a verdict.
+
 ### 7.1 SOLVED at handover — why every interpretability frame failed the gate
 **Cause (code + measured, `pacefix`):** `schema.py:365` sets
 `BIGRAM_INTERP_WPM_MONOTONE = (*BIGRAM_INTERP_MONOTONE, -1)` — **`wpm` itself is monotone-constrained at
@@ -160,6 +194,17 @@ same-frame-reseed control) and the MAXCORR/CONSTFRAC trade. **So "fixable" is es
 *mechanism*, not yet for the *cost*:** dropping the `wpm` constraint necessarily moves CONSTFRAC off
 0.0000, and nobody has measured what it does to wmae or to the interpretability bars. That is the first
 thing to run on the laptop, and it needs `bistrokes31_v1.tsv` (§1.1).
+**Do NOT read this as "ship unconstrained."** `INTERPFRAME-1` measured the constraints *helping*
+(drho +0.01265, W/L 12/12), and both `GATEFOLDS-1` and `GATEWHY-1` measured `INTERP-NOMONO` failing the gate
+*worse* (8 refused buckets vs 5; dvorak b120 −0.0289 → −0.1041). Those are the 10-column frame, so they are
+suggestive rather than decisive — but they make "unconstrain everything" the **least** likely version to
+survive pricing.
+
+**HIGHEST-VALUE NEXT ARM (~8 min, one variable, not run): the PARTIAL tuple — keep all 10 geometric
+constraints, set `wpm` ALONE to 0.** `hybrid-B` already precedents a partial tuple, so this needs no new
+machinery. Breaking the rank identity is **necessary, not sufficient**; the criterion is two-sided and only
+one side is measured.
+
 Resume from **§H of `state/pacefix/report.md`**. **It vendored three JSONs (md5s in its report) because
 its drivers read from the *unpushed* `gatefolds` worktree — check other branches for the same
 unpushed-sibling-path dependency.**
