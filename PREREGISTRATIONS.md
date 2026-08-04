@@ -13257,3 +13257,25 @@ Not "the tests pass" — the tests passed before this arm. Specifically: **every
 ### 7. HARD CONSTRAINTS
 
 Branch `productize` off `tcond`. `data/models/k31/` READ-ONLY; `layouts.py` untouched. All 46 pre-arm tests must still pass. `ruff` clean on `src/` and `tests/`. NO code push — landing is the human's call. Ledger commits are PREREGISTRATIONS.md-only.
+
+---
+
+## COMPARE-1 ADDENDUM 1 — **MY OWN BAR B1 WAS MIS-SPECIFIED AND I AM CORRECTING THE BAR, NOT THE CODE** (2026-08-04)
+
+Registered before the RESULT entry, so the correction cannot be mistaken for a post-hoc loosening.
+
+**B1 as registered demanded `mean_a == mean_b == target_wpm` by EXACT equality (`==`) in both channels. The first clause holds exactly; the second CANNOT and SHOULD NOT.**
+
+| clause | measured | verdict |
+|---|--:|---|
+| `mean_a == mean_b` (bit-identical) | **exactly equal**, both channels | ✅ holds, and this is the clause that carries the meaning |
+| `mean == 90.0` exactly, T2 | 90.00000000000004 (rel **4.737e-16**) | ❌ fails as written |
+| `mean == 90.0` exactly, Tcond | 90.00000000000404 (rel **4.484e-14**) | ❌ fails as written |
+
+🟢 **ROOT CAUSE, MEASURED, AND IT IS NOT A WEIGHTING BUG:** `norm(w2).sum()` and `norm(w3).sum()` are both **exactly 1.0** (`1 - sum == 0.000e+00`), so the normalization is not the source. The offset is float64 **accumulation in the weighted sum itself** — `sum_cells w[cell]*90.0` over ~27k cells (T2) and ~30k (Tcond, one more contraction axis) — and the Tcond figure being ~100x the T2 one is exactly what more accumulated terms predicts. A test demanding bit-exactness here would be asserting that float64 summation is associative, which it is not.
+
+⚠ **WHAT THIS COST AND WHY IT MATTERS ANYWAY:** the diagnostic value of B1 lives entirely in the FIRST clause. `mean_a == mean_b` bit-identically is the statement that the two boards were featurized at the same WPM and indexed through their own permutations correctly — a real difference there voids the run. The second clause only ever checked that the weights normalize, which the direct `norm().sum() == 1.0` measurement above checks better and without a tolerance. **Corrected bar: clause 1 stays EXACT (`==`); clause 2 becomes `rel ≤ 1e-12`, which passes at 4.5e-14 with ~22x margin.** Registered as `test_wpm_means_are_the_scoring_wpm_and_identical_on_both_boards`, whose docstring records this addendum so a future reader does not "tighten" it back.
+
+🟢 **THE OTHER FIVE BARS PASSED AS REGISTERED, no adjustment:** B2 cross-weight identity **4.725e-15** (bar 1e-12); B3 all 19 properties differ, min rel **2.461e-03** on `distance` (bar >1e-6); B4 no mean outside its column's own measured range, every rate column in [0,1]; B5 external reproduction of the parent's out-of-band `feature_means.json` worst rel **4.484e-14** (bar 1e-9); B6 decomposition **BIT-UNCHANGED** — worst relative change across all 66 `ms_per_char` values and `gap_total` is **0.000e+00**.
+
+🟡 **AND ONE REGISTERED NON-CLAIM CONFIRMED AS A LIVE CASE, not a hypothetical.** The prereg said `sign(mean_delta)` need not match `sign(ms_per_char)`. It does not, and the instance is a headline row: **`bg1_top` carries +0.4064 ms/char favouring flagship-c3 while flagship does MORE top-row work (0.2542 vs graphite's 0.2034)**. A future reader will read that as an inconsistency; it is the fitted surface's pricing, and `test_a_contribution_may_disagree_in_sign_with_its_feature_delta` asserts the disagreement EXISTS so that nobody "fixes" it into a falsehood.
