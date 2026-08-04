@@ -1,0 +1,438 @@
+{
+ "prereg": "agent-artifacts/hybridtri/HYBRIDTRI-preregistration.md @ 5a5d3c3 \u00a77",
+ "n_positions": 31,
+ "n_cells": 29791,
+ "n_columns": 46,
+ "A1_census": {
+  "a (first)": {
+   "n_columns_that_vary_with_this_key": 18,
+   "n_absolute_columns": 0,
+   "absolute_columns": [],
+   "n_relational_columns": 18,
+   "relational_columns": [
+    "same_hand_trigram",
+    "redirect",
+    "bad_redirect",
+    "sg_same_finger",
+    "sg_dx",
+    "sg_dy",
+    "sg_distance",
+    "bg1_same_hand",
+    "bg1_same_finger",
+    "bg1_adjacent",
+    "bg1_scissor",
+    "bg1_lsb",
+    "bg1_dx",
+    "bg1_dy",
+    "bg1_distance",
+    "bg1_angle",
+    "bg1_inwards",
+    "bg1_outwards"
+   ]
+  },
+  "b (middle)": {
+   "n_columns_that_vary_with_this_key": 33,
+   "n_absolute_columns": 8,
+   "absolute_columns": [
+    "bg1_bottom",
+    "bg1_home",
+    "bg1_top",
+    "bg1_pinky",
+    "bg1_ring",
+    "bg1_middle",
+    "bg1_index",
+    "bg1_lateral"
+   ],
+   "n_relational_columns": 25,
+   "relational_columns": [
+    "same_hand_trigram",
+    "redirect",
+    "bad_redirect",
+    "bg1_same_hand",
+    "bg1_same_finger",
+    "bg1_adjacent",
+    "bg1_scissor",
+    "bg1_lsb",
+    "bg1_dx",
+    "bg1_dy",
+    "bg1_distance",
+    "bg1_angle",
+    "bg1_inwards",
+    "bg1_outwards",
+    "bg2_same_hand",
+    "bg2_same_finger",
+    "bg2_adjacent",
+    "bg2_scissor",
+    "bg2_lsb",
+    "bg2_dx",
+    "bg2_dy",
+    "bg2_distance",
+    "bg2_angle",
+    "bg2_inwards",
+    "bg2_outwards"
+   ]
+  },
+  "c (third)": {
+   "n_columns_that_vary_with_this_key": 26,
+   "n_absolute_columns": 8,
+   "absolute_columns": [
+    "bg2_bottom",
+    "bg2_home",
+    "bg2_top",
+    "bg2_pinky",
+    "bg2_ring",
+    "bg2_middle",
+    "bg2_index",
+    "bg2_lateral"
+   ],
+   "n_relational_columns": 18,
+   "relational_columns": [
+    "same_hand_trigram",
+    "redirect",
+    "bad_redirect",
+    "sg_same_finger",
+    "sg_dx",
+    "sg_dy",
+    "sg_distance",
+    "bg2_same_hand",
+    "bg2_same_finger",
+    "bg2_adjacent",
+    "bg2_scissor",
+    "bg2_lsb",
+    "bg2_dx",
+    "bg2_dy",
+    "bg2_distance",
+    "bg2_angle",
+    "bg2_inwards",
+    "bg2_outwards"
+   ]
+  }
+ },
+ "A1_verdict": {
+  "a_has_zero_absolute_columns": true,
+  "n_absolute_a": 0,
+  "n_absolute_b": 8,
+  "n_absolute_c": 8,
+  "n_columns_varying_with_a": 18
+ },
+ "A2_recoverability": {
+  "a (first)": {
+   "n_contexts": 961,
+   "n_contexts_where_this_key_is_UNRECOVERABLE": 1,
+   "share_of_contexts": 0.001040582726326743,
+   "n_collapsed_pairs": 5
+  },
+  "b (middle)": {
+   "n_contexts": 961,
+   "n_contexts_where_this_key_is_UNRECOVERABLE": 1,
+   "share_of_contexts": 0.001040582726326743,
+   "n_collapsed_pairs": 5
+  },
+  "c (third)": {
+   "n_contexts": 961,
+   "n_contexts_where_this_key_is_UNRECOVERABLE": 1,
+   "share_of_contexts": 0.001040582726326743,
+   "n_collapsed_pairs": 5
+  }
+ },
+ "A2_verdict": {
+  "a_unrecoverable_share": 0.001040582726326743,
+  "b_unrecoverable_share": 0.001040582726326743,
+  "c_unrecoverable_share": 0.001040582726326743,
+  "refuting_pair_exists_for_a": true,
+  "a_is_STRICTLY_worse_than_b_and_c": false
+ },
+ "A2b_collapsing_contexts": {
+  "a (first)": [
+   {
+    "fixed_positions": [
+     [
+      0,
+      0
+     ],
+     [
+      0,
+      0
+     ]
+    ],
+    "both_fixed_are_space": true,
+    "n_groups": 5,
+    "all_groups_are_mirror_pairs": true,
+    "groups": [
+     {
+      "members": [
+       [
+        -1,
+        2
+       ],
+       [
+        1,
+        2
+       ]
+      ],
+      "is_mirror_pair": true
+     },
+     {
+      "members": [
+       [
+        -2,
+        2
+       ],
+       [
+        2,
+        2
+       ]
+      ],
+      "is_mirror_pair": true
+     },
+     {
+      "members": [
+       [
+        -3,
+        2
+       ],
+       [
+        3,
+        2
+       ]
+      ],
+      "is_mirror_pair": true
+     },
+     {
+      "members": [
+       [
+        -4,
+        2
+       ],
+       [
+        4,
+        2
+       ]
+      ],
+      "is_mirror_pair": true
+     },
+     {
+      "members": [
+       [
+        -5,
+        2
+       ],
+       [
+        5,
+        2
+       ]
+      ],
+      "is_mirror_pair": true
+     }
+    ]
+   }
+  ],
+  "b (middle)": [
+   {
+    "fixed_positions": [
+     [
+      0,
+      0
+     ],
+     [
+      0,
+      0
+     ]
+    ],
+    "both_fixed_are_space": true,
+    "n_groups": 5,
+    "all_groups_are_mirror_pairs": true,
+    "groups": [
+     {
+      "members": [
+       [
+        -2,
+        2
+       ],
+       [
+        2,
+        2
+       ]
+      ],
+      "is_mirror_pair": true
+     },
+     {
+      "members": [
+       [
+        -1,
+        2
+       ],
+       [
+        1,
+        2
+       ]
+      ],
+      "is_mirror_pair": true
+     },
+     {
+      "members": [
+       [
+        -3,
+        2
+       ],
+       [
+        3,
+        2
+       ]
+      ],
+      "is_mirror_pair": true
+     },
+     {
+      "members": [
+       [
+        -4,
+        2
+       ],
+       [
+        4,
+        2
+       ]
+      ],
+      "is_mirror_pair": true
+     },
+     {
+      "members": [
+       [
+        -5,
+        2
+       ],
+       [
+        5,
+        2
+       ]
+      ],
+      "is_mirror_pair": true
+     }
+    ]
+   }
+  ],
+  "c (third)": [
+   {
+    "fixed_positions": [
+     [
+      0,
+      0
+     ],
+     [
+      0,
+      0
+     ]
+    ],
+    "both_fixed_are_space": true,
+    "n_groups": 5,
+    "all_groups_are_mirror_pairs": true,
+    "groups": [
+     {
+      "members": [
+       [
+        -1,
+        2
+       ],
+       [
+        1,
+        2
+       ]
+      ],
+      "is_mirror_pair": true
+     },
+     {
+      "members": [
+       [
+        -2,
+        2
+       ],
+       [
+        2,
+        2
+       ]
+      ],
+      "is_mirror_pair": true
+     },
+     {
+      "members": [
+       [
+        -3,
+        2
+       ],
+       [
+        3,
+        2
+       ]
+      ],
+      "is_mirror_pair": true
+     },
+     {
+      "members": [
+       [
+        -4,
+        2
+       ],
+       [
+        4,
+        2
+       ]
+      ],
+      "is_mirror_pair": true
+     },
+     {
+      "members": [
+       [
+        -5,
+        2
+       ],
+       [
+        5,
+        2
+       ]
+      ],
+      "is_mirror_pair": true
+     }
+    ]
+   }
+  ]
+ },
+ "A2b_verdict": {
+  "every_collapse_is_in_the_space_space_context": true,
+  "every_collapse_is_a_LEFT_RIGHT_MIRROR_pair": true
+ },
+ "A2c_letter_only": {
+  "a (first)": {
+   "n_letter_contexts": 900,
+   "n_contexts_where_this_key_is_UNRECOVERABLE": 0,
+   "share_of_contexts": 0.0,
+   "n_collapsed_pairs": 0
+  },
+  "b (middle)": {
+   "n_letter_contexts": 900,
+   "n_contexts_where_this_key_is_UNRECOVERABLE": 0,
+   "share_of_contexts": 0.0,
+   "n_collapsed_pairs": 0
+  },
+  "c (third)": {
+   "n_letter_contexts": 900,
+   "n_contexts_where_this_key_is_UNRECOVERABLE": 0,
+   "share_of_contexts": 0.0,
+   "n_collapsed_pairs": 0
+  }
+ },
+ "A2c_verdict": {
+  "a_unrecoverable_share_letters": 0.0,
+  "b_unrecoverable_share_letters": 0.0,
+  "c_unrecoverable_share_letters": 0.0,
+  "any_key_unrecoverable_on_letters": false
+ },
+ "A3_impact": {
+  "distinct_feature_rows": 28006,
+  "collapsed_cells": 3570,
+  "collapsed_mass_share": 0.12434789299805067,
+  "searchable_nullspace_ms": 0.0,
+  "max_within_group_truth_spread_ms": 0.0,
+  "target_is_self_generated": true,
+  "target": "TimeSurface.triple_ms_table() = T2 + Tcond, self-generated wrt BOTH served frames"
+ }
+}
