@@ -47,9 +47,14 @@ you get a **different, entirely plausible-looking table** that silently invalida
 Use `tools/k31/k31_extract.py`. (An earlier draft of this document recommended `process-data` — that advice
 was wrong and is the reason `tools/k31/` now exists.)
 
-**What works with NO data at all:** the fitted surfaces are vendored in `data/models/k31/` (1.6 MB, 12 files,
-*in* the repo), so `keybo analyze`, `keybo compare`, `keybo frame-collapse` and every layout comparison run
-off a fresh clone. Only *retraining* needs the tables.
+**What works with NO data at all** (verified 2026-08-04 by cloning `origin/main` into a clean venv and
+running it): the fitted surfaces are vendored in `data/models/k31/` (1.6 MB, 12 files, *in* the repo), so
+**`keybo analyze` and every layout comparison run off a fresh clone** — `keybo analyze graphite` prints
+258.17 ms/char, matching §4. Only *retraining* needs the tables.
+
+⚠ But `keybo compare` and `keybo frame-collapse` are **NOT on `main`** — `compare` needs `tcond` →
+`productize` and `frame-collapse` needs `framediag` (§3). On a fresh `main` clone they fail with
+`invalid choice: 'compare'`. That is expected, not a broken clone.
 
 **Table shape, because it misleads on contact:** `bistrokes31_v1.tsv` is **2202 lines** but 582 MB — one line
 per `(layout, position-pair, bigram)` with every raw observation inline as `(wpm, ms, participant, 0)`, ~93k
