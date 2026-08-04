@@ -27,11 +27,17 @@ or regenerate via the `fetch-data`/`process-data` pipeline. **What still works w
 `data/models/k31/` surfaces (1.6 MB, *in* the repo), so `keybo analyze`, `keybo compare`, `keybo
 frame-collapse` and every layout comparison run fine. Only *retraining* is blocked.
 
-### 1.2 BLOCKER — every branch with this session's code is LOCAL-ONLY
+### 1.2 ~~BLOCKER~~ RESOLVED — all 91 branches are now on `origin`
 
-`origin` has **only `main`** plus ledger-staging branches. Measured: **90 of 91 local branches have no remote
-counterpart**, and **268 commits are unreachable from any remote ref**. All 14 branches in §3 exist on **one
-machine**, and a fresh clone loses them.
+**This is fixed. `git clone` now gets everything — you no longer have to copy anything to get the code.**
+
+It *was* the migration's real blocker: `origin` had only `main` plus ledger-staging branches, so **90 of 91
+local branches had no remote counterpart** and **268 commits were unreachable from any remote ref** — a fresh
+clone lost essentially all of this session's work. All 90 have now been pushed.
+
+Verified after pushing (not inferred from the push output, which reported `rc=0` from a *grep* while pushing
+nothing — see §9.1): **all 91 tips byte-identical local vs `origin`**, **`git rev-list --count --all --not
+--remotes` = 0** (was 268), and a negative control confirming a bogus branch name still fails to resolve.
 
 **A verified bundle now exists** (this was the migration's real blocker, so it is done, not left as a step):
 
@@ -53,8 +59,9 @@ git clone keybo-all-branches.bundle keybo                                   # fr
 git fetch ../keybo-all-branches.bundle 'refs/heads/*:refs/heads/*'          # into an existing clone
 ```
 
-⚠ **Copy that file off this host before it is decommissioned.** It is the only copy of ~60 branches. It is
-*not* in git (100 MB), so it travels the same way as the data in §1.1.
+The bundle is now a **belt-and-braces second copy, no longer the only one** — the branches are on `origin`.
+Copy it if you want an offline snapshot; skip it if you are cloning from GitHub. **§1.1 (the 28 GB of stroke
+data) is now the ONLY remaining out-of-band transfer.**
 
 ### 1.3 Rescued artifact not in git
 
@@ -303,3 +310,15 @@ the resume command) and the committed JSON, not the status file.
   fix would be wrong. The one thing that does deserve a ledger line is the §7.3 C2 correction.
 - **Every decision that was yours stays yours:** the adopt call, the landing order (`tcond` → `productize` →
   `fm4`, which cannot be reordered), any production-corpus swap, and the branch deletions.
+
+### 9.5 Pushed at wrap-up — and the trap that nearly hid it
+All **90** non-`main` branches were pushed to `origin` (§1.2), taking unreachable-from-remote commits from
+**268 → 0**. The first attempt pushed **nothing** while appearing to succeed: `REFS=$(awk ...)` built a
+space-separated refspec string, zsh passed it as **one** argv, and git answered
+`fatal: invalid refspec 'refs/heads/a:refs/heads/a refs/heads/b:...'` — but the loop printed `rc=0` because
+`$?` came from the **`grep` at the end of the pipe**, not from `git push`. Two documented traps stacking, both
+already in §9.1, both hit anyway.
+
+**Fix:** `xargs -a refspecs.txt -n 25 git push origin` (separate argv per refspec), then verify against
+`origin` directly — `git ls-remote --heads` diffed against `git for-each-ref refs/heads`, plus a negative
+control. **Never accept a push as landed on the basis of the command's own reported status.**
