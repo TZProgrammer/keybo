@@ -16,6 +16,7 @@ from keybo.cli import (
     optimize,
     process_data,
     score,
+    shap_diff,
     shap_report,
     train,
     tune,
@@ -37,6 +38,7 @@ _COMMANDS = {
     "analyze": analyze,
     "inspect": inspect,
     "shap-report": shap_report,
+    "shap-diff": shap_diff,
     "effect-curves": effect_curves,
     "layout-diff": layout_diff,
 }
