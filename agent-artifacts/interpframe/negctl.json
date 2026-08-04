@@ -1,0 +1,34 @@
+{
+ "expected": {
+  "card_flagship_c3": 254.9761,
+  "card_graphite": 258.1696,
+  "gap_total": 3.1934,
+  "gap_t2": 0.9981,
+  "gap_tcond": 2.1953,
+  "t2_bottom": 0.7453,
+  "t2_wpm": -0.0922,
+  "t2_lateral": -0.1362,
+  "t2_dx": 0.1678,
+  "tcond_bg2_bottom": 0.7382,
+  "tcond_bg1_bottom": -0.2337
+ },
+ "measured": {
+  "card_flagship_c3": 254.9761188060974,
+  "card_graphite": 258.1695631301549,
+  "gap_total": 3.1934436462523195,
+  "gap_t2": 0.9981034921613627,
+  "gap_tcond": 2.1953401540909567,
+  "t2_bottom": 0.745312201464654,
+  "t2_wpm": -0.09218157967904322,
+  "t2_lateral": -0.1362065864509128,
+  "t2_dx": 0.1678204009367888,
+  "tcond_bg2_bottom": 0.7381605097234633,
+  "tcond_bg1_bottom": -0.23365590217135077
+ },
+ "tol": 0.0005,
+ "all_pass": true,
+ "reconciles": true,
+ "structural": {
+  "bg1_bg2_bottom_opposite_signs": true
+ }
+}
