@@ -1,0 +1,44 @@
+{
+ "n_cells": 961,
+ "covered_mass": 887147352,
+ "frames": {
+  "served (20c)": {
+   "n_columns": 20,
+   "distinct_feature_rows": 765,
+   "collapsed_cells": 380,
+   "collapsed_share": 0.39542143600416235,
+   "corpus_mass_share_in_collapsed_groups": 0.5351425543115412,
+   "floor_wmae_ms": 3.149560915212365e-15,
+   "floor_umae_ms": 0.0,
+   "largest_group": 4
+  },
+  "interp (10c)": {
+   "n_columns": 10,
+   "distinct_feature_rows": 378,
+   "collapsed_cells": 817,
+   "collapsed_share": 0.850156087408949,
+   "corpus_mass_share_in_collapsed_groups": 0.9318534955171686,
+   "floor_wmae_ms": 2.2398598517602277,
+   "floor_umae_ms": 2.798086032044259,
+   "largest_group": 16
+  },
+  "interp-wpm (11c)": {
+   "n_columns": 11,
+   "distinct_feature_rows": 378,
+   "collapsed_cells": 817,
+   "collapsed_share": 0.850156087408949,
+   "corpus_mass_share_in_collapsed_groups": 0.9318534955171686,
+   "floor_wmae_ms": 2.2398598517602277,
+   "floor_umae_ms": 2.798086032044259,
+   "largest_group": 16
+  }
+ },
+ "verdict": {
+  "floor_wmae_served": 3.149560915212365e-15,
+  "floor_wmae_interp": 2.2398598517602277,
+  "floor_gap_ms": 2.2398598517602246,
+  "measured_lolo_wmae_gap_ms": 5.765397712820333,
+  "share_of_measured_gap_explained_by_the_floor": 0.38850049265110004,
+  "h3_confirmed": true
+ }
+}
