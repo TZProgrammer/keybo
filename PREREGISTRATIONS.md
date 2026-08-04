@@ -13193,3 +13193,78 @@ all independent of q04's floor.
 🟢 **AND IT SHARPENS THE GATE RECOMMENDATION (GATEAUDIT-1): at the recommended band (0.90, 1.10) the trigram surface FAILS ON dvorak (0.7304) AND azerty (0.8563), while the bigram surface fails only on qwerty.** So a gate scoped to {pooled, bucket_centered} would flag **different folds in the two channels** — which is the gate working, not misfiring: 0.73 is a 27% magnitude understatement and deserves a verdict. ⚠ **But it means "adopting the gate flags exactly one fold" is TRUE FOR BIGRAMS ONLY. Anyone landing the gate should expect 2 of 4 trigram folds to fail on day one.** Per-bucket detail (qwerty seed 0) shows the trigram channel is well-behaved WITHIN buckets — only `bucket_40` is out of band (1.2194) and every bucket is thickly supported (n = 2831–3690), unlike the bigram channel's thin n=64 buckets that drove the false-flag problem.
 
 🔴 **A PROCESS FAILURE OF MINE WORTH THE RECORD: MY FIRST ATTEMPT AT THIS BURNED 21 MINUTES AND RETURNED ALL-`None` WITH `rc=0`.** The driver harvested `rec["calibration_gate"]` — a key that exists ONLY on branch `calib` — while running against `main`, where `git grep` finds ZERO occurrences. `.get()` on a missing key returns `None` rather than raising, so the script exited 0 and looked successful. ⇒ **`rc=0` PLUS ALL-`None` OUTPUT IS THE SIGNATURE OF A KEY-NOT-PRESENT BUG, NOT A MEASUREMENT — the same family as the empty-intersection nan cascade that printed "fastest = qwerty" for all 27 boards. A driver must assert that every key it reads EXISTS on the tree it runs against.** ⚠ **And the gate was never needed for this question: `calibration_slope` is on `main` already (`validate.py:249` per bucket, plus the per-seed top-level key). I reached for a branch-only artifact when the plain number was in hand.**
+
+## SHAPDIFF-1 (PREREG) — **PER-FEATURE TreeSHAP ATTRIBUTION OF A LAYOUT-PAIR ms/char GAP. Registered BEFORE any number exists.** (2026-08-04)
+
+**QUESTION (user's words):** "For every bigram, we calculate the SHAP of each feature on the speed metric, we then SUM all of the contributions WEIGHTED BY CORPUS FREQUENCY, and get the DIFFERENCE between these results for both layouts." Applied to `flagship-c3` vs `graphite`. Deliverable is a reusable in-repo tool + the analysis.
+
+### §0. TWO CORRECTIONS TO MY BRIEF, ESTABLISHED FROM CODE BEFORE MEASURING (so they cannot be post-hoc)
+
+🟢 **C1 — THE COVERAGE-ASYMMETRY CONFOUND DOES NOT EXIST FOR THIS PAIR, AND THE "co-observed vs each-board-own" DECISION I WAS TOLD TO MAKE IS VACUOUS.** `flagship-c3` = `pyou'vgdnmheai.cstrlkjz,-wfbxq` and `graphite` = `bldwz'foujnrtsgyhaeixqmcvkp,.-` are **permutations of the SAME 30-character set** (`set(f) == set(g)`, both 30 distinct, symmetric difference EMPTY). `TimeSurface.card` skips an n-gram iff a character is absent from the board, and absence is a property of the CHARSET, not the arrangement — so both boards cover **bit-identically the same trigrams**, the same `covered` mass, and the same `ms_per_char` denominator. The 88.7%/88.7% agreement my brief flagged as "not the same 88.7%" is in fact **the same 88.7%**. ⇒ registered: I run ONE support convention, and the co-observed-vs-own split is reported as *inapplicable-by-construction* rather than measured. **If `covered_flagship != covered_graphite` when I measure it, C1 is FALSE and I must say so.**
+
+🟢 **C2 — "the T2 channel is weighted by corpus BIGRAM frequency" IS WRONG; it is weighted by the trigram table's FIRST-TWO-CHARACTER MARGINAL.** `TimeSurface.card` iterates `self.tri` only and accumulates `T2[a,b]*f` per TRIGRAM, so the effective bigram weight is `w2(a,b) = sum_c tri(a,b,c)` over trigrams whose all three chars are on the board — **not** `bigrams.txt`. `triple_ms_table`'s own docstring records that using `bigrams.txt` here is ~1.5e-2 wrong. ⇒ registered: my weights are the trigram marginal, and I will report the `bigrams.txt` variant only as a NEGATIVE CONTROL (expected to MISS reconciliation).
+
+### §1. THE SPACE DECISION — **RESOLVED EXACTLY, NOT BY LINEARIZATION. The "log vs ms" tradeoff my brief called central is a FALSE DILEMMA.**
+
+The booster predicts `p = log(ms*wpm/12000)`; `ms = K*exp(p)` with `K = 12000/wpm`. TreeSHAP is exact/additive in `p`, so per-bigram `sum_i shap_i + base = p`. The brief offered: (a) report logs (exact, wrong units), (b) first-order linearize (approximate, must report residual), (c) multiplicative. **I register (d): the LOG-MEAN DIVISIA (LMDI) weight, which is an ALGEBRAIC IDENTITY with ZERO linearization residual.** For one bigram cell,
+
+    L(a,b) = (ms_B - ms_A) / (p_B - p_A)     [and L := (ms_A+ms_B)/2 when p_B == p_A]
+    ms_B - ms_A  ==  L * (p_B - p_A)  ==  L * sum_i (shap_i^B - shap_i^A)   EXACTLY
+
+so `attrib_i(a,b) = L(a,b) * (shap_i^B(a,b) - shap_i^A(a,b))` sums over `i` to the cell's exact ms difference, and any frequency-weighted linear combination of cells inherits the identity. **Pre-registered floor: this is a pure float-error identity, and I verified the ALGEBRA standalone before writing this entry (200k synthetic cells incl. exact ties, 1e-15 relative). The measured pipeline residual bar is set in §3 accordingly.** For contrast, the same synthetic check priced the alternatives my brief named: first-order-at-A is **3997% wrong** and midpoint-weighted is **1.65% wrong** — so (b) was not a small-cost option, and (d) costs nothing. ⚠ **THE PRICE OF (d), REGISTERED HONESTLY: `L` is a PAIR-SPECIFIC weight** (it depends on both boards' predictions at that cell), so an LMDI ms attribution is a property of the A→B COMPARISON, not of either board alone. A per-board "ms budget" is NOT what this produces and I will not print one. The log-space per-board attribution IS well defined and is reported alongside.
+
+### §2. WHAT IS BEING DECOMPOSED — registered as an explicit chain, because the T2/Tcond split is where a silent over-claim would live
+
+`analyze`'s gauge is `ms_per_char = sum_tri f*(T2[a,b] + Tcond[a,b,c]) / covered`. The user's "for every bigram" maps onto **T2 ONLY**. I register the chain and will report every link with a number:
+
+    gap_total   = ms/char(graphite) - ms/char(flagship-c3)        [my own measurement, NOT the brief's 3.19]
+    gap_T2      = the T2-channel part                              <- THIS is what SHAP decomposes
+    gap_Tcond   = the conditioned-trigram part                     <- NOT bigram-decomposable; reported as a residual channel
+    gap_T2 + gap_Tcond == gap_total                                <- exact by construction; asserted
+    sum_i weighted_attrib_i == gap_T2                              <- the SHAP reconciliation; asserted
+
+⚠ Registered as a HARD RULE: **I will not present a per-feature table as explaining `gap_total`.** The headline states the decomposed share `gap_T2/gap_total` as a number. **If `gap_T2` has the OPPOSITE SIGN to `gap_total` (i.e. flagship-c3 is T2-SLOWER and wins only on Tcond), that is the finding and it leads the report**, superseding any feature ranking.
+
+⚠ Registered: T2 is the **seed-MEAN over 3 boosters** (`_SEEDS`), and SHAP of a mean == mean of SHAPs (linearity), so I attribute per seed and average. `predict_ms` is applied per seed BEFORE the mean, so `L` is computed on the seed-mean ms and the seed-mean `p` is `log`-of-mean-ms recovered by inversion — **registered discipline: I take `p_seedmean := log(msmean*wpm/12000)` and use per-seed SHAP deltas rescaled to sum to `p_seedmean`'s delta, OR attribute per seed and average the ms attributions. I will implement whichever passes §3's bar and REPORT WHICH, plus the size of the discrepancy between them.**
+
+### §3. RECONCILIATION BARS — PASS/FAIL, REGISTERED BEFORE MEASURING
+
+| # | Identity | Bar (relative unless stated) | On failure |
+|---|---|---|---|
+| R1 | TreeSHAP additivity per row: `base + sum_i shap_i == booster.predict` | ≤ 1e-5 abs in log space (float32 booster; a sibling measured 1.9e-06) | tool is wrong; stop |
+| R2 | LMDI cell identity: `sum_i attrib_i == ms_B - ms_A` per cell | ≤ 1e-9 rel | stop |
+| R3 | **THE HEADLINE:** `sum_i weighted_attrib_i == gap_T2` | ≤ 1e-9 rel | stop; no interpretation |
+| R4 | Channel split: `gap_T2 + gap_Tcond == gap_total` | ≤ 1e-9 rel | stop |
+| R5 | My `gap_total` vs the shipped `analyze` ms/char (254.98 / 258.17) | ≤ 0.01 ms/char abs | **MY BRIEF'S NUMBERS ARE WRONG — report prominently, trust my own** |
+| R6 | Coverage equality (C1): `covered_f == covered_g` | exact | C1 is FALSE — report, and run both support conventions |
+
+**NEGATIVE CONTROL, registered as MANDATORY before any interpretation:** re-run the weighting with `bigrams.txt` instead of the trigram marginal (§0 C2). It MUST FAIL R3. A control that PASSES means my weighting is not what the gauge uses, and the whole result is void. **A second control: shuffle the per-cell SHAP-delta vectors across cells; R3 must then FAIL.** (An identity that holds under shuffling is arithmetic, not attribution.)
+
+### §4. CORPUS + ROBUSTNESS — registered decision rule
+
+Primary = `blend-v1` (the shipped default). Secondary = `iweb` (reproduces frozen boards). Both are run. **Registered rule for calling the answer corpus-robust: (i) the SIGN of every feature in the top-5 by |contribution| agrees across corpora, AND (ii) Spearman rho over all 20 features' signed contributions ≥ 0.90. If either fails, the report's headline says the attribution is corpus-SENSITIVE and names the features that flip.** No post-hoc redefinition of "robust".
+
+### §5. GAUGE CROSS-CHECK (my brief's INVARIANT 3) — registered as a FALSIFIABLE prediction, direction-of-agreement fixed in advance
+
+The brief's gauge table says graphite is better on `sfb`/`lsb`/`roll`, flagship better on `sfs`/`lat-span`/`scissor`/`redir`/`alt`. The 20-column frame has `same_finger`, `lsb`, `scissor`, `adjacent`, `same_hand`, `dx/dy/distance/angle`, `inwards/outwards`, row+finger one-hots. **Registered expectations (each individually falsifiable):**
+- E1: `same_finger` should attribute AGAINST flagship-c3 (graphite has better sfb 1.526 vs 1.654). A pro-flagship `same_finger` contribution is a DISAGREEMENT and gets escalated, not smoothed.
+- E2: `lsb` should attribute AGAINST flagship-c3 (graphite 0.559 vs 0.797). ⚠ but the brief itself notes `lsb` correlates with speed at <0.10, so a NULL `lsb` contribution is the third possible outcome and is NOT a disagreement.
+- E3: `scissor` should favour flagship-c3 (0.089 vs 0.517).
+- E4: the lateral-span story (flagship 4.192 vs graphite 5.801, the gauge that correlates best at +0.3137) should surface as `dx`/`distance`/`lateral`-family contributions favouring flagship-c3.
+⚠ **Registered a-priori caution: `sfb`/`sfs`/`lsb`/`scissor` gauges are computed on DIFFERENT denominators and different n-gram tables from the model's frame; a mismatch in MAGNITUDE is expected and is NOT a finding. Only a SIGN conflict is.** And a SHAP attribution is an attribution ON THIS MODEL — never a biomechanical claim.
+
+### §6. WHAT I WILL NOT DO / WHAT THE TOOL CANNOT SEE (registered as constraints on myself)
+
+- I will NOT adopt, promote, or recommend a layout; `src/keybo/layouts.py` is untouched; `data/models/k31/` is never written.
+- I will NOT claim the tool explains anything the frame cannot encode. Registered now, from `features/schema.py`: the served frame carries **NO hand-identity channel** and **NO direction-of-travel channel** (`inwards`/`outwards` are SWAP-INVARIANT — 0 of 870 ordered pairs change under reversal, per the schema docstring), so any left/right or roll-direction story is OUTSIDE this decomposition. The row/finger one-hots describe the **LANDING key only**.
+- `wpm` is a constant column at a fixed scoring WPM, so its SHAP DELTA between two boards must be ~0. **Registered as a self-test: a non-zero `wpm` contribution means my two feature matrices differ in the wpm column and the run is void.**
+- Magnitudes carry known model error: bigram qwerty fold calibration slope 1.407 (CALIB-1), trigram folds dvorak 0.7304 / azerty 0.8563 (TRIGRAM-CALIB-1). Orderings are affine-invariant; ms MAGNITUDES are not. Registered: I quote magnitudes as model-internal, with this caveat attached.
+- The PINKY-FIT position calibration in `TableBigramScorer` is a per-position multiplicative factor OUTSIDE the feature path. 🟢 **Verified inert for these artifacts: all three `bigram_reg31_seed*` sidecars carry `calibration: None`.** Registered as a guard: the tool ASSERTS the loaded models carry no calibration deltas, rather than assuming it — a calibrated model would break the SHAP-sums-to-T2 identity silently.
+
+### §7. THE TOOL (my brief's INVARIANT 2) — registered scope
+
+A module (`keybo.analysis.shap_diff`) + a CLI subcommand in the existing `keybo.cli` style, taking two layouts by name-or-string and a corpus, with tests that assert **the identities of §3 (R1–R4), not merely that it runs**, plus the §3 negative control as a test. It must work for ANY pair, not just this one. A one-off driver in an artifacts dir does NOT satisfy this.
+
+### §8. HONESTY CLAUSE
+
+If R3 fails, I report a FAILED TOOL and no feature story — a ranked table that does not reconcile is worse than no table. If the answer is "the bigram channel explains only a small share of the gap", that is the result and it leads. **Every number in my brief (3.19 ms/char, 254.98, 258.17, the 8 gauges) is treated as UNVERIFIED until I reproduce it; where I disagree, I say MY BRIEF IS WRONG and give my own number.** Confidence tags: 🟢 VERIFIED = I ran it; 🟡 HIGH = read from code; 🟠 INFERRED; 🔴 UNCERTAIN.
