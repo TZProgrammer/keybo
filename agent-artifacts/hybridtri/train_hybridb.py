@@ -76,7 +76,9 @@ for s in SEEDS:
         "interp_frame": rec,
         "target_space": m.target_space,
     }
-    log(f"  saved {path}  stamp={m.metadata.feature_version}  mono={rec.get('monotone_constraints')}")
+    log(
+        f"  saved {path}  stamp={m.metadata.feature_version}  mono={rec.get('monotone_constraints')}"
+    )
 
 with open(f"{ARTIFACTS}/train_hybridb.json", "w") as fh:
     json.dump(out, fh, indent=1, default=float)
