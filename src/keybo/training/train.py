@@ -72,14 +72,18 @@ import numpy as np
 from keybo.data.strokes import StrokeRow, iqr_average
 from keybo.features import (
     bigram_features_from_positions,
+    interp_features_from_positions,
     trigram_features_from_positions,
 )
 from keybo.features.schema import (
     BIGRAM_DIRECTION_FEATURE_NAMES,
     BIGRAM_FEATURE_NAMES,
+    BIGRAM_INTERP_FEATURE_NAMES,
+    BIGRAM_INTERP_MONOTONE,
     BIGRAM_KITCHENSINK_FEATURE_NAMES,
     FEATURE_VERSION,
     FEATURE_VERSION_DIRECTION,
+    FEATURE_VERSION_INTERP,
     FEATURE_VERSION_KITCHENSINK,
     TRIGRAM_DIRECTION_FEATURE_NAMES,
     TRIGRAM_FEATURE_NAMES,
@@ -162,6 +166,7 @@ def _rows_to_examples(
     target_space: str = "MS",
     direction: bool = False,
     kitchensink: bool = False,
+    interp: bool = False,
 ):
     """Yield (feature_vector, target) per WPM group in a stroke row.
 
@@ -174,6 +179,14 @@ def _rows_to_examples(
     external-project channels; :data:`BIGRAM_KITCHENSINK_FEATURE_NAMES` /
     :data:`TRIGRAM_KITCHENSINK_FEATURE_NAMES`). It implies ``direction``, so the three trainable
     frames are narrow / widened / kitchen-sink and each has its own version stamp.
+
+    ``interp=True`` builds INTERPFRAME-1's 10-column interpretability frame
+    (:data:`BIGRAM_INTERP_FEATURE_NAMES`). Unlike the two flags above it is NOT a widening: it
+    REPLACES the served columns, so it is mutually exclusive with both and bigram-only. ⚠ It has
+    no ``wpm`` column, so the WPM group still selects the TARGET (each group is a separate
+    example at its own observed pace) but no longer appears as an input — which is exactly the
+    constant-column artifact the frame exists to remove, and equally exactly why a model on this
+    frame cannot span a WPM range.
     """
     by_wpm: dict[int, list[int]] = defaultdict(list)
     for wpm, duration, _pid, _hold in row.samples:
@@ -181,7 +194,9 @@ def _rows_to_examples(
 
     for wpm, durations in by_wpm.items():
         target = _group_target(durations, wpm, target_space)
-        if ngram == "bigram":
+        if interp:
+            vec = interp_features_from_positions(geometry, row.positions, wpm=wpm)
+        elif ngram == "bigram":
             vec = bigram_features_from_positions(
                 geometry, row.positions, wpm=wpm, direction=direction, kitchensink=kitchensink
             )
@@ -248,6 +263,7 @@ def _build_matrix_full(
     target_space="MS",
     direction=False,
     kitchensink=False,
+    interp=False,
 ):
     """(X, y, example ngram ids, example layouts, example raw-sample counts).
 
@@ -265,7 +281,7 @@ def _build_matrix_full(
     counts: list[float] = []
     for row in iterator:
         for vec, target, n in _rows_to_examples(
-            row, geometry, ngram, target_space, direction, kitchensink
+            row, geometry, ngram, target_space, direction, kitchensink, interp
         ):
             features.append(vec)
             targets.append(target)
@@ -332,9 +348,26 @@ def _train(
     calibration=False,
     direction=False,
     kitchensink=False,
+    interp=False,
+    monotone=True,
     **params,
 ) -> XGBoostTypingModel:
     target_space = normalize_target_space(target_space)
+    if interp:
+        # REFUSED, not silently ignored. `interp` REPLACES the served columns rather than widening
+        # them, so every combination below would produce a frame whose stamp lies about its
+        # columns -- and the stamp is the only thing standing between a model and being scored on
+        # the wrong matrix.
+        if direction or kitchensink:
+            raise ValueError(
+                "interp=True REPLACES the served frame (10 columns), so it cannot be combined "
+                "with direction=/kitchensink=, which WIDEN it"
+            )
+        if ngram != "bigram":
+            raise ValueError(
+                f"interp=True is a bigram-only frame (INTERPFRAME-1 is a T2-channel POC); "
+                f"got ngram={ngram!r}"
+            )
 
     # Targets are built directly in the model's target space (per-sample log aggregation
     # for LOGRAT — PACE-2 ANCHOR-PS).
@@ -346,6 +379,7 @@ def _train(
         target_space=target_space,
         direction=direction,
         kitchensink=kitchensink,
+        interp=interp,
     )
     # The version stamp and the name list move TOGETHER with the frame: a widened model records
     # FEATURE_VERSION_DIRECTION so it can never load where a served model is expected (base.py
@@ -354,7 +388,21 @@ def _train(
     # skew DIRECTION-1 refused to create. The kitchen-sink frame is the third population and gets
     # the third stamp on the same principle — and it is checked FIRST because it implies
     # ``direction``, so an `if direction` test would otherwise claim a kitchen-sink model.
-    if kitchensink:
+    if interp:
+        # Checked FIRST for the same reason kitchensink is checked before direction: the frames are
+        # mutually exclusive and the first matching branch wins, so the most specific goes first.
+        # (The refusals above already make an illegal combination unreachable; this ordering is
+        # what keeps that true if a later flag is added.)
+        names = BIGRAM_INTERP_FEATURE_NAMES
+        stamp = FEATURE_VERSION_INTERP
+        # The monotone constraints ride WITH the frame, because they are part of what the frame
+        # CLAIMS: each sign is the mechanism its column name asserts (see BIGRAM_INTERP_MONOTONE).
+        # A caller can turn them off to price the constraint itself (INTERPFRAME-1 §5d) -- and
+        # `monotone=False` must then be visible in the artifact, or two models with different
+        # constraint sets would be indistinguishable after saving.
+        if monotone:
+            params = {**params, "monotone_constraints": tuple(BIGRAM_INTERP_MONOTONE)}
+    elif kitchensink:
         names = (
             BIGRAM_KITCHENSINK_FEATURE_NAMES
             if ngram == "bigram"
@@ -377,7 +425,11 @@ def _train(
         wpm_range=wpm_range,
         ngram=ngram,
     )
-    if len(y):
+    # The interp frame has no ``wpm`` column, so ``names.index("wpm")`` would raise. Only the
+    # first-finger calibration branch below reads ``wpm_col``, and that branch is unreachable for
+    # this frame (it needs the served bigram columns), so the guard is the honest form -- rather
+    # than inventing a wpm vector the frame deliberately does not carry.
+    if len(y) and "wpm" in names:
         wpm_col = np.maximum(X[:, names.index("wpm")], 1.0)
 
     # First-finger calibration (PINKY-FIT): OFF by default since CAL-REMOVE (2026-07-12).
@@ -428,6 +480,21 @@ def _train(
         else None
     )
 
+    # Recorded in the artifact because the constraint set is NOT recoverable from the saved
+    # booster: xgboost bakes the constraints into the tree structure at fit time and does not
+    # serialize the parameter, so two models trained with and without them would be
+    # indistinguishable after `save()` -- and "was this constrained?" is the whole question
+    # INTERPFRAME-1 §5 asks. Written as the resolved value actually passed to xgboost, not as the
+    # `monotone` flag, so the record cannot drift from the fit.
+    frame_tag = (
+        {
+            "frame": "interp",
+            "monotone_constraints": list(params.get("monotone_constraints") or ()),
+        }
+        if interp
+        else None
+    )
+
     if not practice_term or not len(y):
         model = fit(y)
         model.metadata.extra["training"] = {
@@ -435,6 +502,7 @@ def _train(
             "practice_term": None,
             "layout_weights": bool(weights is not None),
             "calibration": calibration_tag,
+            "interp_frame": frame_tag,
         }
         return model
 
@@ -458,6 +526,7 @@ def _train(
         },
         "layout_weights": bool(weights is not None),
         "calibration": calibration_tag,
+        "interp_frame": frame_tag,
     }
     return model
 
@@ -474,6 +543,8 @@ def train_bigram_model(
     calibration: bool = False,
     direction: bool = False,
     kitchensink: bool = False,
+    interp: bool = False,
+    monotone: bool = True,
     **params,
 ) -> XGBoostTypingModel:
     """Fit a bigram typing-time model from bistroke rows (R1W + LOGRAT recipe).
@@ -489,6 +560,12 @@ def train_bigram_model(
     ``kitchensink=True`` trains on the KITCHEN-SINK frame (the widened frame plus the twelve
     external-project channels) and stamps ``FEATURE_VERSION_KITCHENSINK``. It implies
     ``direction`` and takes precedence over it, so the three model populations stay disjoint.
+
+    ``interp=True`` trains on INTERPFRAME-1's 10-column INTERPRETABILITY frame and stamps
+    ``FEATURE_VERSION_INTERP``. Unlike ``direction``/``kitchensink`` it REPLACES the served
+    columns rather than widening them, so combining it with either is REFUSED, and it applies
+    ``BIGRAM_INTERP_MONOTONE`` unless ``monotone=False`` (which exists to price the constraint
+    itself -- INTERPFRAME-1 §5d -- and is recorded in the artifact).
 
     ``progress`` is consumed here (feature-build bar), never forwarded into ``**params`` --
     XGBoost silently ignores unknown keyword params, so a leak would be invisible.
@@ -506,6 +583,8 @@ def train_bigram_model(
         calibration=calibration,
         direction=direction,
         kitchensink=kitchensink,
+        interp=interp,
+        monotone=monotone,
         **params,
     )
 

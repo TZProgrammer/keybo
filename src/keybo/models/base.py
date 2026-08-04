@@ -82,7 +82,7 @@ class TypingModel(ABC):
             )
         return space
 
-    def to_ms(self, pred: np.ndarray, X: np.ndarray) -> np.ndarray:
+    def to_ms(self, pred: np.ndarray, X: np.ndarray, wpm: np.ndarray | float | None = None):
         """Convert raw predict() output to milliseconds.
 
         Every consumer that needs a TIME (scorers building QAP tables, cell evaluation)
@@ -91,16 +91,37 @@ class TypingModel(ABC):
         the prediction was conditioned on is recovered from the feature matrix itself (the
         schema's "wpm" column), so the conversion can never use a different pace than the
         prediction did.
+
+        ``wpm`` overrides that recovery, and exists for the one frame that has NO ``wpm``
+        column: INTERPFRAME-1's interpretability frame drops it deliberately (it is a CONSTANT
+        column at a fixed scoring WPM, and TreeSHAP credits constants as main effects). For such
+        a model the pace is not recoverable from ``X``, so the caller must state it — which is
+        the honest shape, because the model is only valid at the pace it was trained for.
+
+        ⚠ For a frame that DOES carry ``wpm``, passing this argument is REFUSED rather than
+        honoured: two sources for the same quantity is exactly how a prediction ends up converted
+        at a different pace than it was made at, and that error is invisible in the output (it
+        rescales every number smoothly). One source of truth per model.
         """
         if self.target_space == "MS":
             return pred
-        try:
-            wpm_col = self.metadata.feature_names.index("wpm")
-        except ValueError:
+        has_col = "wpm" in self.metadata.feature_names
+        if wpm is not None and has_col:
             raise ValueError(
-                "LOGRAT model has no 'wpm' feature; cannot convert predictions to ms"
-            ) from None
-        wpm = np.asarray(X)[:, wpm_col]
+                "this model's frame carries a 'wpm' column, so the pace is recovered from X; "
+                "passing wpm= as well would let the conversion use a different pace than the "
+                "prediction did"
+            )
+        if wpm is None:
+            if not has_col:
+                raise ValueError(
+                    f"LOGRAT model on a frame with no 'wpm' column "
+                    f"({len(self.metadata.feature_names)} columns, "
+                    f"feature_version={self.metadata.feature_version!r}) cannot recover the pace "
+                    f"from X; pass wpm= explicitly (the model is valid only at its training pace)"
+                )
+            wpm = np.asarray(X)[:, self.metadata.feature_names.index("wpm")]
+        wpm = np.asarray(wpm, dtype=np.float64)
         if np.any(wpm <= 0):
             raise ValueError(
                 "LOGRAT->ms conversion needs wpm > 0 for every row (a scorer built with "
@@ -108,9 +129,13 @@ class TypingModel(ABC):
             )
         return np.exp(pred) * 12000.0 / wpm
 
-    def predict_ms(self, X: np.ndarray) -> np.ndarray:
-        """predict() in milliseconds regardless of the model's training target space."""
-        return self.to_ms(self.predict(X), X)
+    def predict_ms(self, X: np.ndarray, wpm: np.ndarray | float | None = None) -> np.ndarray:
+        """predict() in milliseconds regardless of the model's training target space.
+
+        ``wpm`` is forwarded to :meth:`to_ms`; see there for when it is required and when it is
+        refused.
+        """
+        return self.to_ms(self.predict(X), X, wpm)
 
     def predict_ms_at(self, X: np.ndarray, positions) -> np.ndarray:
         """predict_ms for ONE position pair, applying the first-finger calibration.

@@ -91,8 +91,16 @@ import numpy as np
 import xgboost as xgb
 
 from keybo.analysis.timecard import TimeSurface, default_surface
-from keybo.features import bigram_features_from_positions, trigram_features_from_positions
-from keybo.features.schema import BIGRAM_FEATURE_NAMES, TRIGRAM_FEATURE_NAMES
+from keybo.features import (
+    bigram_features_from_positions,
+    interp_features_from_positions,
+    trigram_features_from_positions,
+)
+from keybo.features.schema import (
+    BIGRAM_FEATURE_NAMES,
+    BIGRAM_INTERP_FEATURE_NAMES,
+    TRIGRAM_FEATURE_NAMES,
+)
 from keybo.models.xgboost_model import XGBoostTypingModel
 
 #: T2-channel weighting conventions. ``trigram-marginal`` is the gauge's own weight (the
@@ -112,6 +120,19 @@ TCOND_WEIGHTINGS = ("trigram-direct", "tcond-marginal")
 #: Which channels can be decomposed. ``both`` is the default: a single-channel report is a
 #: partial answer by construction, and SHAPDIFF-1 measured that the T2-only answer was 31.3%.
 CHANNELS = ("t2", "tcond", "both")
+
+#: Which FEATURE FRAME the T2 channel is decomposed on. ``"served"`` is the 20-column frame all
+#: three shipped ``bigram_reg31`` artifacts carry — the default, and the only frame with a
+#: production model behind it. ``"interp"`` is INTERPFRAME-1's 10-column interpretability basis,
+#: which exists to be COMPARED against ``"served"`` on the SAME layout pair; it requires
+#: ``bigram_models=`` explicitly, because no shipped artifact carries it.
+#:
+#: ⚠ The frame changes what the ATTRIBUTION is expressed in, NOT what the gauge is. A run at
+#: ``frame="interp"`` decomposes the interp model's OWN T2 gap and its shipped-table ties are
+#: therefore to THAT model's table — not to ``TimeSurface._T2``. Comparing the two frames'
+#: attributions is comparing two explanations of two (nearly identical) surfaces, and the
+#: ``resid_gap_vs_shipped`` / ``resid_table_vs_shipped`` residuals are what price "nearly".
+FRAMES = ("served", "interp")
 
 #: Column -> (block, sub-block) for the served BIGRAM frame. Blocks are the primary reporting
 #: unit; the bigram frame's blocks are atomic (no second level) because they are already only
@@ -143,6 +164,24 @@ _TCOND_BLOCKS: dict[str, tuple[str, str]] = {
     "wpm": ("WPM", ""),
 }
 
+#: Column -> (block, sub-block) for the INTERPRETABILITY frame (INTERPFRAME-1), registered here
+#: because :func:`block_map` REFUSES an unregistered frame — this dict is the integration point.
+#:
+#: ⚠ The blocks are named for the MECHANISM, not for the served frame's blocks, and every one is
+#: 1-3 columns wide. That is the point of the frame: the served frame needed blocks because credit
+#: could not be trusted at column level, and the wider a block is the more it hides. A 10-column
+#: frame in five blocks of 1-3 makes the BLOCK table and the COLUMN table nearly the same claim,
+#: which is what "the per-feature number means what it says" cashes out to.
+#:
+#: There is NO ``WPM`` block, because there is no ``wpm`` column — the constant-column artifact
+#: this frame exists to remove (see :data:`keybo.features.schema.BIGRAM_INTERP_FEATURE_NAMES`).
+_INTERP_BLOCKS: dict[str, tuple[str, str]] = {
+    **{n: ("CONTACT", "") for n in ("hand_conflict", "finger_load", "off_home_column")},
+    **{n: ("SPAN", "") for n in ("row_span", "lateral_span", "same_hand_travel")},
+    **{n: ("ROWCOST", "") for n in ("row_load", "row_arrival", "bottom_bias")},
+    "roll_inward": ("DIRECTION", ""),
+}
+
 #: Tie-break order for equal-magnitude blocks, so a report reads the same way every run.
 _BLOCK_ORDER = (
     "TRI_LEVEL",
@@ -153,6 +192,11 @@ _BLOCK_ORDER = (
     "FINGER",
     "RELATIONAL",
     "GEOMETRY",
+    # the INTERPFRAME-1 blocks
+    "CONTACT",
+    "SPAN",
+    "ROWCOST",
+    "DIRECTION",
     "WPM",
 )
 
@@ -166,7 +210,7 @@ def block_map(feature_names: Sequence[str]) -> dict[str, tuple[str, str]]:
     knows). A widened frame must be taught to this map on purpose.
     """
     names = list(feature_names)
-    for spec in (_T2_BLOCKS, _TCOND_BLOCKS):
+    for spec in (_T2_BLOCKS, _TCOND_BLOCKS, _INTERP_BLOCKS):
         if set(names) == set(spec):
             return {n: spec[n] for n in names}
     raise ValueError(
@@ -442,7 +486,26 @@ class ShapDiff:
     #: SMALLNESS check, not an exactness one.
     resid_vs_card_gap: float
 
+    #: Which feature frame the T2 channel was decomposed on (:data:`FRAMES`). ``"served"`` on
+    #: every production run. Defaulted so no existing caller's constructor call changes.
+    frame: str = "served"
+
     # --- the reconciliation gate -------------------------------------------------------
+
+    @property
+    def card_tie_applies(self) -> bool:
+        """Whether :attr:`resid_vs_card_gap` is a VALID bar for this run, stated not assumed.
+
+        ``card()`` is the SHIPPED surface. A non-``"served"`` frame is attributed on a model that
+        is not the shipped one, so its T2 table differs from production's by a MODEL difference —
+        millisecond-scale, not the float32 noise ``gauge_tol`` is sized for. Gating on the card
+        tie there would fail the run for a reason that has nothing to do with the attribution,
+        and silently dropping the bar would hide that a bar was dropped. So this names the
+        condition, :meth:`reconciles` reads it, and :attr:`resid_vs_card_gap` is reported EITHER
+        WAY — on an ``"interp"`` run it is a legitimate quantity in its own right: how far this
+        POC model's surface sits from the production gauge.
+        """
+        return self.frame == "served"
 
     def reconciles(
         self, rel_tol: float = 1e-9, add_tol: float = 1e-5, gauge_tol: float = 1e-3
@@ -459,13 +522,18 @@ class ShapDiff:
           ``rel_tol`` would fail on the artifact, not on this code.
         * ``gauge_tol`` — the ties to the shipped gauge, in ABSOLUTE ms/char. Same float32
           origin, but they ride on a ~255 ms/char level, so they are expressed absolutely.
+
+        The per-channel EXTERNAL bar (``resid_gap_vs_shipped``) is checked on every frame, so a
+        non-served run is NOT unbarred: it still has to reproduce its own model's
+        ``predict``-side gap through an independent code path. Only the tie to ``card()``, which
+        is a claim about the SHIPPED surface, is scoped by :attr:`card_tie_applies`.
         """
         # bool(), not the bare `and` chain: several residuals are numpy scalars, so the chain
         # returns np.bool_ — which is falsy-correct but NOT JSON-serializable, and `to_dict`
         # embeds this value. Caught by the CLI's own JSON round-trip test.
         return bool(
             self.resid_channel_split <= rel_tol
-            and self.resid_vs_card_gap <= gauge_tol
+            and (self.resid_vs_card_gap <= gauge_tol or not self.card_tie_applies)
             and all(
                 ch.reconciles(rel_tol, add_tol, gauge_tol)
                 for ch in (self.t2, self.tcond)
@@ -590,6 +658,7 @@ class ShapDiff:
             "corpus": self.corpus,
             "target_wpm": self.target_wpm,
             "channel": self.channel,
+            "frame": self.frame,
             "weighting": self.t2.weighting if self.t2 is not None else None,
             "ms_per_char": {
                 "own_support": {"a": self.ms_per_char_own_a, "b": self.ms_per_char_own_b},
@@ -618,6 +687,10 @@ class ShapDiff:
             "residuals": {
                 "channel_split_rel": self.resid_channel_split,
                 "gap_vs_shipped_card_abs_ms_per_char": self.resid_vs_card_gap,
+                # Named so a reader of the JSON can see the bar was SCOPED rather than silently
+                # dropped: on a non-served frame the card() number above is a model DIFFERENCE,
+                # not an attribution residual (see `card_tie_applies`).
+                "card_tie_applies": self.card_tie_applies,
                 "reconciles": self.reconciles(),
             },
             "channels": {
@@ -697,6 +770,7 @@ def _shap_tables(
     geometry,
     target_wpm: float,
     order: int,
+    frame: str = "served",
 ) -> tuple[
     list[np.ndarray], list[np.ndarray], list[np.ndarray], list[np.ndarray], float, list[str]
 ]:
@@ -704,6 +778,12 @@ def _shap_tables(
 
     Returns ``(shap_tables, p_tables, p_predict_tables, ms_tables, worst_additivity,
     feature_names)`` with shapes ``(n_pos,)*order + (n_feat,)`` and ``(n_pos,)*order`` x 3.
+
+    ``frame`` selects which FEATURIZER builds the serve grid and, with it, which schema list the
+    models' ``feature_names`` are asserted against — see :data:`FRAMES`. It defaults to
+    ``"served"`` so every existing caller is byte-unaffected, and it is part of the table cache
+    key: two frames produce different matrices from the same ``(geometry, wpm, order)``, so
+    sharing a cache entry between them would silently serve one frame's SHAP table for the other.
 
     ``p`` is the TreeSHAP walk's own total (``base + sum_i shap_i``) and is the ANCHOR for the
     ms conversion; ``p_predict`` is the ordinary prediction. Both are returned because they are
@@ -719,20 +799,38 @@ def _shap_tables(
     into float64.
 
     Every model is CHECKED, not assumed, for the three properties the identity needs: the
-    served frame FOR ITS ORDER (checked against the schema, not merely across the models),
-    LOGRAT output, and NO first-finger calibration. The last matters most and is invisible:
+    expected frame FOR ITS ORDER AND ``frame`` (checked against the schema, not merely across the
+    models), LOGRAT output, and NO first-finger calibration. The last matters most and is invisible:
     ``TableBigramScorer`` applies calibration deltas as a per-POSITION multiplicative factor
     OUTSIDE the feature path, so a calibrated model's table would not equal ``exp(prediction)``
     and the ms attribution would silently stop summing to the gauge. None of the six shipped
     k31 artifacts carries any.
     """
-    key = (order, target_wpm, _geometry_key(geometry), tuple(id(m) for m in models))
+    key = (order, target_wpm, _geometry_key(geometry), frame, tuple(id(m) for m in models))
     if key in _TABLE_CACHE:
         return _TABLE_CACHE[key][1]
 
     positions = [*geometry.slots, geometry.space_position]
     n = len(positions)
-    if order == 2:
+    if frame not in FRAMES:
+        raise ValueError(f"frame must be one of {FRAMES}, got {frame!r}")
+    if frame == "interp":
+        # INTERPFRAME-1's 10-column basis. Order 2 only: the frame is a re-expression of the
+        # BIGRAM columns, and there is no trigram counterpart, so an order-3 request would
+        # otherwise featurize with `interp` and assert against the served trigram list — i.e.
+        # fail confusingly instead of stating what is missing.
+        if order != 2:
+            raise ValueError(
+                f"frame='interp' is a bigram-only frame (INTERPFRAME-1 is a POC on the T2 "
+                f"channel); got order={order}"
+            )
+        rows = [
+            interp_features_from_positions(geometry, (a, b), wpm=target_wpm)
+            for a in positions
+            for b in positions
+        ]
+        expected = list(BIGRAM_INTERP_FEATURE_NAMES)
+    elif order == 2:
         rows = [
             bigram_features_from_positions(geometry, (a, b), wpm=target_wpm)
             for a in positions
@@ -754,9 +852,11 @@ def _shap_tables(
     # Asserted against the SCHEMA, not merely across the models: three models agreeing with
     # each other on the WRONG frame would pass a mutual check, and every downstream lookup is
     # by column NAME — so the report would attribute to the wrong feature while reconciling.
+    # This is also the guard that makes a FRAME-SWAP loud: an interp model handed frame="served"
+    # (or vice versa) fails HERE rather than being scored on a matrix it was never fitted for.
     if names != expected:
         raise ValueError(
-            f"order-{order} models do not carry the served frame: expected {len(expected)} "
+            f"order-{order} models do not carry the {frame!r} frame: expected {len(expected)} "
             f"columns {expected[:3]}..., got {len(names)} {names[:3]}..."
         )
     dmat = xgb.DMatrix(X)
@@ -1003,6 +1103,7 @@ def shap_diff(
     tcond_weighting: str = "trigram-direct",
     control_bigram_freqs: Mapping[str, int] | None = None,
     shuffle_seed: int | None = None,
+    frame: str = "served",
 ) -> ShapDiff:
     """Decompose ``ms/char(layout_b) - ms/char(layout_a)`` into per-feature contributions.
 
@@ -1013,6 +1114,13 @@ def shap_diff(
     ``channel`` selects which of the gauge's two terms to decompose — ``"t2"`` (the bigram
     table), ``"tcond"`` (the conditioned-trigram increment), or ``"both"`` (the default, and
     the only setting whose decomposed share can reach 100%).
+
+    ``frame`` selects the FEATURE FRAME the T2 channel is decomposed on (:data:`FRAMES`).
+    ``"interp"`` requires ``bigram_models=`` and ``channel="t2"``: no shipped artifact carries
+    that frame, and it has no trigram counterpart. Its shipped-table anchors are taken from the
+    SUPPLIED models' own table rather than from ``TimeSurface._T2`` — a non-production model's
+    surface is not the production surface, and tying it to one would report a model DIFFERENCE as
+    an attribution residual.
 
     ``surface`` may be supplied to reuse a loaded :class:`TimeSurface` (model load dominates a
     short run); ``bigram_models`` / ``trigram_models`` likewise, defaulting to the same seeded
@@ -1054,6 +1162,23 @@ def shap_diff(
             "tcond_weighting='tcond-marginal' is a Tcond-channel control but channel='t2' does "
             "not decompose Tcond; use weighting='bigram-table' for the T2 control"
         )
+    if frame not in FRAMES:
+        raise ValueError(f"frame must be one of {FRAMES}, got {frame!r}")
+    if frame == "interp":
+        # Both refusals rather than defaults, because both silent alternatives are wrong in a way
+        # that still RECONCILES: defaulting to the shipped bigram models would attribute the
+        # SERVED frame while reporting `frame='interp'`, and decomposing Tcond would mix a
+        # 10-column T2 explanation with a 46-column trigram one under one headline.
+        if bigram_models is None:
+            raise ValueError(
+                "frame='interp' has no shipped artifact (no data/models/k31 model carries "
+                "FEATURE_VERSION_INTERP), so bigram_models= must be supplied explicitly"
+            )
+        if channel != "t2":
+            raise ValueError(
+                f"frame='interp' is bigram-only (INTERPFRAME-1 is a T2-channel POC); "
+                f"got channel={channel!r} -- use channel='t2'"
+            )
     want_t2 = channel in ("t2", "both")
     want_tcond = channel in ("tcond", "both")
 
@@ -1132,6 +1257,31 @@ def shap_diff(
     # xgboost code path from `pred_contribs` — under the gauge's own weights, so comparing a
     # TreeSHAP-anchored gap against them is a genuine external tie rather than a restatement.
     shipped_t2, shipped_tc = surface._T2, surface._Tc
+    if frame == "interp":
+        # ⚠ The T2 anchor must be THE ATTRIBUTED MODEL'S OWN predict()-side table, not
+        # `surface._T2`. An interp model is a different fit, so its table differs from the
+        # production one by a MODEL difference (~ms), not by float32 noise (~1e-5) — anchoring to
+        # the production table would book that model difference as an attribution residual and
+        # fail the external bar for a reason that has nothing to do with the attribution. Built
+        # from `predict_ms` here, which is the same independent code path the shipped anchor uses,
+        # so the external tie stays a genuine cross-check of the TreeSHAP walk.
+        positions = [*geometry.slots, geometry.space_position]
+        n_pos = len(positions)
+        vecs = np.vstack(
+            [
+                interp_features_from_positions(geometry, (a, b), wpm=target_wpm)
+                for a in positions
+                for b in positions
+            ]
+        )
+        # `wpm=target_wpm` is REQUIRED here, not optional: the interp frame has no wpm column, so
+        # `to_ms` cannot recover the pace from the matrix and refuses to guess. Passing the SAME
+        # `target_wpm` the features were built at is what keeps this anchor comparable to the
+        # TreeSHAP side, whose ms conversion divides by that same constant.
+        shipped_t2 = np.mean(
+            [m.predict_ms(vecs, wpm=target_wpm).reshape(n_pos, n_pos) for m in bigram_models],
+            axis=0,
+        )
     norm_true = 1.0 / max(covered_true, 1)
     shipped_gap_t2 = float(
         ((w2_true * shipped_t2[idx_b2]).sum() - (w2_true * shipped_t2[idx_a2]).sum()) * norm_true
@@ -1148,7 +1298,7 @@ def shap_diff(
         t2_channel, t2_ms_a, t2_ms_b = _build_channel(
             "t2",
             weighting,
-            _shap_tables(bigram_models, geometry, target_wpm, 2),
+            _shap_tables(bigram_models, geometry, target_wpm, 2, frame),
             perm_a,
             perm_b,
             w2_used,
@@ -1204,7 +1354,7 @@ def shap_diff(
     # `coverage_cost`), using the shipped table for any channel this run did not decompose so
     # the two sides of that difference are built the same way.
     t2_table = (
-        np.mean(_shap_tables(bigram_models, geometry, target_wpm, 2)[3], axis=0)
+        np.mean(_shap_tables(bigram_models, geometry, target_wpm, 2, frame)[3], axis=0)
         if want_t2
         else shipped_t2
     )
@@ -1258,6 +1408,7 @@ def shap_diff(
         # embeds these directly.
         resid_channel_split=float(_rel(gap_t2 + gap_tcond, gap_total)),
         resid_vs_card_gap=float(abs(gap_total - (card_b.ms_per_char - card_a.ms_per_char))),
+        frame=frame,
     )
 
 
@@ -1344,7 +1495,15 @@ def format_report(diff: ShapDiff, top_bigrams_k: int = 5, columns: bool = True) 
     lines: list[str] = []
     a, b = diff.name_a, diff.name_b
     lines.append(f"SHAP-DIFF  {a} -> {b}   corpus={diff.corpus}  wpm={diff.target_wpm:g}")
-    lines.append(f"  channel: {diff.channel}")
+    lines.append(f"  channel: {diff.channel}    frame: {diff.frame}")
+    if not diff.card_tie_applies:
+        # Printed at the TOP, before any number: a reader must not meet an attribution table
+        # believing it decomposes the shipped gauge when it decomposes a POC model's.
+        lines.append(
+            f"  ⚠ frame={diff.frame!r} is NOT the served frame: the T2 table below comes from "
+            f"SUPPLIED models, not from data/models/k31, so the card() tie is a MODEL difference "
+            f"and is not gated (see `card_tie_applies`)."
+        )
     lines.append("")
     lines.append("RECONCILIATION (checked before any interpretation)")
     lines.append(
@@ -1379,7 +1538,8 @@ def format_report(diff: ShapDiff, top_bigrams_k: int = 5, columns: bool = True) 
         f"{diff.coverage_cost:+.3e} ms/char"
     )
     lines.append(f"  channel split vs total (rel)           {diff.resid_channel_split:.3e}")
-    lines.append(f"  gap vs shipped card (abs ms/char)      {diff.resid_vs_card_gap:.3e}")
+    tie = "" if diff.card_tie_applies else "   <- NOT GATED (non-served frame; a model difference)"
+    lines.append(f"  gap vs shipped card (abs ms/char)      {diff.resid_vs_card_gap:.3e}{tie}")
     lines.append(f"  RECONCILES: {diff.reconciles()}")
     if not diff.reconciles():
         lines.append("")

@@ -19,6 +19,7 @@ from keybo.features import classify as C
 from keybo.features.schema import (
     BIGRAM_DIRECTION_FEATURE_NAMES,
     BIGRAM_FEATURE_NAMES,
+    BIGRAM_INTERP_FEATURE_NAMES,
     BIGRAM_KITCHENSINK_FEATURE_NAMES,
     TRIGRAM_DIRECTION_FEATURE_NAMES,
     TRIGRAM_FEATURE_NAMES,
@@ -164,6 +165,121 @@ def bigram_features_from_positions(
     row["wpm"] = float(wpm)
     return np.array(
         [row[name] for name in _bigram_column_names(direction, kitchensink)], dtype=np.float64
+    )
+
+
+# --- the INTERPRETABILITY frame (INTERPFRAME-1) -------------------------------------------
+#
+# A REPLACEMENT basis for the served bigram columns, not an addition: 10 columns instead of 20,
+# chosen so a per-feature SHAP number means what its name says. See
+# :data:`keybo.features.schema.BIGRAM_INTERP_FEATURE_NAMES` for which failure mode each column
+# fixes, and ``agent-artifacts/interpframe/INTERPFRAME-preregistration.md`` §4 for the design.
+#
+# Emitted by its OWN function rather than as a flag on ``_placement_row_from_positions``: every
+# other frame in this module is that function's output PLUS extra keys, so a fourth flag there
+# would have to SUBTRACT columns — and a subtracting flag on the function that feeds the
+# version-locked served frame is exactly the shape of edit that silently changes a shipped
+# frame. A separate function cannot.
+
+#: Absolute column -> off-home stretch column. Mirrors
+#: :data:`keybo.features.classify._HOME_COLUMN`'s reading of columns 1 and 6 as the index's and
+#: pinky's off-home columns, kept as its own literal so a change to the graded lateral-span table
+#: cannot silently re-define this frame's ``off_home_column``.
+_OFF_HOME_COLUMNS = (1, 6)
+
+#: The home row's ``y``. Named rather than inlined, because ``row_load``, ``row_arrival`` and
+#: ``bottom_bias`` must all measure deviation from the SAME origin or the 45-degree rotation that
+#: makes ``row_load``/``row_arrival`` orthogonal does not hold.
+_HOME_ROW_Y = 2
+
+
+def _is_letter_key(position: Position) -> bool:
+    """Whether a position is an assignable letter key rather than the thumb/space slot.
+
+    Space is at ``(0, 0)`` and pressed by the thumb, which has no home column and no finger rank
+    (``Geometry.hand(0) == 0``; ``classify.finger_kind`` returns -1). Every per-KEY term in the
+    interp frame therefore contributes 0 for it — written as ONE predicate rather than re-derived
+    per column, so the treatment cannot drift between columns.
+    """
+    return position[0] != 0
+
+
+def interp_row_from_positions(geometry: Geometry, a: Position, b: Position) -> dict[str, float]:
+    """The ten interpretability-frame features for one ORDERED bigram ``a -> b``.
+
+    Returns an ordered dict keyed by :data:`~keybo.features.schema.BIGRAM_INTERP_FEATURE_NAMES`
+    exactly (a test pins ``list(row) == the name list``).
+
+    ⚠ There is NO ``wpm`` key, deliberately — see the schema note. A caller that needs a
+    WPM-spanning model wants a different frame.
+    """
+    g = geometry
+    cls = C.classify_positions(g, a, b)
+    same_hand = cls is not C.BigramClass.ALTERNATE
+    two_finger = same_hand and cls is not C.BigramClass.SAME_FINGER
+
+    # Per-key terms, zero for the thumb/space slot (see _is_letter_key).
+    dev_a = float(abs(a[1] - _HOME_ROW_Y)) if _is_letter_key(a) else 0.0
+    dev_b = float(abs(b[1] - _HOME_ROW_Y)) if _is_letter_key(b) else 0.0
+    # float() on every sum: a bare ``sum(1.0 for ...)`` over an EMPTY generator returns the int 0,
+    # so a space-only pair would emit ints where every other pair emits floats. Harmless in the
+    # numpy vector, but the dict is also read directly (by the report and by tests), and a column
+    # whose dtype depends on its value is the kind of thing that reads as a bug later.
+    bottom = float(sum(1 for p in (a, b) if _is_letter_key(p) and p[1] < _HOME_ROW_Y))
+    top = float(sum(1 for p in (a, b) if _is_letter_key(p) and p[1] > _HOME_ROW_Y))
+    # 3 - finger_kind: index 0 (strongest) .. pinky 3 (weakest), so the column RISES with weakness
+    # and +1 is the mechanism. finger_kind returns -1 for the thumb, which the letter-key gate
+    # excludes before it could contribute a spurious 4.
+    weakness = float(sum(3 - C.finger_kind(g, p[0]) for p in (a, b) if _is_letter_key(p)))
+
+    return {
+        "hand_conflict": float(0 if not same_hand else (1 if two_finger else 2)),
+        # Gated on TWO-FINGER same-hand: a single finger travelling between its own rows is a
+        # same-finger reach already priced by ``hand_conflict``, and a cross-hand pair spans no row
+        # at all (the two hands move independently). Ungated, this column would fire on cross-hand
+        # pairs and stop being a hand-contortion measure — the same error DIST-1 caught in its own
+        # first widening convention.
+        "row_span": float(abs(a[1] - b[1])) if two_finger else 0.0,
+        "lateral_span": C.lateral_span(g, a, b),
+        "same_hand_travel": g.distance(a, b) if same_hand else 0.0,
+        "row_load": dev_a + dev_b,
+        "row_arrival": dev_b - dev_a,
+        "bottom_bias": bottom - top,
+        "finger_load": weakness,
+        "off_home_column": float(
+            sum(1 for p in (a, b) if _is_letter_key(p) and abs(p[0]) in _OFF_HOME_COLUMNS)
+        ),
+        # +1 inward / -1 outward / 0 not roll-eligible. The two ordered predicates partition the
+        # eligible set exactly (162/162 on K30), so ONE signed column loses nothing.
+        "roll_inward": (
+            1.0
+            if C.is_inwards_ordered(g, a, b)
+            else (-1.0 if C.is_outwards_ordered(g, a, b) else 0.0)
+        ),
+    }
+
+
+def interp_features_from_positions(
+    geometry: Geometry, positions: tuple[Position, Position], wpm: float = 0.0
+) -> np.ndarray:
+    """Interp-frame feature vector from recorded key positions (training AND serving path).
+
+    ``wpm`` is accepted and IGNORED, with the signature kept parallel to
+    :func:`bigram_features_from_positions` on purpose: every caller in the training and
+    attribution stack passes ``wpm=``, and a frame that could not drop into those call sites would
+    have to be threaded through a second code path — which is how a frame ends up featurized
+    differently at train and at serve time. Accepting-and-ignoring keeps ONE call shape; the column
+    is absent from the OUTPUT, which is what matters.
+    """
+    del wpm  # not a column in this frame (see schema); accepted for call-shape parity only
+    row = interp_row_from_positions(geometry, positions[0], positions[1])
+    return np.array([row[name] for name in BIGRAM_INTERP_FEATURE_NAMES], dtype=np.float64)
+
+
+def interp_features(layout: Layout, bigram: str, wpm: float = 0.0) -> np.ndarray:
+    """Interp-frame feature vector for a bigram on a layout."""
+    return interp_features_from_positions(
+        layout.geometry, (layout.pos(bigram[0]), layout.pos(bigram[1])), wpm
     )
 
 

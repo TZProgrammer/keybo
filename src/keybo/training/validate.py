@@ -35,7 +35,11 @@ from scipy.sparse import csr_matrix
 from scipy.stats import kendalltau, spearmanr
 
 from keybo.data.strokes import StrokeRow, iqr_average
-from keybo.features import bigram_features_from_positions, trigram_features_from_positions
+from keybo.features import (
+    bigram_features_from_positions,
+    interp_features_from_positions,
+    trigram_features_from_positions,
+)
 from keybo.geometry import ROW_STAGGERED_30, Geometry
 from keybo.verdicts import HighWpmRegression, bucket_regression_report
 
@@ -542,6 +546,7 @@ def _predict_cells(
     geometry: Geometry,
     direction: bool = False,
     kitchensink: bool = False,
+    interp: bool = False,
 ) -> np.ndarray:
     """g(geometry, wpm) + b(ngram) per cell, in MILLISECONDS — the model's full prediction.
 
@@ -558,15 +563,29 @@ def _predict_cells(
     22-/52-column matrix, and a ``kitchensink`` model the 27-/69-column one. Featurizing a widened
     model with the narrow frame relocates the exact train/serve skew the version stamp exists to
     prevent into this harness — so the caller threads it explicitly rather than inferring it.
+
+    ``interp`` selects INTERPFRAME-1's 10-column frame, which has NO ``wpm`` column — so the pace
+    that ``to_ms`` needs is passed EXPLICITLY from each cell's own bucket midpoint (``Cell.wpm``),
+    the same value the served frame would have put in that column. This keeps the per-cell pace
+    identical between frames, which is what makes the two arms' ms errors comparable at all.
     """
-    featurize = (
-        trigram_features_from_positions
-        if len(cells[0].positions) == 3
-        else bigram_features_from_positions
-    )
+    if interp:
+        # Bound as a no-kwargs closure so the comprehension below stays ONE expression: the interp
+        # featurizer takes no direction=/kitchensink= (its frame has no widening to select), and a
+        # branch inside the loop would re-test `interp` per cell.
+        def featurize(g, positions, wpm, direction=False, kitchensink=False):
+            del direction, kitchensink  # not selectable on this frame
+            return interp_features_from_positions(g, positions, wpm=wpm)
+
+    elif len(cells[0].positions) == 3:
+        featurize = trigram_features_from_positions
+    else:
+        featurize = bigram_features_from_positions
     X = np.vstack(
         [
-            featurize(geometry, c.positions, wpm=c.wpm, direction=direction, kitchensink=kitchensink)
+            featurize(
+                geometry, c.positions, wpm=c.wpm, direction=direction, kitchensink=kitchensink
+            )
             for c in cells
         ]
     )
@@ -589,7 +608,9 @@ def _predict_cells(
                 for c in cells
             ]
         )
-    return model.to_ms(pred, X)
+    # The interp frame carries no wpm column, so the pace is stated rather than recovered (and
+    # to_ms REFUSES the argument on any frame that does carry one, so this cannot double up).
+    return model.to_ms(pred, X, np.array([c.wpm for c in cells]) if interp else None)
 
 
 def _distance(positions) -> float:
@@ -732,8 +753,17 @@ def validate(
     baseline_buckets: Mapping[int, float] | None = None,
     direction: bool = False,
     kitchensink: bool = False,
+    interp: bool = False,
+    monotone: bool = True,
 ) -> dict:
     """Run the full leave-one-layout-out experiment; returns the report dict.
+
+    ``interp=True`` trains AND evaluates every fold on INTERPFRAME-1's 10-column
+    interpretability frame (``FEATURE_VERSION_INTERP``), with ``monotone`` selecting whether its
+    registered constraints are applied. Threaded into the fold model and :func:`_predict_cells`
+    together for the same reason ``direction`` is: training and eval must agree on the frame or
+    the model is scored on a matrix it was not fitted for. Bigram-only, and ``_train`` refuses
+    any other combination.
 
     ``kitchensink=True`` does the same for the KITCHEN-SINK frame (the widened frame plus the
     twelve external-project channels, ``FEATURE_VERSION_KITCHENSINK``); it implies ``direction``.
@@ -793,6 +823,11 @@ def validate(
             "train_params": dict(train_params or {}),
             "direction": bool(direction),
             "kitchensink": bool(kitchensink),
+            "interp": bool(interp),
+            # Recorded even when interp is False, so an arm's config can never be mistaken for
+            # another's: `monotone` is inert without `interp`, and a reader must be able to see
+            # that from the artifact rather than infer it.
+            "monotone": bool(monotone),
         },
         "ceilings": {},
         "folds": {},
@@ -824,18 +859,27 @@ def validate(
         fold = report["folds"].setdefault(holdout, {"n_cells": len(test_cells), "seeds": []})
 
         params = {**(train_params or {}), "random_state": seed, "n_jobs": 1}
+        frame_kw = (
+            {"interp": True, "monotone": monotone}
+            if interp
+            else {"direction": direction, "kitchensink": kitchensink}
+        )
         model = train_fn(
             train_rows,
             target_wpm=(wpm_lo + wpm_hi) / 2,
             geometry=geometry,
-            direction=direction,
-            kitchensink=kitchensink,
+            **frame_kw,
             **params,
         )
 
         obs = np.array([c.obs for c in test_cells])
         pred = _predict_cells(
-            model, test_cells, geometry, direction=direction, kitchensink=kitchensink
+            model,
+            test_cells,
+            geometry,
+            direction=direction,
+            kitchensink=kitchensink,
+            interp=interp,
         )
         rho = _centered_spearman(test_cells, pred, obs)
         ceiling = report["ceilings"][holdout]
@@ -846,7 +890,12 @@ def validate(
         mae_baseline = float(np.mean(np.abs(base_pred - obs)))
 
         pred_all = _predict_cells(
-            model, all_cells, geometry, direction=direction, kitchensink=kitchensink
+            model,
+            all_cells,
+            geometry,
+            direction=direction,
+            kitchensink=kitchensink,
+            interp=interp,
         )
         tau_all4 = layout_ranking_tau(obs_table, aggregate_layout_table(all_cells, pred_all))
 
