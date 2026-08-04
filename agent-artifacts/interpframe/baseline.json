@@ -1,0 +1,524 @@
+{
+ "pair": [
+  "flagship-c3",
+  "graphite"
+ ],
+ "wpm": 90.0,
+ "covered_mass": 887147352,
+ "frames": {
+  "served_bigram": {
+   "n_columns": 20,
+   "columns": [
+    "bottom",
+    "home",
+    "top",
+    "pinky",
+    "ring",
+    "middle",
+    "index",
+    "lateral",
+    "same_hand",
+    "same_finger",
+    "adjacent",
+    "scissor",
+    "lsb",
+    "dx",
+    "dy",
+    "distance",
+    "angle",
+    "inwards",
+    "outwards",
+    "wpm"
+   ],
+   "M1": {
+    "maxcorr": 0.9812822705439735,
+    "meancorr": 0.1136826815884763,
+    "worst_pair": [
+     "dx",
+     "distance"
+    ],
+    "n_pairs_over_0.9": 1,
+    "n_pairs_over_0.7": 2,
+    "n_pairs": 190
+   },
+   "M2": {
+    "constfrac": 0.05790082009811374,
+    "constant_columns": [
+     "wpm"
+    ],
+    "constant_mass_ms_per_char": 0.09218157967904322,
+    "total_abs_mass_ms_per_char": 1.5920600005809982
+   },
+   "M3": {
+    "splitpairs": 7,
+    "conflict_mass_ms_per_char": 0.17429034022367934,
+    "pairs": [
+     {
+      "a": "bottom",
+      "b": "top",
+      "ms_a": 0.745312201464654,
+      "ms_b": -0.04590348656210329,
+      "conflict_ms": 0.04590348656210329
+     },
+     {
+      "a": "lateral",
+      "b": "ring",
+      "ms_a": -0.1362065864509128,
+      "ms_b": 0.04328076547504706,
+      "conflict_ms": 0.04328076547504706
+     },
+     {
+      "a": "lateral",
+      "b": "pinky",
+      "ms_a": -0.1362065864509128,
+      "ms_b": 0.03527796374206967,
+      "conflict_ms": 0.03527796374206967
+     },
+     {
+      "a": "lateral",
+      "b": "middle",
+      "ms_a": -0.1362065864509128,
+      "ms_b": 0.030152536061109684,
+      "conflict_ms": 0.030152536061109684
+     },
+     {
+      "a": "home",
+      "b": "top",
+      "ms_a": 0.014196764153890049,
+      "ms_b": -0.04590348656210329,
+      "conflict_ms": 0.014196764153890049
+     },
+     {
+      "a": "index",
+      "b": "lateral",
+      "ms_a": 0.0050342545746205215,
+      "ms_b": -0.1362065864509128,
+      "conflict_ms": 0.0050342545746205215
+     },
+     {
+      "a": "inwards",
+      "b": "outwards",
+      "ms_a": -0.0004445696548390682,
+      "ms_b": 0.023564558526699492,
+      "conflict_ms": 0.0004445696548390682
+     }
+    ],
+    "min_abs_threshold": 0.0001
+   },
+   "M4": {
+    "monofrac": 0.0,
+    "honored_columns": [],
+    "unhonored_or_unconstrained": [
+     "adjacent",
+     "angle",
+     "bottom",
+     "distance",
+     "dx",
+     "dy",
+     "home",
+     "index",
+     "inwards",
+     "lateral",
+     "lsb",
+     "middle",
+     "outwards",
+     "pinky",
+     "ring",
+     "same_finger",
+     "same_hand",
+     "scissor",
+     "top",
+     "wpm"
+    ]
+   },
+   "M5": {
+    "sign_agree_frac": 0.9,
+    "rho": 0.8736842105263156,
+    "n_live_either": 20,
+    "n_live_both": 20
+   },
+   "M6": {
+    "unanimous_sign_frac": 0.8,
+    "mean_pairwise_sign_agree": 0.8333333333333334,
+    "mean_pairwise_rho": 0.9624060150375939,
+    "n_seeds": 3
+   },
+   "gap_t2": 0.9981034921613627,
+   "gap_total": 3.1934436462523195,
+   "attribution": {
+    "bottom": 0.745312201464654,
+    "home": 0.014196764153890049,
+    "top": -0.04590348656210329,
+    "pinky": 0.03527796374206967,
+    "ring": 0.04328076547504706,
+    "middle": 0.030152536061109684,
+    "index": 0.0050342545746205215,
+    "lateral": -0.1362065864509128,
+    "same_hand": 0.085528435777107,
+    "same_finger": -0.02159506172710629,
+    "adjacent": 0.0007680635861591358,
+    "scissor": 0.026968450388527722,
+    "lsb": -0.000646970135823575,
+    "dx": 0.1678204009367888,
+    "dy": 0.04454101067026298,
+    "distance": 0.004503706143674803,
+    "angle": 0.06813263487055896,
+    "inwards": -0.0004445696548390682,
+    "outwards": 0.023564558526699492,
+    "wpm": -0.09218157967904322
+   }
+  },
+  "served_trigram": {
+   "n_columns": 46,
+   "columns": [
+    "same_hand_trigram",
+    "redirect",
+    "bad_redirect",
+    "sg_same_finger",
+    "sg_dx",
+    "sg_dy",
+    "sg_distance",
+    "bg1_bottom",
+    "bg1_home",
+    "bg1_top",
+    "bg1_pinky",
+    "bg1_ring",
+    "bg1_middle",
+    "bg1_index",
+    "bg1_lateral",
+    "bg1_same_hand",
+    "bg1_same_finger",
+    "bg1_adjacent",
+    "bg1_scissor",
+    "bg1_lsb",
+    "bg1_dx",
+    "bg1_dy",
+    "bg1_distance",
+    "bg1_angle",
+    "bg1_inwards",
+    "bg1_outwards",
+    "bg2_bottom",
+    "bg2_home",
+    "bg2_top",
+    "bg2_pinky",
+    "bg2_ring",
+    "bg2_middle",
+    "bg2_index",
+    "bg2_lateral",
+    "bg2_same_hand",
+    "bg2_same_finger",
+    "bg2_adjacent",
+    "bg2_scissor",
+    "bg2_lsb",
+    "bg2_dx",
+    "bg2_dy",
+    "bg2_distance",
+    "bg2_angle",
+    "bg2_inwards",
+    "bg2_outwards",
+    "wpm"
+   ],
+   "M1": {
+    "maxcorr": 0.981282270543972,
+    "meancorr": 0.07978079012777588,
+    "worst_pair": [
+     "bg1_dx",
+     "bg1_distance"
+    ],
+    "n_pairs_over_0.9": 3,
+    "n_pairs_over_0.7": 6,
+    "n_pairs": 1035
+   },
+   "M2": {
+    "constfrac": 0.0064254681770163835,
+    "constant_columns": [
+     "wpm"
+    ],
+    "constant_mass_ms_per_char": 0.027283089197499378,
+    "total_abs_mass_ms_per_char": 4.246085801979346
+   },
+   "M3": {
+    "splitpairs": 51,
+    "conflict_mass_ms_per_char": 3.046478541228924,
+    "pairs": [
+     {
+      "a": "bg1_bottom",
+      "b": "bg1_top",
+      "ms_a": -0.23365590217135077,
+      "ms_b": 0.40639856935133284,
+      "conflict_ms": 0.23365590217135077
+     },
+     {
+      "a": "bg1_bottom",
+      "b": "bg2_bottom",
+      "ms_a": -0.23365590217135077,
+      "ms_b": 0.7381605097234633,
+      "conflict_ms": 0.23365590217135077
+     },
+     {
+      "a": "bg1_bottom",
+      "b": "bg2_bottom",
+      "ms_a": -0.23365590217135077,
+      "ms_b": 0.7381605097234633,
+      "conflict_ms": 0.23365590217135077
+     },
+     {
+      "a": "bg1_index",
+      "b": "bg1_pinky",
+      "ms_a": 0.1932561975365651,
+      "ms_b": -0.1676152799055978,
+      "conflict_ms": 0.1676152799055978
+     },
+     {
+      "a": "bg1_distance",
+      "b": "bg2_distance",
+      "ms_a": 0.2538869358303682,
+      "ms_b": -0.12500916840646475,
+      "conflict_ms": 0.12500916840646475
+     },
+     {
+      "a": "bg1_dx",
+      "b": "bg2_distance",
+      "ms_a": 0.387404853005262,
+      "ms_b": -0.12500916840646475,
+      "conflict_ms": 0.12500916840646475
+     },
+     {
+      "a": "bg2_distance",
+      "b": "bg2_dx",
+      "ms_a": -0.12500916840646475,
+      "ms_b": 0.25730039825366813,
+      "conflict_ms": 0.12500916840646475
+     },
+     {
+      "a": "bg1_distance",
+      "b": "bg2_distance",
+      "ms_a": 0.2538869358303682,
+      "ms_b": -0.12500916840646475,
+      "conflict_ms": 0.12500916840646475
+     },
+     {
+      "a": "bg1_top",
+      "b": "bg2_top",
+      "ms_a": 0.40639856935133284,
+      "ms_b": -0.11458281357128144,
+      "conflict_ms": 0.11458281357128144
+     },
+     {
+      "a": "bg2_bottom",
+      "b": "bg2_top",
+      "ms_a": 0.7381605097234633,
+      "ms_b": -0.11458281357128144,
+      "conflict_ms": 0.11458281357128144
+     },
+     {
+      "a": "bg1_top",
+      "b": "bg2_top",
+      "ms_a": 0.40639856935133284,
+      "ms_b": -0.11458281357128144,
+      "conflict_ms": 0.11458281357128144
+     },
+     {
+      "a": "bg1_index",
+      "b": "bg2_lateral",
+      "ms_a": 0.1932561975365651,
+      "ms_b": -0.11244935696637998,
+      "conflict_ms": 0.11244935696637998
+     },
+     {
+      "a": "bg1_index",
+      "b": "bg1_middle",
+      "ms_a": 0.1932561975365651,
+      "ms_b": -0.09644146631409156,
+      "conflict_ms": 0.09644146631409156
+     },
+     {
+      "a": "bg1_middle",
+      "b": "bg2_ring",
+      "ms_a": -0.09644146631409156,
+      "ms_b": 0.08547122687954414,
+      "conflict_ms": 0.08547122687954414
+     },
+     {
+      "a": "bg1_pinky",
+      "b": "bg2_ring",
+      "ms_a": -0.1676152799055978,
+      "ms_b": 0.08547122687954414,
+      "conflict_ms": 0.08547122687954414
+     },
+     {
+      "a": "bg2_lateral",
+      "b": "bg2_ring",
+      "ms_a": -0.11244935696637998,
+      "ms_b": 0.08547122687954414,
+      "conflict_ms": 0.08547122687954414
+     },
+     {
+      "a": "bg1_middle",
+      "b": "bg2_pinky",
+      "ms_a": -0.09644146631409156,
+      "ms_b": 0.07270324025897877,
+      "conflict_ms": 0.07270324025897877
+     },
+     {
+      "a": "bg1_pinky",
+      "b": "bg2_pinky",
+      "ms_a": -0.1676152799055978,
+      "ms_b": 0.07270324025897877,
+      "conflict_ms": 0.07270324025897877
+     },
+     {
+      "a": "bg2_lateral",
+      "b": "bg2_pinky",
+      "ms_a": -0.11244935696637998,
+      "ms_b": 0.07270324025897877,
+      "conflict_ms": 0.07270324025897877
+     },
+     {
+      "a": "bg1_pinky",
+      "b": "bg2_pinky",
+      "ms_a": -0.1676152799055978,
+      "ms_b": 0.07270324025897877,
+      "conflict_ms": 0.07270324025897877
+     }
+    ],
+    "min_abs_threshold": 0.0001
+   },
+   "M4": {
+    "monofrac": 0.0,
+    "honored_columns": [],
+    "unhonored_or_unconstrained": [
+     "bad_redirect",
+     "bg1_adjacent",
+     "bg1_angle",
+     "bg1_bottom",
+     "bg1_distance",
+     "bg1_dx",
+     "bg1_dy",
+     "bg1_home",
+     "bg1_index",
+     "bg1_inwards",
+     "bg1_lateral",
+     "bg1_lsb",
+     "bg1_middle",
+     "bg1_outwards",
+     "bg1_pinky",
+     "bg1_ring",
+     "bg1_same_finger",
+     "bg1_same_hand",
+     "bg1_scissor",
+     "bg1_top",
+     "bg2_adjacent",
+     "bg2_angle",
+     "bg2_bottom",
+     "bg2_distance",
+     "bg2_dx",
+     "bg2_dy",
+     "bg2_home",
+     "bg2_index",
+     "bg2_inwards",
+     "bg2_lateral",
+     "bg2_lsb",
+     "bg2_middle",
+     "bg2_outwards",
+     "bg2_pinky",
+     "bg2_ring",
+     "bg2_same_finger",
+     "bg2_same_hand",
+     "bg2_scissor",
+     "bg2_top",
+     "redirect",
+     "same_hand_trigram",
+     "sg_distance",
+     "sg_dx",
+     "sg_dy",
+     "sg_same_finger",
+     "wpm"
+    ]
+   },
+   "M5": {
+    "sign_agree_frac": 0.8444444444444444,
+    "rho": 0.9026827012025901,
+    "n_live_either": 45,
+    "n_live_both": 43
+   },
+   "gap_tcond": 2.1953401540909567,
+   "attribution": {
+    "same_hand_trigram": 0.018607764831298806,
+    "redirect": -0.005845259313620862,
+    "bad_redirect": -7.02930437220465e-05,
+    "sg_same_finger": -0.012315507408096426,
+    "sg_dx": 0.15797847452961336,
+    "sg_dy": 0.007848187855687461,
+    "sg_distance": 0.10286087179041711,
+    "bg1_bottom": -0.23365590217135077,
+    "bg1_home": 0.0024687880406058585,
+    "bg1_top": 0.40639856935133284,
+    "bg1_pinky": -0.1676152799055978,
+    "bg1_ring": -0.01166883150032883,
+    "bg1_middle": -0.09644146631409156,
+    "bg1_index": 0.1932561975365651,
+    "bg1_lateral": 0.03138009352136822,
+    "bg1_same_hand": -0.005759635268710851,
+    "bg1_same_finger": 0.0009789540440014943,
+    "bg1_adjacent": -0.003984011640464675,
+    "bg1_scissor": 0.002287819609678523,
+    "bg1_lsb": -0.004250151474026598,
+    "bg1_dx": 0.387404853005262,
+    "bg1_dy": 0.05125003958509591,
+    "bg1_distance": 0.2538869358303682,
+    "bg1_angle": 0.00777678848418159,
+    "bg1_inwards": -0.00012787093548468912,
+    "bg1_outwards": 4.766256672047057e-05,
+    "bg2_bottom": 0.7381605097234633,
+    "bg2_home": -0.033692576842741344,
+    "bg2_top": -0.11458281357128144,
+    "bg2_pinky": 0.07270324025897877,
+    "bg2_ring": 0.08547122687954414,
+    "bg2_middle": 0.02960464633917943,
+    "bg2_index": 0.023040039253135202,
+    "bg2_lateral": -0.11244935696637998,
+    "bg2_same_hand": 0.1111905101411727,
+    "bg2_same_finger": -0.001972143905664977,
+    "bg2_adjacent": -0.06106626588542098,
+    "bg2_scissor": 0.012299703330885581,
+    "bg2_lsb": -0.0075832001932485,
+    "bg2_dx": 0.25730039825366813,
+    "bg2_dy": 0.04761953025848486,
+    "bg2_distance": -0.12500916840646475,
+    "bg2_angle": 0.21502194458402857,
+    "bg2_inwards": 0.000481476406797758,
+    "bg2_outwards": 0.0033877520236131114,
+    "wpm": -0.027283089197499378
+   }
+  },
+  "interp_structural": {
+   "n_columns": 10,
+   "columns": [
+    "hand_conflict",
+    "row_span",
+    "lateral_span",
+    "same_hand_travel",
+    "row_load",
+    "row_arrival",
+    "bottom_bias",
+    "finger_load",
+    "off_home_column",
+    "roll_inward"
+   ],
+   "M1": {
+    "maxcorr": 0.7037387118702239,
+    "meancorr": 0.15717843717511532,
+    "worst_pair": [
+     "hand_conflict",
+     "same_hand_travel"
+    ],
+    "n_pairs_over_0.9": 0,
+    "n_pairs_over_0.7": 1,
+    "n_pairs": 45
+   },
+   "note": "M1 is a property of the FEATURE MATRIX alone, so it needs no model. M2-M6 need an attribution and are computed in poc.py once the POC model exists."
+  }
+ },
+ "control_helper_vs_shipped_max_abs_diff": 0.0
+}
