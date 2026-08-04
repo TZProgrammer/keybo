@@ -13310,3 +13310,82 @@ If R3 fails, I report a FAILED TOOL and no feature story — a ranked table that
 🟢 **THE TOOL (INVARIANT 2 SATISFIED): `src/keybo/analysis/shap_diff.py` + `keybo shap-diff <a> <b> [--corpus iweb] [--control bigram-table|shuffle] [--json]`, works for ANY pair, 23 tests asserting the identities AS NUMBERS — including BOTH negative controls with assertions of WHICH bar fires and which does NOT, a `|gap_T2| < |gap_total|` guard so a future change that silently claims the whole gap fails loudly, and a REFUSAL of any PINKY-FIT-calibrated model. Full suite 1304 passed / 3 skipped, ruff clean. Branch `shapdiff` (c6b9ad3 tool + aa47691 artifacts), UNPUSHED — code-push is the human's call.** 🟢 **THREE BUGS THE BARS/RESIDUALS CAUGHT IN THE CHILD'S OWN DRAFT, the third worth keeping: its first log control was a TAUTOLOGY (`base := p − Σshap` then assert `base + Σshap == p`), printed EXACTLY 0.000e+00, and could never fail — the BARS did NOT catch it, reading its own residual list did. NEW RULE: a control reading EXACTLY 0.000e+00 deserves suspicion — a residual structurally incapable of being non-zero is not evidence.** (This is the mirror of my own error above: I over-trusted a self-consistency identity; the child over-trusted a self-consistency control. Same lesson from both ends.)
 
 ⚠ **TOP OPEN: 68.7% of the gap is UNDECOMPOSED — it lives in the Tcond channel, which the same LMDI+TreeSHAP construction handles unchanged (also LOGRAT via `predict_ms`) but needs the trigram weighting and a 31³ table. That is where the MAJORITY of flagship-c3's advantage is, and the bigram tool cannot see it.** Also open: the rho=0.8737 tail sensitivity is undiagnosed; mixed-charset support is implemented + unit-tested but never run for real; and a GROUPED attribution over the {bottom, home, top} one-hot family would state the row story as one number and fix the correlated-credit non-uniqueness the child flagged (wpm is a CONSTANT column yet carries −0.0922 — the visible symptom that SHAP's split across coupled columns is not unique; read BLOCKS, not single columns).
+
+## SHAPDIFF-TCOND (PREREG) — **PER-TRIGRAM TreeSHAP ATTRIBUTION OF THE CONDITIONED-TRIGRAM CHANNEL, THE 68.7% SHAPDIFF-1 COULD NOT SEE. Registered BEFORE any decomposition number exists.** (2026-08-04)
+
+**QUESTION.** SHAPDIFF-1 split `flagship-c3` vs `graphite` into `gap_T2 = +0.9981` (31.3%, decomposed: `bottom` carries 74.7% of it) and `gap_Tcond = +2.1953` (68.7%, **left undecomposed**), and named that residual channel as its own top open item. This arm decomposes `gap_Tcond` per TRIGRAM feature by the same LMDI+TreeSHAP construction, so the pair's advantage is accounted for end to end.
+
+### §0. FOUR FACTS ESTABLISHED FROM CODE / A NON-DECOMPOSITION MEASUREMENT BEFORE REGISTERING (so they cannot be post-hoc)
+
+🟢 **F1 — THE TRIGRAM WEIGHT IS THE TRIGRAM FREQUENCY DIRECTLY, AND THIS IS THE ONE PLACE THE T2 SUBTLETY DOES *NOT* APPLY.** `TimeSurface.card` (timecard.py:221-235) loops `self.tri` and accumulates `Tc[a,b,c]*f` per TRIGRAM. SHAPDIFF-1's hard-won correction — that the effective *bigram* weight is the trigram table's first-two-char marginal `w2(x,y) = sum_z tri(x,y,z)`, not `bigrams.txt` — exists precisely because the T2 term is indexed by only two of the three looped characters. The Tcond term is indexed by all three, so **no marginalization occurs and the weight is `tri` itself.** ⚠ Registered as the trap this arm must not fall into by symmetry-seeking: "SHAPDIFF-1 needed a marginal, so I need one too" is the wrong inference, and a *marginal-weighted* Tcond is registered below as this arm's WRONG-WEIGHTING negative control.
+
+🟢 **F2 — THE FRAME IS 46 COLUMNS AND MY BRIEF'S COLUMN COUNT IS WRONG.** Measured `len(TRIGRAM_FEATURE_NAMES) == 46` decomposing as **7 trigram-level + 19 `bg1_` + 19 `bg2_` + 1 `wpm`**. My brief said "`bg1_*` (26 cols)"; `_BIGRAM_PLACEMENT_NAMES` has **19** entries (schema.py:34-59) and 7+26+26+1 = 60 ≠ 46. The 7 trigram-level columns are `same_hand_trigram, redirect, bad_redirect, sg_same_finger, sg_dx, sg_dy, sg_distance` (`sg_` = the SKIPGRAM, i.e. first-and-third key).
+
+🟢 **F3 — THE CONSTRUCTION TRANSFERS: `trigram_cond31_seed*` are LOGRAT, carry `calibration: None`, and their `feature_names` equal `TRIGRAM_FEATURE_NAMES` exactly.** Measured on all three artifacts. So `ms = exp(p)*12000/wpm` holds, the LMDI weight `L = (ms_B-ms_A)/(p_B-p_A)` is the same algebraic identity, and `_Tc` is the seed mean **in ms** exactly as `_T2` is — so SHAPDIFF-1's "attribute per seed, average the MS attributions" carries over verbatim. `reject_calibrated_trigram_model` (models/base.py:185) already guards the trigram path at every site.
+
+🟢 **F4 — THE TWO EXTERNAL ANCHORS, MEASURED BEFORE WRITING ANY DECOMPOSITION CODE, AND BOTH REPRODUCE MY BRIEF.** Contracting the SHIPPED `_Tc` against `tri` gives **`gap_Tcond = +2.195340`** (`tc_a` 125.747938, `tc_b` 127.943279) and `card()` gives `ms/char` 254.976119 / 258.169563 ⇒ **`gap_total = +3.193444`**. Both agree with the brief's 2.1953 / 3.1934 to 4 decimals. Registered as the numbers bar (b) must hit; they are computed WITHOUT TreeSHAP, so they are a genuinely external tie. Also measured: 31³ = 29,791 cells, 24,478 of them carrying corpus mass; coverage 88.7147% and IDENTICAL for both boards (charsets are permutations — SHAPDIFF-1's C1 re-confirmed here); `wpm` is again a CONSTANT column (ptp 0.0 at 90.0).
+
+### §1. THE PRIMARY UNIT OF ATTRIBUTION IS A **BLOCK**, REGISTERED IN ADVANCE — NOT A COLUMN
+
+SHAPDIFF-1 measured that TreeSHAP's credit split across CORRELATED columns is not unique, its visible symptom being that the CONSTANT `wpm` column carried −0.0922 ms/char. On a 46-column frame containing two near-parallel 19-column blocks (`bg1_`/`bg2_` are the same 19 features on two overlapping key pairs), that non-uniqueness is structurally worse, not better. ⇒ **Registered: the headline is a BLOCK attribution, and the 46-column table is subordinate detail.** Blocks, fixed now:
+
+| block | columns |
+|---|---|
+| `TRI_LEVEL` | `same_hand_trigram`, `redirect`, `bad_redirect` |
+| `SKIPGRAM` | `sg_same_finger`, `sg_dx`, `sg_dy`, `sg_distance` |
+| `BG1` | the 19 `bg1_*` |
+| `BG2` | the 19 `bg2_*` |
+| `WPM` | `wpm` |
+
+Sub-blocks reported inside `BG1`/`BG2` (same partition applied to each, so the two are comparable): `row` = {bottom, home, top}, `finger` = {pinky, ring, middle, index, lateral}, `relational` = {same_hand, same_finger, adjacent, scissor, lsb}, `geometry` = {dx, dy, distance, angle, inwards, outwards}. **A block sum is INVARIANT to how credit is split within it, which is exactly why it is the reportable unit.** ⚠ Registered honestly: block sums are invariant to *within*-block redistribution, NOT to *between*-block leakage; `BG1`↔`BG2` leakage is a real limit and I will state it rather than claim blocks solve non-uniqueness.
+
+### §2. RECONCILIATION — **TWO BARS, BECAUSE SHAPDIFF-1 PROVED ONE IS NOT ENOUGH**
+
+SHAPDIFF-1's load-bearing methodological finding: a self-consistency identity validates the ARITHMETIC but never the CHOICE OF QUANTITY — under a wrong weighting `sum_i contribution_i == gap` reads 2e-16 and PASSES, because both sides share the weight table. Both bars are therefore registered, with the controls that separate them:
+
+| # | Identity | Bar | On failure |
+|---|---|---|---|
+| T1 | Per-CELL LMDI: `sum_i attrib_i == Tc_B[cell] - Tc_A[cell]` | ≤ 1e-9 rel | stop |
+| T2 | **INTERNAL:** `sum_i contribution_i == gap_Tcond` | ≤ 1e-9 rel | stop; no interpretation |
+| T3 | **EXTERNAL:** my `gap_Tcond` vs the SHIPPED `_Tc`-contraction (+2.195340) | ≤ 1e-3 abs ms/char | report prominently; the channel is not what I think it is |
+| T4 | **EXTERNAL:** `gap_T2 + gap_Tcond == gap_total` vs `card()`'s +3.193444 | ≤ 1e-3 abs ms/char | as T3 |
+| T5 | TreeSHAP walk vs independent `predict()`, log space | ≤ 1e-5 abs | tool is wrong; stop |
+
+**NEGATIVE CONTROLS, registered as MANDATORY, each with the bar it MUST break AND the bar it must LEAVE INTACT — that pairing is the evidence the bars are non-redundant:**
+- **WRONG-WEIGHTING (`tcond-marginal`):** weight the Tcond channel by the first-two-character marginal `w2` broadcast over the third character instead of `tri` itself (i.e. commit F1's trap). **MUST break T3/T4 while PASSING T2.**
+- **SHUFFLE:** permute the per-cell SHAP-delta vectors across cells. **MUST break T1/T2 while leaving T3/T4 intact.**
+
+⚠ Registered from SHAPDIFF-1's own scar: **a residual reading EXACTLY 0.000e+00 is treated as SUSPECT, not as a pass** — its first log-space control was a tautology (`base := p − Σshap`, then assert `base + Σshap == p`) that could never fail. I will READ the residual list, not merely check the booleans. ⚠ And registered as a *prediction that can embarrass me*: T5 CANNOT be 0 (float32 booster; I measured 1.219e-06 on seed 0 before writing this), so an exact zero there means I have compared something to itself.
+
+### §3. MECHANISM — REGISTERED AS AN OBLIGATION, NOT AN OPTION
+
+A ranked table of 46 numbers is not an answer to "why". For each dominant block I will measure the underlying board difference **independently of SHAP**, both halves from separate machinery (the shape SHAPDIFF-1 used for `bottom`: corpus mass share on each row, and the model's price for that row, neither computed from the other): a **corpus-side share** (what fraction of trigram mass has the property on each board) and a **model-side price** (mean ms or mean logs the surface charges for it), stated as one actionable sentence. ⚠ Registered: if a dominant block admits no such independent measurement, I say so rather than dressing the SHAP number up as a mechanism.
+
+### §4. GAUGE CROSS-CHECK — FALSIFIABLE, DIRECTIONS FIXED BEFORE MEASURING
+
+Gauges measured independently for this pair (nothing in the pipeline reads them): `redir` 2.494 vs 3.213, `sg_dist` 3.968 vs 4.031, `scissor` 0.089 vs 0.517, `alt` 45.156 vs 44.076 (all flagship-c3 better); `sfb` 1.654 vs 1.526, `roll` 41.761 vs 42.466 (graphite better).
+- **G1: `redirect` + `bad_redirect` should attribute FOR flagship-c3** (it runs fewer redirects: 2.494 vs 3.213). This frame has literal `redirect`/`bad_redirect` columns, so it is the most DIRECT gauge test available anywhere in this campaign. A pro-graphite redirect block is a DISAGREEMENT and gets escalated, not smoothed.
+- **G2: `SKIPGRAM` (`sg_distance` especially) should attribute FOR flagship-c3** (3.968 vs 4.031). ⚠ but the margin is 1.6%, so a NULL is the third admissible outcome and is not a disagreement.
+- **G3: `bg*_same_finger` should attribute AGAINST flagship-c3** (graphite's sfb is better, 1.526 vs 1.654) — SHAPDIFF-1's falsifier, which PASSED in the T2 channel; I register the same expectation here.
+- **G4: `bg*_scissor` should attribute FOR flagship-c3** (0.089 vs 0.517).
+⚠ Registered a-priori: gauges use different denominators and n-gram tables from the frame, so a MAGNITUDE mismatch is expected and is NOT a finding. Only a SIGN conflict is. ⚠ And registered from SHAPDIFF-1's Trap-13 instance: a column named like a gauge is not that gauge (`lateral` is a landing-key one-hot, not lat-span). I will check each column's DEFINITION in `features/ngram.py` before reading it against a gauge of the same name.
+
+### §5. CORPUS ROBUSTNESS — RULE FIXED NOW, REPORTED AS REGISTERED EVEN IF IT FAILS
+
+`blend-v1` (default) and `iweb`, both run. **Registered rule: the attribution is corpus-ROBUST iff (i) the SIGN of every BLOCK in the top-3 by |contribution| agrees across corpora, AND (ii) Spearman rho over the 5 BLOCK contributions ≥ 0.90, AND (iii) Spearman rho over all 46 COLUMN contributions ≥ 0.90.** SHAPDIFF-1's rule was column-level only and FAILED at rho = 0.8737 while its headline was stable — so I register the block-level and column-level bars SEPARATELY and expect they may disagree. **A block-level pass with a column-level fail is a legitimate, informative outcome and will be reported as exactly that, not laundered into a single "robust".** No post-hoc redefinition; flippers named with their share of the gap.
+
+### §6. WHAT THIS CANNOT SEE / WHAT I WILL NOT DO
+
+- `data/models/k31/` is never written; `layouts.py` untouched; no layout adopted or recommended. Code is NOT pushed (branch `tcond`, off `shapdiff`); only this ledger is.
+- The frame carries **no hand-identity column**, so "graphite overloads one hand" stays unaskable. The `bg*` `inwards`/`outwards` pair is SWAP-INVARIANT (schema docstring: 0 of 870 ordered pairs change under reversal) — but ⚠ registered as an OPEN question this arm can settle and SHAPDIFF-1 could not: the TRIGRAM-level `redirect`/`bad_redirect` columns ARE order-aware, so **this channel may carry a direction-of-travel signal the bigram frame provably lacked.** I will measure whether it does rather than assume either way.
+- `wpm` is constant across cells (measured, F4). Registered self-test: a large `WPM`-block contribution is the same TreeSHAP interaction-credit artifact SHAPDIFF-1 documented, NOT a frame mismatch — but I will re-assert constancy on BOTH boards' matrices, and if they ever differ the run is VOID.
+- Magnitudes carry known model error: TRIGRAM-CALIB-1 measured trigram fold slopes qwerty 1.0404, dvorak 0.7304, azerty 0.8563. Orderings are affine-invariant; ms MAGNITUDES are not. Registered: magnitudes are quoted as model-internal.
+- A SHAP attribution is an attribution ON THIS MODEL: what the fitted surface prices, not what a hand does.
+
+### §7. THE TOOL — EXTENDED, NOT FORKED
+
+`keybo.analysis.shap_diff` gains the Tcond channel as a first-class citizen (`--channel t2|tcond|both`, default `both`) reusing the SAME LMDI machinery. A parallel module duplicating it would be a failure of this arm. SHAPDIFF-1's **23 existing tests must still pass**, and new tests assert the Tcond identities AS NUMBERS plus both new controls WITH the which-bar-fires pairing.
+
+### §8. HONESTY CLAUSE
+
+If T2 or T3 fails I report a FAILED TOOL and no feature story. **If the dominant Tcond block turns out to be `BG1`/`BG2` — i.e. the trigram model is mostly re-pricing its constituent bigrams — then the honest headline is that the Tcond channel is NOT a genuinely trigram-level story, and that leads the report even though it is the less interesting answer.** Every number in my brief is UNVERIFIED until I reproduce it; where I disagree I say MY BRIEF IS WRONG and give my own number (already once: the 26-column claim, §0 F2). Tags: 🟢 VERIFIED = I ran it; 🟡 HIGH = read from code; 🟠 INFERRED; 🔴 UNCERTAIN.
