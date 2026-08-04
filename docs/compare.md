@@ -81,9 +81,9 @@ keybo compare A B --control shuffle         # SHAP deltas permuted         -> IN
 A control that *reconciles* means the identity has become vacuous, so `--control` inverts the
 exit code: `rc=0` means the control correctly failed.
 
-## The four ways this output can mislead — and what the tool does about each
+## The five ways this output can mislead — and what the tool does about each
 
-Every item was **measured** in SHAPDIFF-1 / SHAPDIFF-TCOND, not imagined.
+Every item was **measured** in SHAPDIFF-1 / SHAPDIFF-TCOND / FM4, not imagined.
 
 ### 1. Per-column credit is not unique → blocks are the default
 
@@ -131,12 +131,50 @@ ms figures as scaled. And every number is a contribution to *this fitted surface
 never a biomechanical claim — this surface prices **long travel as cheaper**, so a positive
 `dx` is a fact about the model's pricing, not about distance being good.
 
+### 5. A column's name is also a gauge's name → the honest display name
+
+Four served columns share a name with a gauge `keybo analyze` reports, **while measuring
+something else** — so a reader who moves between the two tables draws a false inference. This is
+the one that already did damage: the SHAPDIFF-1 read-through treated the `lateral` column as the
+lateral-*stretch* measure, and it is not one.
+
+Each verdict is a measurement over the **full** enumeration of `ROW_STAGGERED_30` — all 900
+ordered position pairs, all 27,000 ordered triples — against the gauge's *own* code path:
+
+| served column | same-named gauge | verdict | printed as |
+|---|---|---|---|
+| `scissor` | `scissor` (oxey, comfort) | **EQUAL** — 0 disagreements, both call `classify.is_scissor` | `scissor` (unchanged) |
+| `lsb` | `lsb` (keymeow, \|dx\| ≥ 2) | **DIFFERENT** — column fires 32, gauge 24; strict superset, the 8 extra are exactly the dx = 1.75 pairs | `lsb_dx1p5` |
+| `redirect` | `redirect` / `redir` | **DIFFERENT** — column fires 4320, both gauges 2808; the 1512 extra are exactly the same-finger-constituent firings | `redirect_ungated` |
+| `bad_redirect` | `bad_redirects_total` | **DIFFERENT** — column fires 864, gauge 540 | `bad_redirect_ungated` |
+| `lateral` | `lat-span` | **DIFFERENT** — a landing-KEY one-hot (invariant in the first key) vs a graded PAIRWISE stretch (symmetric); 126 pairs fire one and not the other, each way | `off_home_column` |
+
+`scissor` keeps its name deliberately: a shared name that is *truthful* is informative, and
+annotating it would train readers to ignore the annotation. So would renaming
+`redirect`/`bad_redirect` if they matched — and a prior reading held that they did, citing
+`analysis/redirects.py`'s exhaustive equality. **That equality is between the two GAUGES**
+(`kmstats._is_redirect` and `community._v1_pattern`: 2808 both, 0 exactly-one) and neither side
+of it is the model's column. The gauge's predicate does already have a column name here —
+`redirect_sfgated`/`bad_redirect_sfgated` match it exactly on all 27,000 triples — which is what
+makes `_ungated` the accurate name for the served pair rather than an invented one.
+
+**The rename is in the READER only; the served schema is untouched.** That is not a shortcut, it
+is the correct fix, and the alternative was measured: `models/base.py`'s load guard compares
+`feature_version` alone and never `feature_names`, so renaming a schema column would *not*
+invalidate the six `data/models/k31` artifacts — but it would desync their sidecars from the
+schema, and `_shap_tables` refuses a model whose stored names differ from the schema list. A
+schema rename therefore makes `keybo compare` **raise instead of report**, while `shap-report`
+(which takes its names from the *sidecar*) would silently keep printing the old ones. Fixing the
+display layer keeps every published number reproducible; `keybo.analysis.effect_curves` set the
+same precedent when it renamed its own copies of `inwards`/`outwards` to `outer_high`/`outer_low`.
+
 ## What it fundamentally cannot do
 
 **It cannot attribute any part of the gap that is not in the model's features at all.** Neither
 frame carries a hand-identity channel, so *"board B overloads one hand"* is unaskable; the
 bigram frame carries no direction-of-travel channel either (`inwards`/`outwards` are
-swap-invariant; `redirect`/`bad_redirect` on the trigram frame are the one order-aware signal).
+swap-invariant; the trigram frame's `redirect_ungated`/`bad_redirect_ungated` — served as
+`redirect`/`bad_redirect` — are the one order-aware signal).
 Such a difference is **priced inside the features that are served**, not reported as a
 remainder — so the absence of a "hand balance" row is not evidence that hand balance did
 nothing.
