@@ -120,7 +120,9 @@ for arm in ("CUR", "INTERP", "INTERP-NOMONO", "CUR-NOWPM"):
         "direction": cfg.get("direction"),
         "kitchensink": cfg.get("kitchensink"),
     }
-    print(f"  {arm:<15} interp={cfg.get('interp')!r} monotone={cfg.get('monotone')!r} seeds={cfg.get('seeds')}")
+    print(
+        f"  {arm:<15} interp={cfg.get('interp')!r} monotone={cfg.get('monotone')!r} seeds={cfg.get('seeds')}"
+    )
 out["arm_identity"] = ident
 
 # H-MONO's arm must differ from INTERP in EXACTLY the monotone flag, or the test is not the test.
@@ -241,7 +243,9 @@ print(f"[H-EXTRAP] monotone-decreasing in wpm? {out['H_EXTRAP_monotone_decreasin
 # ---------------------------------------------------------------------------------------------
 FLOOR = G01["GC3_measured_floor"]["per_fold_bucket"]
 SUP = G01["GC4_support"]["support_per_fold_bucket"]
-print("\n[margin] every REFUSED (fold,bucket): mean delta rho vs the MEASURED reseed floor at that bucket")
+print(
+    "\n[margin] every REFUSED (fold,bucket): mean delta rho vs the MEASURED reseed floor at that bucket"
+)
 print(
     f"{'arm':<22}{'fold':<9}{'bkt':<6}{'mean drho':>11}{'floor(pairmax)':>16}"
     f"{'margin':>10}{'x floor':>9}{'n_cells':>9}{'n_ppts':>8}"

@@ -32,17 +32,27 @@ import numpy as np  # noqa: E402
 
 from keybo.verdicts import HIGH_WPM_FLOOR, HIGH_WPM_TOLERANCE, bucket_regression_report  # noqa: E402
 
-HT = json.load(open("/local/home/zegertho/repos/keybo-wt-hybridtri/agent-artifacts/hybridtri/lolo.json"))
-IF = json.load(open("/local/home/zegertho/repos/keybo-wt-interpframe/agent-artifacts/interpframe/lolo.json"))
-FX = json.load(open("/local/home/zegertho/repos/keybo-wt-interpframe/agent-artifacts/interpframe/lolo_nowpm_fixed.json"))
+HT = json.load(
+    open("/local/home/zegertho/repos/keybo-wt-hybridtri/agent-artifacts/hybridtri/lolo.json")
+)
+IF = json.load(
+    open("/local/home/zegertho/repos/keybo-wt-interpframe/agent-artifacts/interpframe/lolo.json")
+)
+FX = json.load(
+    open(
+        "/local/home/zegertho/repos/keybo-wt-interpframe/agent-artifacts/interpframe/lolo_nowpm_fixed.json"
+    )
+)
 SN = json.load(open(f"{ARTIFACTS}/g02_seednoise.json"))
 G01 = json.load(open(f"{ARTIFACTS}/g01_controls.json"))
 require_key(SN, "report", "inline_verdict", where="g02_seednoise.json")
 
 # The SEEDNOISE arm must be what it claims: served basis, NEW seeds. Verified, not trusted.
 sncfg = SN["report"].get("config", {})
-print(f"[identity] SEEDNOISE config: seeds={sncfg.get('seeds')} interp={sncfg.get('interp')!r} "
-      f"monotone={sncfg.get('monotone')} columns={len(SN['served_columns'])}")
+print(
+    f"[identity] SEEDNOISE config: seeds={sncfg.get('seeds')} interp={sncfg.get('interp')!r} "
+    f"monotone={sncfg.get('monotone')} columns={len(SN['served_columns'])}"
+)
 if list(sncfg.get("seeds") or []) != [3, 4, 5] or sncfg.get("interp") is not False:
     raise SystemExit(f"ABORT: SEEDNOISE is not the served frame at new seeds: {sncfg}")
 if len(SN["served_columns"]) != 20 or SN["served_columns"][-1] != "wpm":
@@ -125,9 +135,7 @@ FLOOR = G01["GC3_measured_floor"]["per_fold_bucket"]
 SUP = G01["GC4_support"]["support_per_fold_bucket"]
 
 print("\n[PARTITION] every refused (fold,bucket), classified against the SEEDNOISE control")
-print(
-    f"{'arm':<36}{'fold':<9}{'bkt':<6}{'drho':>9}{'xfloor':>8}{'n_cells':>8}{'n_ppts':>8}  class"
-)
+print(f"{'arm':<36}{'fold':<9}{'bkt':<6}{'drho':>9}{'xfloor':>8}{'n_cells':>8}{'n_ppts':>8}  class")
 rowsout = []
 per_arm = {}
 for label, rep in ARMS.items():
@@ -195,7 +203,9 @@ out["partition_summary"] = {
     "n_noise_suspect": n_ns,
     "n_survives": n_sv,
 }
-print(f"\n[PARTITION] rows: {n_np} NOISE-PROVEN, {n_ns} NOISE-SUSPECT, {n_sv} SURVIVES (of {len(rowsout)})")
+print(
+    f"\n[PARTITION] rows: {n_np} NOISE-PROVEN, {n_ns} NOISE-SUSPECT, {n_sv} SURVIVES (of {len(rowsout)})"
+)
 
 # ---------------------------------------------------------------------------------------------
 # BOOTSTRAP over the baseline's SEED COMPOSITION (prereg §8.3)

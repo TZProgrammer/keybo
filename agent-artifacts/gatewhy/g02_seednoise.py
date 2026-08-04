@@ -39,9 +39,13 @@ from keybo.training.validate import validate  # noqa: E402
 require(V, "validate")
 
 # The SERVED frame, asserted -- this arm's whole meaning is "nothing changed but the seed".
-print(f"[frame] served bigram columns: {len(BIGRAM_FEATURE_NAMES)} ending {BIGRAM_FEATURE_NAMES[-1]!r}")
+print(
+    f"[frame] served bigram columns: {len(BIGRAM_FEATURE_NAMES)} ending {BIGRAM_FEATURE_NAMES[-1]!r}"
+)
 if len(BIGRAM_FEATURE_NAMES) != 20 or BIGRAM_FEATURE_NAMES[-1] != "wpm":
-    raise SystemExit(f"ABORT: served frame is not the shipped 20c/wpm frame: {BIGRAM_FEATURE_NAMES}")
+    raise SystemExit(
+        f"ABORT: served frame is not the shipped 20c/wpm frame: {BIGRAM_FEATURE_NAMES}"
+    )
 
 NEW_SEEDS = [3, 4, 5]  # registered: seeds NOT used by the published run
 STROKES = "/local/home/zegertho/keybo-e2e/bistrokes31_v1.tsv"
@@ -69,7 +73,9 @@ rep = validate(
     train_params={"n_jobs": 8},
 )
 cfg = rep.get("config", {})
-log(f"done. config seeds={cfg.get('seeds')} interp={cfg.get('interp')!r} monotone={cfg.get('monotone')}")
+log(
+    f"done. config seeds={cfg.get('seeds')} interp={cfg.get('interp')!r} monotone={cfg.get('monotone')}"
+)
 # VERIFY THE ARM IS WHAT IT CLAIMS (a config label is a claim, not the referent).
 if cfg.get("interp") is not False or list(cfg.get("seeds") or []) != NEW_SEEDS:
     raise SystemExit(f"ABORT: SEEDNOISE arm config is not served/new-seeds: {cfg}")
@@ -87,7 +93,9 @@ with open(f"{ARTIFACTS}/g02_seednoise.json", "w") as fh:
 log(f"wrote {ARTIFACTS}/g02_seednoise.json")
 
 # Quick inline verdict so the log alone carries the answer even if the JSON is never read.
-HT = json.load(open("/local/home/zegertho/repos/keybo-wt-hybridtri/agent-artifacts/hybridtri/lolo.json"))
+HT = json.load(
+    open("/local/home/zegertho/repos/keybo-wt-hybridtri/agent-artifacts/hybridtri/lolo.json")
+)
 cur = HT["arms"]["CUR"]
 base = {}
 for holdout, fold in cur["folds"].items():
@@ -117,7 +125,9 @@ for holdout, fold in rep["folds"].items():
     st = sorted(b for b, h in hits.items() if h == n)
     if st:
         structural[holdout] = st
-    print(f"  {holdout:<8} structural {st}  noise {sorted(b for b, h in hits.items() if 0 < h < n)}")
+    print(
+        f"  {holdout:<8} structural {st}  noise {sorted(b for b, h in hits.items() if 0 < h < n)}"
+    )
 print()
 print(f"SEEDNOISE PASSES: {not structural}" + ("" if not structural else f"  -> {structural}"))
 out["inline_verdict"] = {"structural": structural, "passed": not structural}

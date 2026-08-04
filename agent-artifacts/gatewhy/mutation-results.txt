@@ -1,0 +1,32 @@
+GATEWHY-1 mutation battery — 2026-08-04T11:05:26Z
+target: tests/test_gate_control_vacuity.py  (asserting each mutation applied; python -B; pycache purged before AND after)
+
+M01    RED          src/keybo/verdicts.py  HIGH_WPM_TOLERANCE = 0.005 -> HIGH_WPM_TOLERANCE = 0.05
+M02    RED          src/keybo/verdicts.py  HIGH_WPM_TOLERANCE = 0.005 -> HIGH_WPM_TOLERANCE = 0.0
+M03    RED          src/keybo/verdicts.py  HIGH_WPM_FLOOR = 80 -> HIGH_WPM_FLOOR = 40
+M04    RED          src/keybo/verdicts.py  HIGH_WPM_FLOOR = 80 -> HIGH_WPM_FLOOR = 120
+M05    RED          src/keybo/verdicts.py  regressing = sorted(b for b, d in high.items() if d < -tolerance) -> regressing = sorted(b for b, d in high.items() if d <= -tolerance)
+M06    RED          src/keybo/verdicts.py  regressing = sorted(b for b, d in high.items() if d < -tolerance) -> regressing = sorted(b for b, d in high.items() if d < tolerance)
+M07    RED          src/keybo/verdicts.py  regressing = sorted(b for b, d in high.items() if d < -tolerance) -> regressing = sorted(b for b, d in high.items() if abs(d) > tolerance)
+M08    RED          src/keybo/verdicts.py  high = {b: d for b, d in deltas.items() if b >= floor} -> high = {b: d for b, d in deltas.items() if b > floor}
+M09    RED          src/keybo/verdicts.py  high = {b: d for b, d in deltas.items() if b >= floor} -> high = dict(deltas)
+M10    RED          src/keybo/verdicts.py  bucket: float(candidate[bucket]) - float(baseline[bucket]) -> bucket: float(baseline[bucket]) - float(candidate[bucket])
+M11    RED          src/keybo/verdicts.py  gated = bool(baseline) and top in deltas and bool(high) -> gated = True
+M12    RED          src/keybo/verdicts.py  report["passed"] = not regressing -> report["passed"] = True
+M13    RED          src/keybo/verdicts.py          report["passed"] = not regressing ->         report["passed"] = bool(regressing)
+M14    RED          src/keybo/verdicts.py      if gated:
+        report["passed"] = not regressing ->     if gated:
+        report["passed"] = not regressing or (
+            report["min_regressing_support"] is not None
+            and report["min_regressing_support"] < 30
+        )
+M15    SURVIVED     src/keybo/verdicts.py  "min_regressing_support": ( -> "min_regressing_support": (None) or (
+M16    RED          src/keybo/verdicts.py      if not report["passed"]:
+        offenders ->     if False:
+        offenders
+M17    RED          src/keybo/verdicts.py  f"{what}: rho regresses in {len(offenders)} of {len(report[ -> f"{what}: rho moved in {len(offenders)} of {len(report[
+M18    RED          src/keybo/verdicts.py      if not report["gated"]:
+        top = max(baseline) if baseline else None ->     if False:
+        top = max(baseline) if baseline else None
+
+RED: 17   SURVIVED: 1   NOT-APPLIED: 0

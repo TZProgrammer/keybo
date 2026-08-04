@@ -43,7 +43,9 @@ out: dict = {"prereg": "GATEWHY-preregistration.md @ 569b68d §6.1/§7.1/§7.2"}
 # =============================================================================================
 # 1a. H-PACE, numerically: within a bucket the conversion is a POSITIVE CONSTANT multiplier.
 # =============================================================================================
-print("[H-PACE 1a] Cell.wpm is the bucket midpoint -> the ms conversion is rank-preserving IN-bucket")
+print(
+    "[H-PACE 1a] Cell.wpm is the bucket midpoint -> the ms conversion is rank-preserving IN-bucket"
+)
 # Cell.wpm's construction, asserted on real cells rather than read off the docstring.
 from keybo.data.strokes import load_strokes  # noqa: E402
 
@@ -131,7 +133,9 @@ print(
 # 2. VACUITY of the gate control -- an identity, then an exhaustive adversarial search.
 # =============================================================================================
 print("\n[VACUITY] the published control compares the incumbent against a mean OF ITS OWN SEEDS")
-HT = json.load(open("/local/home/zegertho/repos/keybo-wt-hybridtri/agent-artifacts/hybridtri/lolo.json"))
+HT = json.load(
+    open("/local/home/zegertho/repos/keybo-wt-hybridtri/agent-artifacts/hybridtri/lolo.json")
+)
 cur = HT["arms"]["CUR"]
 sum_abs, worst = [], 0.0
 for holdout, fold in cur["folds"].items():
@@ -149,7 +153,9 @@ out["VACUITY_identity"] = {
     "max_abs_sum_of_incumbent_deltas": worst,
     "note": "each incumbent bucket's 3 seed-deltas are deviations from their own mean => sum == 0",
 }
-print(f"          max |sum of the 3 incumbent deltas| over {len(sum_abs)} (fold,bucket) cells: {worst:.3e}")
+print(
+    f"          max |sum of the 3 incumbent deltas| over {len(sum_abs)} (fold,bucket) cells: {worst:.3e}"
+)
 
 # The impossibility, proved by exhaustive adversarial search rather than by one observation.
 rng2 = np.random.default_rng(7)
@@ -210,7 +216,9 @@ print(
 # =============================================================================================
 # 3. H-BASIS re-scored from the FIXED file (§7.2).
 # =============================================================================================
-print("\n[H-BASIS §7.2] re-scored from lolo_nowpm_fixed.json, and compared to the confounded verdict")
+print(
+    "\n[H-BASIS §7.2] re-scored from lolo_nowpm_fixed.json, and compared to the confounded verdict"
+)
 
 
 def rhos(rep):

@@ -40,7 +40,9 @@ require(VD, "bucket_regression_report", "HIGH_WPM_FLOOR", "HIGH_WPM_TOLERANCE")
 print(f"[gate] HIGH_WPM_FLOOR={HIGH_WPM_FLOOR}  HIGH_WPM_TOLERANCE={HIGH_WPM_TOLERANCE}")
 
 HYBRIDTRI = "/local/home/zegertho/repos/keybo-wt-hybridtri/agent-artifacts/hybridtri/lolo.json"
-INTERPFRAME = "/local/home/zegertho/repos/keybo-wt-interpframe/agent-artifacts/interpframe/lolo.json"
+INTERPFRAME = (
+    "/local/home/zegertho/repos/keybo-wt-interpframe/agent-artifacts/interpframe/lolo.json"
+)
 
 out: dict = {
     "prereg": "agent-artifacts/gatewhy/GATEWHY-preregistration.md @ c5e1559",
@@ -131,7 +133,9 @@ SUP = support(HT["arms"]["CUR"])
 # ---------------------------------------------------------------------------------------------
 # GC1 — reproduce the PUBLISHED verdicts. Baseline = CUR per-fold mean over ALL its seeds.
 # ---------------------------------------------------------------------------------------------
-def verdict(cand: dict[str, dict[int, dict[int, float]]], base: dict[str, dict[int, float]]) -> dict:
+def verdict(
+    cand: dict[str, dict[int, dict[int, float]]], base: dict[str, dict[int, float]]
+) -> dict:
     """The published gate rule: per fold, a bucket regressing on EVERY seed is STRUCTURAL."""
     detail = {}
     for holdout, seeds in cand.items():
@@ -184,14 +188,18 @@ EXPECT = {
 }
 gc1_ok = all(gc1[a]["structural"] == EXPECT[a] for a in EXPECT)
 out["GC1_reproduce_published"] = {
-    "baseline_per_fold": {h: {str(b): v for b, v in sorted(d.items())} for h, d in BASE_PUB.items()},
+    "baseline_per_fold": {
+        h: {str(b): v for b, v in sorted(d.items())} for h, d in BASE_PUB.items()
+    },
     "arms": gc1,
     "expected_structural": EXPECT,
     "reproduced": bool(gc1_ok),
 }
 print(f"[GC1] reproduced published verdicts EXACTLY: {gc1_ok}")
 if not gc1_ok:
-    print("!! GC1 FAILED -- my reader disagrees with the published artifact. Everything after is void.")
+    print(
+        "!! GC1 FAILED -- my reader disagrees with the published artifact. Everything after is void."
+    )
 
 # ---------------------------------------------------------------------------------------------
 # GC3 — this gate's OWN measured floor, from CUR alone (no training).
@@ -338,7 +346,9 @@ def symmetric_verdict(cand_r: dict[str, dict[int, dict[int, float]]], *, is_cur:
         "passed_conservative": not any(d["structural_conservative"] for d in detail.values()),
         "passed_lenient": not any(d["structural_lenient"] for d in detail.values()),
         "structural_conservative": {
-            h: d["structural_conservative"] for h, d in detail.items() if d["structural_conservative"]
+            h: d["structural_conservative"]
+            for h, d in detail.items()
+            if d["structural_conservative"]
         },
         "structural_lenient": {
             h: d["structural_lenient"] for h, d in detail.items() if d["structural_lenient"]
