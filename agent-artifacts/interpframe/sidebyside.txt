@@ -1,0 +1,173 @@
+========================================================================================
+INTERPFRAME-1 §(d) — SIDE-BY-SIDE SHAP-DIFF, flagship-c3 -> graphite, T2 CHANNEL
+========================================================================================
+
+Both halves are `keybo.analysis.shap_diff.format_report` output. The two runs
+decompose DIFFERENT MODELS' T2 surfaces (the shipped 3-seed bigram_reg31 vs the POC's
+3-seed interp models), so their gaps differ — that is a model difference, not an
+attribution disagreement, and it is why the interp run's card() tie is SCOPED rather
+than gated. What is comparable is the SHAPE of the explanation.
+
+########################################################################################
+# A. THE SERVED FRAME (20 columns) — the incumbent explanation
+########################################################################################
+SHAP-DIFF  flagship-c3 -> graphite   corpus=default  wpm=90
+  channel: t2    frame: served
+
+RECONCILIATION (checked before any interpretation)
+  ms/char shipped card()  flagship-c3: 254.9761   graphite: 258.1696   <- what `keybo analyze` prints
+  ms/char own-support     flagship-c3: 254.9761   graphite: 258.1696
+  ms/char common-support  flagship-c3: 254.9761   graphite: 258.1696
+  gap (b-a; +ve = flagship-c3 faster) : +3.1934 ms/char
+    T2 bigram channel    : +0.9981  (31.3%)  <- decomposed
+    Tcond trigram channel: +2.1953  (68.7%)  <- NOT decomposed in this run
+  DECOMPOSED SHARE: 31.3% of the gap    undecomposed: +2.1953 ms/char
+  coverage flagship-c3: 88.715%   graphite: 88.715%
+  common support is a no-op: True   coverage cost: -2.842e-14 ms/char
+  channel split vs total (rel)           4.450e-15
+  gap vs shipped card (abs ms/char)      4.389e-07
+  RECONCILES: True
+
+=== CHANNEL T2 — T2 (bigram table) ===
+  weighting: trigram-marginal    gap +0.9981 ms/char (31.3% of the total gap)
+  residuals:
+    INTERNAL per-cell LMDI identity (rel)     1.456e-16
+    INTERNAL sum(features) vs channel gap     7.341e-15
+    EXTERNAL gap vs shipped table (abs ms/ch) 4.389e-07
+    EXTERNAL table vs shipped (abs ms)        3.564e-05
+    TreeSHAP walk vs predict, per row (abs)   3.965e-07
+    TreeSHAP walk vs predict, weighted (abs)  3.057e-08
+  RECONCILES: True
+
+  BLOCK CONTRIBUTIONS (primary) to gap_t2 (+0.9981 ms/char)
+    block           ms/char    share      favours   parts
+    ROW             +0.7136    71.5%  flagship-c3   bottom+0.7453  top-0.0459  home+0.0142
+    GEOMETRY        +0.3081    30.9%  flagship-c3   dx+0.1678  angle+0.0681  dy+0.0445  outwards+0.0236  distance+0.0045  inwards-0.0004
+    WPM             -0.0922    -9.2%     graphite   wpm-0.0922
+    RELATIONAL      +0.0910     9.1%  flagship-c3   same_hand+0.0855  scissor+0.0270  same_finger-0.0216  adjacent+0.0008  lsb-0.0006
+    FINGER          -0.0225    -2.3%     graphite   lateral-0.1362  ring+0.0433  pinky+0.0353  middle+0.0302  index+0.0050
+    SUM             +0.9981
+
+  PER-FEATURE CONTRIBUTIONS, per COLUMN (subordinate — SHAP's split across correlated columns is NOT unique; read the blocks above)
+    feature              block          ms/char    share      favours       log_a     log_b      d_log
+    bottom               ROW            +0.7453    74.7%  flagship-c3    -0.01415  -0.00889   +0.00526
+    dx                   GEOMETRY       +0.1678    16.8%  flagship-c3    -0.00164  -0.00039   +0.00124
+    lateral              FINGER         -0.1362   -13.6%     graphite    -0.00531  -0.00626   -0.00095
+    wpm                  WPM            -0.0922    -9.2%     graphite    +0.08394  +0.08326   -0.00068
+    same_hand            RELATIONAL     +0.0855     8.6%  flagship-c3    -0.00807  -0.00744   +0.00063
+    angle                GEOMETRY       +0.0681     6.8%  flagship-c3    -0.00272  -0.00222   +0.00049
+    top                  ROW            -0.0459    -4.6%     graphite    -0.00334  -0.00368   -0.00035
+    dy                   GEOMETRY       +0.0445     4.5%  flagship-c3    +0.00200  +0.00231   +0.00031
+    ring                 FINGER         +0.0433     4.3%  flagship-c3    -0.00026  +0.00003   +0.00029
+    pinky                FINGER         +0.0353     3.5%  flagship-c3    -0.00012  +0.00018   +0.00030
+    middle               FINGER         +0.0302     3.0%  flagship-c3    -0.00013  +0.00009   +0.00022
+    scissor              RELATIONAL     +0.0270     2.7%  flagship-c3    -0.00076  -0.00057   +0.00018
+    outwards             GEOMETRY       +0.0236     2.4%  flagship-c3    -0.00083  -0.00065   +0.00018
+    same_finger          RELATIONAL     -0.0216    -2.2%     graphite    -0.01135  -0.01150   -0.00014
+    home                 ROW            +0.0142     1.4%  flagship-c3    +0.00334  +0.00353   +0.00019
+    index                FINGER         +0.0050     0.5%  flagship-c3    +0.00048  +0.00050   +0.00002
+    distance             GEOMETRY       +0.0045     0.5%  flagship-c3    -0.00097  -0.00095   +0.00002
+    adjacent             RELATIONAL     +0.0008     0.1%  flagship-c3    -0.00010  -0.00011   -0.00000
+    lsb                  RELATIONAL     -0.0006    -0.1%     graphite    -0.00135  -0.00138   -0.00003
+    inwards              GEOMETRY       -0.0004    -0.0%     graphite    +0.00004  +0.00003   -0.00000
+    SUM                                 +0.9981
+
+  TOP N-GRAMS per leading column (ms/char, corpus-weighted)
+    bottom               '␣c'+0.1538  '␣f'-0.1243  '␣b'-0.1203  '␣w'-0.1146
+    dx                   'th'-0.0478  'in'+0.0432  'en'+0.0333  'an'+0.0277
+    lateral              '␣c'-0.0576  '␣w'-0.0395  'ng'+0.0300  '␣.'-0.0219
+    wpm                  '␣c'-0.0186  '␣w'+0.0175  '␣f'+0.0159  '␣b'+0.0149
+    same_hand            'of'+0.0248  'fo'+0.0216  'fi'+0.0192  'if'+0.0166
+    angle                'nd'+0.0409  'io'+0.0257  'ke'-0.0221  'ho'-0.0203
+
+########################################################################################
+# B. THE INTERP FRAME (10 columns) — the proposed explanation
+########################################################################################
+SHAP-DIFF  flagship-c3 -> graphite   corpus=default  wpm=90
+  channel: t2    frame: interp
+  ⚠ frame='interp' is NOT the served frame: the T2 table below comes from SUPPLIED models, not from data/models/k31, so the card() tie is a MODEL difference and is not gated (see `card_tie_applies`).
+
+RECONCILIATION (checked before any interpretation)
+  ms/char shipped card()  flagship-c3: 254.9761   graphite: 258.1696   <- what `keybo analyze` prints
+  ms/char own-support     flagship-c3: 243.2822   graphite: 246.6906
+  ms/char common-support  flagship-c3: 243.2822   graphite: 246.6906
+  gap (b-a; +ve = flagship-c3 faster) : +3.4083 ms/char
+    T2 bigram channel    : +1.2130  (35.6%)  <- decomposed
+    Tcond trigram channel: +2.1953  (64.4%)  <- NOT decomposed in this run
+  DECOMPOSED SHARE: 35.6% of the gap    undecomposed: +2.1953 ms/char
+  coverage flagship-c3: 88.715%   graphite: 88.715%
+  common support is a no-op: True   coverage cost: +2.842e-14 ms/char
+  channel split vs total (rel)           0.000e+00
+  gap vs shipped card (abs ms/char)      2.149e-01   <- NOT GATED (non-served frame; a model difference)
+  RECONCILES: True
+
+=== CHANNEL T2 — T2 (bigram table) ===
+  weighting: trigram-marginal    gap +1.2130 ms/char (35.6% of the total gap)
+  residuals:
+    INTERNAL per-cell LMDI identity (rel)     1.749e-16
+    INTERNAL sum(features) vs channel gap     7.139e-15
+    EXTERNAL gap vs shipped table (abs ms/ch) 1.440e-07
+    EXTERNAL table vs shipped (abs ms)        3.465e-05
+    TreeSHAP walk vs predict, per row (abs)   3.405e-07
+    TreeSHAP walk vs predict, weighted (abs)  5.706e-08
+  RECONCILES: True
+
+  BLOCK CONTRIBUTIONS (primary) to gap_t2 (+1.2130 ms/char)
+    block           ms/char    share      favours   parts
+    ROWCOST         +0.6158    50.8%  flagship-c3   bottom_bias+0.5798  row_arrival+0.0287  row_load+0.0073
+    SPAN            +0.2767    22.8%  flagship-c3   same_hand_travel+0.1252  lateral_span+0.1116  row_span+0.0398
+    CONTACT         +0.1784    14.7%  flagship-c3   finger_load+0.2499  off_home_column-0.0527  hand_conflict-0.0188
+    DIRECTION       +0.1420    11.7%  flagship-c3   roll_inward+0.1420
+    SUM             +1.2130
+
+  PER-FEATURE CONTRIBUTIONS, per COLUMN (subordinate — SHAP's split across correlated columns is NOT unique; read the blocks above)
+    feature              block          ms/char    share      favours       log_a     log_b      d_log
+    bottom_bias          ROWCOST        +0.5798    47.8%  flagship-c3    -0.00025  +0.00444   +0.00470
+    finger_load          CONTACT        +0.2499    20.6%  flagship-c3    -0.00010  +0.00208   +0.00217
+    roll_inward          DIRECTION      +0.1420    11.7%  flagship-c3    -0.00025  +0.00095   +0.00120
+    same_hand_travel     SPAN           +0.1252    10.3%  flagship-c3    -0.00767  -0.00661   +0.00106
+    lateral_span         SPAN           +0.1116     9.2%  flagship-c3    -0.00560  -0.00468   +0.00092
+    off_home_column      CONTACT        -0.0527    -4.3%     graphite    -0.00314  -0.00355   -0.00042
+    row_span             SPAN           +0.0398     3.3%  flagship-c3    -0.00246  -0.00213   +0.00032
+    row_arrival          ROWCOST        +0.0287     2.4%  flagship-c3    -0.00015  +0.00008   +0.00023
+    hand_conflict        CONTACT        -0.0188    -1.6%     graphite    -0.01332  -0.01344   -0.00011
+    row_load             ROWCOST        +0.0073     0.6%  flagship-c3    -0.00108  -0.00103   +0.00004
+    SUM                                 +1.2130
+
+  TOP N-GRAMS per leading column (ms/char, corpus-weighted)
+    bottom_bias          'on'+0.0662  'ng'+0.0463  'nd'+0.0456  '␣c'+0.0424
+    finger_load          'in'+0.1300  'he'-0.1074  'th'-0.0835  '␣i'+0.0409
+    roll_inward          'he'+0.0789  'ha'+0.0255  'ou'+0.0238  'hi'+0.0181
+    same_hand_travel     'he'+0.0355  'fi'+0.0137  'nd'+0.0123  'if'+0.0107
+    lateral_span         'ng'+0.0490  'ke'+0.0146  'ay'+0.0134  'yo'+0.0115
+    off_home_column      '␣c'-0.0180  '␣w'-0.0141  'y␣'+0.0122  'g␣'+0.0102
+
+========================================================================================
+C. WHAT CHANGED — each claim CHECKED against the two tables above
+========================================================================================
+
+1. THE BOTTOM-ROW STORY: shattered -> ONE monotone column.
+   SERVED spreads it over 3 one-hot columns with MIXED signs: bottom +0.7453  top -0.0459  home +0.0142
+   INTERP puts it in one signed, monotone-constrained column: bottom_bias +0.5798
+
+2. THE CONSTANT-COLUMN ARTIFACT: present -> GONE by construction.
+   SERVED credits wpm -0.0922 ms/char (-9.2% of the gap) to a column that does not VARY at a fixed scoring WPM.
+   INTERP has no wpm column at all, so the artifact is impossible by construction.
+
+3. THE WRONG-SIGNED PHYSICAL STORY: distance -> same_hand_travel.
+   SERVED: distance +0.0045 and dx +0.1678 — two mutually dependent columns (|r| = 0.9813) whose individual credits are not unique, and whose learned response prices LONG travel CHEAPER because long travel proxies for CROSS-HAND.
+   INTERP: same_hand_travel +0.1252 — the same quantity CONDITIONED on same-hand and monotone-constrained, so 'farther is slower' is true of the fitted surface, verified (SHAP rho +0.8706).
+
+4. NAME COLLISIONS: resolved.
+   SERVED 'lateral' -0.1362 is an off-home COLUMN flag, not the `lat-span` GAUGE; SERVED 'inwards'/'outwards' (-0.0004/+0.0236) are SWAP-INVARIANT and so are not directions of travel at all.
+   INTERP: off_home_column -0.0527 says what it measures; lateral_span +0.1116 IS the gauge's own predicate; roll_inward +0.1420 is antisymmetric under reversal, i.e. an actual direction.
+
+5. DEAD COLUMNS: the served table's tail carries names that explain nothing.
+   SERVED has 3 columns under 1e-3 ms/char: ['inwards', 'lsb', 'adjacent']
+   INTERP has 0 — every column earns its place or is not in the frame.
+
+6. THE BLOCK TABLE and the COLUMN table now say nearly the same thing.
+   SERVED blocks (widest 6 columns): ROW +0.7136/3c  GEOMETRY +0.3081/6c  WPM -0.0922/1c  RELATIONAL +0.0910/5c  FINGER -0.0225/5c
+   INTERP blocks (widest 3 columns): ROWCOST +0.6158/3c  SPAN +0.2767/3c  CONTACT +0.1784/3c  DIRECTION +0.1420/1c
+   Blocks exist BECAUSE column credit is not unique across correlated columns. The narrower
+   the widest block, the less the primary table has to hide — which is the whole claim.

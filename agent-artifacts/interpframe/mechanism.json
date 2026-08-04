@@ -1,0 +1,81 @@
+{
+ "served": {
+  "distance": {
+   "rho_all": -0.68208396230368,
+   "rho_same_hand": -0.33536962666704756,
+   "rho_cross_hand": -0.2588658300333583,
+   "n_all": 961,
+   "n_same_hand": 450,
+   "n_cross_hand": 511
+  },
+  "dx": {
+   "rho_all": 0.2206761580920283,
+   "rho_same_hand": -0.14049309928002177,
+   "rho_cross_hand": 0.6839249053842985,
+   "n_all": 961,
+   "n_same_hand": 450,
+   "n_cross_hand": 511
+  },
+  "dy": {
+   "rho_all": 0.758398440877256,
+   "rho_same_hand": 0.9025603579558095,
+   "rho_cross_hand": 0.6737962597056659,
+   "n_all": 961,
+   "n_same_hand": 450,
+   "n_cross_hand": 511
+  }
+ },
+ "confound": {
+  "mean_distance_same_hand": 2.039790756374358,
+  "mean_distance_cross_hand": 6.12318770812537,
+  "mean_ms_same_hand": 152.74022285716913,
+  "mean_ms_cross_hand": 131.2453719462217,
+  "rho_distance_vs_ms_ALL": -0.5820860857447353,
+  "rho_distance_vs_ms_SAME_HAND": -0.34901619814876106
+ },
+ "interp": {
+  "same_hand_travel": {
+   "rho_all": 0.8705605611798045,
+   "rho_same_hand": 0.6804941579262497
+  }
+ },
+ "strata": {
+  "all_letter": {
+   "rho_distance_vs_ms": -0.5820860857447353,
+   "n": 900,
+   "mean_distance": 4.081489232249864,
+   "mean_ms": 141.9927974016954
+  },
+  "same_hand": {
+   "rho_distance_vs_ms": -0.34901619814876106,
+   "n": 450,
+   "mean_distance": 2.039790756374358,
+   "mean_ms": 152.74022285716913
+  },
+  "same_hand_same_finger": {
+   "rho_distance_vs_ms": 0.5683754407215774,
+   "n": 126,
+   "mean_distance": 1.0517139747457767,
+   "mean_ms": 170.3577944911969
+  },
+  "same_hand_two_finger": {
+   "rho_distance_vs_ms": -0.07579273323191628,
+   "n": 324,
+   "mean_distance": 2.424042838118806,
+   "mean_ms": 145.88894499949166
+  },
+  "cross_hand": {
+   "rho_distance_vs_ms": 0.10638095444486778,
+   "n": 450,
+   "mean_distance": 6.12318770812537,
+   "mean_ms": 131.2453719462217
+  }
+ },
+ "verdict": {
+  "brief_premise_distance_is_wrong_signed": true,
+  "relationship_flips_positive_within_same_hand": false,
+  "interp_replacement_is_positive": true,
+  "conditioning_on_same_hand_ALONE_is_insufficient": true,
+  "confound_is_two_level": true
+ }
+}
