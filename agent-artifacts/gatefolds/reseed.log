@@ -1,0 +1,33 @@
+[tree] keybo.__file__ = /local/home/zegertho/repos/keybo-wt-gatefolds/src/keybo/__init__.py
+[tree] branch = gatefolds  HEAD = a643387
+[tree] threads = OMP=1
+[    0.0s] loading /local/home/zegertho/keybo-e2e/bistrokes31_v1.tsv
+[  212.2s] 2202 rows
+
+====================================================================================================
+TAUTOLOGY CHECK on the gate's OWN incumbent control (reproducing gatewhy's finding)
+====================================================================================================
+  max |sum of the incumbent's 3 seed deltas| over 20 cells: 3.331e-16
+  cells where ALL THREE seed deltas are negative: 0/20
+  => the incumbent CANNOT be structurally refused against its own mean. The control that
+     both INTERPFRAME-1 and I ran licensed nothing. CONFIRMED, independently.
+[  212.2s] ARM CUR-RESEED: validate() 4 folds x seeds [3, 4, 5] (served frame, nothing else changed)
+[  676.1s] ARM CUR-RESEED: done
+
+====================================================================================================
+CUR-RESEED: the served frame, seeds [3,4,5], vs the REGISTERED CUR(0,1,2) baseline
+====================================================================================================
+  verdict: STRUCTURAL on 1/4 folds -> {'azerty': [120]}
+    azerty   structural [120]  noise []   high-bucket mean deltas b80:+0.0012  b100:+0.0013  b120:-0.0103
+    dvorak   structural []  noise [100]   high-bucket mean deltas b80:+0.0020  b100:+0.0041  b120:+0.0068
+    qwerty   structural []  noise [80]   high-bucket mean deltas b80:-0.0021  b100:+0.0005  b120:-0.0000
+    qwertz   structural []  noise []   high-bucket mean deltas b80:-0.0004  b100:+0.0003  b120:+0.0032
+
+  MEASURED RESEED FLOOR on the 36 high (fold,bucket,seed) cells:
+    |delta rho|  p50 0.0016   p95 0.0108   max 0.0157
+    share of high cells already exceeding the gate's 0.005 tolerance: 27.8%
+
+  READ: this is what CHANGING NOTHING BUT THE SEED produces. Any of my structural rows whose
+  |delta rho| sits below this p95 is NOT attributable to the frame, and I must say so.
+[  676.1s] wrote /local/home/zegertho/repos/keybo-wt-gatefolds/agent-artifacts/gatefolds/reseed.json
+[  676.1s] SENTINEL /tmp/gatefolds_wk/reseed.sentinel
