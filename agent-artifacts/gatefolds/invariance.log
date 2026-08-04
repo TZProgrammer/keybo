@@ -1,0 +1,39 @@
+[tree] keybo.__file__ = /local/home/zegertho/repos/keybo-wt-gatefolds/src/keybo/__init__.py
+[tree] branch = gatefolds  HEAD = d55b021
+[tree] threads = OMP=1
+
+============================================================================================
+A. FEATURIZER INVARIANCE across the gate's five wpm buckets, over ALL position pairs
+============================================================================================
+  served       20c  has_wpm=True  invariant pairs 0/1296 (0.0000)  varying cols: ['wpm']
+  interp.1     10c  has_wpm=False invariant pairs 1296/1296 (1.0000)  varying cols: NONE
+  interp-wpm   11c  has_wpm=True  invariant pairs 0/1296 (0.0000)  varying cols: ['wpm']
+  hybridb      18c  has_wpm=False invariant pairs 1296/1296 (1.0000)  varying cols: NONE
+
+============================================================================================
+B. PREDICTION INVARIANCE — raw LOGRAT spread and WITHIN-BUCKET RANK identity
+============================================================================================
+[    0.2s] loading /local/home/zegertho/keybo-e2e/bistrokes31_v1.tsv
+[  211.3s] 2202 rows; layouts ['azerty', 'dvorak', 'qwerty', 'qwertz']
+[  211.3s] 875 distinct position pairs present in the data
+[  211.3s] ARM served: train_bigram_model
+  served       20c has_wpm=True  raw LOGRAT spread over buckets 7.107e-01  rank-identical buckets 1/5  rho(b40 ms, b120 ms) = 0.793006
+               ms mean/bucket: b40:215.47  b60:170.00  b80:140.16  b100:119.63  b120:106.21
+[  227.4s] ARM interp.1: train_bigram_model
+  interp.1     10c has_wpm=False raw LOGRAT spread over buckets 0.000e+00  rank-identical buckets 5/5  rho(b40 ms, b120 ms) = 1.000000
+               ms mean/bucket: b40:226.64  b60:161.89  b80:125.91  b100:103.02  b120:87.17
+[  242.0s] ARM interp-wpm: train_bigram_model
+  interp-wpm   11c has_wpm=True  raw LOGRAT spread over buckets 7.777e-02  rank-identical buckets 5/5  rho(b40 ms, b120 ms) = 1.000000
+               ms mean/bucket: b40:226.53  b60:161.76  b80:125.82  b100:102.94  b120:87.10
+[  256.8s] ARM hybridb: train_bigram_model
+  hybridb      18c has_wpm=False raw LOGRAT spread over buckets 0.000e+00  rank-identical buckets 5/5  rho(b40 ms, b120 ms) = 1.000000
+               ms mean/bucket: b40:229.10  b60:163.64  b80:127.28  b100:104.13  b120:88.11
+[  273.2s] wrote /local/home/zegertho/repos/keybo-wt-gatefolds/agent-artifacts/gatefolds/invariance.json
+
+============================================================================================
+WHAT THIS DECIDES
+============================================================================================
+  served       pace-adaptive
+  interp.1     WPM-INVARIANT (cannot re-rank across pace)
+  interp-wpm   pace-adaptive
+  hybridb      WPM-INVARIANT (cannot re-rank across pace)
