@@ -1,0 +1,85 @@
+{
+ "note": "attribution fidelity of interp.1 on GIVEN board pairs -- no search involved",
+ "pairs": {
+  "B-INTERP-optimal vs B-SERVED-optimal": {
+   "truth_T2_gap_ms_per_char": 0.8608249443055591,
+   "best_frame_reported_gap": 0.4971695670918894,
+   "fidelity": 0.5775501399915448,
+   "abs_error_ms_per_char": -0.3636553772136697,
+   "blind_share_of_differing_mass": 0.4617188669174037
+  },
+  "B-INTERP-optimal vs graphite": {
+   "truth_T2_gap_ms_per_char": -0.6609343273587491,
+   "best_frame_reported_gap": -0.9446386377317921,
+   "fidelity": 1.4292473527692122,
+   "abs_error_ms_per_char": -0.283704310373043,
+   "blind_share_of_differing_mass": 0.19181415591439632
+  },
+  "B-INTERP-optimal vs qwerty-C30M": {
+   "truth_T2_gap_ms_per_char": -4.623222473752305,
+   "best_frame_reported_gap": -5.0531820525438995,
+   "fidelity": 1.0929999759329405,
+   "abs_error_ms_per_char": -0.4299595787915944,
+   "blind_share_of_differing_mass": 0.3255797941381623
+  },
+  "B-INTERP-optimal vs semimak": {
+   "truth_T2_gap_ms_per_char": -0.5655894853688253,
+   "best_frame_reported_gap": -0.8211305436680121,
+   "fidelity": 1.4518136650516877,
+   "abs_error_ms_per_char": -0.25554105829918683,
+   "blind_share_of_differing_mass": 0.18029190081150234
+  },
+  "B-SERVED-optimal vs graphite": {
+   "truth_T2_gap_ms_per_char": -1.5217592716643082,
+   "best_frame_reported_gap": -1.4418082048236904,
+   "fidelity": 0.9474614228877493,
+   "abs_error_ms_per_char": 0.07995106684061781,
+   "blind_share_of_differing_mass": 0.18813240657243432
+  },
+  "B-SERVED-optimal vs qwerty-C30M": {
+   "truth_T2_gap_ms_per_char": -5.4840474180578624,
+   "best_frame_reported_gap": -5.550351619635785,
+   "fidelity": 1.0120903771472867,
+   "abs_error_ms_per_char": -0.06630420157792294,
+   "blind_share_of_differing_mass": 0.2613360810915371
+  },
+  "B-SERVED-optimal vs semimak": {
+   "truth_T2_gap_ms_per_char": -1.4264144296743844,
+   "best_frame_reported_gap": -1.3183001107599104,
+   "fidelity": 0.9242055347553139,
+   "abs_error_ms_per_char": 0.10811431891447398,
+   "blind_share_of_differing_mass": 0.2103825076539875
+  },
+  "graphite vs qwerty-C30M": {
+   "truth_T2_gap_ms_per_char": -3.962288146393554,
+   "best_frame_reported_gap": -4.108543414812097,
+   "fidelity": 1.0369118203964198,
+   "abs_error_ms_per_char": -0.14625526841854253,
+   "blind_share_of_differing_mass": 0.21896534931831232
+  },
+  "graphite vs semimak": {
+   "truth_T2_gap_ms_per_char": 0.09534484198991877,
+   "best_frame_reported_gap": 0.12350809406377583,
+   "fidelity": 1.2953830693519308,
+   "abs_error_ms_per_char": 0.02816325207385706,
+   "blind_share_of_differing_mass": 0.41722777031586866
+  },
+  "qwerty-C30M vs semimak": {
+   "truth_T2_gap_ms_per_char": 4.057632988383471,
+   "best_frame_reported_gap": 4.232051508875873,
+   "fidelity": 1.0429852874796075,
+   "abs_error_ms_per_char": 0.17441852049240225,
+   "blind_share_of_differing_mass": 0.20965012233144223
+  }
+ },
+ "summary": {
+  "n_pairs": 10,
+  "fidelity_min": 0.5775501399915448,
+  "fidelity_max": 1.4518136650516877,
+  "fidelity_median": 1.0399485539380136,
+  "abs_error_max_ms_per_char": 0.4299595787915944,
+  "abs_error_median": 0.1603368944554724,
+  "sign_agreement": 1.0,
+  "blind_share_median": 0.2146739284861499
+ }
+}
