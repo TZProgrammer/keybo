@@ -1,0 +1,74 @@
+{
+ "n_cells": 961,
+ "covered_bigram_mass": 887147352.0,
+ "frames": {
+  "served (20c)": {
+   "n_columns": 20,
+   "distinct_feature_rows": 765,
+   "collapsed_cells": 380,
+   "collapsed_mass_share": 0.370568889439688,
+   "floor_wmae_ms": 2.346353672769862e-15,
+   "floor_umae_ms": 0.0,
+   "searchable_nullspace_ms": 0.0,
+   "largest_group": 4
+  },
+  "interp.1 (10c)": {
+   "n_columns": 10,
+   "distinct_feature_rows": 378,
+   "collapsed_cells": 817,
+   "collapsed_mass_share": 0.8851544078102597,
+   "floor_wmae_ms": 2.0447618852821368,
+   "floor_umae_ms": 2.798086032044259,
+   "searchable_nullspace_ms": 3.2564937652759745,
+   "largest_group": 16
+  },
+  "hybrid-A: interp + row one-hots": {
+   "n_columns": 13,
+   "distinct_feature_rows": 447,
+   "collapsed_cells": 745,
+   "collapsed_mass_share": 0.8201567466325481,
+   "floor_wmae_ms": 0.7428524413891153,
+   "floor_umae_ms": 1.1680431351734586,
+   "searchable_nullspace_ms": 1.4509204086306122,
+   "largest_group": 10,
+   "floor_near_zero": false
+  },
+  "hybrid-B: interp + row + finger one-hots": {
+   "n_columns": 18,
+   "distinct_feature_rows": 573,
+   "collapsed_cells": 745,
+   "collapsed_mass_share": 0.8201567466325481,
+   "floor_wmae_ms": 0.25446239261892084,
+   "floor_umae_ms": 0.6043227747748328,
+   "searchable_nullspace_ms": 0.9377282878872664,
+   "largest_group": 4,
+   "floor_near_zero": false
+  },
+  "hybrid-C: interp + ALL served cols": {
+   "n_columns": 30,
+   "distinct_feature_rows": 771,
+   "collapsed_cells": 380,
+   "collapsed_mass_share": 0.370568889439688,
+   "floor_wmae_ms": 2.361206851513557e-15,
+   "floor_umae_ms": 0.0,
+   "searchable_nullspace_ms": 0.0,
+   "largest_group": 2,
+   "floor_near_zero": true
+  }
+ },
+ "interpretation_columns_retained": {
+  "note": "every hybrid RETAINS all ten interp.1 ordinal columns, so the monotone/orthogonal interpretation columns survive; the added one-hots restore RESOLUTION only",
+  "interp_columns": [
+   "hand_conflict",
+   "row_span",
+   "lateral_span",
+   "same_hand_travel",
+   "row_load",
+   "row_arrival",
+   "bottom_bias",
+   "finger_load",
+   "off_home_column",
+   "roll_inward"
+  ]
+ }
+}

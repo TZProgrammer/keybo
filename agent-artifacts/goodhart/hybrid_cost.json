@@ -1,0 +1,87 @@
+{
+ "registered_bar_MAXCORR": 0.785,
+ "published_INTERPFRAME1": {
+  "served": 0.9813,
+  "interp": 0.7037
+ },
+ "frames": {
+  "served (20c)": {
+   "maxcorr": 0.9812822705439735,
+   "meancorr": 0.1136826815884763,
+   "worst_pair": [
+    "dx",
+    "distance"
+   ],
+   "n_pairs_over_0.9": 1,
+   "n_pairs_over_0.7": 2,
+   "n_pairs": 190,
+   "n_columns": 20,
+   "searchable_nullspace_ms": 0.0,
+   "floor_wmae_ms": 2.346353672769862e-15,
+   "clears_registered_MAXCORR_bar": false
+  },
+  "interp.1 (10c)": {
+   "maxcorr": 0.7037387118702239,
+   "meancorr": 0.15717843717511532,
+   "worst_pair": [
+    "hand_conflict",
+    "same_hand_travel"
+   ],
+   "n_pairs_over_0.9": 0,
+   "n_pairs_over_0.7": 1,
+   "n_pairs": 45,
+   "n_columns": 10,
+   "searchable_nullspace_ms": 3.2564937652759745,
+   "floor_wmae_ms": 2.0447618852821368,
+   "clears_registered_MAXCORR_bar": true
+  },
+  "hybrid-A (13c)": {
+   "maxcorr": 0.7037387118702239,
+   "meancorr": 0.17410006596083752,
+   "worst_pair": [
+    "hand_conflict",
+    "same_hand_travel"
+   ],
+   "n_pairs_over_0.9": 0,
+   "n_pairs_over_0.7": 1,
+   "n_pairs": 78,
+   "n_columns": 13,
+   "searchable_nullspace_ms": 1.4509204086306122,
+   "floor_wmae_ms": 0.7428524413891153,
+   "clears_registered_MAXCORR_bar": true,
+   "verdict": "interpretability only"
+  },
+  "hybrid-B (18c)": {
+   "maxcorr": 0.7078588895252078,
+   "meancorr": 0.1499272788782894,
+   "worst_pair": [
+    "off_home_column",
+    "lateral"
+   ],
+   "n_pairs_over_0.9": 0,
+   "n_pairs_over_0.7": 2,
+   "n_pairs": 153,
+   "n_columns": 18,
+   "searchable_nullspace_ms": 0.9377282878872664,
+   "floor_wmae_ms": 0.25446239261892084,
+   "clears_registered_MAXCORR_bar": true,
+   "verdict": "interpretability only"
+  },
+  "hybrid-C (30c)": {
+   "maxcorr": 0.9812822705439735,
+   "meancorr": 0.13541144981510536,
+   "worst_pair": [
+    "served:dx",
+    "served:distance"
+   ],
+   "n_pairs_over_0.9": 2,
+   "n_pairs_over_0.7": 7,
+   "n_pairs": 435,
+   "n_columns": 30,
+   "searchable_nullspace_ms": 0.0,
+   "floor_wmae_ms": 2.361206851513557e-15,
+   "clears_registered_MAXCORR_bar": false,
+   "verdict": "resolution only"
+  }
+ }
+}
