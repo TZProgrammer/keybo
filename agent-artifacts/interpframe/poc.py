@@ -136,9 +136,19 @@ nomono_models = train_arm(False, "interp_nomono")
 # §5(a) BOOSTER-LEVEL monotonicity — the parameter is not the property
 # =========================================================================================
 log("§5(a) booster-level monotonicity sweep")
-positions = [*GEO.slots, GEO.space_position]
+# ⚠ TWO DIFFERENT GRIDS, named apart because conflating them cost a debugging round: the model is
+# TRAINED on ROW_STAGGERED_31 (the K31 tables carry the quote slot) and SERVED on
+# ROW_STAGGERED_30 (the boards being compared are 30-character). 32^2 = 1024 cells vs 31^2 = 961.
+# The booster sweep below is about the MODEL, so it uses the TRAIN grid; every attribution and
+# metric is about the SERVED comparison, so those use the SERVE grid. One name for both silently
+# produced a 1024-vs-961 mismatch.
+train_positions = [*GEO.slots, GEO.space_position]
 X_grid = np.vstack(
-    [interp_features_from_positions(GEO, (a, b), wpm=WPM) for a in positions for b in positions]
+    [
+        interp_features_from_positions(GEO, (a, b), wpm=WPM)
+        for a in train_positions
+        for b in train_positions
+    ]
 )
 
 
@@ -205,6 +215,11 @@ GEO_SURF = surface.geometry
 assert set(GEO_SURF.slots) <= set(GEO.slots), "every served slot must be one the model trained on"
 assert GEO_SURF.row_offsets == GEO.row_offsets, "stagger must match or dx/distance change meaning"
 assert GEO_SURF.space_position == GEO.space_position, "space must be pinned identically"
+serve_positions = [*GEO_SURF.slots, GEO_SURF.space_position]
+log(
+    f"grids: TRAIN {len(train_positions)}^2 = {len(train_positions) ** 2} cells, "
+    f"SERVE {len(serve_positions)}^2 = {len(serve_positions) ** 2} cells"
+)
 _, LAY_A = _resolve("flagship-c3")
 _, LAY_B = _resolve("graphite")
 w2_char, covered = A.char_bigram_weight(surface, LAY_A)
@@ -220,14 +235,20 @@ def shap_monotone(models, frame="interp"):
     tables = _shap_tables(models, GEO_SURF, WPM, 2, frame)
     shap = np.mean(tables[0], axis=0).reshape(-1, len(tables[5]))
     names = list(tables[5])
+    # The SERVE grid, matching the SHAP table `_shap_tables` just built on GEO_SURF -- not the
+    # train grid (see the note at §5a). Asserted below rather than trusted.
     Xg = np.vstack(
         [
             (interp_features_from_positions if frame == "interp" else _served_feat)(
                 GEO_SURF, (a, b), wpm=WPM
             )
-            for a in positions
-            for b in positions
+            for a in serve_positions
+            for b in serve_positions
         ]
+    )
+    assert Xg.shape[0] == shap.shape[0], (
+        f"grid mismatch: features {Xg.shape} vs SHAP {shap.shape} -- the feature matrix and the "
+        f"SHAP table must be built on the SAME geometry"
     )
     res = {}
     for j, name in enumerate(names):
@@ -392,14 +413,19 @@ log(f"  interp iweb gap {r_iweb['gap']:+.4f} reconciles {r_iweb['reconciles']}")
 log("metrics")
 slot_a = surface._slot_of(LAY_A)
 perm = np.array([slot_a[c] for c in LAY_A] + [slot_a[" "]], dtype=np.intp)
-n_pos = len(positions)
+n_pos = len(serve_positions)
 w2_pos = np.zeros((n_pos, n_pos))
 np.add.at(w2_pos, (perm[:, None], perm[None, :]), w2_char)
 assert abs(w2_pos.sum() - w2_char.sum()) < 1e-6
 
 X_in = np.vstack(
-    [interp_features_from_positions(GEO_SURF, (a, b), wpm=WPM) for a in positions for b in positions]
+    [
+        interp_features_from_positions(GEO_SURF, (a, b), wpm=WPM)
+        for a in serve_positions
+        for b in serve_positions
+    ]
 )
+assert X_in.shape == (n_pos * n_pos, len(NAMES))
 ms = r_interp["ms"]
 rec = {
     "n_columns": len(NAMES),
