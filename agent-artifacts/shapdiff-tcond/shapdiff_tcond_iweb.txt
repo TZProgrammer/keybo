@@ -1,0 +1,155 @@
+SHAP-DIFF  flagship-c3 -> graphite   corpus=iweb  wpm=90
+  channel: both
+
+RECONCILIATION (checked before any interpretation)
+  ms/char shipped card()  flagship-c3: 253.5879   graphite: 256.1910   <- what `keybo analyze` prints
+  ms/char own-support     flagship-c3: 253.5879   graphite: 256.1910
+  ms/char common-support  flagship-c3: 253.5879   graphite: 256.1910
+  gap (b-a; +ve = flagship-c3 faster) : +2.6031 ms/char
+    T2 bigram channel    : +0.8317  (32.0%)  <- decomposed
+    Tcond trigram channel: +1.7714  (68.0%)  <- decomposed
+  DECOMPOSED SHARE: 100.0% of the gap    undecomposed: +0.0000 ms/char
+  coverage flagship-c3: 92.467%   graphite: 92.467%
+  common support is a no-op: True   coverage cost: -2.842e-14 ms/char
+  channel split vs total (rel)           5.459e-15
+  gap vs shipped card (abs ms/char)      4.206e-07
+  RECONCILES: True
+
+=== CHANNEL T2 — T2 (bigram table) ===
+  weighting: trigram-marginal    gap +0.8317 ms/char (32.0% of the total gap)
+  residuals:
+    INTERNAL per-cell LMDI identity (rel)     1.456e-16
+    INTERNAL sum(features) vs channel gap     4.085e-14
+    EXTERNAL gap vs shipped table (abs ms/ch) 3.709e-07
+    EXTERNAL table vs shipped (abs ms)        3.564e-05
+    TreeSHAP walk vs predict, per row (abs)   3.965e-07
+    TreeSHAP walk vs predict, weighted (abs)  3.161e-08
+  RECONCILES: True
+
+  BLOCK CONTRIBUTIONS (primary) to gap_t2 (+0.8317 ms/char)
+    block           ms/char    share      favours   parts
+    ROW             +0.5520    66.4%  flagship-c3   bottom+0.5186  home+0.0744  top-0.0411
+    GEOMETRY        +0.2360    28.4%  flagship-c3   dx+0.1109  dy+0.0577  distance+0.0295  angle+0.0238  outwards+0.0147  inwards-0.0006
+    RELATIONAL      +0.0956    11.5%  flagship-c3   same_hand+0.0864  scissor+0.0180  same_finger-0.0175  lsb+0.0099  adjacent-0.0012
+    WPM             -0.0742    -8.9%     graphite   wpm-0.0742
+    FINGER          +0.0223     2.7%  flagship-c3   lateral-0.0596  middle+0.0292  pinky+0.0255  ring+0.0190  index+0.0082
+    SUM             +0.8317
+
+  PER-FEATURE CONTRIBUTIONS, per COLUMN (subordinate — SHAP's split across correlated columns is NOT unique; read the blocks above)
+    feature              block          ms/char    share      favours       log_a     log_b      d_log
+    bottom               ROW            +0.5186    62.4%  flagship-c3    -0.01562  -0.01195   +0.00367
+    dx                   GEOMETRY       +0.1109    13.3%  flagship-c3    -0.00174  -0.00090   +0.00084
+    same_hand            RELATIONAL     +0.0864    10.4%  flagship-c3    -0.00802  -0.00737   +0.00066
+    home                 ROW            +0.0744     9.0%  flagship-c3    +0.00323  +0.00387   +0.00064
+    wpm                  WPM            -0.0742    -8.9%     graphite    +0.08414  +0.08358   -0.00056
+    lateral              FINGER         -0.0596    -7.2%     graphite    -0.00596  -0.00637   -0.00041
+    dy                   GEOMETRY       +0.0577     6.9%  flagship-c3    +0.00181  +0.00222   +0.00040
+    top                  ROW            -0.0411    -4.9%     graphite    -0.00340  -0.00372   -0.00031
+    distance             GEOMETRY       +0.0295     3.6%  flagship-c3    -0.00117  -0.00095   +0.00023
+    middle               FINGER         +0.0292     3.5%  flagship-c3    -0.00007  +0.00015   +0.00021
+    pinky                FINGER         +0.0255     3.1%  flagship-c3    -0.00010  +0.00014   +0.00023
+    angle                GEOMETRY       +0.0238     2.9%  flagship-c3    -0.00276  -0.00254   +0.00022
+    ring                 FINGER         +0.0190     2.3%  flagship-c3    -0.00032  -0.00021   +0.00011
+    scissor              RELATIONAL     +0.0180     2.2%  flagship-c3    -0.00076  -0.00063   +0.00013
+    same_finger          RELATIONAL     -0.0175    -2.1%     graphite    -0.01166  -0.01179   -0.00013
+    outwards             GEOMETRY       +0.0147     1.8%  flagship-c3    -0.00084  -0.00072   +0.00012
+    lsb                  RELATIONAL     +0.0099     1.2%  flagship-c3    -0.00146  -0.00140   +0.00006
+    index                FINGER         +0.0082     1.0%  flagship-c3    +0.00036  +0.00041   +0.00005
+    adjacent             RELATIONAL     -0.0012    -0.1%     graphite    -0.00008  -0.00010   -0.00001
+    inwards              GEOMETRY       -0.0006    -0.1%     graphite    +0.00004  +0.00003   -0.00000
+    SUM                                 +0.8317
+
+  TOP N-GRAMS per leading column (ms/char, corpus-weighted)
+    bottom               '␣w'-0.1486  '␣c'+0.1408  '␣b'-0.1297  '␣f'-0.1201  '␣p'+0.1124
+    dx                   'th'-0.0597  'in'+0.0477  'en'+0.0356  'an'+0.0351  'it'+0.0294
+    same_hand            'of'+0.0368  'fo'+0.0240  'fi'+0.0141  'fe'+0.0131  'in'+0.0125
+    home                 'in'+0.0468  'an'+0.0403  '␣c'-0.0362  'on'+0.0325  'en'+0.0262
+    wpm                  '␣w'+0.0226  '␣c'-0.0170  '␣b'+0.0161  '␣f'+0.0154  '␣p'-0.0140
+    lateral              '␣c'-0.0527  '␣w'-0.0513  'ng'+0.0372  '␣y'+0.0233  'ic'-0.0215
+
+=== CHANNEL TCOND — Tcond (conditioned trigram) ===
+  weighting: trigram-direct    gap +1.7714 ms/char (68.0% of the total gap)
+  residuals:
+    INTERNAL per-cell LMDI identity (rel)     2.349e-16
+    INTERNAL sum(features) vs channel gap     4.011e-15
+    EXTERNAL gap vs shipped table (abs ms/ch) 4.977e-08
+    EXTERNAL table vs shipped (abs ms)        2.408e-04
+    TreeSHAP walk vs predict, per row (abs)   1.398e-06
+    TreeSHAP walk vs predict, weighted (abs)  3.689e-08
+  RECONCILES: True
+
+  BLOCK CONTRIBUTIONS (primary) to gap_tcond (+1.7714 ms/char)
+    block           ms/char    share      favours   parts
+    BG2             +0.9072    51.2%  flagship-c3   row+0.3992  geometry+0.3226  finger+0.1227  relational+0.0627
+    BG1             +0.6560    37.0%  flagship-c3   geometry+0.6909  finger-0.1061  row+0.0781  relational-0.0069
+    SKIPGRAM        +0.1922    10.9%  flagship-c3   sg_distance+0.0929  sg_dx+0.0665  sg_dy+0.0394  sg_same_finger-0.0066
+    TRI_LEVEL       +0.0148     0.8%  flagship-c3   same_hand_trigram+0.0195  redirect-0.0045  bad_redirect-0.0002
+    WPM             +0.0012     0.1%  flagship-c3   wpm+0.0012
+    SUM             +1.7714
+
+  PER-FEATURE CONTRIBUTIONS, per COLUMN (subordinate — SHAP's split across correlated columns is NOT unique; read the blocks above)
+    feature              block          ms/char    share      favours       log_a     log_b      d_log
+    bg2_bottom           BG2            +0.5463    30.8%  flagship-c3    -0.01166  -0.00776   +0.00390
+    bg1_top              BG1            +0.4578    25.8%  flagship-c3    +0.00604  +0.00970   +0.00367
+    bg1_dx               BG1            +0.3868    21.8%  flagship-c3    -0.00055  +0.00243   +0.00297
+    bg1_distance         BG1            +0.2391    13.5%  flagship-c3    -0.00012  +0.00174   +0.00186
+    bg1_bottom           BG1            -0.2072   -11.7%     graphite    +0.00496  +0.00329   -0.00166
+    bg1_home             BG1            -0.1725    -9.7%     graphite    -0.01968  -0.02120   -0.00152
+    bg1_pinky            BG1            -0.1674    -9.5%     graphite    +0.00053  -0.00083   -0.00136
+    bg2_angle            BG2            +0.1539     8.7%  flagship-c3    -0.00214  -0.00112   +0.00102
+    bg2_dx               BG2            +0.1523     8.6%  flagship-c3    +0.00746  +0.00880   +0.00134
+    bg2_top              BG2            -0.1270    -7.2%     graphite    -0.00312  -0.00426   -0.00114
+    bg2_same_hand        BG2            +0.1175     6.6%  flagship-c3    -0.00158  -0.00066   +0.00092
+    bg1_index            BG1            +0.1087     6.1%  flagship-c3    +0.00065  +0.00154   +0.00089
+    sg_distance          SKIPGRAM       +0.0929     5.2%  flagship-c3    -0.00067  +0.00008   +0.00075
+    bg2_adjacent         BG2            -0.0816    -4.6%     graphite    +0.00069  +0.00006   -0.00062
+    bg1_middle           BG1            -0.0799    -4.5%     graphite    +0.00016  -0.00052   -0.00068
+    bg2_ring             BG2            +0.0747     4.2%  flagship-c3    -0.00041  +0.00018   +0.00059
+    sg_dx                SKIPGRAM       +0.0665     3.8%  flagship-c3    -0.00037  +0.00025   +0.00062
+    bg1_dy               BG1            +0.0646     3.6%  flagship-c3    -0.00108  -0.00061   +0.00046
+    bg2_pinky            BG2            +0.0543     3.1%  flagship-c3    +0.00021  +0.00072   +0.00051
+    bg2_dy               BG2            +0.0514     2.9%  flagship-c3    -0.00305  -0.00279   +0.00026
+    bg2_lateral          BG2            -0.0442    -2.5%     graphite    -0.00301  -0.00324   -0.00023
+    sg_dy                SKIPGRAM       +0.0394     2.2%  flagship-c3    -0.00289  -0.00245   +0.00044
+    bg2_distance         BG2            -0.0379    -2.1%     graphite    -0.00898  -0.00903   -0.00005
+    bg2_middle           BG2            +0.0319     1.8%  flagship-c3    -0.00002  +0.00019   +0.00021
+    bg2_home             BG2            -0.0201    -1.1%     graphite    +0.00052  +0.00037   -0.00015
+    bg1_ring             BG1            +0.0195     1.1%  flagship-c3    +0.00004  +0.00020   +0.00015
+    same_hand_trigram    TRI_LEVEL      +0.0195     1.1%  flagship-c3    -0.00260  -0.00247   +0.00014
+    bg2_lsb              BG2            +0.0160     0.9%  flagship-c3    -0.00318  -0.00303   +0.00015
+    bg1_lateral          BG1            +0.0130     0.7%  flagship-c3    +0.00276  +0.00291   +0.00015
+    bg1_same_finger      BG1            +0.0104     0.6%  flagship-c3    +0.00087  +0.00095   +0.00008
+    bg1_lsb              BG1            -0.0075    -0.4%     graphite    +0.00037  +0.00030   -0.00006
+    bg2_scissor          BG2            +0.0068     0.4%  flagship-c3    -0.00017  -0.00012   +0.00005
+    sg_same_finger       SKIPGRAM       -0.0066    -0.4%     graphite    -0.00079  -0.00086   -0.00007
+    bg1_same_hand        BG1            -0.0064    -0.4%     graphite    +0.00110  +0.00107   -0.00004
+    bg2_index            BG2            +0.0061     0.3%  flagship-c3    +0.00084  +0.00093   +0.00009
+    bg1_adjacent         BG1            -0.0046    -0.3%     graphite    -0.00001  -0.00005   -0.00004
+    redirect             TRI_LEVEL      -0.0045    -0.3%     graphite    -0.00005  -0.00009   -0.00004
+    bg2_same_finger      BG2            +0.0041     0.2%  flagship-c3    -0.01224  -0.01222   +0.00003
+    bg2_outwards         BG2            +0.0024     0.1%  flagship-c3    -0.00002  -0.00000   +0.00002
+    bg1_scissor          BG1            +0.0012     0.1%  flagship-c3    -0.00000  +0.00001   +0.00001
+    wpm                  WPM            +0.0012     0.1%  flagship-c3    +0.08197  +0.08205   +0.00007
+    bg2_inwards          BG2            +0.0005     0.0%  flagship-c3    -0.00001  -0.00001   +0.00000
+    bg1_angle            BG1            +0.0004     0.0%  flagship-c3    -0.00007  -0.00009   -0.00002
+    bad_redirect         TRI_LEVEL      -0.0002    -0.0%     graphite    -0.00026  -0.00026   +0.00000
+    bg1_inwards          BG1            -0.0001    -0.0%     graphite    +0.00000  +0.00000   -0.00000
+    bg1_outwards         BG1            +0.0000     0.0%  flagship-c3    +0.00000  +0.00000   +0.00000
+    SUM                                 +1.7714
+
+  TOP N-GRAMS per leading column (ms/char, corpus-weighted)
+    bg2_bottom           '␣of'-0.0497  'e␣c'+0.0238  'e␣p'+0.0207  'e␣f'-0.0203  'e␣b'-0.0190
+    bg1_top              'ing'+0.0484  'and'+0.0436  'ng␣'+0.0347  'of␣'-0.0317  'on␣'+0.0243
+    bg1_dx               'ing'+0.0716  'in␣'+0.0468  'the'+0.0463  'ind'+0.0317  'to␣'+0.0169
+    bg1_distance         '␣th'+0.0225  'ing'+0.0118  'he␣'-0.0116  'tio'+0.0109  'n␣t'+0.0107
+    bg1_bottom           '␣co'-0.0223  'of␣'+0.0207  '␣fo'+0.0166  '␣wi'+0.0136  '␣ca'-0.0127
+    bg1_home             'and'-0.0625  'ng␣'-0.0521  'ing'-0.0497  'on␣'-0.0364  'in␣'-0.0340
+
+wrote /local/home/zegertho/agent/state/tcond/artifacts/shapdiff_tcond_iweb.json
+
+---TIMING---
+command: /local/home/zegertho/repos/keybo/.venv/bin/python -m keybo shap-diff flagship-c3 graphite --corpus iweb --json /local/home/zegertho/agent/state/tcond/artifacts/shapdiff_tcond_iweb.json
+elapsed_ms: 51269
+exit_code: 0
+timed_out: false
+---/TIMING---

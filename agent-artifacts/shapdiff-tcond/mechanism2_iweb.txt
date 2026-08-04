@@ -1,0 +1,44 @@
+keybo.__file__ = /local/home/zegertho/repos/keybo-wt-tcond/src/keybo/__init__.py
+checkout = /local/home/zegertho/repos/keybo-wt-tcond branch = tcond
+
+=== (1) bg1_/bg2_ identity, asserted by byte-comparison against the bigram frame ===
+bg1_* == bigram_features(a,b) on 400/400 sampled triples
+bg2_* == bigram_features(b,c) on 400/400 sampled triples
+mismatches: []
+
+row one-hot semantics (bigram placement one-hots are the SECOND key of their pair):
+  => bg1_{bottom,home,top} describes the trigram's MIDDLE key (b)
+  => bg2_{bottom,home,top} describes the trigram's THIRD  key (c)
+  bg2_bottom == 1[c on bottom row]  exact: True
+  bg1_bottom == 1[b on bottom row]  exact: True
+
+=== (2) THIRD-key row: corpus mass share per board  x  shipped-table price ===
+3rd-key row   share_F%  share_G%     G/F  mean ms (shipped)
+top            25.4602   19.8294  0.7788            140.199
+home           50.4493   52.7686  1.0460            136.977
+bottom          6.4026    9.7141  1.5172            158.670
+space          17.6879   17.6879  1.0000            116.443
+MIDDLE-key row
+top            26.1985   20.4447  0.7804            141.878
+home           51.5734   54.1752  1.0504            138.731
+bottom          6.5949    9.7470  1.4780            151.370
+space          15.6332   15.6332  1.0000            155.126
+
+=== (3) TOTAL TRAVEL (bg1_distance + bg2_distance): binned shipped price x mass ===
+travel bin     cells   mean ms  share_F%  share_G%   G-F pp
+[0,2)            343   157.204    0.1599    0.2409  +0.0811
+[2,4)           3226   158.247    2.9479    3.0353  +0.0874
+[4,6)           5324   149.853   11.3522   10.1576  -1.1946
+[6,8)           6112   140.556   21.5053   22.1050  +0.5997
+[8,10)          6056   139.188   27.3705   22.9380  -4.4325
+[10,12)         3940   140.362   16.3502   15.3808  -0.9694
+[12,100)        4790   142.615   20.3141   26.1425  +5.8283
+(check)                         100.0000  100.0000
+
+mass-weighted MEAN total travel:  flagship-c3 9.1703   graphite 9.5225   (+0.3523, +3.84%)
+shipped price: travel<=4  157.068 ms   travel>=8  140.611 ms   delta -16.457 ms
+
+=== (4) is Tcond genuinely trigram-level? variance decomposition of the SHIPPED table ===
+share of Tc variance explained by (a,b) alone : 0.1592
+share of Tc variance explained by (b,c) alone : 0.7928
+=> the (b,c) transition, which the BIGRAM channel never sees, carries most of Tc's structure

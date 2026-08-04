@@ -1,0 +1,53 @@
+keybo.__file__ = /local/home/zegertho/repos/keybo-wt-tcond/src/keybo/__init__.py
+checkout = /local/home/zegertho/repos/keybo-wt-tcond branch = tcond
+
+=== gauges RECOMPUTED here (parent's brief numbers in brackets) ===
+gauge                   flagship-c3     graphite       better   brief
+alt                         45.1561      44.0763     graphite  [45.156 / 44.076]  MATCH
+lsb                          0.7967       0.5594     graphite
+lsb-dist                     1.6852       1.2424     graphite
+redir                        2.4939       3.2131     flagship  [2.494 / 3.213]  MATCH
+roll                        41.7608      42.4657     flagship  [41.761 / 42.466]  MATCH
+sfb                          1.6538       1.5257     graphite  [1.654 / 1.526]  MATCH
+sfb-dist                     1.9290       1.8548     graphite  [1.654 / 1.526]  <-- DIFFERS
+sfr                          2.6596       2.6596     graphite
+sfs                          6.7717       6.8778     flagship
+sfs-dist                     8.1310       8.2252     flagship
+sr-roll                     12.9532      14.3417     flagship
+
+=== the redirect FAMILY split (analysis/redirects.py) ===
+class                       flagship-c3     graphite       better
+bad_redirects                    0.5569       0.2804     graphite
+bad_redirects_sfs                0.4435       0.1370     graphite
+bad_redirects_total              1.0004       0.4173     graphite
+redirects                        1.0336       1.8297     flagship
+redirects_family_total           2.4939       3.2131     flagship
+redirects_sfs                    0.4599       0.9661     flagship
+
+=== the FOUR REGISTERED EXPECTATIONS (attribution sign: + favours flagship-c3) ===
+
+G1 redirect family FOR flagship (redir 2.494 vs 3.213)
+   blend-v1 -0.0059 (-0.27% of gap) -> favours graphite;  iweb -0.0047 (-0.26%) -> graphite
+   expected flagship  ==>  DISAGREEMENT
+      redirect             blend-v1 -0.0058   iweb -0.0045
+      bad_redirect         blend-v1 -0.0001   iweb -0.0002
+
+G2 SKIPGRAM FOR flagship (sg_dist 3.968 vs 4.031)
+   blend-v1 +0.2564 (+11.68% of gap) -> favours flagship;  iweb +0.1922 (+10.85%) -> flagship
+   expected flagship  ==>  CONFIRMED
+      sg_same_finger       blend-v1 -0.0123   iweb -0.0066
+      sg_dx                blend-v1 +0.1580   iweb +0.0665
+      sg_dy                blend-v1 +0.0078   iweb +0.0394
+      sg_distance          blend-v1 +0.1029   iweb +0.0929
+
+G3 bg*_same_finger AGAINST flagship (sfb 1.654 vs 1.526)
+   blend-v1 -0.0010 (-0.05% of gap) -> favours graphite;  iweb +0.0145 (+0.82%) -> flagship
+   expected graphite  ==>  SPLIT across corpora
+      bg1_same_finger      blend-v1 +0.0010   iweb +0.0104
+      bg2_same_finger      blend-v1 -0.0020   iweb +0.0041
+
+G4 bg*_scissor FOR flagship (0.089 vs 0.517)
+   blend-v1 +0.0146 (+0.66% of gap) -> favours flagship;  iweb +0.0080 (+0.45%) -> flagship
+   expected flagship  ==>  CONFIRMED
+      bg1_scissor          blend-v1 +0.0023   iweb +0.0012
+      bg2_scissor          blend-v1 +0.0123   iweb +0.0068

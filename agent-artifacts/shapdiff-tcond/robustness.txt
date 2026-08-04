@@ -1,0 +1,69 @@
+keybo.__file__ = /local/home/zegertho/repos/keybo-wt-tcond/src/keybo/__init__.py
+checkout = /local/home/zegertho/repos/keybo-wt-tcond branch = tcond
+
+==============================================================================
+=== CHANNEL TCOND  blend-v1 gap +2.1953   iweb gap +1.7714
+
+block          blend-v1   share%       iweb   share%   sign
+BG2             +1.1399    51.9%    +0.9072    51.2%  AGREE
+BG1             +0.8136    37.1%    +0.6560    37.0%  AGREE
+SKIPGRAM        +0.2564    11.7%    +0.1922    10.9%  AGREE
+WPM             -0.0273    -1.2%    +0.0012     0.1%   FLIP
+TRI_LEVEL       +0.0127     0.6%    +0.0148     0.8%  AGREE
+
+(i)   top-3 BLOCK sign agreement ['BG2', 'BG1', 'SKIPGRAM']: PASS
+(ii)  BLOCK  Spearman rho over 5 blocks : 1.0000   PASS (bar 0.90)
+(iii) COLUMN Spearman rho over 46 columns: 0.9027   PASS (bar 0.90)
+==> REGISTERED VERDICT for tcond: ROBUST
+
+sign FLIPPERS among columns (5): 
+   wpm                  blend-v1 -0.0273 (-1.24% of gap)  ->  iweb +0.0012 (+0.07%)
+   bg1_ring             blend-v1 -0.0117 (-0.53% of gap)  ->  iweb +0.0195 (+1.10%)
+   bg2_lsb              blend-v1 -0.0076 (-0.35% of gap)  ->  iweb +0.0160 (+0.90%)
+   bg1_home             blend-v1 +0.0025 (+0.11% of gap)  ->  iweb -0.1725 (-9.74%)
+   bg2_same_finger      blend-v1 -0.0020 (-0.09% of gap)  ->  iweb +0.0041 (+0.23%)
+   flippers' total |share| of the blend-v1 channel gap: 2.32%
+   largest flipper by |blend-v1 share|: wpm
+
+top-8 columns, both corpora:
+feature                blend-v1  rank       iweb  rank
+bg2_bottom              +0.7382     1    +0.5463     1
+bg1_top                 +0.4064     2    +0.4578     2
+bg1_dx                  +0.3874     3    +0.3868     3
+bg2_dx                  +0.2573     4    +0.1523     9
+bg1_distance            +0.2539     5    +0.2391     4
+bg1_bottom              -0.2337     6    -0.2072     5
+bg2_angle               +0.2150     7    +0.1539     8
+bg1_index               +0.1933     8    +0.1087    12
+
+==============================================================================
+=== CHANNEL T2  blend-v1 gap +0.9981   iweb gap +0.8317
+
+block          blend-v1   share%       iweb   share%   sign
+ROW             +0.7136    71.5%    +0.5520    66.4%  AGREE
+GEOMETRY        +0.3081    30.9%    +0.2360    28.4%  AGREE
+WPM             -0.0922    -9.2%    -0.0742    -8.9%  AGREE
+RELATIONAL      +0.0910     9.1%    +0.0956    11.5%  AGREE
+FINGER          -0.0225    -2.3%    +0.0223     2.7%   FLIP
+
+(i)   top-3 BLOCK sign agreement ['ROW', 'GEOMETRY', 'WPM']: PASS
+(ii)  BLOCK  Spearman rho over 5 blocks : 1.0000   PASS (bar 0.90)
+(iii) COLUMN Spearman rho over 20 columns: 0.8737   FAIL (bar 0.90)
+==> REGISTERED VERDICT for t2: NOT robust as registered
+
+sign FLIPPERS among columns (2): 
+   adjacent             blend-v1 +0.0008 (+0.08% of gap)  ->  iweb -0.0012 (-0.14%)
+   lsb                  blend-v1 -0.0006 (-0.06% of gap)  ->  iweb +0.0099 (+1.19%)
+   flippers' total |share| of the blend-v1 channel gap: 0.14%
+   largest flipper by |blend-v1 share|: adjacent
+
+top-8 columns, both corpora:
+feature                blend-v1  rank       iweb  rank
+bottom                  +0.7453     1    +0.5186     1
+dx                      +0.1678     2    +0.1109     2
+lateral                 -0.1362     3    -0.0596     6
+wpm                     -0.0922     4    -0.0742     5
+same_hand               +0.0855     5    +0.0864     3
+angle                   +0.0681     6    +0.0238    12
+top                     -0.0459     7    -0.0411     8
+dy                      +0.0445     8    +0.0577     7

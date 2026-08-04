@@ -1,0 +1,62 @@
+SHAP-DIFF  flagship-c3 -> graphite   corpus=default  wpm=90
+  channel: both
+
+RECONCILIATION (checked before any interpretation)
+  ms/char shipped card()  flagship-c3: 254.9761   graphite: 258.1696   <- what `keybo analyze` prints
+  ms/char own-support     flagship-c3: 254.9761   graphite: 258.1696
+  ms/char common-support  flagship-c3: 254.9761   graphite: 258.1696
+  gap (b-a; +ve = flagship-c3 faster) : +3.1934 ms/char
+    T2 bigram channel    : +0.9981  (31.3%)  <- decomposed
+    Tcond trigram channel: +2.1953  (68.7%)  <- decomposed
+  DECOMPOSED SHARE: 100.0% of the gap    undecomposed: +0.0000 ms/char
+  coverage flagship-c3: 88.715%   graphite: 88.715%
+  common support is a no-op: True   coverage cost: +0.000e+00 ms/char
+  channel split vs total (rel)           0.000e+00
+  gap vs shipped card (abs ms/char)      6.778e-07
+  RECONCILES: False
+
+!! RECONCILIATION FAILED — the tables below explain NOTHING. !!
+
+=== CHANNEL T2 — T2 (bigram table) ===
+  weighting: trigram-marginal    gap +0.9981 ms/char (31.3% of the total gap)
+  residuals:
+    INTERNAL per-cell LMDI identity (rel)     2.807e-01
+    INTERNAL sum(features) vs channel gap     5.867e-02
+    EXTERNAL gap vs shipped table (abs ms/ch) 4.389e-07
+    EXTERNAL table vs shipped (abs ms)        3.564e-05
+    TreeSHAP walk vs predict, per row (abs)   3.965e-07
+    TreeSHAP walk vs predict, weighted (abs)  3.057e-08
+  RECONCILES: False
+  !! CHANNEL t2 FAILED — its tables below explain NOTHING. !!
+
+  BLOCK CONTRIBUTIONS (primary) to gap_t2 (+0.9981 ms/char)
+    block           ms/char    share      favours   parts
+    ROW          +23816.4692 2386172.3%  flagship-c3   home+24265.4009  bottom-349.4476  top-99.4842
+    FINGER       -20175.6052 -2021394.1%     graphite   ring-19990.8595  pinky-133.5998  lateral-78.2957  index+23.2332  middle+3.9166
+    WPM          -2198.5950 -220277.3%     graphite   wpm-2198.5950
+    RELATIONAL   -1860.4284 -186396.3%     graphite   same_hand-2410.7097  adjacent+502.8700  same_finger+58.9812  lsb-11.7543  scissor+0.1844
+    GEOMETRY      +419.0991 41989.5%  flagship-c3   dx+4382.8807  distance-2457.7772  dy-1423.7165  angle-82.4236  outwards+0.1358  inwards-0.0002
+    SUM             +0.9395
+
+=== CHANNEL TCOND — Tcond (conditioned trigram) ===
+  weighting: trigram-direct    gap +2.1953 ms/char (68.7% of the total gap)
+  residuals:
+    INTERNAL per-cell LMDI identity (rel)     1.832e-01
+    INTERNAL sum(features) vs channel gap     1.394e-03
+    EXTERNAL gap vs shipped table (abs ms/ch) 2.389e-07
+    EXTERNAL table vs shipped (abs ms)        2.408e-04
+    TreeSHAP walk vs predict, per row (abs)   1.398e-06
+    TreeSHAP walk vs predict, weighted (abs)  3.349e-08
+  RECONCILES: False
+  !! CHANNEL tcond FAILED — its tables below explain NOTHING. !!
+
+  BLOCK CONTRIBUTIONS (primary) to gap_tcond (+2.1953 ms/char)
+    block           ms/char    share      favours   parts
+    BG2            -30.4365 -1386.4%     graphite   row-37.7440  finger+13.3089  geometry-12.2178  relational+6.2164
+    BG1            +26.0082  1184.7%  flagship-c3   row+11.0515  geometry+8.4233  finger+7.0283  relational-0.4949
+    WPM             +7.9097   360.3%  flagship-c3   wpm+7.9097
+    SKIPGRAM        -0.8292   -37.8%     graphite   sg_dx-9.4439  sg_dy+7.1800  sg_distance+4.0744  sg_same_finger-2.6398
+    TRI_LEVEL       -0.4537   -20.7%     graphite   same_hand_trigram-0.2814  redirect-0.0924  bad_redirect-0.0800
+    SUM             +2.1984
+
+control 'shuffle' failed reconciliation, as required

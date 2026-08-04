@@ -1,0 +1,35 @@
+keybo.__file__ = /local/home/zegertho/repos/keybo-wt-tcond/src/keybo/__init__.py
+checkout = /local/home/zegertho/repos/keybo-wt-tcond branch = tcond
+
+corpus=blend-v1(default)  gap_Tcond=+2.195340
+
+=== (A-fixed) COMPOSITION share vs stratum refinement, pooled board-free price ===
+stratification                      strata  composition  % of gap     within
+3rd-key row (4)                          4      +0.6451     29.4%    +1.5502
+mid-key row (4)                          4      +0.1195      5.4%    +2.0758
+first-key row (4)                        4      +0.0469      2.1%    +2.1484
+mid x 3rd row (16)                      16      +0.7995     36.4%    +1.3959
+all-three rows (64)                     64      +0.7833     35.7%    +1.4121
+travel only (6)                          6      -0.2231    -10.2%    +2.4185
+3rd row x travel (24)                   24      +0.0855      3.9%    +2.1098
+all rows x travel (384)                384      +1.1606     52.9%    +1.0347
+3rd key identity (31)                   31      +0.5005     22.8%    +1.6949
+mid x 3rd key (961)                    961      +1.9562     89.1%    +0.2391
+FULL CELL (29791) [limit=100%]       29791      +2.1953    100.0%    +0.0000
+
+=== (B) the TRAVEL confound: is short travel cheap or is it same-finger? ===
+travel bin       cells  mean ms ALL  mean ms no-SF  SF share of cells
+[0,2)              343      157.204        168.347              98.5%
+[2,4)             3226      158.247        155.010              63.2%
+[4,6)             5324      149.853        148.133              40.6%
+[6,8)             6112      140.556        139.134              24.0%
+[8,10)            6056      139.188        137.572              14.7%
+[10,12)           3940      140.362        138.768               7.6%
+[12,100)          4790      142.615        142.433               0.5%
+
+SAME-FINGER-FREE cells only: composition share by travel bin
+  travel x same-finger (13 strata): composition -0.1874 (-8.5% of gap)  within +2.3828
+
+mass-weighted mean TOTAL TRAVEL: F 9.1621  G 9.6255  (+0.4635 = +5.06%)
+  price[all cells]  travel<=4 157.068 ms   travel>=10 141.598 ms   delta -15.470
+  price[no same-finger]  travel<=4 153.628 ms   travel>=10 140.846 ms   delta -12.782

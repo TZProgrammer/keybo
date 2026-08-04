@@ -1,0 +1,61 @@
+/local/home/zegertho/repos/keybo-wt-tcond/agent-artifacts/shapdiff-tcond/mechanism3.py:10: SyntaxWarning: invalid escape sequence '\_'
+  \_________ MASS-SHIFT term __________/     \______ WITHIN-STRATUM term ______/
+keybo.__file__ = /local/home/zegertho/repos/keybo-wt-tcond/src/keybo/__init__.py
+checkout = /local/home/zegertho/repos/keybo-wt-tcond branch = tcond
+
+corpus=blend-v1(default)   gap_Tcond (shipped table, no SHAP) = +2.195340 ms/char
+
+--- stratify by THIRD key's ROW (BG2 row sub-block) ---
+stratum           mass_F%  mass_G%  d_mass pp   price_F   price_G  mass-shift ms
+3rd=top           24.7815  19.7920    -4.9895   129.005   133.898        -6.4368
+3rd=home          50.5229  51.3111    +0.7881   126.713   126.823        +0.9987
+3rd=bottom         7.4075  11.6089    +4.2014   144.414   149.240        +6.0674
+3rd=space         17.2881  17.2881    +0.0000   110.261   110.150        +0.0000
+MASS-SHIFT total                                                         +0.6293   (28.7% of the gap)
+WITHIN total                                                             +1.5660   (71.3%)
+SUM (must == gap)                                                         +2.1953   resid 4.086e-14
+
+--- stratify by MIDDLE key's ROW (BG1 row sub-block) ---
+stratum           mass_F%  mass_G%  d_mass pp   price_F   price_G  mass-shift ms
+mid=top           25.4159  20.3420    -5.0739   123.894   125.772        -6.2863
+mid=home          51.7010  52.5750    +0.8740   118.579   121.184        +1.0364
+mid=bottom         7.7047  11.9046    +4.1999   127.383   129.357        +5.3499
+mid=space         15.1784  15.1784    +0.0000   152.440   153.157        +0.0000
+MASS-SHIFT total                                                         +0.1001   (4.6% of the gap)
+WITHIN total                                                             +2.0953   (95.4%)
+SUM (must == gap)                                                         +2.1953   resid 3.997e-14
+
+--- stratify by TOTAL TRAVEL (geometry sub-blocks) ---
+stratum           mass_F%  mass_G%  d_mass pp   price_F   price_G  mass-shift ms
+travel[0,4)        3.4447   3.3990    -0.0457   133.614   131.557        -0.0611
+travel[4,6)       11.9525   9.7969    -2.1556   127.956   129.849        -2.7582
+travel[6,8)       21.4592  21.0311    -0.4281   131.890   133.003        -0.5646
+travel[8,10)      25.9102  23.0349    -2.8753   126.018   130.343        -3.6235
+travel[10,12)     15.5112  15.1589    -0.3522   116.868   120.313        -0.4116
+travel[12,100)    21.7223  27.5793    +5.8570   123.236   125.152        +7.2179
+MASS-SHIFT total                                                         -0.2011   (-9.2% of the gap)
+WITHIN total                                                             +2.3965   (109.2%)
+SUM (must == gap)                                                         +2.1953   resid 2.043e-14
+
+--- stratify by the FRAME's redirect column ---
+stratum           mass_F%  mass_G%  d_mass pp   price_F   price_G  mass-shift ms
+bad_redirect       0.8149   0.2697    -0.5451   154.843   151.810        -0.8441
+redirect_only      1.0039   1.9099    +0.9060   142.083   145.359        +1.2873
+no_redirect       98.1812  97.8203    -0.3609   125.339   127.537        -0.4524
+MASS-SHIFT total                                                         -0.0091   (-0.4% of the gap)
+WITHIN total                                                             +2.2045   (100.4%)
+SUM (must == gap)                                                         +2.1953   resid 2.709e-14
+
+--- stratify by THIRD-key row x TRAVEL (joint) ---
+stratum           mass_F%  mass_G%  d_mass pp   price_F   price_G  mass-shift ms
+3rd=top,t[0,8)     7.1716   6.5472    -0.6245   132.395   134.797        -0.8268
+3rd=top,t[8,100)  17.6099  13.2448    -4.3651   127.625   133.453        -5.5709
+3rd=home,t[0,8)   17.3717  14.9969    -2.3748   134.872   135.264        -3.2030
+3rd=home,t[8,100)  33.1512  36.3142    +3.1630   122.437   123.337        +3.8726
+3rd=bot,t[0,8)     3.6728   4.6561    +0.9833   151.469   153.571        +1.4895
+3rd=bot,t[8,100)   3.7347   6.9528    +3.2181   137.476   146.339        +4.4241
+3rd=spc,t[0,8)     8.6403   8.0268    -0.6135   112.398   110.922        -0.6895
+3rd=spc,t[8,100)   8.6478   9.2612    +0.6135   108.126   109.481        +0.6633
+MASS-SHIFT total                                                         +0.1593   (7.3% of the gap)
+WITHIN total                                                             +2.0360   (92.7%)
+SUM (must == gap)                                                         +2.1953   resid 1.688e-14
