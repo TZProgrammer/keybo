@@ -198,3 +198,73 @@ BEFORE and AFTER each mutation (FM4-1's false-survivor hazard). Every mutation a
 changed the file; `rc` taken straight from pytest, never from a pipe tail. An assertion whose subject
 cannot vary is vacuous (INVARIANT 5) — if a field is only ever checked at its default, I force the
 other value somewhere.
+
+---
+
+# §6 AMENDMENT 1 — registered AFTER the controls, BEFORE the arms they motivate
+
+Causal order: GC1–GC4 are committed at `8d41013`. Everything in this section is registered **before**
+the number it asks for exists. What changed my plan is a *control result*, not a candidate result.
+
+## §6.1 My own H-ASYM is REFUTED IN ITS REGISTERED FORM, and the real defect is worse
+
+H-ASYM predicted a symmetric LOSO baseline would make CUR fail. **It does not, and cannot.** Measured
+(g01): `dev_i = 1.5 × d_i` **exactly** (ratio 1.5 to 6 dp), where `d_i` is the published delta and
+`dev_i` the LOSO deviation. Both are deviations of a seed from a centre computed from the same three
+seeds, so **both sum to zero** (verified 1.1e-16). A STRUCTURAL refusal requires all three seeds to
+regress; three numbers summing to zero cannot all be below −0.005. ⇒ **the incumbent cannot fail,
+under either estimator, for any data whatsoever.**
+
+⇒ **THE MANDATORY GATE CONTROL IS VACUOUS (INVARIANT 5: an assertion whose subject cannot vary).**
+Both INTERPFRAME-1 and HYBRIDTRI-1 report "GATE CONTROL PASSED ⇒ verdicts readable". That inference
+is void: the control's subject cannot vary. This supersedes H-ASYM and is registered as **H-VAC**.
+
+## §6.2 H-VAC — the control is self-referential, so a NON-VACUOUS control is required
+
+**H-VAC:** the published gate control cannot fail, so it licenses nothing. The honest control is an
+arm that (a) uses the SERVED frame and (b) faces the SAME estimator a candidate faces — i.e. compared
+against a baseline it did **not** contribute to.
+* **The registered instrument: SEEDNOISE.** Retrain CUR (served 20c, identical in every respect) at
+  NEW seeds [3,4,5] and score it against the PUBLISHED CUR baseline (the seeds [0,1,2] per-fold
+  mean). Nothing but the seed differs, so any refusal is instability by construction. This is GC3
+  route (b), which §2 registered as conditional; the vacuity finding makes it **mandatory**.
+* SUPPORTED (⇒ GATE ARTIFACT) iff SEEDNOISE fails structurally on ≥1 fold; **decisive** if it fails
+  on the same buckets as the candidates.
+* REFUTED (⇒ the refusals discriminate) iff SEEDNOISE passes cleanly on 4/4 folds while the interp
+  frames fail 4/4. **I register this as the outcome that would exonerate the gate**, and I state now
+  that it is a real possibility: the published per-bucket CUR seed sd is 0.0003–0.0067, and 3 of the
+  12 high-bucket sds sit below the 0.005 tolerance.
+
+## §6.3 H-BASIS (NEW) — is the refusal specific to an INTERPRETABILITY basis at all?
+
+The confound nobody has controlled: every refused arm is *both* an interp frame *and* a model whose
+high-wpm ρ level differs from CUR's by more than the tolerance. `CUR-NOWPM` separates them — it is
+the **SERVED 20-column basis** with `wpm` neutralized, has NO interpretability construction, no
+monotone constraints, no ordinal recoding, and a *matched* accuracy cost (published Δwmae +6.07 vs
+interp's +5.77). It is **already trained** in `agent-artifacts/interpframe/lolo.json`.
+* SUPPORTED (⇒ the refusal is NOT about interpretability) iff CUR-NOWPM also fails structurally on
+  ~4/4 folds.
+* REFUTED (⇒ something specific to the interp basis) iff CUR-NOWPM passes.
+* ⚠ Registered caveat: interpframe's run is a DIFFERENT run from hybridtri's. I will therefore
+  baseline interpframe arms against **interpframe's OWN CUR** (same-run pairing), never across runs,
+  and I will verify the two runs' CUR agree before quoting any cross-run statement (INVARIANT 7's
+  logic: only same-instrument deltas compare).
+
+## §6.4 H-MONO scoring, and H-PACE's numeric test
+
+* **H-MONO:** score `INTERP-NOMONO` (same 10 columns, `monotone=False`, already trained) against
+  interpframe's own CUR baseline. Verify the arm's identity (column count + monotone flag from its
+  config) rather than trusting the label. PASS ⇒ constraints are the cause; FAIL ⇒ refuted.
+* **H-PACE:** decided numerically, not by narrative. If `CUR-NOWPM` — which keeps the `wpm` COLUMN
+  (so recovers pace from `X`, the served path) — fails the same way as the interp frames (which use
+  the explicit-`wpm` path), then the pace *path* is not what distinguishes the refused arms. I also
+  record that `to_ms` REFUSES a `wpm=` argument when the frame has the column (`base.py:110-115`), so
+  the two paths cannot both run for one model; the comparison is between models, and that is the
+  strongest form available without editing `src/`.
+
+## §6.5 The margin-vs-floor table, and bootstrap stability
+
+For every refused (fold, bucket): Δρ, the GC3 measured reseed floor **at that bucket**, the margin
+(|Δρ| − floor), and the support. Reported BEFORE any p-value (INVARIANT 8). Bootstrap: resample which
+seeds fill the baseline and report how often each structural verdict survives, beside the registered
+result, never instead of it.
