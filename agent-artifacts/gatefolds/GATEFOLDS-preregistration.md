@@ -155,4 +155,30 @@ its own baseline? Registered prediction: **NO** (`highwpm.json` records
 
 ## §5 — Outcome
 
-*(filled in after measurement — nothing here yet by construction)*
+**MY ASSIGNED PRIOR IS REFUTED. R1 FIRED at the registered threshold (≥3/4 folds); measured 4/4.**
+
+| # | Registered item | Outcome |
+|---|---|---|
+| R1 | gate refuses the SERVED frame under matched conditions ⇒ prior refuted | 🟢 **FIRED, 4/4.** `CUR-INVARIANT` (served 20c, wpm-invariant, no interp columns, no constraints) is refused STRUCTURALLY on all four folds, on the SAME buckets |
+| R2 | mechanism is a harness/conversion defect | 🟠 **PARTIALLY.** Not the cause of the refusal (my honest-conversion arm keeps τ=1.0 and is still refused 4/4) — but the gate *cannot see* the difference: 12/12 identical rhos across τ 1.0 vs 0.333 |
+| H1 | both failing frames wpm-invariant by construction | 🟢 **CONFIRMED** on two independent code paths. Raw LOGRAT spread across buckets EXACTLY `0.000e+00`; within-bucket rank identical 5/5. Served: 1/5, ρ(b40,b120)=0.7930 |
+| H1's Dead‑1 discriminator | interp‑wpm's refused set should differ from interp.1's | 🔴 **MY PREDICTION WAS WRONG, and the failure is informative.** interp‑wpm is *also* rank-identical 5/5 with ρ=1.000000 — restoring the column does NOT restore re-ranking, because it shifts every pair by the same monotone amount. This is a *mechanism* for Dead‑1 that I did not have at registration |
+| H2 | unconstrained variant decides the constraint question | 🟢 **CONSTRAINTS EXONERATED.** `INTERP-NOMONO` already existed and fails **worse** (8 structural rows vs interp.1's 5), exactly as I predicted |
+| H3 | population/support descriptive only | 🟢 Reported, not upgraded. qwerty b120 is refused by all five wpm-deprived arms at **477 cells / 10,811 participants / 879,982 raw** — not a thin-bucket story |
+| H4 | ordinal-vs-one-hot basis | 🟢 **Evidence AGAINST it**, not run as a new arm (reason stated): hybrid-B carries the served one-hots *beside* the ordinals and still fails 4/4 |
+| Gate control (inv. 2) | prediction: gate PASSES the incumbent | 🟢 **CONFIRMED.** CUR passes (noise only) on both the sibling's run and my own re-derivation |
+| Floor (inv. 7) | measured, not borrowed | 🟢 Incumbent high-bucket seed sd median **0.00244**; tolerance 0.005 = **2.05×** that. Every structural row's margin/floor_sd = **2.22 – 90.91** |
+| Bootstrap (inv. 7) | verdict stability | 🟢 **P(structural) = 1.000** for every structural row in every arm (2000 seed resamples) |
+| High-wpm SPECIFICITY | — | 🟡 **DATA-MASS ANCHOR effect.** Top bucket agrees worst with the volume-weighted rest on 3/4 folds, while b120 holds only 1.3–5.6% of a fold's raw samples vs 53–75% in b40+b60 |
+
+**Two self-refutations recorded rather than quietly dropped:**
+1. My §4a `reorder.py` LOW-vs-HIGH metric was **confounded** (not distance-matched; agreement decays
+   +0.8686→+0.7001 with bucket distance). Distance-matched the effect vanishes, 2/4 each way. It
+   returned the answer my prior wanted and I discarded it.
+2. My first alignment statistic **zero-filled** deltas for non-refused buckets, biasing it up to
+   +0.43/+0.48/+0.56. Real deltas give +0.36/+0.35/+0.31, and only 1/6 arms reaches 2 null-sd ⇒
+   reported as **suggestive, not established**.
+
+**Verification:** full suite **1480 passed / 3 skipped / 0 failed**, rc=0. Mutation battery
+**6/6 RED, 0 survivors** (M5 — a behavioural pace leak that keeps the name list 10 wide — went RED,
+which is the evidence the new tests check behaviour rather than schema).
