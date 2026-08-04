@@ -1,0 +1,16 @@
+GATEFOLDS-1 mutation battery — 6/6 RED, 0 survivors
+
+=== GATEFOLDS-1 mutation battery ===
+
+M1 RED       (rc=1) :: BIGRAM_INTERP_FEATURE_NAMES = [*_BIGRAM_INTERP_NAMES]
+M2 RED       (rc=1) ::     *_HYBRIDB_FINGER_ONEHOTS,
+]
+M3 RED       (rc=1) :: BIGRAM_FEATURE_NAMES = [*_BIGRAM_PLACEMENT_NAMES, "wpm"]
+M4 RED       (rc=1) :: _BIGRAM_INTERP_WPM_NAMES = [*_BIGRAM_INTERP_NAMES, "wpm"]
+M5 RED       (rc=1) ::     del wpm  # not a column in this frame (see schema); acce
+M6 RED       (rc=1) ::     row["wpm"] = float(wpm)
+    return np.array(
+        [ro
+M7 NOT-MUTATED (by design) :: to_ms rank-preservation is demonstrated on inline values, so no src/ mutation can reach it; its non-vacuity is enforced by the paired 'values DO change' assertion in the same test
+
+=== done. SURVIVED lines above are findings. Logs: /tmp/gatefolds_wk/mut_*.log ===
