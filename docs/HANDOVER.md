@@ -3,8 +3,8 @@
 Written for a fresh agent (or you) on another machine. Read §1 before cloning anything: **the most
 important facts here are about what is *not* in this repository.**
 
-Ledger tip when written: `origin/main` = `c1c0bc8` (plus this document). `PREREGISTRATIONS.md` = 13,730 lines / 231
-registered entries. Mainline suite: **1281 passed / 3 skipped / 0 failed**.
+Ledger tip when written: `origin/main` = `c1c0bc8`; this document then landed on top (`b5488aa`, `3fdb93f`, and this commit). `PREREGISTRATIONS.md` = 13,730 lines / 231
+registered entries. Mainline suite: **1281 passed / 3 skipped / 0 failed** (measured before the docs commits; see §9.1 for how to run it).
 
 ---
 
@@ -87,7 +87,7 @@ instead of a retrain. Worth copying.
 | — | `interpframe` `b973f39` | `interp.1`, the 10-column interpretability frame (**attribution only — see §5**) | 1393/3 |
 | — | `hybridtri` `52f0e3f` | hybrid-B + **two real shipped-path bug fixes** (see §6) | 1455/3 |
 | — | `gatewhy` `e56b12f` / `gatefolds` `986f3a6` | the gate diagnosis; `src/` byte-identical to base | 1467/3, 1480/3 |
-| — | `pacefix` `d97de23` (moving — prereg `c6d7841`) | **IN FLIGHT at handover** (§7) | — |
+| — | `pacefix` `0ee7dbe` (final; prereg `c6d7841`) | **SOLVED — the pace-gate cause, measured (§7.1, §9.2). Carries `agent-artifacts/pacefix/diagnose.json`, the evidence.** | — |
 | — | `calib` `c28b37e` | the calibration gate — **needs an end-to-end `validate()` run before landing** | 1276/3 |
 | — | `gateaudit-proposal` `f098ca8` | the audited calibration-gate variant (land *this*, not raw `calib`) | 1295/3 |
 | — | `domain-hard` `79cb175` | `valid_domain` — **78 files**; the only "LAND" from the branch audit | 1257/3 |
@@ -243,3 +243,63 @@ Then: (a) confirm the 14 local-only branches arrived (`git branch -a`) — **if 
 **Standing conventions:** the ledger is the law and is append-only (**never** resolve a ledger conflict
 with `--theirs`; extract added lines onto a fresh base). `data/models/k31/` is read-only. Adopting a
 layout, publishing, and pushing non-ledger code are human decisions.
+
+---
+
+## 9. Last things recorded at wrap-up
+
+### 9.1 Running the tests on the laptop — the trap that will hit you first
+**`python -m pytest` fails with `ModuleNotFoundError: No module named 'keybo'`.** There is a project venv at
+`.venv/`; a fresh shell does not activate it, and the failure looks like a broken test module
+(`ERROR tests/analysis/test_bad_scissor.py`) rather than a missing environment. Use:
+```bash
+.venv/bin/python -B -m pytest              # note: -B on PYTHON, not on pytest ('pytest -B' is INVALID)
+```
+The full suite takes **> 2 minutes**, so give it a real timeout. Baseline measured on mainline this session:
+**1281 passed, 3 skipped.** ⚠ That baseline was measured *before* the two docs commits; the docs commits
+touch no code, so it should hold, but **it was not re-run after them** — re-establish it as your first act.
+
+Other environment traps, all paid for once already: a shared venv can silently resolve `keybo` to a *different
+checkout* (check `python -c "import keybo; print(keybo.__file__)"` before trusting any result);
+`pyproject` sets `addopts="-q"` so `-q` gives you `-qq`; a bare script in `/tmp` shadow-imports
+`/tmp/platform.py`; `cmd | tail; rc=$?` captures **tail's** rc, not cmd's.
+
+### 9.2 PACEFIX-1's numbers re-verified from the committed evidence, not from its report
+Evidence lives at **`agent-artifacts/pacefix/diagnose.json` on branch `pacefix`** (committed, so it travels
+with the repo). Read out of that blob directly rather than taken from the agent's summary:
+
+| arm | wpm gain_share | wpm splits | trees geom BELOW wpm | interaction leaves | rho(b40,b120) |
+|---|---|---|---|---|---|
+| `served` | 0.7515730 | 405 | — | — | **0.7930056** |
+| `interp-wpm` (shipped) | **0.0006352** | 4 | **0** | 8/1020 (0.78%) | **1.0000000** |
+| `interp-wpm-nomono` | **0.8126406** | 441 | **109** | 625/1668 (37.5%) | **0.9210093** |
+| `interp-wpm-depth6` | 0.0010662 | 7 | — | — | 0.9999998566886138 |
+
+Ratio **1279.3×** (the report's "1280×" — confirmed). `served`'s 0.7930056 reproduces GATEFOLDS-1's published
+0.793006 to 3.8e-07, which is the positive control.
+
+**The mechanism is sharper than prose conveys.** Constrained, all 4 wpm splits sit at depth 2 — the deepest
+level of a depth-3 tree — and geometry never sits below wpm in *any* tree. Unconstrained, wpm is at the
+**root of 112 trees** and geometry sits below it in **109**. So the constraint provably lets wpm nudge
+individual leaves but never reorganize a subtree, which is exactly what a within-bucket re-ordering needs.
+That is why the rank identity was *exactly* 1.000000 rather than approximately.
+
+Also confirmed from the same blob: `served_has_monotone_tuple_in_schema = **False**` — the independent proof
+of the §7.3 correction that GATEFOLDS-1's published "the served frame has its OWN monotone constraints" is
+wrong.
+
+### 9.3 A stale status file that will mislead you
+`state/pacefix/status` reads **`failed`**. That is the agent's own last self-written status, not an outcome —
+its tree is clean, its 5 commits are present, its evidence is committed, and its result is verified above.
+Same class of trap as everything in §6: **a label is not its referent.** Trust `report.md` (289 lines, §H has
+the resume command) and the committed JSON, not the status file.
+
+### 9.4 What is genuinely NOT done
+- **The price of the pace fix is unmeasured.** `lolo.py` is committed but **unrun**; the MAXCORR/CONSTFRAC
+  driver is unwritten. Breaking the rank identity is *necessary, not sufficient*.
+- **The next arm is chosen but not run** (~8 min): partial tuple, `wpm` alone at 0, all 10 geometric
+  constraints kept. Needs `bistrokes31_v1.tsv` (§1.1).
+- **No ledger entry for PACEFIX-1** — deliberately. The arm is half-measured, and an entry implying a *priced*
+  fix would be wrong. The one thing that does deserve a ledger line is the §7.3 C2 correction.
+- **Every decision that was yours stays yours:** the adopt call, the landing order (`tcond` → `productize` →
+  `fm4`, which cannot be reordered), any production-corpus swap, and the branch deletions.
