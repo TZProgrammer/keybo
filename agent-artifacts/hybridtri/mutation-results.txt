@@ -1,0 +1,45 @@
+M01 RED       (rc=1) :: _HYBRIDB_ROW_ONEHOTS = ["bottom", "home", "top"]
+M02 RED       (rc=1) :: _HYBRIDB_FINGER_ONEHOTS = ["pinky", "ring", "middle", "index
+M03 RED       (rc=1) :: _HYBRIDB_ROW_ONEHOTS = ["bottom", "home", "top"]
+M04 RED       (rc=1) ::     *_BIGRAM_INTERP_NAMES,
+    *_HYBRIDB_ROW_ONEHOTS,
+    *_
+M05 RED       (rc=1) ::     *_HYBRIDB_FINGER_ONEHOTS,
+]
+M06 RED       (rc=1) ::     *BIGRAM_INTERP_MONOTONE,
+    *((0,) * (len(_HYBRIDB_ROW_
+M07 RED       (rc=1) ::     *((0,) * (len(_HYBRIDB_ROW_ONEHOTS) + len(_HYBRIDB_FINGE
+M08 RED       (rc=1) ::     *((0,) * (len(_HYBRIDB_ROW_ONEHOTS) + len(_HYBRIDB_FINGE
+M09 RED       (rc=1) :: FEATURE_VERSION_HYBRIDB = f"{FEATURE_VERSION}+hybrid-b.1"
+M10 RED       (rc=1) :: FEATURE_VERSION_HYBRIDB = f"{FEATURE_VERSION}+hybrid-b.1"
+M11 RED       (rc=1) :: FEATURE_VERSION = "2026-07-05.3"
+M12 RED       (rc=1) ::     row = interp_row_from_positions(geometry, a, b)
+    plac
+M13 SURVIVED  (tests still GREEN under the mutation -- the assertion tests nothing) ::             row[name] = placement[name]
+M14 RED       (rc=1) ::     del wpm  # not a column in this frame (see schema); acce
+M15 RED       (rc=1) ::     if interp is False or interp not in _REPLACEMENT_FRAMES:
+M16 SURVIVED  (tests still GREEN under the mutation -- the assertion tests nothing) ::     return _REPLACEMENT_FRAMES[interp]
+M17 RED       (rc=1) ::     "hybridb": (
+        hybridb_features_from_positions,
+M18 RED       (rc=1) ::         BIGRAM_HYBRIDB_MONOTONE,
+        FEATURE_VERSION_HYB
+M19 RED       (rc=1) ::         hybridb_features_from_positions,
+        BIGRAM_HYBR
+M20 RED       (rc=1) :: REPLACEMENT_FRAME_FLAGS = tuple(_REPLACEMENT_FRAMES)
+M21 RED       (rc=1) ::     **{n: ("ROWCOST", "onehot") for n in ("bottom", "home", 
+M22 RED       (rc=1) ::     **{n: ("CONTACT", "onehot") for n in ("pinky", "ring", "
+M23 RED       (rc=1) ::     **{n: ("SPAN", "") for n in ("row_span", "lateral_span",
+M24 RED       (rc=1) ::     **{n: ("ROWCOST", "ordinal") for n in ("row_load", "row_
+M25 RED       (rc=1) ::     raise ValueError(
+        f"no block partition registere
+M26 RED       (rc=1) :: FRAMES = ("served", "interp", "interp-wpm", "hybridb")
+M27 RED       (rc=1) ::     "hybridb": "hybridb",
+M28 RED       (rc=1) ::     if interp is not False and interp not in REPLACEMENT_FRA
+M29 RED       (rc=1) ::         if ngram != "bigram":
+M30 RED       (rc=1) ::         if direction or kitchensink:
+M31 RED       (rc=1) ::             params = {**params, "monotone_constraints": tupl
+M32 RED       (rc=1) ::             assert len(constraints) == len(names), "one cons
+M13b SURVIVED  (tests still GREEN under the mutation -- the assertion tests nothing) ::             row[name] = placement[name]
+M16b SURVIVED  (tests still GREEN under the mutation -- the assertion tests nothing) ::     return _REPLACEMENT_FRAMES[interp]
+M27b RED       (rc=1) ::     "hybridb": "hybridb",
+M28b RED       (rc=1) ::     if interp is not False and interp not in REPLACEMENT_FRA

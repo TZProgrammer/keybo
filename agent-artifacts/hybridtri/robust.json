@@ -1,0 +1,92 @@
+{
+ "prereg": "agent-artifacts/hybridtri/HYBRIDTRI-preregistration.md @ 5a5d3c3 \u00a75 (INVARIANT 6)",
+ "n_resamples": 4000,
+ "budgets": [
+  3,
+  6,
+  12
+ ],
+ "channels": {
+  "G": {
+   "registered_gap": 3.0981934597893144,
+   "floor_p95": 1.0816477147764658,
+   "n3": {
+    "share_EXPLOITABLE": 0.87825,
+    "share_gap_positive": 0.931,
+    "median_gap": 2.0227548715980106,
+    "median_gap_exceeds_floor": true,
+    "p05_gap": -0.32280165976547437,
+    "p95_gap": 3.317321128404984
+   },
+   "n6": {
+    "share_EXPLOITABLE": 0.77875,
+    "share_gap_positive": 0.925,
+    "median_gap": 3.0322397845899047,
+    "median_gap_exceeds_floor": true,
+    "p05_gap": -0.32280165976547437,
+    "p95_gap": 3.317321128404984
+   },
+   "n12": {
+    "share_EXPLOITABLE": 0.59575,
+    "share_gap_positive": 0.95375,
+    "median_gap": 3.0322397845899047,
+    "median_gap_exceeds_floor": true,
+    "p05_gap": 0.6866832532264198,
+    "p95_gap": 3.317321128404984
+   },
+   "no_selection": {
+    "mean_trusted_hybridb": 257.20076456055153,
+    "mean_trusted_served": 255.73543003483178,
+    "mean_gap": 1.4653345257197543,
+    "sign_positive": true
+   }
+  },
+  "B": {
+   "registered_gap": 0.9246534304724605,
+   "floor_p95": 0.147084931365157,
+   "n3": {
+    "share_EXPLOITABLE": 1.0,
+    "share_gap_positive": 1.0,
+    "median_gap": 0.7239007322081363,
+    "median_gap_exceeds_floor": true,
+    "p05_gap": 0.41214049801430974,
+    "p95_gap": 1.0984123006336404
+   },
+   "n6": {
+    "share_EXPLOITABLE": 1.0,
+    "share_gap_positive": 1.0,
+    "median_gap": 0.7577002456150694,
+    "median_gap_exceeds_floor": true,
+    "p05_gap": 0.47581682620460697,
+    "p95_gap": 1.0984123006336404
+   },
+   "n12": {
+    "share_EXPLOITABLE": 1.0,
+    "share_gap_positive": 1.0,
+    "median_gap": 0.7729098084539601,
+    "median_gap_exceeds_floor": true,
+    "p05_gap": 0.5523350390293729,
+    "p95_gap": 1.0984123006336404
+   },
+   "no_selection": {
+    "mean_trusted_hybridb": 129.6563429045221,
+    "mean_trusted_served": 128.83093932672546,
+    "mean_gap": 0.8254035777966351,
+    "sign_positive": true
+   }
+  }
+ },
+ "EXPLOIT1_R1_published": {
+  "G_share_exploitable": [
+   0.382,
+   0.359,
+   0.486
+  ],
+  "B_share_exploitable": [
+   1.0,
+   1.0,
+   1.0
+  ],
+  "note": "EXPLOIT-1's G verdict was a coin flip at every budget; its B was 100%"
+ }
+}

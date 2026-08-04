@@ -266,7 +266,9 @@ for k, (pub, mine) in PUB.items():
 
 log("")
 if bad:
-    log(f"!! {len(bad)} MISMATCH(ES) -- the brief's premise is WRONG on these and must be corrected:")
+    log(
+        f"!! {len(bad)} MISMATCH(ES) -- the brief's premise is WRONG on these and must be corrected:"
+    )
     for k, pub, mine, diff in bad:
         log(f"   {k}: published {pub} vs measured {mine} (|diff| {diff:.4e})")
 else:
