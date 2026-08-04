@@ -163,3 +163,17 @@ intervention DOES break rank identity, the honest answer is two-sided and I must
 is **FIXABLE only if** the break comes with M-C accuracy-neutrality AND M-D's MAXCORR bar intact.
 **A break bought at interp.1's +58% wmae, or at MAXCORR back near 0.9813, is not a fix and I will
 say so.**
+
+---
+
+## 5. POST-HOC ADDENDUM — a defect in MY OWN registered bar (added after measuring; labelled as such)
+
+**C5.** §M-B registered: "rank identity BREAKS iff ρ(b40,b120) < 1.000000 AND rank-identical < 5/5".
+`interp-wpm-depth6` measured **ρ = 0.9999998566886138** @ 1/5 — which satisfies that bar *literally*
+while being a **1.4e-07** break, ~77,000× BELOW this gate's own measured p95 reseed floor (0.0108).
+**The bar was stated at 6 decimals and therefore cannot distinguish a real re-ordering from float
+noise.** The `n_rank_identical` count is likewise brittle: a 1.4e-07 perturbation flips it 5/5 → 1/5
+while changing nothing material. Both readings are reported in the report; the substantive verdict
+(depth does NOT restore pace tracking, exactly as registered under H-DEPTH) rests on ρ magnitude
+measured against the floor. **Recommended pattern for future arms: report Δρ ÷ measured floor, never
+the identity count alone.** Registered here rather than silently re-scored.
