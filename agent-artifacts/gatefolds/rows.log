@@ -1,0 +1,79 @@
+[tree] keybo.__file__ = /local/home/zegertho/repos/keybo-wt-gatefolds/src/keybo/__init__.py
+[tree] branch = gatefolds  HEAD = 48a83d4
+[tree] threads = OMP=1
+[gate] floor=80 wpm  tolerance=0.005
+[arm ] CUR            interp=False monotone=True  interpframe run; the served incumbent
+[arm ] INTERP         interp=True monotone=True  interp.1, 10c, monotone ON
+[arm ] INTERP-NOMONO  interp=True monotone=False  interp.1, 10c, monotone OFF
+[arm ] CUR-NOWPM      interp=False monotone=True  served 20c, wpm neutralized to a GLOBAL const
+[arm ] HYBRIDB        interp='hybridb' monotone=True  hybrid-B, 18c, partial monotone
+[arm ] CUR-INVARIANT  interp=False monotone=True  MINE: served 20c wpm-invariant, TRUE-pace ms
+[arm ] CUR-mine       interp=False monotone=True  MINE: served control, re-derived on my tree
+
+====================================================================================================
+MEASURED SEED FLOOR (within-arm rho spread across 3 seeds, per fold x bucket)
+====================================================================================================
+  incumbent high-bucket seed sd: median 0.00244  max range 0.01283 over 12 (fold,bucket) cells
+  gate tolerance 0.005 is 2.05x that median sd
+
+====================================================================================================
+REFUSED ROWS PER ARM (structural = regresses on EVERY seed of a fold)
+====================================================================================================
+
+  CUR            PASS   (interpframe run; the served incumbent  [/local/home/zegertho/repos/keybo-wt-hybridtri/agent-artifacts/interpframe/lolo.json#CUR])
+      azerty   noise-only buckets [100, 120] (regressed on some but not all seeds)
+      dvorak   noise-only buckets [100] (regressed on some but not all seeds)
+      qwertz   noise-only buckets [120] (regressed on some but not all seeds)
+
+  INTERP         STRUCTURAL on 4/4 folds   (interp.1, 10c, monotone ON  [/local/home/zegertho/repos/keybo-wt-hybridtri/agent-artifacts/interpframe/lolo.json#INTERP])
+      azerty   b120  delta_rho -0.0404  n_cells 64    n_part 23   n_raw 1340    margin +0.0354  margin/floor_sd  18.43  boot P(struct) 1.000
+      dvorak   b100  delta_rho -0.0810  n_cells 145   n_part 34   n_raw 4333    margin +0.0760  margin/floor_sd  21.51  boot P(struct) 1.000
+      dvorak   b120  delta_rho -0.0289  n_cells 79    n_part 19   n_raw 1665    margin +0.0239  margin/floor_sd   3.40  boot P(struct) 1.000
+      qwerty   b120  delta_rho -0.0283  n_cells 477   n_part 10811 n_raw 879982  margin +0.0233  margin/floor_sd  40.71  boot P(struct) 1.000
+      qwertz   b100  delta_rho -0.0214  n_cells 242   n_part 161  n_raw 15404   margin +0.0164  margin/floor_sd  24.57  boot P(struct) 1.000
+      qwerty   noise-only buckets [100] (regressed on some but not all seeds)
+
+  INTERP-NOMONO  STRUCTURAL on 4/4 folds   (interp.1, 10c, monotone OFF  [/local/home/zegertho/repos/keybo-wt-hybridtri/agent-artifacts/interpframe/lolo.json#INTERP-NOMONO])
+      azerty   b100  delta_rho -0.0154  n_cells 153   n_part 51   n_raw 5171    margin +0.0104  margin/floor_sd   3.93  boot P(struct) 1.000
+      azerty   b120  delta_rho -0.0423  n_cells 64    n_part 23   n_raw 1340    margin +0.0373  margin/floor_sd  45.19  boot P(struct) 1.000
+      dvorak   b80   delta_rho -0.0303  n_cells 193   n_part 51   n_raw 7824    margin +0.0253  margin/floor_sd   8.46  boot P(struct) 1.000
+      dvorak   b100  delta_rho -0.1160  n_cells 145   n_part 34   n_raw 4333    margin +0.1110  margin/floor_sd  26.99  boot P(struct) 1.000
+      dvorak   b120  delta_rho -0.1041  n_cells 79    n_part 19   n_raw 1665    margin +0.0991  margin/floor_sd   7.30  boot P(struct) 1.000
+      qwerty   b100  delta_rho -0.0152  n_cells 527   n_part 24015 n_raw 2714546 margin +0.0102  margin/floor_sd   5.57  boot P(struct) 1.000
+      qwerty   b120  delta_rho -0.0347  n_cells 477   n_part 10811 n_raw 879982  margin +0.0297  margin/floor_sd  14.02  boot P(struct) 1.000
+      qwertz   b100  delta_rho -0.0256  n_cells 242   n_part 161  n_raw 15404   margin +0.0206  margin/floor_sd   8.96  boot P(struct) 1.000
+      qwerty   noise-only buckets [80] (regressed on some but not all seeds)
+
+  CUR-NOWPM      STRUCTURAL on 4/4 folds   (served 20c, wpm neutralized to a GLOBAL const  [/local/home/zegertho/repos/keybo-wt-hybridtri/agent-artifacts/interpframe/lolo.json#CUR-NOWPM])
+      azerty   b120  delta_rho -0.0296  n_cells 64    n_part 23   n_raw 1340    margin +0.0246  margin/floor_sd  17.47  boot P(struct) 1.000
+      dvorak   b80   delta_rho -0.0315  n_cells 193   n_part 51   n_raw 7824    margin +0.0265  margin/floor_sd  10.98  boot P(struct) 1.000
+      dvorak   b100  delta_rho -0.0159  n_cells 145   n_part 34   n_raw 4333    margin +0.0109  margin/floor_sd   2.22  boot P(struct) 1.000
+      qwerty   b100  delta_rho -0.0148  n_cells 527   n_part 24015 n_raw 2714546 margin +0.0098  margin/floor_sd   4.85  boot P(struct) 1.000
+      qwerty   b120  delta_rho -0.0331  n_cells 477   n_part 10811 n_raw 879982  margin +0.0281  margin/floor_sd  90.91  boot P(struct) 1.000
+      qwertz   b100  delta_rho -0.0189  n_cells 242   n_part 161  n_raw 15404   margin +0.0139  margin/floor_sd  15.91  boot P(struct) 1.000
+      dvorak   noise-only buckets [120] (regressed on some but not all seeds)
+      qwertz   noise-only buckets [120] (regressed on some but not all seeds)
+
+  HYBRIDB        STRUCTURAL on 4/4 folds   (hybrid-B, 18c, partial monotone  [/local/home/zegertho/repos/keybo-wt-hybridtri/agent-artifacts/hybridtri/lolo.json#HYBRIDB])
+      azerty   b120  delta_rho -0.0199  n_cells 64    n_part 23   n_raw 1340    margin +0.0149  margin/floor_sd   4.71  boot P(struct) 1.000
+      dvorak   b80   delta_rho -0.0145  n_cells 193   n_part 51   n_raw 7824    margin +0.0095  margin/floor_sd   2.94  boot P(struct) 1.000
+      dvorak   b100  delta_rho -0.0227  n_cells 145   n_part 34   n_raw 4333    margin +0.0177  margin/floor_sd   4.57  boot P(struct) 1.000
+      qwerty   b120  delta_rho -0.0247  n_cells 477   n_part 10811 n_raw 879982  margin +0.0197  margin/floor_sd  38.84  boot P(struct) 1.000
+      qwertz   b100  delta_rho -0.0161  n_cells 242   n_part 161  n_raw 15404   margin +0.0111  margin/floor_sd  42.13  boot P(struct) 1.000
+
+  CUR-INVARIANT  STRUCTURAL on 4/4 folds   (MINE: served 20c wpm-invariant, TRUE-pace ms  [/local/home/zegertho/repos/keybo-wt-gatefolds/agent-artifacts/gatefolds/control.json#CUR-INVARIANT])
+      azerty   b120  delta_rho -0.0296  n_cells 64    n_part 23   n_raw 1340    margin +0.0246  margin/floor_sd  17.47  boot P(struct) 1.000
+      dvorak   b80   delta_rho -0.0315  n_cells 193   n_part 51   n_raw 7824    margin +0.0265  margin/floor_sd  10.98  boot P(struct) 1.000
+      dvorak   b100  delta_rho -0.0159  n_cells 145   n_part 34   n_raw 4333    margin +0.0109  margin/floor_sd   2.22  boot P(struct) 1.000
+      qwerty   b100  delta_rho -0.0148  n_cells 527   n_part 24015 n_raw 2714546 margin +0.0098  margin/floor_sd   4.85  boot P(struct) 1.000
+      qwerty   b120  delta_rho -0.0331  n_cells 477   n_part 10811 n_raw 879982  margin +0.0281  margin/floor_sd  90.91  boot P(struct) 1.000
+      qwertz   b100  delta_rho -0.0189  n_cells 242   n_part 161  n_raw 15404   margin +0.0139  margin/floor_sd  15.91  boot P(struct) 1.000
+      dvorak   noise-only buckets [120] (regressed on some but not all seeds)
+      qwertz   noise-only buckets [120] (regressed on some but not all seeds)
+
+  CUR-mine       PASS   (MINE: served control, re-derived on my tree  [/local/home/zegertho/repos/keybo-wt-gatefolds/agent-artifacts/gatefolds/control.json#CUR])
+      azerty   noise-only buckets [100, 120] (regressed on some but not all seeds)
+      dvorak   noise-only buckets [100] (regressed on some but not all seeds)
+      qwertz   noise-only buckets [120] (regressed on some but not all seeds)
+
+wrote /local/home/zegertho/repos/keybo-wt-gatefolds/agent-artifacts/gatefolds/rows.json

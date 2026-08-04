@@ -1,0 +1,84 @@
+[tree] keybo.__file__ = /local/home/zegertho/repos/keybo-wt-gatefolds/src/keybo/__init__.py
+[tree] branch = gatefolds  HEAD = 48a83d4
+[tree] threads = OMP=1
+[    0.0s] loading /local/home/zegertho/keybo-e2e/bistrokes31_v1.tsv
+[  211.1s] 2202 rows; layouts ['azerty', 'dvorak', 'qwerty', 'qwertz']
+
+========================================================================================================
+OBSERVED cross-bucket agreement (Spearman of two buckets' OBSERVED durations, common cells)
+no model, no frame, no predicted target -- invariant 3 by construction
+========================================================================================================
+
+  azerty   cells/bucket b40:282 b60:280 b80:222 b100:153 b120:64
+            participants b40:143 b60:157 b80:98 b100:51 b120:23
+      40-60    n_common 269   rho_obs +0.8603   equal-n(64) +0.8532 +- 0.0416
+      40-80    n_common 220   rho_obs +0.7801   equal-n(64) +0.7733 +- 0.0449
+      40-100   n_common 153   rho_obs +0.7184   equal-n(64) +0.7123 +- 0.0412
+      40-120   n_common 64    rho_obs +0.6564   equal-n(64) +0.6564 +- 0.0000
+      60-80    n_common 222   rho_obs +0.8436   equal-n(64) +0.8318 +- 0.0358
+      60-100   n_common 153   rho_obs +0.7785   equal-n(64) +0.7744 +- 0.0352
+      60-120   n_common 64    rho_obs +0.6995   equal-n(64) +0.6995 +- 0.0000
+      80-100   n_common 153   rho_obs +0.8016   equal-n(64) +0.7984 +- 0.0376
+      80-120   n_common 64    rho_obs +0.7712   equal-n(64) +0.7712 +- 0.0000
+      100-120  n_common 64    rho_obs +0.8292   equal-n(64) +0.8292 +- 0.0000
+      => LOW-anchored (both <80) mean equal-n 0.8531508699633699
+      => HIGH-anchored (both >=80) mean equal-n 0.799578091019146
+
+  dvorak   cells/bucket b40:170 b60:212 b80:193 b100:145 b120:79
+            participants b40:40 b60:59 b80:51 b100:34 b120:19
+      40-60    n_common 167   rho_obs +0.7947   equal-n(78) +0.7889 +- 0.0369
+      40-80    n_common 162   rho_obs +0.6854   equal-n(78) +0.6821 +- 0.0475
+      40-100   n_common 137   rho_obs +0.6673   equal-n(78) +0.6651 +- 0.0506
+      40-120   n_common 79    rho_obs +0.6737   equal-n(78) +0.6740 +- 0.0065
+      60-80    n_common 188   rho_obs +0.7614   equal-n(78) +0.7533 +- 0.0485
+      60-100   n_common 145   rho_obs +0.7323   equal-n(78) +0.7345 +- 0.0430
+      60-120   n_common 79    rho_obs +0.6860   equal-n(78) +0.6859 +- 0.0083
+      80-100   n_common 143   rho_obs +0.7833   equal-n(78) +0.7799 +- 0.0361
+      80-120   n_common 79    rho_obs +0.7640   equal-n(78) +0.7638 +- 0.0061
+      100-120  n_common 78    rho_obs +0.8622   equal-n(78) +0.8622
+      => LOW-anchored (both <80) mean equal-n 0.7889328680590196
+      => HIGH-anchored (both >=80) mean equal-n 0.8019809539735983
+
+  qwerty   cells/bucket b40:541 b60:555 b80:548 b100:527 b120:477
+            participants b40:43467 b60:51224 b80:40472 b100:24015 b120:10811
+      40-60    n_common 540   rho_obs +0.9611   equal-n(477) +0.9611 +- 0.0021
+      40-80    n_common 540   rho_obs +0.8980   equal-n(477) +0.8981 +- 0.0040
+      40-100   n_common 525   rho_obs +0.8106   equal-n(477) +0.8105 +- 0.0062
+      40-120   n_common 477   rho_obs +0.7346   equal-n(477) +0.7346 +- 0.0000
+      60-80    n_common 543   rho_obs +0.9648   equal-n(477) +0.9648 +- 0.0015
+      60-100   n_common 527   rho_obs +0.9051   equal-n(477) +0.9050 +- 0.0032
+      60-120   n_common 477   rho_obs +0.8429   equal-n(477) +0.8429 +- 0.0000
+      80-100   n_common 526   rho_obs +0.9729   equal-n(477) +0.9729 +- 0.0010
+      80-120   n_common 477   rho_obs +0.9301   equal-n(477) +0.9301 +- 0.0000
+      100-120  n_common 477   rho_obs +0.9688   equal-n(477) +0.9688 +- 0.0000
+      => LOW-anchored (both <80) mean equal-n 0.9611495844094327
+      => HIGH-anchored (both >=80) mean equal-n 0.9572707570123655
+
+  qwertz   cells/bucket b40:366 b60:367 b80:323 b100:242 b120:108
+            participants b40:413 b60:457 b80:314 b100:161 b120:54
+      40-60    n_common 351   rho_obs +0.9131   equal-n(108) +0.9125 +- 0.0198
+      40-80    n_common 319   rho_obs +0.8499   equal-n(108) +0.8446 +- 0.0268
+      40-100   n_common 242   rho_obs +0.7463   equal-n(108) +0.7460 +- 0.0335
+      40-120   n_common 108   rho_obs +0.7353   equal-n(108) +0.7353 +- 0.0000
+      60-80    n_common 320   rho_obs +0.9243   equal-n(108) +0.9223 +- 0.0145
+      60-100   n_common 242   rho_obs +0.8399   equal-n(108) +0.8349 +- 0.0267
+      60-120   n_common 108   rho_obs +0.7867   equal-n(108) +0.7867
+      80-100   n_common 242   rho_obs +0.9089   equal-n(108) +0.9067 +- 0.0191
+      80-120   n_common 108   rho_obs +0.8166   equal-n(108) +0.8166
+      100-120  n_common 108   rho_obs +0.7911   equal-n(108) +0.7911 +- 0.0000
+      => LOW-anchored (both <80) mean equal-n 0.9125169815275277
+      => HIGH-anchored (both >=80) mean equal-n 0.838140924175962
+
+========================================================================================================
+SUMMARY (equal-n, so the difference cannot be a cell-count artifact)
+========================================================================================================
+  LOW-anchored  bucket-pair agreement, mean over folds: 0.8789375759898375
+  HIGH-anchored bucket-pair agreement, mean over folds: 0.8492426815452679
+  delta (high - low): -0.02969489444456952
+  folds where HIGH agreement < LOW agreement: 3/4
+
+  READ: if HIGH-anchored agreement is LOWER, the observed pair-ordering genuinely CHANGES
+  more across the fast buckets -- so ONE fixed ranking (all a wpm-invariant frame can emit)
+  must lose the most exactly there. If it is NOT lower, H1 explains the invariance but NOT
+  the high-wpm SPECIFICITY, and I must say so.
+[  225.5s] wrote /local/home/zegertho/repos/keybo-wt-gatefolds/agent-artifacts/gatefolds/reorder.json
