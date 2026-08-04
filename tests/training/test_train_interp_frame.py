@@ -222,3 +222,53 @@ def test_validate_records_monotone_even_on_a_served_run():
     )
     assert report["config"]["interp"] is False
     assert "monotone" in report["config"]
+
+
+# --- the frame-mismatch GUARD (the near-miss that motivated it) ----------------------------
+
+
+def test_predict_cells_REFUSES_a_frame_that_does_not_match_the_model():
+    """The guard _predict_cells was missing. validate() once forwarded interp=True where the
+    model had been trained on interp='wpm', and only xgboost's shape check caught it -- which is
+    luck: two frames of EQUAL width would have scored the model on a matrix it was never fitted
+    for and returned a plausible number."""
+    from keybo.training.validate import _predict_cells, build_cells
+
+    rows = _rows(140)
+    cells = build_cells(rows, min_cell_samples=4)
+    assert cells, "fixture guard"
+    m = train_bigram_model(rows, target_wpm=90.0, geometry=G, interp=True, n_estimators=10)
+    # featurize with the 11-column VARIANT against a 10-column model
+    with pytest.raises(ValueError, match="frame mismatch"):
+        _predict_cells(m, cells, G, interp="wpm")
+
+
+def test_validate_forwards_the_interp_STRING_and_trains_the_right_frame():
+    """The bug itself: `{"interp": True}` discarded the "wpm" string, so the harness trained the
+    10-column frame and evaluated 11 columns."""
+    from keybo.features import BIGRAM_INTERP_WPM_FEATURE_NAMES
+    from keybo.training.validate import validate
+
+    report = validate(
+        _rows(140),
+        seeds=[0],
+        ngram="bigram",
+        n_boot=5,
+        geometry=G,
+        interp="wpm",
+        min_cell_samples=4,
+        train_params={"n_estimators": 10},
+    )
+    assert report["config"]["interp"] == "wpm"
+    assert report["folds"]
+    for fold in report["folds"].values():
+        for rec in fold["seeds"]:
+            assert np.isfinite(rec["mae_model"])
+    # and the variant really is the 11-column frame
+    m = train_bigram_model(_rows(), target_wpm=90.0, geometry=G, interp="wpm", n_estimators=10)
+    assert list(m.metadata.feature_names) == BIGRAM_INTERP_WPM_FEATURE_NAMES
+
+
+def test_an_unknown_interp_value_is_REFUSED():
+    with pytest.raises(ValueError, match="interp must be False, True"):
+        train_bigram_model(_rows(), target_wpm=90.0, geometry=G, interp="wmp", n_estimators=10)

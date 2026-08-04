@@ -596,6 +596,19 @@ def _predict_cells(
             for c in cells
         ]
     )
+    # THE GUARD THIS FUNCTION WAS MISSING. Its whole contract is "the frame flags must match what
+    # the model was trained on", and it enforced that only by asking the caller nicely. A real
+    # mismatch (validate() forwarding interp=True where the model was trained on interp="wpm") got
+    # through and surfaced as an xgboost shape error -- which is LUCK: two frames of equal width
+    # would have scored the model on a matrix it was never fitted for and returned a plausible
+    # number. Checking the model's OWN recorded column count makes that impossible.
+    if X.shape[1] != len(model.metadata.feature_names):
+        raise ValueError(
+            f"frame mismatch: featurized {X.shape[1]} columns but the model was trained on "
+            f"{len(model.metadata.feature_names)} "
+            f"(feature_version={model.metadata.feature_version!r}); the direction/kitchensink/"
+            f"interp flags passed here must match the ones the model was trained with"
+        )
     pred = model.predict(X)
     practice = (model.metadata.extra.get("training") or {}).get("practice_term")
     if practice:
@@ -868,8 +881,13 @@ def validate(
         fold = report["folds"].setdefault(holdout, {"n_cells": len(test_cells), "seeds": []})
 
         params = {**(train_params or {}), "random_state": seed, "n_jobs": 1}
+        # ``interp`` is forwarded VERBATIM, not coerced to True: it is a string-or-bool flag and
+        # ``"wpm"`` selects the 11-column variant. Passing ``True`` here trained the 10-column frame
+        # while ``_predict_cells`` featurized 11 columns -- caught only by xgboost's shape check
+        # ("expected: 10, got 11"), which is luck: had the two frames shared a width, the harness
+        # would have scored a model on a matrix it was never fitted for and reported a number.
         frame_kw = (
-            {"interp": True, "monotone": monotone}
+            {"interp": interp, "monotone": monotone}
             if interp
             else {"direction": direction, "kitchensink": kitchensink}
         )

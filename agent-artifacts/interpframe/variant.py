@@ -124,7 +124,15 @@ for j, name in enumerate(NAMES):
     pred = np.mean([m.predict(Xs) for m in models], axis=0)
     d = np.diff(pred)
     want = MONO[name]
-    viol = max(float(-d.min()) if want > 0 else float(d.max()), 0.0)
+    if d.size == 0:
+        # ⚠ `wpm` is CONSTANT on the serve grid, so its sweep has ONE point and there is no step to
+        # check. This is not a pass and not a violation: the constraint is UNVERIFIABLE on the
+        # population being explained, which is exactly the defect this variant re-admits. Scored as
+        # zero range and zero violation, and the `alive`/`rho` checks below then keep it OUT of M4.
+        viol = 0.0
+        pred = np.array([pred[0], pred[0]])
+    else:
+        viol = max(float(-d.min()) if want > 0 else float(d.max()), 0.0)
     col, sv = X[:, j], shap[:, j]
     rho = float(spearmanr(col, sv).statistic) if float(np.ptp(col)) > 0 else float("nan")
     alive = float(np.abs(sv).mean()) > 1e-6
