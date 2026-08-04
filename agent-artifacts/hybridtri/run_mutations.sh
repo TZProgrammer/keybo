@@ -104,12 +104,12 @@ bash $M M21 "$SHAP" '    **{n: ("ROWCOST", "onehot") for n in ("bottom", "home",
 bash $M M22 "$SHAP" '    **{n: ("CONTACT", "onehot") for n in ("pinky", "ring", "middle", "index", "lateral")},' \
                     '    **{n: ("FINGER", "") for n in ("pinky", "ring", "middle", "index", "lateral")},' $T
 # the partition made INCOMPLETE -- block_map must refuse, not report a partial table
-bash $M M23 "$SHAP" '    "roll_inward": ("DIRECTION", ""),
-}
-
-#: ``FRAMES`` name' '}
-
-#: ``FRAMES`` name' $T
+bash $M M23 "$SHAP" \
+  '    **{n: ("SPAN", "") for n in ("row_span", "lateral_span", "same_hand_travel")},
+    "roll_inward": ("DIRECTION", ""),
+}' \
+  '    "roll_inward": ("DIRECTION", ""),
+}' $T
 # the sub-block label flattened to a constant -- a field whose subject cannot vary
 bash $M M24 "$SHAP" '    **{n: ("ROWCOST", "ordinal") for n in ("row_load", "row_arrival", "bottom_bias")},' \
                     '    **{n: ("ROWCOST", "onehot") for n in ("row_load", "row_arrival", "bottom_bias")},' $T
@@ -124,12 +124,11 @@ bash $M M25 "$SHAP" '    raise ValueError(
 bash $M M26 "$SHAP" 'FRAMES = ("served", "interp", "interp-wpm", "hybridb")' \
                     'FRAMES = ("served", "interp", "interp-wpm")' $T
 # the frame-name -> flag mapping pointing hybridb at the interp frame
-bash $M M27 "$SHAP" '    "hybridb": "hybridb",' '    "hybridb": True,' \
-                    tests/analysis/test_shap_diff_interp_frame.py
+bash $M M27 "$SHAP" '    "hybridb": "hybridb",' '    "hybridb": True,' $ALLT
 
 # --- the TRAIN-path refusals ---------------------------------------------------------------
 bash $M M28 "$TRAIN" '    if interp is not False and interp not in REPLACEMENT_FRAME_FLAGS:' \
-                     '    if False:' tests/training/test_train_interp_frame.py
+                     '    if False:' $ALLT
 bash $M M29 "$TRAIN" '        if ngram != "bigram":' '        if False:' \
                      tests/training/test_train_interp_frame.py
 bash $M M30 "$TRAIN" '        if direction or kitchensink:' '        if False:' \
@@ -140,3 +139,17 @@ bash $M M31 "$TRAIN" '            params = {**params, "monotone_constraints": tu
 # the length assertion dropped: a short tuple would constrain the WRONG columns silently
 bash $M M32 "$TRAIN" '            assert len(constraints) == len(names), "one constraint per column"' \
                      '            constraints = constraints[:1]' tests/training/test_train_interp_frame.py
+
+# --- re-runs of the FIRST battery's four survivors, now that each has a dedicated test -------
+# M13 is an EQUIVALENT MUTANT (the KeyError branch is unreachable from real data -- all 18 schema
+# names are present in one of the two row builders). It is expected to SURVIVE and is covered
+# constructively instead, the route FRAMEDIAG-1 took for its own unreachable state. Re-run so the
+# equivalence is recorded rather than assumed.
+bash $M M13b "$NGRAM" '            row[name] = placement[name]' \
+                      '            row[name] = placement.get(name, 0.0)' $T
+# M16/M27/M28 were REAL gaps and now have dedicated tests.
+bash $M M16b "$NGRAM" '    return _REPLACEMENT_FRAMES[interp]' \
+                      '    return _REPLACEMENT_FRAMES.get(interp, _REPLACEMENT_FRAMES[True])' $T
+bash $M M27b "$SHAP" '    "hybridb": "hybridb",' '    "hybridb": True,' $T
+bash $M M28b "$TRAIN" '    if interp is not False and interp not in REPLACEMENT_FRAME_FLAGS:' \
+                      '    if interp and interp not in REPLACEMENT_FRAME_FLAGS:' $T

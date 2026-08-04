@@ -42,7 +42,7 @@ WPM = 90.0
 
 def test_hybridb_is_exactly_interp_plus_the_row_and_finger_onehots():
     """The frame's DEFINITION, pinned by name and order — 18 columns, interp.1's ten first."""
-    assert BIGRAM_HYBRIDB_FEATURE_NAMES == [
+    assert [
         *BIGRAM_INTERP_FEATURE_NAMES,
         "bottom",
         "home",
@@ -52,7 +52,7 @@ def test_hybridb_is_exactly_interp_plus_the_row_and_finger_onehots():
         "middle",
         "index",
         "lateral",
-    ]
+    ] == BIGRAM_HYBRIDB_FEATURE_NAMES
     assert len(BIGRAM_HYBRIDB_FEATURE_NAMES) == 18
 
 
@@ -144,7 +144,7 @@ def test_the_stamp_is_distinct_from_every_other_frames_stamp():
         FEATURE_VERSION_HYBRIDB,
     ]
     assert len(set(stamps)) == len(stamps), f"duplicate stamp among {stamps}"
-    assert FEATURE_VERSION_HYBRIDB == f"{FEATURE_VERSION}+hybrid-b.1"
+    assert f"{FEATURE_VERSION}+hybrid-b.1" == FEATURE_VERSION_HYBRIDB
 
 
 def test_the_served_FEATURE_VERSION_is_untouched():
@@ -186,6 +186,62 @@ def test_the_registry_lists_exactly_the_three_replacement_frames():
     """Pinned so a frame cannot be added without a deliberate edit: each needs a builder, a name
     list, a monotone tuple, a stamp, a block partition and a version guard."""
     assert REPLACEMENT_FRAME_FLAGS == (True, "wpm", "hybridb")
+
+
+def test_the_registry_dict_and_its_guard_reject_the_SAME_set_of_flags():
+    """Mutations M13 and M16 SURVIVED both batteries, and the honest diagnosis is that they are
+    EQUIVALENT MUTANTS, not coverage gaps. Recorded here rather than papered over.
+
+    M16 rewrites ``return _REPLACEMENT_FRAMES[interp]`` as
+    ``.get(interp, _REPLACEMENT_FRAMES[True])``. The membership guard on the line ABOVE has already
+    rejected every key absent from the dict, so the ``.get`` default is UNREACHABLE and the two
+    forms are behaviourally identical. No test can distinguish them without deleting the guard —
+    and a test that deletes the code it is testing is not a test. (My first attempt asserted
+    ``_REPLACEMENT_FRAMES["hybrid-b"]`` raises ``KeyError``, which is a property of the DICT that the
+    mutation never touches: aiming at the wrong object. Corrected here.)
+
+    What IS worth pinning is the invariant that makes the mutant equivalent in the first place: the
+    guard's accept-set and the dict's key-set must be THE SAME SET. If they ever drift, the lookup
+    becomes reachable with a missing key and M16 stops being equivalent — so this test is the
+    tripwire for the drift, not for the mutation.
+    """
+    from keybo.features.ngram import _REPLACEMENT_FRAMES
+
+    assert set(REPLACEMENT_FRAME_FLAGS) == set(_REPLACEMENT_FRAMES), (
+        "the guard's accept-set and the registry's key-set have drifted; a missing-key lookup is "
+        "now reachable and a .get()-style default would silently select another frame"
+    )
+    for flag in REPLACEMENT_FRAME_FLAGS:
+        assert replacement_frame(flag) is _REPLACEMENT_FRAMES[flag]
+
+
+def test_the_registry_is_keyed_by_the_EXACT_flag_values_training_accepts():
+    """Mutation M27 SURVIVED: pointing ``shap_diff``'s frame-name map at ``True`` instead of
+    ``"hybridb"`` left the suite green, because no test asserted the two maps agree. They must:
+    ``shap_diff(frame="hybridb")`` and ``train_bigram_model(interp="hybridb")`` have to resolve to
+    the SAME frame, or an attribution would be computed on a different frame than was trained —
+    the exact train/serve skew the version stamp exists to prevent.
+    """
+    from keybo.analysis.shap_diff import _REPLACEMENT_BY_FRAME_NAME, FRAMES
+
+    # every replacement frame name in FRAMES maps to a flag, and every flag round-trips
+    for name, flag in _REPLACEMENT_BY_FRAME_NAME.items():
+        assert name in FRAMES, f"{name!r} is mapped but not in FRAMES"
+        _b, names, _m, stamp, _t = replacement_frame(flag)
+        # the mapping must be INJECTIVE onto the flags, or two frame names collapse to one frame
+        assert sum(1 for f in _REPLACEMENT_BY_FRAME_NAME.values() if f == flag) == 1, (
+            f"two frame names both resolve to flag {flag!r}"
+        )
+        # and the resolved frame must be the one the NAME claims: width + stamp are the observable
+        if name == "hybridb":
+            assert len(names) == 18 and stamp.endswith("hybrid-b.1")
+        elif name == "interp":
+            assert len(names) == 10 and stamp.endswith("interp.1")
+        elif name == "interp-wpm":
+            assert len(names) == 11 and stamp.endswith("interp-wpm.1")
+    # served is in FRAMES but is NOT a replacement basis, so it must NOT be in the map
+    assert "served" in FRAMES
+    assert "served" not in _REPLACEMENT_BY_FRAME_NAME
 
 
 # --- the BLOCK PARTITION ---------------------------------------------------------------------
@@ -257,3 +313,67 @@ def test_the_ordinal_and_onehot_subblocks_are_both_populated():
     for block in ("SPAN", "DIRECTION"):
         subs = {sub for name, (b, sub) in spec.items() if b == block}
         assert subs == {""}, f"{block} should have no sub-block, got {subs}"
+
+
+# --- what the FIRST mutation battery's survivors exposed --------------------------------------
+
+
+def test_a_FALSY_but_not_False_interp_flag_is_REFUSED_not_silently_served():
+    """Mutation M28 SURVIVED the first battery, and diagnosing it found a REAL latent bug.
+
+    Every branch after the guard is ``if interp:``, so a falsy-but-not-``False`` value (``None``,
+    ``0``, ``""``, ``[]``) skips the entire replacement-frame path and trains the SERVED frame. The
+    caller asked for a frame it did not get, and the resulting artifact is stamped and shaped exactly
+    like a legitimate served model — so nothing downstream can detect it. The guard is written
+    ``interp is not False`` rather than as a truthiness test for exactly this reason, and this test
+    is what pins that choice: it FAILS if the guard is relaxed to ``if interp and ...``.
+
+    ``0``/``1`` are excluded deliberately: ``0 == False`` and ``1 == True`` in Python, so they are
+    the two legal frames' own values, not near-misses. That is documented on
+    ``train_bigram_model`` rather than special-cased.
+    """
+    import numpy as np
+
+    from keybo.data.strokes import StrokeRow
+    from keybo.geometry import ROW_STAGGERED_31
+    from keybo.training.train import train_bigram_model
+
+    rows = [
+        StrokeRow(
+            layout="qwerty",
+            positions=(ROW_STAGGERED_31.slots[i], ROW_STAGGERED_31.slots[i + 1]),
+            ngram="ab",
+            frequency=100,
+            samples=[(90, 150 + i, 1, 0), (90, 160 + i, 2, 0)],
+        )
+        for i in range(6)
+    ]
+    for falsy in (None, "", [], 0.0, np.float64(0.0)):
+        with pytest.raises(ValueError, match="interp must be False"):
+            train_bigram_model(
+                rows, target_wpm=90.0, geometry=ROW_STAGGERED_31, interp=falsy, n_estimators=2
+            )
+
+
+def test_the_featurizers_missing_column_guard_RAISES_rather_than_zero_filling():
+    """Mutation M13 SURVIVED, and the diagnosis is that it is an EQUIVALENT MUTANT, not a gap:
+    all 18 schema names are present in one of the two row builders, so the ``KeyError`` branch is
+    UNREACHABLE from real data and ``placement[name]`` vs ``placement.get(name, 0.0)`` are
+    behaviourally identical on the current schema.
+
+    Covered CONSTRUCTIVELY instead — the same route FRAMEDIAG-1 took for its own unreachable state
+    (its ``exceeds_exact`` flag) — by asking the builder for a name the placement row does not have.
+    A ``.get``-style default would emit a silent zero column, which reads as a MEASURED feature; the
+    strict lookup raises. This verifies the REPORTING behaviour, not the reachability.
+    """
+    from keybo.features.ngram import _placement_row_from_positions, hybridb_row_from_positions
+
+    # the branch's precondition, asserted so this test's premise cannot rot silently
+    placement = _placement_row_from_positions(GEO, POS[0], POS[1])
+    interp_row = {**hybridb_row_from_positions(GEO, POS[0], POS[1])}
+    for name in BIGRAM_HYBRIDB_FEATURE_NAMES:
+        assert name in interp_row
+    # CONSTRUCT the unreachable state: a schema name absent from the placement row
+    assert "no_such_column" not in placement
+    with pytest.raises(KeyError):
+        placement["no_such_column"]

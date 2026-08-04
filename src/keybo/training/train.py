@@ -357,6 +357,14 @@ def _train(
     **params,
 ) -> XGBoostTypingModel:
     target_space = normalize_target_space(target_space)
+    # ⚠ `is not False`, NOT a truthiness test, and the difference is load-bearing. Every later
+    # branch here is `if interp:`, so a FALSY-but-not-False value (None, 0, "", []) skips the whole
+    # replacement-frame path and silently trains the SERVED frame -- the caller asked for a frame it
+    # did not get, and the artifact is stamped and shaped exactly like a legitimate served model, so
+    # nothing downstream can detect it. A mutation that relaxed this guard to `if interp and ...`
+    # SURVIVED the first mutation battery for precisely that reason: the falsy values it lets through
+    # produce a plausible model rather than an error. Identity-comparing to False is what makes
+    # `interp=None` a refusal instead of a silent served-frame fit.
     if interp is not False and interp not in REPLACEMENT_FRAME_FLAGS:
         raise ValueError(
             f"interp must be False (the served frame) or one of "

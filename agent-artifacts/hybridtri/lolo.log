@@ -1,0 +1,142 @@
+[tree] keybo.__file__ = /local/home/zegertho/repos/keybo-wt-hybridtri/src/keybo/__init__.py
+[tree] branch = hybridtri  HEAD = c5d8684
+[tree] threads = OMP=1
+[frame] served: 20 columns
+[frame] interp: 10 columns
+[frame] hybridb: 18 columns
+[    0.0s] loading /local/home/zegertho/keybo-e2e/bistrokes31_v1.tsv
+[  208.9s] 2202 rows; layouts ['azerty', 'dvorak', 'qwerty', 'qwertz']
+[  208.9s] ARM CUR: validate() 4 folds x 3 seeds  kw={}
+[  664.2s] ARM CUR: done. config interp=False monotone=True
+[  664.2s] checkpointed CUR -> lolo.json
+[  664.2s] ARM HYBRIDB: validate() 4 folds x 3 seeds  kw={'interp': 'hybridb', 'monotone': True}
+[ 1120.2s] ARM HYBRIDB: done. config interp='hybridb' monotone=True
+[ 1120.2s] checkpointed HYBRIDB -> lolo.json
+[ 1120.2s] ARM INTERP: validate() 4 folds x 3 seeds  kw={'interp': True, 'monotone': True}
+[ 1561.5s] ARM INTERP: done. config interp=True monotone=True
+[ 1561.5s] checkpointed INTERP -> lolo.json
+
+============================================================================================
+PAIRED PER-FOLD DELTAS (MOR-FIX-1) — positive = the ARM is HIGHER than the reference
+============================================================================================
+
+HYBRIDB_vs_CUR
+  rho                mean paired delta   -0.00371   W/L 4/8   sign-consistent folds 2/4
+      azerty       -0.00439  consistent  [-0.0025817954732254567, -0.003363600501566588, -0.007215640711524807]
+      dvorak       +0.00182  mixed       [-0.004685015268792836, 0.0064264190585889835, 0.003729426952726156]
+      qwerty       +0.00172  mixed       [0.0007287435600440428, -1.6114592247151727e-05, 0.004456674352331547]
+      qwertz       -0.01401  consistent  [-0.015050293792342795, -0.013556121243485375, -0.01341800011768246]
+  rho_frac_ceiling   mean paired delta   -0.00404   W/L 4/8   sign-consistent folds 2/4
+      azerty       -0.00501  consistent  [-0.0029503109849523534, -0.0038437078427306925, -0.00824557339086418]
+      dvorak       +0.00231  mixed       [-0.005936141022546915, 0.008142583879261589, 0.004725364391474862]
+      qwerty       +0.00174  mixed       [0.0007356792689192648, -1.6267960491589406e-05, 0.0044990900902593944]
+      qwertz       -0.01521  consistent  [-0.01633953862979043, -0.014717371619731856, -0.014567418701749935]
+  mae_model          mean paired delta   +5.09238   W/L 12/0   sign-consistent folds 4/4
+      azerty       +5.08542  consistent  [5.112481384947188, 5.077883795076248, 5.065903895642911]
+      dvorak       +2.82561  consistent  [3.047771206085166, 2.6278780165815547, 2.8011899258884547]
+      qwerty       +5.85671  consistent  [5.878559175567148, 5.910960414313976, 5.780621856733447]
+      qwertz       +6.60176  consistent  [6.636577731588444, 6.614022827756505, 6.554671147955867]
+  wmae               mean paired delta   +5.73597   W/L 12/0   sign-consistent folds 4/4
+      azerty       +5.00000  consistent  [5.036417805162822, 4.914591762134862, 5.048983719136048]
+      dvorak       +3.84611  consistent  [3.951746738735947, 3.8006596259279437, 3.785925969514949]
+      qwerty       +6.82056  consistent  [6.864948976104575, 6.764181673232811, 6.832542790843291]
+      qwertz       +7.27721  consistent  [7.279985081643044, 7.294707378171658, 7.256934308043185]
+  umae               mean paired delta   +5.09238   W/L 12/0   sign-consistent folds 4/4
+      azerty       +5.08542  consistent  [5.112481384947188, 5.077883795076248, 5.065903895642911]
+      dvorak       +2.82561  consistent  [3.047771206085166, 2.6278780165815547, 2.8011899258884547]
+      qwerty       +5.85671  consistent  [5.878559175567148, 5.910960414313976, 5.780621856733447]
+      qwertz       +6.60176  consistent  [6.636577731588444, 6.614022827756505, 6.554671147955867]
+
+INTERP_vs_CUR
+  rho                mean paired delta   -0.00047   W/L 3/9   sign-consistent folds 4/4
+      azerty       -0.00684  consistent  [-0.005928634293209445, -0.006696196079634675, -0.007895541655011606]
+      dvorak       +0.03236  consistent  [0.028683470480610374, 0.037224492453836744, 0.031167320211142324]
+      qwerty       -0.01554  consistent  [-0.01684305300920086, -0.014450163055091503, -0.015321619059137093]
+      qwertz       -0.01185  consistent  [-0.01234292932785308, -0.01167368851108641, -0.011542732163685954]
+  rho_frac_ceiling   mean paired delta   +0.00116   W/L 3/9   sign-consistent folds 4/4
+      azerty       -0.00782  consistent  [-0.006774864648426027, -0.007651985238962489, -0.009022520768397047]
+      dvorak       +0.04100  consistent  [0.03634334490287283, 0.04716523298666708, 0.03949050268856169]
+      qwerty       -0.01569  consistent  [-0.01700335427105293, -0.014587690341292814, -0.015467440298757684]
+      qwertz       -0.01287  consistent  [-0.013400254728571315, -0.012673685112783772, -0.012531510725579897]
+  mae_model          mean paired delta   +5.13363   W/L 12/0   sign-consistent folds 4/4
+      azerty       +5.12071  consistent  [5.147717560128225, 5.136427804333875, 5.077993237532972]
+      dvorak       +1.98948  consistent  [2.1959179845593653, 1.8033824376227656, 1.969150006555413]
+      qwerty       +6.92862  consistent  [6.937255943833328, 6.950038239776976, 6.898560889613794]
+      qwertz       +6.49572  consistent  [6.510024372796012, 6.52442409939769, 6.45272044775526]
+  wmae               mean paired delta   +5.76540   W/L 12/0   sign-consistent folds 4/4
+      azerty       +5.09241  consistent  [5.135307763767296, 5.020560876648023, 5.121371966261966]
+      dvorak       +3.65051  consistent  [3.7697356420973716, 3.5811463671524653, 3.600643834263156]
+      qwerty       +6.99449  consistent  [7.015491401202317, 6.946271895579027, 7.02171488349204]
+      qwertz       +7.32418  consistent  [7.328193498691112, 7.3503353484262295, 7.293999076263008]
+  umae               mean paired delta   +5.13363   W/L 12/0   sign-consistent folds 4/4
+      azerty       +5.12071  consistent  [5.147717560128225, 5.136427804333875, 5.077993237532972]
+      dvorak       +1.98948  consistent  [2.1959179845593653, 1.8033824376227656, 1.969150006555413]
+      qwerty       +6.92862  consistent  [6.937255943833328, 6.950038239776976, 6.898560889613794]
+      qwertz       +6.49572  consistent  [6.510024372796012, 6.52442409939769, 6.45272044775526]
+
+HYBRIDB_vs_INTERP
+  rho                mean paired delta   -0.00324   W/L 6/6   sign-consistent folds 4/4
+      azerty       +0.00245  consistent  [0.0033468388199839882, 0.003332595578068087, 0.0006799009434867997]
+      dvorak       -0.03053  consistent  [-0.03336848574940321, -0.03079807339524776, -0.02743789325841617]
+      qwerty       +0.01726  consistent  [0.017571796569244902, 0.014434048462844351, 0.01977829341146864]
+      qwertz       -0.00216  consistent  [-0.0027073644644897144, -0.0018824327323989642, -0.0018752679539965067]
+  rho_frac_ceiling   mean paired delta   -0.00520   W/L 6/6   sign-consistent folds 4/4
+      azerty       +0.00280  consistent  [0.003824553663473673, 0.003808277396231796, 0.0007769473775328661]
+      dvorak       -0.03869  consistent  [-0.042279485925419746, -0.039022649107405494, -0.03476513829708683]
+      qwerty       +0.01743  consistent  [0.017739033539972193, 0.014571422380801224, 0.01996653038901708]
+      qwertz       -0.00234  consistent  [-0.002939283901219114, -0.0020436865069480836, -0.002035907976170037]
+  mae_model          mean paired delta   -0.04126   W/L 6/6   sign-consistent folds 4/4
+      azerty       -0.03529  consistent  [-0.035236175181037055, -0.05854400925762704, -0.012089341890060723]
+      dvorak       +0.83613  consistent  [0.8518532215258006, 0.8244955789587891, 0.8320399193330417]
+      qwerty       -1.07190  consistent  [-1.0586967682661808, -1.039077825463, -1.1179390328803471]
+      qwertz       +0.10603  consistent  [0.12655335879243168, 0.08959872835881555, 0.10195070020060726]
+  wmae               mean paired delta   -0.02943   W/L 3/9   sign-consistent folds 4/4
+      azerty       -0.09242  consistent  [-0.0988899586044738, -0.1059691145131616, -0.07238824712591807]
+      dvorak       +0.19560  consistent  [0.1820110966385755, 0.21951325877547845, 0.18528213525179282]
+      qwerty       -0.17393  consistent  [-0.15054242509774163, -0.18209022234621663, -0.18917209264874835]
+      qwertz       -0.04697  consistent  [-0.048208417048067886, -0.055627970254571224, -0.03706476821982285]
+  umae               mean paired delta   -0.04126   W/L 6/6   sign-consistent folds 4/4
+      azerty       -0.03529  consistent  [-0.035236175181037055, -0.05854400925762704, -0.012089341890060723]
+      dvorak       +0.83613  consistent  [0.8518532215258006, 0.8244955789587891, 0.8320399193330417]
+      qwerty       -1.07190  consistent  [-1.0586967682661808, -1.039077825463, -1.1179390328803471]
+      qwertz       +0.10603  consistent  [0.12655335879243168, 0.08959872835881555, 0.10195070020060726]
+
+POOLED tau_heldout per arm (out-of-sample layout ranking):
+  CUR        [1.0, 1.0, 1.0]
+  HYBRIDB    [1.0, 1.0, 1.0]
+  INTERP     [1.0, 1.0, 1.0]
+
+ABSOLUTE per arm (mean over folds x seeds):
+  CUR        rho 0.8154   rho/ceiling 0.9145   wmae 9.9382   umae 16.2658
+  HYBRIDB    rho 0.8117   rho/ceiling 0.9104   wmae 15.6741   umae 21.3581
+  INTERP     rho 0.8149   rho/ceiling 0.9156   wmae 15.7036   umae 21.3994
+
+HIGH-WPM GATE (B1). Incumbent = CUR's own per-bucket rho, PER FOLD (mean over its 3 seeds):
+  azerty   b40:0.8927  b60:0.8943  b80:0.8434  b100:0.8149  b120:0.7486
+  dvorak   b40:0.7007  b60:0.7217  b80:0.7344  b100:0.6935  b120:0.6323
+  qwerty   b40:0.7981  b60:0.7861  b80:0.8064  b100:0.8182  b120:0.8370
+  qwertz   b40:0.9270  b60:0.9467  b80:0.9209  b100:0.8642  b120:0.7912
+
+  STRUCTURAL = regresses on EVERY seed of a fold => REFUSAL. noise-only = reported, no veto
+  CUR        PASS   (noise-only: {'azerty': [100, 120], 'dvorak': [100], 'qwertz': [120]})
+  HYBRIDB    STRUCTURAL REGRESSION {'azerty': [120], 'dvorak': [80, 100], 'qwerty': [120], 'qwertz': [100]}
+  INTERP     STRUCTURAL REGRESSION {'azerty': [120], 'dvorak': [100, 120], 'qwerty': [120], 'qwertz': [100]}   (noise-only: {'qwerty': [100]})
+
+  GATE CONTROL: the gate PASSES the incumbent it is built from => verdicts readable.
+
+============================================================================================
+THE REGISTERED VERDICT (HYBRIDTRI-preregistration.md §2/§4)
+============================================================================================
+  B1_high_wpm_gate_passed                False
+  B1_gate_control_ok                     True
+  B2_mean_paired_drho_vs_CUR             -0.0037121098147647282
+  B2_bar_drho_ge                         -0.005
+  B2_tau_heldout                         [1.0, 1.0, 1.0]
+  B2_rank_neutral                        True
+  B3_mean_paired_dwmae_vs_CUR            5.7359688190542615
+  H_B_bar_dwmae_lt                       2.0
+  H_B_holds                              False
+  interp_reference_dwmae_vs_CUR          5.765397712820334
+  interp_reference_gate_passed           False
+[ 1561.5s] wrote /local/home/zegertho/repos/keybo-wt-hybridtri/agent-artifacts/hybridtri/lolo.json
+[ 1561.5s] SENTINEL /tmp/hybridtri_wk/lolo.sentinel
