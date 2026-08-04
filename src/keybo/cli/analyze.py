@@ -715,6 +715,17 @@ def _print_report(
         "the other columns): the trigram-level reach the 15 gauges miss, metering the a→c span "
         "for ALL trigrams where sfs meters it only for same-finger skips (BUILDMETRIC-1)"
     )
+    # The OTHER half of the two-conventions disclosure above. `lsb`/`lsb-narrow`/`lat-span` are
+    # named apart HERE, but three of these gauge names are ALSO names of MODEL FEATURE COLUMNS
+    # measuring something else, and a reader moving between this table and a `keybo compare`
+    # attribution table has no way to see that. Naming it in both places is the fix; the
+    # verdicts are measured exhaustively (see keybo.analysis.shap_diff.GAUGE_COLLISIONS).
+    # Imported HERE rather than at module scope: shap_diff pulls in xgboost, and `keybo analyze`
+    # must not pay that on every invocation (the same reason `compare` imports _resolve locally).
+    from keybo.analysis.shap_diff import gauge_side_collision_notes
+
+    for line in gauge_side_collision_notes(GAUGE_NAMES):
+        print(line)
 
     # Immediately under the table it explains, not in a trailing section: the whole point is that a
     # repeated number in the row above is not the agreement it looks like.

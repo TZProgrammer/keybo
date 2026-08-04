@@ -1,0 +1,15 @@
+{
+  "keybo_file": "/local/home/zegertho/repos/keybo-wt-fm4/src/keybo/__init__.py",
+  "n": 27000,
+  "stats": {
+    "gated": 2808,
+    "gated_bad": 540,
+    "v1": 2808,
+    "v1_bad": 540,
+    "d_gated_v1": 0,
+    "d_gatedbad_v1bad": 0,
+    "d_km_gated": 0,
+    "ungated": 4320,
+    "ungated_bad": 864
+  }
+}

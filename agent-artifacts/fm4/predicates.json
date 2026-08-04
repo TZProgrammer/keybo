@@ -1,0 +1,127 @@
+{
+  "keybo_file": "/local/home/zegertho/repos/keybo-wt-fm4/src/keybo/__init__.py",
+  "results": {
+    "K30 scissor: FRAME vs oxey/comfort gauge": {
+      "n": 900,
+      "disagreements": 0,
+      "disagree_pct": 0.0,
+      "verdict": "EQUAL"
+    },
+    "K30 lsb: FRAME(is_lsb) vs keymeow gauge(_is_lsb)": {
+      "n": 900,
+      "disagreements": 8,
+      "disagree_pct": 0.8888888888888888,
+      "verdict": "DIFFERENT",
+      "skipped_outside_kmstats_universe": 0,
+      "frame_only": 8,
+      "gauge_only": 0
+    },
+    "K30 lsb: FRAME vs lsb-narrow gauge (is_lsb)": {
+      "n": 900,
+      "disagreements": 0,
+      "disagree_pct": 0.0,
+      "verdict": "EQUAL"
+    },
+    "K30 lateral(col) vs lat-span gauge (nonzero agreement)": {
+      "n": 900,
+      "disagreements": 252,
+      "disagree_pct": 28.0,
+      "verdict": "DIFFERENT",
+      "value_disagreements": 288
+    },
+    "K30_latspan_vs_dx": {
+      "latspan_nonzero_but_dx_zero": 0,
+      "note": "lat_span = max(0, stagger_adjusted_dx - neutral); dx IS stagger_adjusted_dx"
+    },
+    "K30_inwards_swap": {
+      "n_ordered_distinct": 870,
+      "inwards_changes_under_swap": 0,
+      "outwards_changes_under_swap": 0
+    },
+    "K30 inwards: FRAME vs oxey inroll gauge": {
+      "n": 900,
+      "disagreements": 0,
+      "disagree_pct": 0.0,
+      "verdict": "EQUAL"
+    },
+    "K31 scissor: FRAME vs oxey/comfort gauge": {
+      "n": 961,
+      "disagreements": 0,
+      "disagree_pct": 0.0,
+      "verdict": "EQUAL"
+    },
+    "K31 lsb: FRAME(is_lsb) vs keymeow gauge(_is_lsb)": {
+      "n": 900,
+      "disagreements": 8,
+      "disagree_pct": 0.8888888888888888,
+      "verdict": "DIFFERENT",
+      "skipped_outside_kmstats_universe": 61,
+      "frame_only": 8,
+      "gauge_only": 0
+    },
+    "K31 lsb: FRAME vs lsb-narrow gauge (is_lsb)": {
+      "n": 961,
+      "disagreements": 0,
+      "disagree_pct": 0.0,
+      "verdict": "EQUAL"
+    },
+    "K31 lateral(col) vs lat-span gauge (nonzero agreement)": {
+      "n": 961,
+      "disagreements": 283,
+      "disagree_pct": 29.448491155046828,
+      "verdict": "DIFFERENT",
+      "value_disagreements": 331
+    },
+    "K31_latspan_vs_dx": {
+      "latspan_nonzero_but_dx_zero": 0,
+      "note": "lat_span = max(0, stagger_adjusted_dx - neutral); dx IS stagger_adjusted_dx"
+    },
+    "K31_inwards_swap": {
+      "n_ordered_distinct": 930,
+      "inwards_changes_under_swap": 0,
+      "outwards_changes_under_swap": 0
+    },
+    "K31 inwards: FRAME vs oxey inroll gauge": {
+      "n": 961,
+      "disagreements": 0,
+      "disagree_pct": 0.0,
+      "verdict": "EQUAL"
+    },
+    "redirect: FRAME vs oxey gauge (_trigram_class) [all 30^3]": {
+      "n": 27000,
+      "disagreements": 1512,
+      "disagree_pct": 5.6,
+      "verdict": "DIFFERENT",
+      "frame_only": 1512,
+      "gauge_only": 0
+    },
+    "bad_redirect: FRAME vs oxey gauge (_trigram_class) [all 30^3]": {
+      "n": 27000,
+      "disagreements": 324,
+      "disagree_pct": 1.2,
+      "verdict": "DIFFERENT",
+      "frame_only": 324,
+      "gauge_only": 0
+    },
+    "redirect: FRAME vs oxey gauge (_trigram_class) [all-distinct]": {
+      "n": 24360,
+      "disagreements": 1116,
+      "disagree_pct": 4.58128078817734,
+      "verdict": "DIFFERENT",
+      "frame_only": 1116,
+      "gauge_only": 0
+    },
+    "bad_redirect: FRAME vs oxey gauge (_trigram_class) [all-distinct]": {
+      "n": 24360,
+      "disagreements": 216,
+      "disagree_pct": 0.8866995073891626,
+      "verdict": "DIFFERENT",
+      "frame_only": 216,
+      "gauge_only": 0
+    },
+    "mechanism_redirect_samefinger": {
+      "frame_redirect_firings_with_samefinger_constituent": 1512,
+      "note": "the gauge (_v1_pattern) returns None for these; the frame counts them"
+    }
+  }
+}

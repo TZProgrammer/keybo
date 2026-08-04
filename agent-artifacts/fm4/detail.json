@@ -1,0 +1,190 @@
+{
+  "keybo_file": "/local/home/zegertho/repos/keybo-wt-fm4/src/keybo/__init__.py",
+  "lsb": {
+    "n": 900,
+    "disagreements": 8,
+    "frame_firings": 32,
+    "gauge_firings": 24,
+    "cells": [
+      {
+        "a": [
+          -3,
+          3
+        ],
+        "b": [
+          -2,
+          1
+        ],
+        "frame_lsb": true,
+        "gauge_lsb": false,
+        "frame_dx_stagger_adj": 1.75,
+        "gauge_abs_x_gap": 1.75,
+        "gauge_kind_gap": 1,
+        "fingers": [
+          "LM",
+          "LI"
+        ]
+      },
+      {
+        "a": [
+          -1,
+          3
+        ],
+        "b": [
+          -3,
+          2
+        ],
+        "frame_lsb": true,
+        "gauge_lsb": false,
+        "frame_dx_stagger_adj": 1.75,
+        "gauge_abs_x_gap": 1.75,
+        "gauge_kind_gap": 1,
+        "fingers": [
+          "LI",
+          "LM"
+        ]
+      },
+      {
+        "a": [
+          2,
+          3
+        ],
+        "b": [
+          3,
+          1
+        ],
+        "frame_lsb": true,
+        "gauge_lsb": false,
+        "frame_dx_stagger_adj": 1.75,
+        "gauge_abs_x_gap": 1.75,
+        "gauge_kind_gap": 1,
+        "fingers": [
+          "RI",
+          "RM"
+        ]
+      },
+      {
+        "a": [
+          3,
+          3
+        ],
+        "b": [
+          1,
+          2
+        ],
+        "frame_lsb": true,
+        "gauge_lsb": false,
+        "frame_dx_stagger_adj": 1.75,
+        "gauge_abs_x_gap": 1.75,
+        "gauge_kind_gap": 1,
+        "fingers": [
+          "RM",
+          "RI"
+        ]
+      },
+      {
+        "a": [
+          -3,
+          2
+        ],
+        "b": [
+          -1,
+          3
+        ],
+        "frame_lsb": true,
+        "gauge_lsb": false,
+        "frame_dx_stagger_adj": 1.75,
+        "gauge_abs_x_gap": 1.75,
+        "gauge_kind_gap": 1,
+        "fingers": [
+          "LM",
+          "LI"
+        ]
+      },
+      {
+        "a": [
+          1,
+          2
+        ],
+        "b": [
+          3,
+          3
+        ],
+        "frame_lsb": true,
+        "gauge_lsb": false,
+        "frame_dx_stagger_adj": 1.75,
+        "gauge_abs_x_gap": 1.75,
+        "gauge_kind_gap": 1,
+        "fingers": [
+          "RI",
+          "RM"
+        ]
+      },
+      {
+        "a": [
+          -2,
+          1
+        ],
+        "b": [
+          -3,
+          3
+        ],
+        "frame_lsb": true,
+        "gauge_lsb": false,
+        "frame_dx_stagger_adj": 1.75,
+        "gauge_abs_x_gap": 1.75,
+        "gauge_kind_gap": 1,
+        "fingers": [
+          "LI",
+          "LM"
+        ]
+      },
+      {
+        "a": [
+          3,
+          1
+        ],
+        "b": [
+          2,
+          3
+        ],
+        "frame_lsb": true,
+        "gauge_lsb": false,
+        "frame_dx_stagger_adj": 1.75,
+        "gauge_abs_x_gap": 1.75,
+        "gauge_kind_gap": 1,
+        "fingers": [
+          "RM",
+          "RI"
+        ]
+      }
+    ]
+  },
+  "lsb_finger_classes": {
+    "frame": [
+      [
+        "I",
+        "M"
+      ]
+    ],
+    "gauge": [
+      [
+        "I",
+        "M"
+      ]
+    ]
+  },
+  "lateral_vs_latspan": {
+    "lateral_firings": 180,
+    "latspan_nonzero": 180,
+    "lateral1_span0": 126,
+    "span_pos_lateral0": 126,
+    "lateral_is_landing_key_only": true,
+    "latspan_is_symmetric": true
+  },
+  "sg_distance_vs_sg_dist": {
+    "n": 27000,
+    "per_cell_disagreements": 0,
+    "verdict": "EQUAL per-cell (gauge is the corpus-weighted mean of the column)"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "keybo_file": "/local/home/zegertho/repos/keybo-wt-fm4/src/keybo/__init__.py",
+  "Q0_sidecar_col7_name": "lateral",
+  "Q1_load": {
+    "loaded": true,
+    "feature_version": "2026-07-05.3",
+    "sidecar_col7": "lateral"
+  },
+  "Q2_matrix_sha256": "80251a89115976f32659b883ea91370db066397eec80ac9e6b3b7615c4366bb2",
+  "Q3_shap_diff": {
+    "ran": false,
+    "error": "ValueError: order-2 models do not carry the served frame: expected 20 columns ['bottom', 'home', 'top']..., got 20 ['bottom', 'home', 'top']..."
+  },
+  "Q4_shap_report_col7": "lateral"
+}

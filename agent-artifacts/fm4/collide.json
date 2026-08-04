@@ -1,0 +1,218 @@
+{
+  "keybo_file": "/local/home/zegertho/repos/keybo-wt-fm4/src/keybo/__init__.py",
+  "gauge_sources": {
+    "analyze GAUGE_NAMES (the board)": [
+      "sfr",
+      "sfb",
+      "sfs",
+      "sfb-dist",
+      "sfs-dist",
+      "lsb",
+      "lsb-dist",
+      "alt",
+      "roll",
+      "sr-roll",
+      "redir",
+      "scissor",
+      "imbalance",
+      "oxey-style",
+      "comfort",
+      "sg_dist",
+      "lsb-narrow",
+      "lat-span"
+    ],
+    "oxey pattern_shares": [
+      "sfb",
+      "dsfb",
+      "lsb",
+      "scissor",
+      "inroll",
+      "outroll",
+      "onehand",
+      "redirect",
+      "bad_redirect",
+      "alternate",
+      "imbalance",
+      "inroll_ordered",
+      "outroll_ordered"
+    ],
+    "redirect family (analyze --redirects)": [
+      "redirects",
+      "redirects_sfs",
+      "bad_redirects",
+      "bad_redirects_sfs"
+    ],
+    "comfort terms": [
+      "off_home",
+      "bottom_row",
+      "sfb",
+      "scissor",
+      "lsb",
+      "lag2_reuse"
+    ]
+  },
+  "frames": {
+    "BIGRAM_FEATURE_NAMES": [
+      "bottom",
+      "home",
+      "top",
+      "pinky",
+      "ring",
+      "middle",
+      "index",
+      "lateral",
+      "same_hand",
+      "same_finger",
+      "adjacent",
+      "scissor",
+      "lsb",
+      "dx",
+      "dy",
+      "distance",
+      "angle",
+      "inwards",
+      "outwards",
+      "wpm"
+    ],
+    "TRIGRAM_FEATURE_NAMES": [
+      "same_hand_trigram",
+      "redirect",
+      "bad_redirect",
+      "sg_same_finger",
+      "sg_dx",
+      "sg_dy",
+      "sg_distance",
+      "bg1_bottom",
+      "bg1_home",
+      "bg1_top",
+      "bg1_pinky",
+      "bg1_ring",
+      "bg1_middle",
+      "bg1_index",
+      "bg1_lateral",
+      "bg1_same_hand",
+      "bg1_same_finger",
+      "bg1_adjacent",
+      "bg1_scissor",
+      "bg1_lsb",
+      "bg1_dx",
+      "bg1_dy",
+      "bg1_distance",
+      "bg1_angle",
+      "bg1_inwards",
+      "bg1_outwards",
+      "bg2_bottom",
+      "bg2_home",
+      "bg2_top",
+      "bg2_pinky",
+      "bg2_ring",
+      "bg2_middle",
+      "bg2_index",
+      "bg2_lateral",
+      "bg2_same_hand",
+      "bg2_same_finger",
+      "bg2_adjacent",
+      "bg2_scissor",
+      "bg2_lsb",
+      "bg2_dx",
+      "bg2_dy",
+      "bg2_distance",
+      "bg2_angle",
+      "bg2_inwards",
+      "bg2_outwards",
+      "wpm"
+    ]
+  },
+  "collisions": [
+    {
+      "frame": "BIGRAM_FEATURE_NAMES",
+      "column": "scissor",
+      "normalized": "scissor",
+      "exact_name_match": true,
+      "gauges": [
+        "scissor [analyze GAUGE_NAMES (the board)]",
+        "scissor [comfort terms]",
+        "scissor [oxey pattern_shares]"
+      ]
+    },
+    {
+      "frame": "BIGRAM_FEATURE_NAMES",
+      "column": "lsb",
+      "normalized": "lsb",
+      "exact_name_match": true,
+      "gauges": [
+        "lsb [analyze GAUGE_NAMES (the board)]",
+        "lsb [comfort terms]",
+        "lsb [oxey pattern_shares]"
+      ]
+    },
+    {
+      "frame": "TRIGRAM_FEATURE_NAMES",
+      "column": "redirect",
+      "normalized": "redirect",
+      "exact_name_match": true,
+      "gauges": [
+        "redirect [oxey pattern_shares]"
+      ]
+    },
+    {
+      "frame": "TRIGRAM_FEATURE_NAMES",
+      "column": "bad_redirect",
+      "normalized": "bad_redirect",
+      "exact_name_match": true,
+      "gauges": [
+        "bad_redirect [oxey pattern_shares]"
+      ]
+    },
+    {
+      "frame": "TRIGRAM_FEATURE_NAMES",
+      "column": "bg1_scissor",
+      "normalized": "scissor",
+      "exact_name_match": false,
+      "gauges": [
+        "scissor [analyze GAUGE_NAMES (the board)]",
+        "scissor [comfort terms]",
+        "scissor [oxey pattern_shares]"
+      ]
+    },
+    {
+      "frame": "TRIGRAM_FEATURE_NAMES",
+      "column": "bg1_lsb",
+      "normalized": "lsb",
+      "exact_name_match": false,
+      "gauges": [
+        "lsb [analyze GAUGE_NAMES (the board)]",
+        "lsb [comfort terms]",
+        "lsb [oxey pattern_shares]"
+      ]
+    },
+    {
+      "frame": "TRIGRAM_FEATURE_NAMES",
+      "column": "bg2_scissor",
+      "normalized": "scissor",
+      "exact_name_match": false,
+      "gauges": [
+        "scissor [analyze GAUGE_NAMES (the board)]",
+        "scissor [comfort terms]",
+        "scissor [oxey pattern_shares]"
+      ]
+    },
+    {
+      "frame": "TRIGRAM_FEATURE_NAMES",
+      "column": "bg2_lsb",
+      "normalized": "lsb",
+      "exact_name_match": false,
+      "gauges": [
+        "lsb [analyze GAUGE_NAMES (the board)]",
+        "lsb [comfort terms]",
+        "lsb [oxey pattern_shares]"
+      ]
+    }
+  ],
+  "distinct_colliding_names": [
+    "bad_redirect",
+    "lsb",
+    "redirect",
+    "scissor"
+  ]
+}

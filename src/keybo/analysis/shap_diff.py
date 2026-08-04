@@ -176,6 +176,165 @@ CANNOT = (
     "difference is priced inside the features that ARE served, not reported as a remainder."
 )
 
+# --- FM4: the served columns whose NAME collides with a reported gauge ----------------------
+#
+# A frame column and a reported gauge sharing a name while measuring DIFFERENT things is how a
+# reader of an attribution table draws a false inference: they read ``lateral -0.1362`` beside
+# ``analyze``'s lateral-stretch column and conclude the model priced hand stretch, when the
+# column is a landing-key one-hot. The fix is applied HERE rather than by renaming the schema
+# column, for two measured reasons and one precedent:
+#
+# * ``models/base.py``'s load guard compares ``feature_version`` ONLY, never ``feature_names`` --
+#   so a schema rename does not invalidate the six ``data/models/k31`` artifacts, but it DOES
+#   desync their sidecars from the schema, and :func:`_shap_tables` refuses a model whose
+#   ``metadata.feature_names`` differ from the schema list. A schema rename therefore makes
+#   ``keybo compare`` raise instead of report (measured: ``agent-artifacts/fm4/stamp_probe.py``).
+# * :mod:`keybo.analysis.shap_report` takes its printed names from the model's SIDECAR, so a
+#   schema rename would not even reach its figures -- the two readers would disagree.
+# * :mod:`keybo.analysis.effect_curves` already fixed this exact defect this exact way: it prints
+#   ``outer_high``/``outer_low`` for the served ``inwards``/``outwards`` columns, keeping the
+#   served names untouched ("They were named for a direction of travel that the served bigram
+#   gauge cannot represent, and the rename is the fix").
+#
+# EVERY entry below is a MEASURED verdict, not a naming opinion. The comparisons are exhaustive
+# over the full enumeration of ``ROW_STAGGERED_30`` -- all 900 ordered position pairs, all 27,000
+# ordered triples -- and are reproduced by ``tests/analysis/test_gauge_collisions.py``. Columns
+# whose predicate is EQUAL to the gauge's are deliberately ABSENT: a shared name that is
+# TRUTHFUL is informative, and annotating it would train readers to ignore the annotation.
+#
+#: Served column -> (display name, the gauge it is confused with, what the column measures
+#: instead). Only columns MEASURED to differ from their same-named gauge appear.
+GAUGE_COLLISIONS: dict[str, tuple[str, str, str]] = {
+    # `lsb` the column is classify.is_lsb (index/middle, stagger-adjusted dx > 1.5); `lsb` the
+    # gauge is keymeow's kmstats._is_lsb (adjacent finger-kind, |dx| >= 2). The column is a
+    # strict SUPERSET: 32 firings vs 24 over the 900 ordered K30 pairs, disagreeing on exactly
+    # the 8 pairs whose span is 1.75 -- above the column's 1.5 bar, below the gauge's 2.0 one.
+    "lsb": (
+        "lsb_dx1p5",
+        "the `lsb` gauge (keymeow, |dx| >= 2)",
+        "index/middle stagger-adjusted dx > 1.5 -- a strict SUPERSET of the gauge (32 vs 24 "
+        "firings of 900 K30 pairs; the 8 extra are exactly the dx == 1.75 pairs)",
+    ),
+    # `redirect` the column has NO same-finger gate; every reported redirect gauge does. The
+    # column fires 4320 of 27,000 K30 triples against the gauges' 2808, and the 1512 extra are
+    # exactly the firings with a same-finger constituent bigram (REDIRGATE-1's count).
+    "redirect": (
+        "redirect_ungated",
+        "the `redirect`/`redir` gauges (same-finger-gated)",
+        "a direction reversal with NO same-finger gate, so a finger REPOSITIONING counts -- a "
+        "strict superset of the gauges (4320 vs 2808 of 27,000 K30 triples)",
+    ),
+    # Same defect, same mechanism, on the no-index-finger sub-class: 864 vs 540, the 324 extra
+    # being the same-finger-constituent firings.
+    "bad_redirect": (
+        "bad_redirect_ungated",
+        "the `bad_redirects_total` gauge (same-finger-gated)",
+        "the no-index-finger redirect, again UNGATED -- 864 firings vs the gauge's 540 of "
+        "27,000 K30 triples",
+    ),
+    # `lateral` is a LANDING-KEY one-hot (|x| in {1,6}), verified to depend on the second key
+    # alone; the `lat-span` gauge is the graded PAIRWISE stretch, verified symmetric in (a, b).
+    # They disagree on 252 of 900 ordered K30 pairs -- 126 each way. Included even though the
+    # names are not character-identical: `lateral`/`lat-span` is the pair that actually misled
+    # the SHAPDIFF-1 read-through, which is the defect this map exists to prevent.
+    "lateral": (
+        "off_home_column",
+        "the `lat-span` gauge (graded pairwise stretch)",
+        "a LANDING-KEY one-hot for a finger's off-home column (|x| in {1,6}), a property of "
+        "ONE key -- the gauge's geometry reaches the frame as `dx`, not here (126 pairs fire "
+        "one and not the other, in each direction)",
+    ),
+}
+
+#: The lookup the formatter uses: :data:`GAUGE_COLLISIONS` plus the ``bg1_``/``bg2_`` mirrors, since
+#: the trigram frame carries each BIGRAM-level column twice under a prefix and a prefixed column
+#: inherits the collision (``bg2_lateral`` is as confusable as ``lateral``). Generated rather than
+#: written out so the two can never drift.
+#:
+#: Only the BIGRAM-level entries are mirrored. ``redirect``/``bad_redirect`` are TRIGRAM-level — they
+#: come from ``_trigram_level_from_positions``, not from the per-bigram placement block — so
+#: ``bg1_redirect`` is not a column of any served frame, and generating one would annotate a name
+#: that never appears (caught by ``test_every_annotated_column_exists_in_a_served_frame``).
+#: Derived from the PUBLIC schema lists rather than from ``schema._BIGRAM_PLACEMENT_NAMES``: a
+#: column is bigram-level exactly when the trigram frame carries it under the ``bg1_`` prefix, which
+#: is the property this needs and is true by construction of ``TRIGRAM_FEATURE_NAMES``.
+_BIGRAM_LEVEL_COLLISIONS = frozenset(
+    col for col in GAUGE_COLLISIONS if f"bg1_{col}" in TRIGRAM_FEATURE_NAMES
+)
+
+_COLLISION_COLUMNS: dict[str, tuple[str, str, str]] = {
+    **GAUGE_COLLISIONS,
+    **{
+        f"{prefix}{col}": (f"{prefix}{disp}", gauge, what)
+        for col, (disp, gauge, what) in GAUGE_COLLISIONS.items()
+        if col in _BIGRAM_LEVEL_COLLISIONS
+        for prefix in ("bg1_", "bg2_")
+    },
+}
+
+
+def display_name(column: str) -> str:
+    """The name to PRINT for a served column: honest where the served name collides.
+
+    Identity for every column that is not in :data:`GAUGE_COLLISIONS`, including the ones whose
+    shared gauge name was MEASURED to be truthful (``scissor`` is byte-identical to the
+    ``scissor`` gauge over all 900 K30 pairs, so it keeps its name and needs no annotation).
+    """
+    entry = _COLLISION_COLUMNS.get(column)
+    return entry[0] if entry else column
+
+
+def gauge_collision_notes(feature_names: Sequence[str]) -> list[str]:
+    """One line per colliding column PRESENT in ``feature_names``, or ``[]``.
+
+    Emitted into the report and the JSON alike, so the artifact carries the same disclosure the
+    human table does. Empty for a frame with no colliding column, which is why the formatter can
+    call it unconditionally.
+    """
+    notes = []
+    for column in feature_names:
+        entry = _COLLISION_COLUMNS.get(column)
+        if entry is None:
+            continue
+        display, gauge, what = entry
+        notes.append(f"{display} (served column `{column}`) is NOT {gauge}: it is {what}.")
+    return notes
+
+
+#: The GAUGE-side index of the same map: reported gauge name -> the served column that shares its
+#: name while measuring something else. Keyed on the gauge names as :mod:`keybo.cli.analyze` prints
+#: them, so the disclosure can be emitted under the GAUGE table too — a reader who only ever sees
+#: the gauge board is exactly the reader who cannot know a model column shares the name.
+#: ``lat-span``/``lateral`` is included for the same reason it is in :data:`GAUGE_COLLISIONS`: it is
+#: the pair that actually misled the SHAPDIFF-1 read-through.
+_GAUGE_SIDE: dict[str, str] = {
+    "lsb": "lsb",
+    "redirect": "redirect",
+    "bad_redirect": "bad_redirect",
+    "lat-span": "lateral",
+}
+
+
+def gauge_side_collision_notes(gauge_names: Sequence[str]) -> list[str]:
+    """One line per REPORTED GAUGE in ``gauge_names`` whose name is also a served column.
+
+    The mirror of :func:`gauge_collision_notes`: that one warns the reader of an ATTRIBUTION
+    table, this one warns the reader of the GAUGE table. Same measured verdicts, stated from the
+    other side, because the collision misleads in both directions.
+    """
+    notes = []
+    for gauge in gauge_names:
+        column = _GAUGE_SIDE.get(gauge)
+        if column is None:
+            continue
+        display, _gauge_desc, what = GAUGE_COLLISIONS[column]
+        notes.append(
+            f"the `{gauge}` GAUGE above is NOT the model's `{column}` COLUMN (which "
+            f"`keybo compare` prints as `{display}`): that column is {what}."
+        )
+    return notes
+
+
 #: Column -> (block, sub-block) for the served BIGRAM frame. Blocks are the primary reporting
 #: unit; the bigram frame's blocks are atomic (no second level) because they are already only
 #: 1-6 columns wide.
@@ -535,6 +694,7 @@ class ChannelAttribution:
                     "columns": list(b.columns),
                     "parts": [{"part": p, "ms_per_char": v} for p, v in b.parts],
                     "leading_column": b.leading[0] if b.leading else None,
+                    "leading_column_display": (display_name(b.leading[0]) if b.leading else None),
                     "leading_mean_a": b.leading[1] if b.leading else None,
                     "leading_mean_b": b.leading[2] if b.leading else None,
                     "flag": b.flag,
@@ -544,6 +704,7 @@ class ChannelAttribution:
             "contributions": [
                 {
                     "feature": c.feature,
+                    "display_name": display_name(c.feature),
                     "block": spec[c.feature][0],
                     "ms_per_char": c.ms_per_char,
                     "favours": c.favours,
@@ -873,6 +1034,21 @@ class ShapDiff:
                 "gauge_refusal_threshold_ms_per_char": GAUGE_REFUSAL_MS,
                 "gauge_tie_ok": self.gauge_tie_ok(),
                 "leakage_ms_floor": LEAKAGE_MS_FLOOR,
+                # FM4. Machine-readable, keyed by the SERVED column name, so a consumer joining
+                # this artifact to an `analyze` gauge column can detect the collision itself
+                # rather than trusting that the names mean the same thing.
+                "name_collisions": {
+                    column: {
+                        "display_name": display,
+                        "not_this_gauge": gauge,
+                        "what_the_column_measures": what,
+                    }
+                    for column, (display, gauge, what) in _COLLISION_COLUMNS.items()
+                    if any(
+                        ch is not None and column in ch.feature_names
+                        for ch in (self.t2, self.tcond)
+                    )
+                },
             },
         }
         if self.t2 is not None:
@@ -891,6 +1067,7 @@ class ShapDiff:
             payload["contributions"] = [
                 {
                     "feature": c.feature,
+                    "display_name": display_name(c.feature),
                     "ms_per_char": c.ms_per_char,
                     "favours": c.favours,
                     "share_of_gap_t2_pct": (
@@ -1624,7 +1801,7 @@ def _format_channel(
         mark = f" [{blk.flag}]" if blk.flag else ""
         lines.append(
             f"    {blk.block:<12} {blk.ms_per_char:>+10.4f} {pct:>7.1f}% {favour:>12}"
-            f"   {lead:<14} {mean_a:>9.4f} {mean_b:>9.4f}{mark}"
+            f"   {display_name(lead):<14} {mean_a:>9.4f} {mean_b:>9.4f}{mark}"
         )
     lines.append(f"    {'SUM':<12} {sum(x.ms_per_char for x in ch.blocks()):>+10.4f}")
     lines.append("")
@@ -1651,7 +1828,7 @@ def _format_channel(
             joint = ch.joint(prop)
             favour = a if joint > 0 else (b if joint < 0 else "-")
             lines.append(
-                f"      {prop:<14} {by_name['bg1_' + prop]:>+10.4f} "
+                f"      {display_name(prop):<14} {by_name['bg1_' + prop]:>+10.4f} "
                 f"{by_name['bg2_' + prop]:>+10.4f} {joint:>+10.4f}   {favour:>12}"
             )
     if columns:
@@ -1674,7 +1851,8 @@ def _format_channel(
             pct = 100.0 * c.ms_per_char / ch.gap if ch.gap else float("nan")
             favour = {"a": a, "b": b, "tie": "-"}[c.favours]
             lines.append(
-                f"    {c.feature:<20} {spec[c.feature][0]:<11} {c.ms_per_char:>+10.4f} "
+                f"    {display_name(c.feature):<20} {spec[c.feature][0]:<11} "
+                f"{c.ms_per_char:>+10.4f} "
                 f"{pct:>7.1f}% {favour:>12}   {c.mean_a:>9.4f} {c.mean_b:>9.4f} "
                 f"{c.mean_delta:>+10.4f}  {c.flag}"
             )
@@ -1686,7 +1864,8 @@ def _format_channel(
             lines.append(
                 f"    ... and {len(hidden)} more columns, totalling "
                 f"{sum(c.ms_per_char for c in hidden):+.4f} ms/char "
-                f"(largest withheld: {hidden[0].feature} {hidden[0].ms_per_char:+.4f}). "
+                f"(largest withheld: {display_name(hidden[0].feature)} "
+                f"{hidden[0].ms_per_char:+.4f}). "
                 "Use --top 0 for all; --json is never truncated."
             )
         lines.append(
@@ -1708,7 +1887,7 @@ def _format_channel(
         for c in ch.ranked()[:6]:
             top = ch.top_ngrams(c.feature, top_ngrams_k)
             rendered = "  ".join(f"{ng!r}{v:+.4f}" for ng, v in top)
-            lines.append(f"    {c.feature:<20} {rendered}")
+            lines.append(f"    {display_name(c.feature):<20} {rendered}")
     return lines
 
 
@@ -1858,6 +2037,37 @@ def _format_honesty(diff: ShapDiff) -> list[str]:
                 f"{diff.tcond.joint(lead):+.4f} ms/char are the same property on two frames — "
                 f"NOT {t2_value + diff.tcond.joint(lead):+.4f}."
             )
+    # FM4. The columns printed above under an honest DISPLAY name, saying which gauge each one is
+    # NOT. Both halves are load-bearing: the renamed column stops the false inference, and this
+    # block is what lets a reader who reaches for `analyze`'s same-named gauge column find out
+    # WHY the two numbers disagree instead of concluding one of them is wrong.
+    notes = sorted(
+        {
+            note
+            for ch in (diff.t2, diff.tcond)
+            if ch is not None
+            for note in gauge_collision_notes(ch.feature_names)
+        }
+    )
+    if notes:
+        lines.append("")
+        lines.append(
+            "  ⚠ NAME COLLISIONS — these columns are printed under a name that is NOT the "
+            "served one,"
+        )
+        lines.append(
+            "    because the served name is also a REPORTED GAUGE measuring something else "
+            "(verdicts"
+        )
+        lines.append(
+            "    measured exhaustively over all 900 K30 pairs / 27,000 triples). The served "
+            "schema name"
+        )
+        lines.append("    is unchanged, so every model artifact and published number is untouched:")
+        for note in notes:
+            wrapped = _wrap(note, 82)
+            lines.append(f"      * {wrapped[0]}")
+            lines.extend(f"        {line}" for line in wrapped[1:])
     lines.append("")
     for caveat in CAVEATS:
         wrapped = _wrap(caveat, 84)

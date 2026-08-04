@@ -40,6 +40,7 @@ from dataclasses import dataclass, field
 import numpy as np
 import xgboost as xgb
 
+from keybo.analysis.shap_diff import display_name, gauge_collision_notes
 from keybo.models.xgboost_model import XGBoostTypingModel
 
 # Categorical accents (dataviz palette): blue for magnitude bars, red for the
@@ -87,9 +88,14 @@ class ShapReport:
         return {
             "unit": self.unit,
             "base_value": self.base_value,
+            # FM4: `display_name` is the honest name for a column whose SERVED name is also a
+            # reported gauge measuring something else. The served `feature` key is unchanged and
+            # still first, so existing consumers keep working.
+            "name_collision_notes": gauge_collision_notes(self.feature_names),
             "ranking": [
                 {
                     "feature": n,
+                    "display_name": display_name(n),
                     "mean_abs_shap": a,
                     "mean_signed_shap": s,
                     "importance_share_pct": share[n],
@@ -205,7 +211,10 @@ def render_report(report: ShapReport, out_prefix: str, top_k: int = 12) -> list[
             fontsize=8,
             color="#40403e",
         )
-    ax.set_yticks(ypos, names, fontsize=9)
+    # FM4: label the bars with the HONEST name where the served name is also a reported gauge
+    # measuring something else (keybo.analysis.shap_diff.GAUGE_COLLISIONS). `names` itself is
+    # left alone -- it keys `share` and the per-column lookups below.
+    ax.set_yticks(ypos, [display_name(n) for n in names], fontsize=9)
     ax.set_xlabel(f"mean |SHAP| ({report.unit}; % = share of total importance)")
     ax.set_title(f"Global feature importance — base value {report.base_value:.3g} {report.unit}")
     ax.spines[["top", "right"]].set_visible(False)
@@ -230,7 +239,7 @@ def render_report(report: ShapReport, out_prefix: str, top_k: int = 12) -> list[
         y = (k - 1 - row) + (rng.random(len(sv)) - 0.5) * 0.55
         ax.scatter(sv, y, s=5, c=_diverging_colors(fv), linewidths=0, alpha=0.8, rasterized=True)
     ax.axvline(0, color=_GRAY, linewidth=1)
-    ax.set_yticks(np.arange(k)[::-1], names[:k], fontsize=9)
+    ax.set_yticks(np.arange(k)[::-1], [display_name(n) for n in names[:k]], fontsize=9)
     ax.set_xlabel(f"SHAP value ({report.unit}; color = feature value, blue low → red high)")
     ax.set_title("SHAP distribution per feature")
     ax.spines[["top", "right", "left"]].set_visible(False)
@@ -273,7 +282,7 @@ def render_report(report: ShapReport, out_prefix: str, top_k: int = 12) -> list[
                 markersize=4,
             )
         ax.axhline(0, color=_GRAY, linewidth=0.8)
-        ax.set_title(name, fontsize=9)
+        ax.set_title(display_name(name), fontsize=9)
         ax.tick_params(labelsize=8)
         ax.spines[["top", "right"]].set_visible(False)
     for j in range(k, nrows * ncols):
@@ -289,7 +298,7 @@ def render_report(report: ShapReport, out_prefix: str, top_k: int = 12) -> list[
     # --- 4. interaction pairs ------------------------------------------------------------
     if report.interaction_pairs:
         pairs = report.interaction_pairs[:15]
-        labels = [f"{a} × {b}" for a, b, _ in pairs]
+        labels = [f"{display_name(a)} × {display_name(b)}" for a, b, _ in pairs]
         vals = [v for _, _, v in pairs]
         fig, ax = plt.subplots(figsize=(8, 0.34 * len(pairs) + 1.2))
         ypos = np.arange(len(pairs))[::-1]
