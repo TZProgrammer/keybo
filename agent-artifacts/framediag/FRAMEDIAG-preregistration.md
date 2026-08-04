@@ -211,3 +211,47 @@ every tolerance from exact to 1e-3, and never above 765 anywhere in the widened 
 nonzero tolerance is a parameter whose value must be reported beside any number it produced, and on
 these frames it buys nothing (flat to 1e-3, and only bites at `tol >= 0.5`, i.e. half a key width —
 far outside "float noise" territory).
+
+---
+
+## §9 — ADDENDUM 2: THE SELF-GENERATED-TARGET TAUTOLOGY (registered BEFORE the write-up; T5)
+
+🔴 **T5, MEASURED AND DECISIVE: the served frame's published "EXACTLY 0.0000 ms" floor is
+STRUCTURALLY INCAPABLE OF BEING NON-ZERO, so it is not evidence about the served frame.**
+
+`max|T2 - mean_seeds(model.predict_ms(served_X))| = 0.000000e+00` over all 961 cells.
+`TimeSurface.__init__` builds `_T2` from `TableBigramScorer(bigram_reg31_seed*)`, which featurizes
+with the **served** frame and predicts. Two cells with identical served rows are therefore fed the
+identical vector to the identical deterministic model ⇒ identical target, necessarily. All 184 served
+collapse groups have target spread exactly 0.
+
+**This is the defect class INVARIANT 4 named** (the tautological control this campaign already caught:
+a residual structurally incapable of being non-zero). A floor of a frame against a target THAT FRAME
+GENERATED is an identity, not a measurement.
+
+**THE INSTRUMENT CAN FAIL, WHICH IS WHAT MAKES THE INTERP NUMBER SURVIVE (control, measured):**
+* served frame vs `mean_c Tcond[a,b,c]` — a target produced by the TRIGRAM model on TRIGRAM features,
+  which the served frame did not generate: **floor_wmae 0.552232 ms**, non-zero. So the served frame
+  genuinely collapses cells whose true values differ.
+* interp.1 vs T2: **137 of 234 collapsed groups have non-zero spread, max 93.1735 ms.** T2 is not
+  interp-generated, so interp.1's 1.9964 / 2.2399 ms floor IS a real measurement.
+
+**REGISTERED DECISION RULES, before the corrected write-up exists:**
+1. **The library must DETECT and REPORT this, not merely document it.** A new
+   `self_generated_target_warning`-style field is added: when a frame's collapse groups ALL have
+   exactly zero target spread while at least one group is non-trivial, the result is flagged
+   `target_is_self_generated=True` with the reason. It is a FLAG, not an exception: a genuinely
+   perfectly-resolved frame produces the same signature, and refusing would block a legitimate use.
+   The flag says "this zero is uninformative unless you know the target's provenance".
+2. **The bar for the flag:** it must fire on (served frame, T2) and NOT fire on (interp.1, T2) or on
+   (served frame, `mean_c Tcond`). Both directions asserted, so the flag cannot be a constant.
+3. **What is NOT retracted:** INTERPFRAME-1's DIRECTION of conclusion (interp.1 destroys magnitude
+   resolution the served frame keeps) stands — it is carried by the distinct-row counts (765 vs 378)
+   and the mass share (53.5% vs 93.2%), which are target-FREE. Only the served floor's role as a
+   measured 0.0 baseline is void. The honest form of the headline is registered as: *"interp.1 has a
+   1.9964 ms (L1) floor against T2, while the served frame's floor against T2 is 0 BY CONSTRUCTION
+   because T2 is its own output"* — a one-sided measurement, not a two-frame contrast.
+4. **A fair frame-vs-frame floor** needs a target NEITHER frame generated, and is registered as an
+   OPEN ITEM rather than something this arm ships: the campaign has no such held-out per-cell ms
+   target on disk (every surface is model-generated from one of these frames), and manufacturing one
+   would be a new measurement arm, not a diagnostic.
