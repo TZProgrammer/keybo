@@ -13193,3 +13193,67 @@ all independent of q04's floor.
 🟢 **AND IT SHARPENS THE GATE RECOMMENDATION (GATEAUDIT-1): at the recommended band (0.90, 1.10) the trigram surface FAILS ON dvorak (0.7304) AND azerty (0.8563), while the bigram surface fails only on qwerty.** So a gate scoped to {pooled, bucket_centered} would flag **different folds in the two channels** — which is the gate working, not misfiring: 0.73 is a 27% magnitude understatement and deserves a verdict. ⚠ **But it means "adopting the gate flags exactly one fold" is TRUE FOR BIGRAMS ONLY. Anyone landing the gate should expect 2 of 4 trigram folds to fail on day one.** Per-bucket detail (qwerty seed 0) shows the trigram channel is well-behaved WITHIN buckets — only `bucket_40` is out of band (1.2194) and every bucket is thickly supported (n = 2831–3690), unlike the bigram channel's thin n=64 buckets that drove the false-flag problem.
 
 🔴 **A PROCESS FAILURE OF MINE WORTH THE RECORD: MY FIRST ATTEMPT AT THIS BURNED 21 MINUTES AND RETURNED ALL-`None` WITH `rc=0`.** The driver harvested `rec["calibration_gate"]` — a key that exists ONLY on branch `calib` — while running against `main`, where `git grep` finds ZERO occurrences. `.get()` on a missing key returns `None` rather than raising, so the script exited 0 and looked successful. ⇒ **`rc=0` PLUS ALL-`None` OUTPUT IS THE SIGNATURE OF A KEY-NOT-PRESENT BUG, NOT A MEASUREMENT — the same family as the empty-intersection nan cascade that printed "fastest = qwerty" for all 27 boards. A driver must assert that every key it reads EXISTS on the tree it runs against.** ⚠ **And the gate was never needed for this question: `calibration_slope` is on `main` already (`validate.py:249` per bucket, plus the per-seed top-level key). I reached for a branch-only artifact when the plain number was in hand.**
+
+---
+
+## COMPARE-1 (PREREG) — **PRODUCTIZING THE GAP DECOMPOSITION: `keybo shap-diff` → `keybo compare`, WITH THE PER-LAYOUT FEATURE-VALUE COLUMNS AND AN HONESTY LAYER THAT REFUSES TO MISLEAD** (2026-08-04)
+
+**Registered BEFORE any new number exists.** The tool being productized already reconciles (SHAPDIFF-1, SHAPDIFF-TCOND: 100% of the flagship-c3 → graphite +3.1934 ms/char gap decomposes, internal 1e-16 / external ~7e-07). This arm adds **no new estimand for the gap** — it adds a SECOND, DIFFERENT quantity beside it (the per-layout feature value), renames the command, and converts four already-measured ways-to-mislead into machine-checked output. So the bars below are about the NEW quantity and the NEW refusals, not a re-litigation of the decomposition.
+
+### 0. THE QUESTION
+
+A reader of the attribution table cannot currently tell **which direction** a contribution comes from. `bottom +0.7453 ms/char favours flagship-c3` is compatible with two opposite worlds: flagship does *less* bottom-row work, or flagship does *more* and the model prices it as cheaper. The table is exact and still unreadable. ⇒ **Every row must carry the feature's own value on each board, under the same weight the gap uses.**
+
+### 1. THE NEW ESTIMAND, DEFINED BEFORE MEASURING
+
+For feature column `i`, channel `c ∈ {t2, tcond}`, board `X ∈ {A, B}`:
+
+    mean_i^X(c)  :=  ( sum_cells  w_c[cell] * f_i(cell under X) )  /  covered_c
+
+where `w_t2 = w2` (the trigram table's first-two-character marginal) and `w_tcond = w3` (the trigram frequency directly), **both taken from `_char_weight_tables` — the same helper, the same call, that produces the weights the gap is computed with.** No second weight path is introduced; a second path is exactly the ~1.5e-2 `bigrams.txt` drift SHAPDIFF-1 registered.
+
+This is a **frequency-weighted mean of the feature column**, NOT an attribution. It is a per-BOARD quantity (no pair-specific LMDI weight enters), so unlike `ms_per_char` it is well defined for one board alone.
+
+⚠ **REGISTERED NON-CLAIM:** `sign(mean_b − mean_a)` is **NOT** required to match `sign(ms_per_char)`, and a mismatch is **not** a bug. TreeSHAP credit on correlated columns need not align with the marginal feature delta, and the model prices some features counter-intuitively (SHAPDIFF-1 registered that this surface prices LONG travel CHEAPER). Any test asserting sign agreement would be asserting a falsehood. What the columns license is *reading the direction*, not inferring causation.
+
+### 2. BARS — PASS/FAIL REGISTERED BEFORE MEASURING
+
+| # | Bar | Threshold | What a failure means |
+|---|---|--:|---|
+| **B1** | `wpm` is a CONSTANT column: `mean_a == mean_b == target_wpm` **exactly**, in BOTH channels | exact equality (`==`) | the two boards were featurized at different WPM, or the weighting is not normalized — the run is void |
+| **B2** | **CROSS-WEIGHT IDENTITY.** For every shared placement feature `X`, `mean(bg1_X)` under `w3` equals `mean(X)` under `w2`, on both boards | rel ≤ 1e-12 | the two channels' weights are not a marginal pair — i.e. `w2 ≠ sum_z w3` — which would mean one channel is weighted wrongly. **This is the bar that catches a wrong weight, and it is an algebraic identity, not a tolerance**: `bg1_*` depends only on `(a,b)`, so contracting `w3` over the third character must reproduce the `w2` contraction |
+| **B3** | `mean(bg2_X)` must **DIFFER** from `mean(bg1_X)` on at least one shared `X` | rel > 1e-6 on ≥1 | `bg2_*` is the `(b,c)` transition; if it reproduced `bg1_*` the second-position marginal was silently used for both |
+| **B4** | Every mean lies within `[min, max]` of that feature's column over the positively-weighted cells; one-hot columns lie in `[0,1]` | inclusive | a normalization or indexing bug (the `covered` denominator, or the wrong board's permutation) |
+| **B5** | **EXTERNAL REPRODUCTION.** The in-tool means reproduce the out-of-band `feature_means.json` computed independently by the parent | rel ≤ 1e-9 | the folded-in path is not the path that produced the reviewed numbers |
+| **B6** | The gap decomposition is **BIT-UNCHANGED** by this arm: `gap_total`, `gap_t2`, `gap_tcond`, and every `ms_per_char` equal the pre-arm values | rel ≤ 1e-12 | the feature-value columns perturbed the attribution — a productization must not move the science |
+
+**B5's reference values, quoted from the parent's file BEFORE I run** (flagship-c3 / graphite): bigram `bottom` 0.07704719271934433 / 0.11904612436920174; trigram `bg2_bottom` 0.07407521293035432 / 0.11608938105695885; `wpm` 90.0 / 90.0 in both channels.
+
+### 3. THE HONESTY LAYER — FOUR REFUSALS, EACH WITH A NAMED DECISION RULE
+
+Registered as RULES, so a later reader can check the code implements what was registered rather than what was convenient.
+
+* **H1 — BLOCK-FIRST DEFAULT.** The default human report prints the BLOCK table and NOT the per-column table. A block sum is invariant to how TreeSHAP redistributed credit *within* the block; a per-column number is not. Per-column detail requires an explicit opt-in (`--columns`). ⚠ This **inverts** the pre-arm default (`--no-columns` was opt-OUT), which is the point: the misleading table must be the one you ask for.
+* **H2 — LEAKAGE FLAG, two kinds, both computed not asserted:**
+  - **`COUPLED`** — for a property `X` present as both `bg1_X` and `bg2_X`, if the two carry **opposite signs** and both `|ms_per_char| ≥ 0.01` ms/char, flag both rows and print the **JOINT** `bg1_X + bg2_X`. The registered instance to reproduce: `bg1_bottom −0.2337` vs `bg2_bottom +0.7382`.
+  - **`NO-DIFF`** — if `mean_a == mean_b` (rel ≤ 1e-12) yet `|ms_per_char| ≥ 0.01`, flag the row: the boards do not differ in this feature at all, so the credit is a coupled-column interaction artifact. The registered instance: `wpm`, carrying −0.0922 (t2) and −0.0273 (tcond) at an identical 90.0 on both boards. **This flag is only computable BECAUSE the mean columns exist** — it is the first honesty mechanism the new columns buy.
+* **H3 — NON-ADDITIVITY GUARD.** The bigram `X` and the trigram `bg1_X`/`bg2_X` are the same physical property in two different channels and **MUST NOT be summed** (t2's `bottom` 23.3% of the gap and tcond's `bg2_bottom` 23.1% are not 46.4%). The combined report must NAME the properties that appear in both channels and state the refusal; the library must **raise** rather than return a cross-channel total.
+* **H4 — PROVENANCE + CALIBRATION CARRY, printed where magnitudes are printed.** One block stating (i) every number is a contribution to THIS fitted model's prediction, not a biomechanical claim, and `dx`/`distance` have no clean standalone mechanism because the surface prices long travel cheaper; (ii) ms MAGNITUDES inherit the model's per-fold calibration error (bigram qwerty fold 1.407; trigram dvorak 0.7304), while ORDERINGS are affine-invariant and therefore safe.
+
+### 4. THE TWO-BAR GUARANTEE BECOMES A PRODUCT FEATURE, NOT A DEV CHECK
+
+SHAPDIFF-1 measured that the internal sums-back identity **passes at ~1e-16 under a WRONG weighting** (both sides share the weight table), and SHAPDIFF-TCOND measured that the wrong-weighting control additionally **inverts the answer** (BG1 overtakes BG2). ⇒ Registered rule: **a default `compare` run emits BOTH residual families and REFUSES to print an interpretable table when the EXTERNAL tie fails.** Refusal threshold: `resid_vs_card_gap > 1e-3` ms/char absolute, or any channel's `resid_gap_vs_shipped > 1e-3` — the `gauge_tol` already registered in `reconciles()`. On refusal the tables are **suppressed** (not merely annotated) and the exit code is non-zero. Both negative controls stay reachable via `--control`.
+
+⚠ **REGISTERED SCOPE LIMIT:** the external tie is to the *shipped* `card()` gauge. It cannot detect an error present in `card()` itself. This arm does not claim the gauge is right; it claims the decomposition decomposes THE GAUGE'S OWN quantity.
+
+### 5. THE RENAME
+
+`keybo shap-diff` → **`keybo compare`** (module `src/keybo/cli/compare.py`, registered in `_COMMANDS`; the analysis layer stays `keybo.analysis.shap_diff` because the SHAPDIFF-1/-TCOND ledger entries, artifacts and tests name it, and renaming it would break the audit trail for zero user-facing gain). Parity target is `keybo analyze` verbatim: `add_arguments(parser)` + `run(args)`, a named sectioned human default, `--json` for machines, registry names or raw 30-char strings, `--corpus`/`--target-wpm` spelled identically. Help text must disambiguate from both existing neighbours: **`layout-diff`** ranks individual n-grams by frequency-weighted impact (which *strings* moved), **`shap-report`** gives single-layout feature importances (what the model uses), **`compare`** attributes a PAIR's ms/char gap per FEATURE with each board's feature value (why A is faster). ⚠ **The old `shap-diff` spelling is REMOVED, not aliased** — a dual spelling would leave two documented entry points to one tool and the ledger already fixes the rename date.
+
+### 6. WHAT WOULD FALSIFY THE PRODUCTIZATION CLAIM
+
+Not "the tests pass" — the tests passed before this arm. Specifically: **every new test must be shown to go RED under a targeted mutation** (wrong weight table in the mean path → B2 fires; means computed on one board's permutation for both → B5 fires; leakage flag hard-coded to `wpm` → the `bg1_bottom`/`bg2_bottom` case fires; refusal downgraded to a warning → the suppression test fires). A green suite that cannot go red is the degenerate control SHAPDIFF-1 already recorded once (a tautological additivity check printing exactly 0.000e+00).
+
+### 7. HARD CONSTRAINTS
+
+Branch `productize` off `tcond`. `data/models/k31/` READ-ONLY; `layouts.py` untouched. All 46 pre-arm tests must still pass. `ruff` clean on `src/` and `tests/`. NO code push — landing is the human's call. Ledger commits are PREREGISTRATIONS.md-only.
