@@ -1,0 +1,71 @@
+[tree] keybo.__file__ = /local/home/zegertho/repos/keybo-wt-pacefix/src/keybo/__init__.py
+[tree] branch = pacefix  HEAD = 3aae5e7
+[tree] threads = OMP=1
+
+====================================================================================================
+PREREG C1/C2 — THE CONSTRAINT FACTS, read from code before any model is trained
+====================================================================================================
+  interp-wpm columns: 11   monotone tuple: (1, 1, 1, 1, 1, 1, 1, 1, 1, -1, -1)
+  ALL 11 columns constrained? True   wpm at index 10 -> constraint -1
+  served frame has a BIGRAM_MONOTONE tuple in schema.py? False  (=> the served frame trains UNCONSTRAINED; GATEFOLDS-1's 'its OWN monotone constraints' is wrong)
+[    0.0s] loading rows (cached)
+[rows] CACHE HIT /tmp/pacefix_wk/rows-5be278ecb28e3585.pkl: 2202 rows
+[    5.8s] 2202 rows; layouts ['azerty', 'dvorak', 'qwerty', 'qwertz']
+[    5.8s] 875 distinct position pairs present in the data
+
+====================================================================================================
+M-A + M-B PER ARM
+====================================================================================================
+[    5.8s] ARM served: train_bigram_model  (reference: 20c served frame (unconstrained))
+
+  served              20c  reference: 20c served frame (unconstrained)
+    identity: version=2026-07-05.3  depth=3  constraints=NONE
+    M-A wpm: present=True  splits=405  gain_share=0.751573  trees_with_wpm=165/300
+         wpm-below-geometry trees=76  geometry-below-wpm trees=127  interaction leaves=850/1841 (0.4617)
+         wpm split depth histogram: {'0': 112, '1': 142, '2': 151}
+    M-B raw LOGRAT spread=7.1071e-01  rank-identical 1/5  rho(b40,b120)=0.793006  min pairwise rho=0.793006
+         => RANK IDENTITY BREAKS: True
+[   22.5s] ARM interp-wpm: train_bigram_model  (BASELINE (DEAD-1): 11c, all constrained)
+
+  interp-wpm          11c  BASELINE (DEAD-1): 11c, all constrained
+    identity: version=2026-07-05.3+interp-wpm.1  depth=3  constraints=(1, 1, 1, 1, 1, 1, 1, 1, 1, -1, -1)
+    M-A wpm: present=True  splits=4  gain_share=0.000635  trees_with_wpm=4/300
+         wpm-below-geometry trees=4  geometry-below-wpm trees=0  interaction leaves=8/1020 (0.0078)
+         wpm split depth histogram: {'2': 4}
+    M-B raw LOGRAT spread=7.7773e-02  rank-identical 5/5  rho(b40,b120)=1.000000  min pairwise rho=1.000000
+         => RANK IDENTITY BREAKS: False
+[   38.0s] ARM interp-wpm-nomono: train_bigram_model  (ONE VAR: monotone OFF)
+
+  interp-wpm-nomono   11c  ONE VAR: monotone OFF
+    identity: version=2026-07-05.3+interp-wpm.1  depth=3  constraints=NONE
+    M-A wpm: present=True  splits=441  gain_share=0.812641  trees_with_wpm=140/300
+         wpm-below-geometry trees=54  geometry-below-wpm trees=109  interaction leaves=625/1668 (0.3747)
+         wpm split depth histogram: {'0': 112, '1': 147, '2': 182}
+    M-B raw LOGRAT spread=5.3812e-01  rank-identical 1/5  rho(b40,b120)=0.921009  min pairwise rho=0.921009
+         => RANK IDENTITY BREAKS: True
+[   53.9s] ARM interp-wpm-depth6: train_bigram_model  (ONE VAR: max_depth 3->6)
+
+  interp-wpm-depth6   11c  ONE VAR: max_depth 3->6
+    identity: version=2026-07-05.3+interp-wpm.1  depth=6  constraints=(1, 1, 1, 1, 1, 1, 1, 1, 1, -1, -1)
+    M-A wpm: present=True  splits=7  gain_share=0.001066  trees_with_wpm=7/300
+         wpm-below-geometry trees=7  geometry-below-wpm trees=0  interaction leaves=14/1217 (0.0115)
+         wpm split depth histogram: {'2': 4, '3': 3}
+    M-B raw LOGRAT spread=1.7672e-01  rank-identical 1/5  rho(b40,b120)=1.000000  min pairwise rho=1.000000
+         => RANK IDENTITY BREAKS: True
+
+====================================================================================================
+POSITIVE CONTROL — do my UNCHANGED arms reproduce GATEFOLDS-1's published numbers?
+====================================================================================================
+  served       rho 0.793006 vs published 0.793006 (|diff| 3.84e-07)  rank-identical 1/1  REPRODUCES=True
+  interp-wpm   rho 1.000000 vs published 1.000000 (|diff| 0.00e+00)  rank-identical 5/5  REPRODUCES=True
+[   69.5s] wrote /local/home/zegertho/repos/keybo-wt-pacefix/agent-artifacts/pacefix/diagnose.json
+
+====================================================================================================
+WHAT THIS DECIDES about the FOUR candidate explanations of rho = 1.000000
+====================================================================================================
+  (a) H-SPLIT 'trees never split on wpm': wpm n_splits=4, gain_share=0.000635 => REFUTED (it DOES split)
+  (b) H-ROOT  'wpm splits are a per-bucket SHIFT, not a pair-dependent term': interaction leaves=8/1020 => paths EXIST -- see (c)
+  (c) H-MONO-BLOCK 'the constraint forbids the sign pattern': dropping monotone gives rho=0.921009 @ 1/5 => SUPPORTED (identity BREAKS)
+  H-DEPTH (registered prediction: LOSES): depth 6 gives rho=1.000000 @ 1/5 => identity BREAKS
+  (d) H-TARGET 'LOGRAT already absorbed the pace structure' => the STRUCTURAL answer: REFUTED as a COMPLETE explanation (something broke it)
+[   69.5s] SENTINEL /tmp/pacefix_wk/diagnose.sentinel
