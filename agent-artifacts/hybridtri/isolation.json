@@ -1,0 +1,107 @@
+{
+ "checks": {
+  "FEATURE_VERSION": {
+   "published": "2026-07-05.3",
+   "mine": "2026-07-05.3",
+   "ok": true,
+   "tol": null
+  },
+  "served bigram n_columns": {
+   "published": 20,
+   "mine": 20,
+   "ok": true,
+   "tol": null
+  },
+  "served trigram n_columns": {
+   "published": 46,
+   "mine": 46,
+   "ok": true,
+   "tol": null
+  },
+  "served bigram last column": {
+   "published": "wpm",
+   "mine": "wpm",
+   "ok": true,
+   "tol": null
+  },
+  "served trigram last column": {
+   "published": "wpm",
+   "mine": "wpm",
+   "ok": true,
+   "tol": null
+  },
+  "served bigram matrix shape": {
+   "published": "(961, 20)",
+   "mine": "(961, 20)",
+   "ok": true,
+   "tol": null
+  },
+  "served bigram matrix checksum": {
+   "published": 97940.954121,
+   "mine": 97940.95412101164,
+   "ok": true,
+   "tol": 1e-06
+  },
+  "card() flagship-c3 ms/char": {
+   "published": 254.9761,
+   "mine": 254.9761,
+   "ok": true,
+   "tol": 5e-05
+  },
+  "card() graphite ms/char": {
+   "published": 258.1696,
+   "mine": 258.1696,
+   "ok": true,
+   "tol": 5e-05
+  },
+  "card() C30M/qwerty ms/char": {
+   "published": 264.1389,
+   "mine": 264.1389,
+   "ok": true,
+   "tol": 5e-05
+  },
+  "gap_total": {
+   "published": 3.193444,
+   "mine": 3.193444,
+   "ok": true,
+   "tol": 5e-06
+  },
+  "T2 bottom": {
+   "published": 0.7453,
+   "mine": 0.7453,
+   "ok": true,
+   "tol": 5e-05
+  },
+  "T2 wpm": {
+   "published": -0.0922,
+   "mine": -0.0922,
+   "ok": true,
+   "tol": 5e-05
+  },
+  "T2 lateral": {
+   "published": -0.1362,
+   "mine": -0.1362,
+   "ok": true,
+   "tol": 5e-05
+  },
+  "T2 dx": {
+   "published": 0.1678,
+   "mine": 0.1678,
+   "ok": true,
+   "tol": 5e-05
+  },
+  "Tcond bg2_bottom": {
+   "published": 0.7382,
+   "mine": 0.7382,
+   "ok": true,
+   "tol": 5e-05
+  },
+  "Tcond bg1_bottom": {
+   "published": -0.2337,
+   "mine": -0.2337,
+   "ok": true,
+   "tol": 5e-05
+  }
+ },
+ "all_passed": true
+}
