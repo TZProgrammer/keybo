@@ -257,7 +257,20 @@ for label, flag, mono, extra, varies in ARMS:
     build, _ = builder_for(flag)
 
     # ARM IDENTITY from the MODEL, never from my label (present != effective).
-    resolved = (model.metadata.extra.get("training") or {}).get("frame") or {}
+    # ⚠ THE KEY IS `interp_frame`, NOT `frame` (train.py:535/558 -- `frame_tag` is STORED under
+    # "interp_frame"; "frame" is a key INSIDE it). Reading the wrong key returned {} for every arm,
+    # i.e. "no constraints" for a fully-constrained model -- the exact "rc=0 with all-None output is
+    # a key-not-present bug, not a measurement" hazard. It was caught only because the assertion
+    # below demands the constraints be PRESENT for a mono arm; without it, this arm would have
+    # reported "constraints absent" and I would have mis-attributed the rank identity. So: assert
+    # the key exists, rather than `.get()`-ing into silence.
+    _training = model.metadata.extra.get("training") or {}
+    if flag is not False and "interp_frame" not in _training:
+        raise SystemExit(
+            f"{label}: metadata.extra['training'] has no 'interp_frame' key "
+            f"(keys: {sorted(_training)}) -- the frame record moved; fix the driver, do not .get()"
+        )
+    resolved = _training.get("interp_frame") or {}
     identity = {
         "label": label,
         "one_variable_vs_interp_wpm": varies,
