@@ -246,7 +246,7 @@ def test_calibrated_model_is_refused():
 
 def test_report_puts_reconciliation_before_the_table(diff):
     """A reader must not meet the feature ranking before the residuals that license it."""
-    text = format_report(diff)
+    text = format_report(diff, columns=True)
     assert text.index("RECONCILIATION") < text.index("PER-FEATURE CONTRIBUTIONS")
     assert "RECONCILES: True" in text
     assert "Tcond trigram channel" in text
@@ -255,7 +255,7 @@ def test_report_puts_reconciliation_before_the_table(diff):
 
 def test_report_flags_a_failed_reconciliation():
     control = shap_diff(FLAGSHIP_C3, GRAPHITE, shuffle_seed=1)
-    text = format_report(control)
+    text = format_report(control, columns=True)
     assert "RECONCILIATION FAILED" in text
     assert text.index("RECONCILIATION FAILED") < text.index("PER-FEATURE CONTRIBUTIONS")
 
@@ -265,7 +265,7 @@ def test_report_flags_a_failed_reconciliation():
 
 def test_cli_end_to_end_writes_json(tmp_path, capsys):
     out = tmp_path / "diff.json"
-    rc = main(["shap-diff", "flagship-c3", "graphite", "--json", str(out)])
+    rc = main(["compare", "flagship-c3", "graphite", "--json", str(out)])
     assert rc == 0
     printed = capsys.readouterr().out
     assert "RECONCILES: True" in printed
@@ -300,13 +300,13 @@ def test_to_dict_is_json_serializable_with_no_numpy_scalars(diff):
 
 def test_cli_control_exits_zero_only_when_the_control_fails(capsys):
     """The control's expectation is machine-checked: rc=0 means it correctly FAILED."""
-    rc = main(["shap-diff", "flagship-c3", "graphite", "--control", "shuffle"])
+    rc = main(["compare", "flagship-c3", "graphite", "--control", "shuffle"])
     assert rc == 0
     assert "failed reconciliation, as required" in capsys.readouterr().out
 
 
 def test_cli_refuses_identical_layouts(capsys):
-    rc = main(["shap-diff", "graphite", "graphite"])
+    rc = main(["compare", "graphite", "graphite"])
     assert rc == 1
     assert "same layout" in capsys.readouterr().out
 
@@ -665,21 +665,22 @@ def test_calibrated_trigram_model_is_refused():
 
 def test_report_puts_blocks_before_columns(both):
     """A reader must not meet the 46-column table before the blocks that license reading it."""
-    text = format_report(both)
+    text = format_report(both, columns=True)
     assert text.index("RECONCILIATION") < text.index("BLOCK CONTRIBUTIONS")
     assert text.index("BLOCK CONTRIBUTIONS") < text.index("PER-FEATURE CONTRIBUTIONS")
     assert "CHANNEL TCOND" in text and "CHANNEL T2" in text
     assert "DECOMPOSED SHARE: 100.0%" in text
     assert "bg2_bottom" in text
-    # --no-columns keeps the primary table and drops the subordinate one
-    blocks_only = format_report(both, columns=False)
+    # the DEFAULT keeps the primary table and drops the subordinate one (COMPARE-1 H1 flipped
+    # this from opt-out to opt-in; see test_per_column_table_is_opt_in_not_opt_out)
+    blocks_only = format_report(both)
     assert "BLOCK CONTRIBUTIONS" in blocks_only
     assert "PER-FEATURE CONTRIBUTIONS" not in blocks_only
 
 
 def test_cli_both_channels_end_to_end_writes_json(tmp_path, capsys):
     out = tmp_path / "diff.json"
-    rc = main(["shap-diff", "flagship-c3", "graphite", "--json", str(out)])
+    rc = main(["compare", "flagship-c3", "graphite", "--json", str(out)])
     assert rc == 0
     printed = capsys.readouterr().out
     assert "RECONCILES: True" in printed
@@ -705,14 +706,653 @@ def test_cli_both_channels_end_to_end_writes_json(tmp_path, capsys):
 
 def test_cli_tcond_control_exits_zero_only_when_the_control_fails(capsys):
     """The control's expectation is machine-checked: rc=0 means it correctly FAILED."""
-    rc = main(["shap-diff", "flagship-c3", "graphite", "--control", "tcond-marginal"])
+    rc = main(["compare", "flagship-c3", "graphite", "--control", "tcond-marginal"])
     assert rc == 0
     assert "failed reconciliation, as required" in capsys.readouterr().out
 
 
 def test_cli_channel_flag_reports_the_undecomposed_remainder(capsys):
-    rc = main(["shap-diff", "flagship-c3", "graphite", "--channel", "t2", "--no-columns"])
+    rc = main(["compare", "flagship-c3", "graphite", "--channel", "t2"])
     assert rc == 0
     printed = capsys.readouterr().out
     assert "NOT decomposed in this run" in printed
     assert "DECOMPOSED SHARE: 31.3%" in printed
+
+
+# =========================================================================================
+# COMPARE-1: the per-layout FEATURE-VALUE columns, the honesty layer, and the rename.
+#
+# Same discipline as above — the bars as NUMBERS, and each honesty mechanism asserted through
+# the behaviour it is supposed to produce rather than through its own existence. What is new:
+#
+# 1. mean_a/mean_b are a SECOND quantity beside the attribution: a frequency-weighted mean of
+#    the feature column itself, per BOARD, under the channel's own weight (w2 vs w3). The bar
+#    that catches a wrong weight here is the CROSS-WEIGHT IDENTITY (B2), which is algebra: a
+#    bg1_* column depends only on (a,b), so contracting w3 over the third character MUST
+#    reproduce the w2 contraction of the corresponding bigram column.
+# 2. The mean columns are what make the NO-DIFF leakage flag computable at all — without them
+#    the report cannot distinguish "B does less of it" from "B does exactly as much and the tree
+#    split on an interaction path".
+# =========================================================================================
+
+from keybo.analysis.shap_diff import (  # noqa: E402
+    CANNOT,
+    CAVEATS,
+    ESTIMAND,
+    GAUGE_REFUSAL_MS,
+    LEAKAGE_MS_FLOOR,
+)
+
+#: The parent's OUT-OF-BAND feature means (state/keybo-optimization/artifacts/feature_means.json),
+#: quoted into the prereg BEFORE the in-tool path existed. These are the external reproduction
+#: bar (B5): the folded-in path must reproduce the numbers that were computed and reviewed by a
+#: separate script, or it is not the same quantity.
+EXTERNAL_MEANS = {
+    ("t2", "a", "bottom"): 0.07704719271934433,
+    ("t2", "b", "bottom"): 0.11904612436920174,
+    ("t2", "a", "dx"): 4.302328620093768,
+    ("t2", "b", "dx"): 4.500276864941823,
+    ("t2", "a", "lateral"): 0.07144692350950059,
+    ("t2", "b", "lateral"): 0.05123010951623739,
+    ("tcond", "a", "bg2_bottom"): 0.07407521293035432,
+    ("tcond", "b", "bg2_bottom"): 0.11608938105695885,
+    ("tcond", "a", "bg1_bottom"): 0.07704719271934433,
+    ("tcond", "a", "sg_dx"): 3.623099432415372,
+}
+
+#: One-hot / rate columns whose mean must lie in [0,1] (B4). Prefix-stripped for bg1_/bg2_.
+_RATE_COLUMNS = frozenset(
+    {
+        "bottom",
+        "home",
+        "top",
+        "pinky",
+        "ring",
+        "middle",
+        "index",
+        "lateral",
+        "same_hand",
+        "same_finger",
+        "adjacent",
+        "scissor",
+        "lsb",
+        "inwards",
+        "outwards",
+        "same_hand_trigram",
+        "redirect",
+        "bad_redirect",
+        "sg_same_finger",
+    }
+)
+
+
+def _base_name(column: str) -> str:
+    return column[4:] if column.startswith(("bg1_", "bg2_")) else column
+
+
+# --- B1/B4: the constant-column canary and the in-range bar -------------------------------
+
+
+def test_wpm_means_are_the_scoring_wpm_and_identical_on_both_boards(both):
+    """B1, the canary that the weighting is right — and the row that exposed SHAP's splitting.
+
+    ``wpm`` is a CONSTANT column at a fixed scoring WPM, so its frequency-weighted mean must be
+    that WPM on BOTH boards in BOTH channels. It is asserted two ways, because they fail for
+    different reasons:
+
+    * ``mean_a == mean_b`` **exactly** (bit-identical). Any difference at all would mean the two
+      boards were featurized differently or indexed through the wrong permutation, and the run
+      would be void. This is the strong clause and it holds exactly.
+    * ``mean == target_wpm`` to a float64 SUMMATION tolerance, NOT exactly. COMPARE-1's prereg
+      registered this clause as exact equality and it was WRONG to: the normalized weights sum
+      to exactly 1.0, but a weighted sum of 90.0 over 27k-30k cells accumulates float64
+      rounding, measured at 4.7e-16 relative on the bigram frame and 4.5e-14 on the trigram one
+      (more cells, more accumulation). See the COMPARE-1 addendum in PREREGISTRATIONS.md — the
+      bar was mis-specified, not the code.
+
+    And the substantive point: the column's CONTRIBUTION is not zero (-0.0922 on the bigram
+    frame, -0.0273 on the trigram one) even though the boards do not differ in it at all. That
+    is the coupled-column artifact, and it is exactly what the NO-DIFF flag below reports.
+    """
+    for channel in (both.t2, both.tcond):
+        wpm = next(c for c in channel.contributions if c.feature == "wpm")
+        assert wpm.mean_a == wpm.mean_b, (
+            f"{channel.channel}: the boards differ in a CONSTANT column"
+        )
+        assert wpm.mean_delta == 0.0
+        assert wpm.mean_a == pytest.approx(both.target_wpm, rel=1e-12)
+        assert abs(wpm.ms_per_char) > LEAKAGE_MS_FLOOR, "the artifact this canary exists for"
+
+
+def test_every_mean_lies_inside_its_column_range(both):
+    """B4: a mean outside the column's own range is a normalization or indexing bug.
+
+    Checked against the ACTUAL served matrix rather than a remembered range, so it also
+    catches a mean computed over the wrong cells. Rate columns additionally must be in [0,1].
+    """
+    from keybo.analysis.shap_diff import _shap_tables, default_models
+    from keybo.geometry import ROW_STAGGERED_30
+
+    for channel, kind, order in ((both.t2, "bigram", 2), (both.tcond, "trigram", 3)):
+        features = _shap_tables(default_models(kind), ROW_STAGGERED_30, 90.0, order)[6]
+        flat = features.reshape(-1, features.shape[-1])
+        for i, contribution in enumerate(channel.contributions):
+            low, high = float(flat[:, i].min()), float(flat[:, i].max())
+            for mean in (contribution.mean_a, contribution.mean_b):
+                assert low - 1e-9 <= mean <= high + 1e-9, (
+                    f"{channel.channel}/{contribution.feature}: mean {mean} outside [{low}, {high}]"
+                )
+            if _base_name(contribution.feature) in _RATE_COLUMNS:
+                assert 0.0 <= contribution.mean_a <= 1.0
+                assert 0.0 <= contribution.mean_b <= 1.0
+
+
+# --- B2: THE bar that catches a wrong weight ----------------------------------------------
+
+
+def test_cross_weight_identity_ties_bg1_means_to_the_bigram_channel(both):
+    """B2 — the bar a WRONG WEIGHT breaks, and it is an algebraic identity, not a tolerance.
+
+    A ``bg1_X`` column of the trigram frame depends only on the trigram's FIRST TWO characters,
+    exactly as the bigram frame's ``X`` does. So contracting the trigram weight ``w3`` over the
+    third character must reproduce contracting ``w2`` — because ``w2`` IS ``sum_z w3``. The two
+    channels' means therefore have to agree for all 19 shared placement features, on both
+    boards, to float64 rounding.
+
+    This is the test that would fail if the mean path used a weight of its own: any weight that
+    is not the channel's own would break the marginal relationship. It is a much sharper
+    instrument than an in-range check, and it is why the implementation reuses
+    ``_char_weight_tables`` instead of re-deriving weights (the ~1.5e-2 ``bigrams.txt`` trap
+    SHAPDIFF-1 registered would show up here as a ~1e-2 failure).
+    """
+    t2 = {c.feature: c for c in both.t2.contributions}
+    tcond = {c.feature: c for c in both.tcond.contributions}
+    shared = [n for n in t2 if n != "wpm"]
+    assert len(shared) == 19
+    worst = 0.0
+    for name in shared:
+        bg1 = tcond[f"bg1_{name}"]
+        for from_t2, from_tcond in ((t2[name].mean_a, bg1.mean_a), (t2[name].mean_b, bg1.mean_b)):
+            assert from_t2 == pytest.approx(from_tcond, rel=1e-12), (
+                f"bg1_{name} under w3 != {name} under w2 — the two channels' weights are not a "
+                "marginal pair, so one channel is weighted wrongly"
+            )
+            worst = max(worst, abs(from_t2 - from_tcond) / max(abs(from_tcond), 1e-300))
+    assert worst > 0.0, "an EXACT zero would mean the two paths are the same code, not two paths"
+
+
+def test_bg2_means_differ_from_bg1_means(both):
+    """B3: ``bg2_*`` is the ``(b,c)`` transition, so it must NOT reproduce ``bg1_*``.
+
+    The mirror of B2 and equally necessary: B2 alone would also pass if the mean path had used
+    the FIRST-position marginal for both blocks. All 19 properties must differ, and they do by
+    0.2%-4%, which is the real difference between a trigram's two constituent bigrams.
+    """
+    tcond = {c.feature: c for c in both.tcond.contributions}
+    properties = sorted(n[4:] for n in tcond if n.startswith("bg1_"))
+    assert len(properties) == 19
+    for name in properties:
+        bg1, bg2 = tcond[f"bg1_{name}"], tcond[f"bg2_{name}"]
+        rel = abs(bg1.mean_a - bg2.mean_a) / max(abs(bg2.mean_a), 1e-300)
+        assert rel > 1e-6, f"bg2_{name} reproduces bg1_{name}: the same marginal was used twice"
+
+
+# --- B5: external reproduction of the out-of-band numbers ---------------------------------
+
+
+def test_means_reproduce_the_out_of_band_reference_values(both):
+    """B5 — the folded-in path reproduces the numbers a SEPARATE script computed and a human read.
+
+    These literals were produced out-of-band before the tool carried the columns, and were
+    quoted into the COMPARE-1 prereg before this code path existed. An in-tool path that
+    disagreed would be a different quantity wearing the reviewed numbers' name.
+    """
+    channels = {"t2": both.t2, "tcond": both.tcond}
+    for (channel_name, board, feature), want in EXTERNAL_MEANS.items():
+        contribution = next(c for c in channels[channel_name].contributions if c.feature == feature)
+        got = contribution.mean_a if board == "a" else contribution.mean_b
+        assert got == pytest.approx(want, rel=1e-9), (
+            f"{channel_name}/{board}/{feature}: {got!r} != out-of-band {want!r}"
+        )
+
+
+def test_the_user_facing_worked_example_is_the_bottom_row(both):
+    """The example that motivated the feature, pinned: bottom 0.077 (flagship) vs 0.119 (graphite).
+
+    ``bottom`` carries +0.7453 ms/char favouring flagship-c3, and WITHOUT these columns a reader
+    cannot tell whether flagship is faster because it does less bottom-row work or more of it.
+    The answer is less — 0.0770 against 0.1190 — and that direction is the product's headline.
+    """
+    bottom = next(c for c in both.t2.contributions if c.feature == "bottom")
+    assert bottom.mean_a == pytest.approx(0.0770, abs=5e-5)
+    assert bottom.mean_b == pytest.approx(0.1190, abs=5e-5)
+    assert bottom.ms_per_char > 0 and bottom.favours == "a"
+    assert bottom.mean_delta > 0, "graphite does MORE bottom-row work"
+
+
+def test_a_contribution_may_disagree_in_sign_with_its_feature_delta(both):
+    """The REGISTERED NON-CLAIM: sign(mean_delta) need not match sign(ms_per_char).
+
+    Asserted as a POSITIVE fact about this pair, not merely left unasserted, because a future
+    reader's first instinct will be to "fix" the apparent inconsistency. ``bg1_top`` favours
+    flagship-c3 (+0.4064) while flagship does MORE top-row work (0.2542 vs 0.2034): the model
+    prices it that way, and a test asserting agreement would be asserting a falsehood.
+
+    A mismatch is therefore a fact about the fitted surface, not a bug — which is exactly why
+    the columns are labelled as feature VALUES and never as attributions.
+    """
+    disagreeing = [
+        c
+        for c in both.tcond.contributions
+        if abs(c.ms_per_char) > LEAKAGE_MS_FLOOR
+        and c.mean_delta != 0.0
+        and (c.ms_per_char > 0) != (c.mean_delta > 0)
+    ]
+    assert disagreeing, "if this ever empties, re-read the non-claim before 'fixing' anything"
+    top = next(c for c in both.tcond.contributions if c.feature == "bg1_top")
+    assert top.ms_per_char > 0 and top.mean_delta < 0
+
+
+# --- B6: the productization must not move the science -------------------------------------
+
+
+def test_the_decomposition_is_unchanged_by_the_new_columns(both, diff):
+    """B6: adding a second quantity must not perturb the first one, at all.
+
+    The registered pre-arm values (SHAPDIFF-1/-TCOND) asserted directly, so a mean path that
+    accidentally wrote into the attribution — or a refactor of ``_lmdi_channel`` that changed a
+    summation order — fails here rather than silently re-pricing every published number.
+    """
+    assert both.gap_total == pytest.approx(3.1934, abs=1e-3)
+    assert both.gap_t2 == pytest.approx(0.9981, abs=1e-3)
+    assert both.gap_tcond == pytest.approx(2.1953, abs=1e-3)
+    assert both.t2.resid_cell_lmdi <= REL_TOL and both.tcond.resid_cell_lmdi <= REL_TOL
+    for feature, want in (("bottom", 0.7453), ("dx", 0.1678), ("wpm", -0.0922)):
+        got = next(c for c in both.t2.contributions if c.feature == feature)
+        assert got.ms_per_char == pytest.approx(want, abs=1e-3)
+    for feature, want in (("bg2_bottom", 0.7382), ("bg1_bottom", -0.2337), ("bg1_top", 0.4064)):
+        got = next(c for c in both.tcond.contributions if c.feature == feature)
+        assert got.ms_per_char == pytest.approx(want, abs=1e-3)
+
+
+# --- H2: the leakage flags -----------------------------------------------------------------
+
+
+def test_no_diff_flag_fires_on_wpm_and_needs_the_mean_columns(both):
+    """H2 NO-DIFF: equal means + non-zero credit = the credit is an interaction artifact.
+
+    This flag is the first thing the new columns BUY. Without ``mean_a``/``mean_b`` the report
+    cannot tell "board B does less of this" from "board B does exactly as much of it", so it
+    cannot tell a real difference from a coupled-column artifact. With them it can, and it says
+    so at the point of reading.
+    """
+    for channel in (both.t2, both.tcond):
+        flags = channel.leakage()
+        assert flags.get("wpm") == "NO-DIFF", f"{channel.channel}: wpm must be flagged"
+        wpm = next(c for c in channel.contributions if c.feature == "wpm")
+        assert wpm.flag == "NO-DIFF", "the flag must ride on the row, not only on the channel"
+        assert wpm.mean_a == wpm.mean_b and abs(wpm.ms_per_char) >= LEAKAGE_MS_FLOOR
+
+
+def test_coupled_flag_fires_on_opposite_signed_bg1_bg2_mates(both):
+    """H2 COUPLED: the measured ``bg1_bottom`` -0.2337 vs ``bg2_bottom`` +0.7382 case.
+
+    The two columns are the SAME physical property on the trigram's two overlapping key pairs,
+    credited in OPPOSITE directions. Neither number stands alone; the joint does, because it
+    does not depend on how TreeSHAP divided the credit between them.
+    """
+    flags = both.tcond.leakage()
+    assert flags.get("bg1_bottom") == "COUPLED" and flags.get("bg2_bottom") == "COUPLED"
+    bg1 = next(c for c in both.tcond.contributions if c.feature == "bg1_bottom")
+    bg2 = next(c for c in both.tcond.contributions if c.feature == "bg2_bottom")
+    assert bg1.ms_per_char < 0 < bg2.ms_per_char, "the registered opposite-sign case"
+    assert bg1.flag == bg2.flag == "COUPLED"
+    assert both.tcond.joint("bottom") == pytest.approx(bg1.ms_per_char + bg2.ms_per_char, rel=1e-12)
+    assert both.tcond.joint("bottom") == pytest.approx(0.5045, abs=1e-3)
+    # every flagged column is a real member of an opposite-signed pair, and both mates are
+    # flagged together — a one-sided flag would tell a reader to distrust the wrong row
+    for name, kind in flags.items():
+        if kind != "COUPLED":
+            continue
+        mate = ("bg2_" + name[4:]) if name.startswith("bg1_") else ("bg1_" + name[4:])
+        assert flags[mate] == "COUPLED"
+    # the T2 frame has no bg1_/bg2_ columns at all, so it can never raise this flag
+    assert "COUPLED" not in both.t2.leakage().values()
+
+
+def test_leakage_flags_are_computed_not_hardcoded(both):
+    """The flags must come from the NUMBERS: perturb a contribution, watch the verdict move.
+
+    A hand-listed flag set would pass every assertion above while being blind on any other
+    layout pair. Here the sign of one mate is flipped and the COUPLED verdict must vanish; the
+    magnitude of another is pushed below the floor and it must vanish too.
+    """
+    import dataclasses
+
+    tcond = both.tcond
+    original = tcond.contributions
+    try:
+        bg1 = next(c for c in original if c.feature == "bg1_bottom")
+        tcond.contributions = [
+            dataclasses.replace(c, ms_per_char=-c.ms_per_char) if c is bg1 else c for c in original
+        ]
+        assert "bg1_bottom" not in tcond.leakage(), "same-signed mates must NOT be flagged"
+
+        tcond.contributions = [
+            dataclasses.replace(c, ms_per_char=LEAKAGE_MS_FLOOR / 10) if c is bg1 else c
+            for c in original
+        ]
+        assert "bg1_bottom" not in tcond.leakage(), "dust must NOT be flagged"
+
+        wpm = next(c for c in original if c.feature == "wpm")
+        tcond.contributions = [
+            dataclasses.replace(c, mean_b=c.mean_b * 1.01) if c is wpm else c for c in original
+        ]
+        assert tcond.leakage().get("wpm") != "NO-DIFF", "differing means must clear NO-DIFF"
+    finally:
+        tcond.contributions = original
+    assert tcond.leakage().get("wpm") == "NO-DIFF"
+
+
+def test_joint_refuses_a_property_the_frame_does_not_carry_twice(both):
+    """``joint`` must not answer a question the frame cannot support."""
+    with pytest.raises(ValueError, match="not a property"):
+        both.tcond.joint("redirect")
+    with pytest.raises(ValueError, match="not a property"):
+        both.t2.joint("bottom")
+
+
+# --- H1: block-first, per-column opt-IN ----------------------------------------------------
+
+
+def test_per_column_table_is_opt_in_not_opt_out(both):
+    """H1: the DEFAULT report shows blocks only — the misleading table must be asked for.
+
+    Inverted from SHAPDIFF-1/-TCOND, where the audience was the author. A block sum is
+    invariant to how TreeSHAP redistributed credit among correlated columns; a per-column number
+    is not. So the default carries the claim that survives, and the subordinate split is opt-in.
+    """
+    default = format_report(both)
+    assert "BLOCK CONTRIBUTIONS" in default
+    assert "PER-FEATURE CONTRIBUTIONS" not in default
+    assert "PER-FEATURE CONTRIBUTIONS" in format_report(both, columns=True)
+
+
+def test_block_table_carries_the_two_column_view_and_the_flag(both):
+    """The PRIMARY table must show feature values too, or the reader drops to the unsafe one.
+
+    A block spans a one-hot and a distance in key units, so there is deliberately no block-level
+    mean — the block's LEADING column and its two values are the honest statement, and the block
+    inherits any flag its columns raised.
+    """
+    text = format_report(both)
+    row_block = next(b for b in both.t2.blocks() if b.block == "ROW")
+    assert row_block.leading is not None
+    lead, mean_a, mean_b = row_block.leading
+    assert lead == "bottom"
+    assert (mean_a, mean_b) == pytest.approx((0.0770, 0.1190), abs=5e-5)
+    assert "0.0770" in text and "0.1190" in text
+    wpm_block = next(b for b in both.t2.blocks() if b.block == "WPM")
+    assert wpm_block.flag == "NO-DIFF" and "[NO-DIFF]" in text
+    bg2 = next(b for b in both.tcond.blocks() if b.block == "BG2")
+    assert bg2.flag == "COUPLED"
+    # the joints are printed for the reader, not left as an exercise
+    assert "COUPLED PROPERTIES" in text and "JOINT" in text
+
+
+def test_top_truncation_names_what_it_withheld(both):
+    """A truncated table must PRICE its remainder — the over-claim guard, one level down.
+
+    ``--top`` exists so 66 rows do not land on a reader at once. The danger is that the visible
+    rows read as the whole decomposition, so the withheld count, their total, and the largest
+    withheld column are all named, and the SUM stays over ALL columns.
+    """
+    full = format_report(both, columns=True, top=0)
+    clipped = format_report(both, columns=True, top=5)
+    assert "... and 41 more columns" in clipped  # 46 trigram columns - 5 shown
+    assert "and 15 more columns" in clipped  # 20 bigram columns - 5 shown
+    assert "--json is never truncated" in clipped
+    assert "over ALL columns" in clipped
+    assert (
+        "bg2_angle" in full
+        and "bg2_angle" not in clipped.split("CHANNEL TCOND")[1].split("COUPLED PROPERTIES")[0]
+    )
+
+
+# --- H3: the cross-channel non-additivity guard --------------------------------------------
+
+
+def test_cross_channel_properties_are_named_and_refused(both):
+    """H3: a property in BOTH channels must be NAMED and its cross-channel total REFUSED.
+
+    ``bottom`` is 23.3% of the total gap in the T2 channel and ``bg1_bottom``+``bg2_bottom`` is
+    15.8% in the Tcond channel. They are the same physical property attributed on two different
+    frames over two different populations of cells, each already carrying its own channel's full
+    share — so their sum is a double-count, and there is no correct number to return. The
+    library therefore RAISES rather than picking one.
+    """
+    shared = both.cross_channel_properties()
+    assert len(shared) == 19 and "bottom" in shared and "dx" in shared
+    assert "wpm" not in shared, "wpm is WPM-blocked in both frames, not a placement property"
+    with pytest.raises(ValueError, match="REFUSED"):
+        both.total_for_property("bottom")
+    # the refusal must carry BOTH numbers, so the reader can act on it
+    with pytest.raises(ValueError, match=r"T2 \+0\.7453.*Tcond bg1\+bg2 \+0\.5045"):
+        both.total_for_property("bottom")
+    # and it refuses to pretend for a property that is not actually doubled
+    with pytest.raises(ValueError, match="not carried by both channels"):
+        both.total_for_property("redirect")
+    # a single-channel run has nothing to refuse
+    only_t2 = shap_diff(FLAGSHIP_C3, GRAPHITE, channel="t2")
+    assert only_t2.cross_channel_properties() == []
+
+
+def test_report_states_the_non_additivity_with_a_worked_example(both):
+    """The refusal must be in the READER's path, not only in the API."""
+    text = format_report(both)
+    assert "DO NOT ADD ACROSS CHANNELS" in text
+    assert "19 properties appear in BOTH channels" in text
+    assert "NOT +1.2498" in text, "the double-count must be shown as the wrong number it is"
+
+
+# --- H4: provenance and calibration carry --------------------------------------------------
+
+
+def test_caveats_print_where_the_magnitudes_print(both):
+    """H4: the four measured caveats ride WITH the numbers, and name their measurements."""
+    text = format_report(both)
+    assert "HOW TO READ THIS" in text
+    assert ESTIMAND.split(",")[0] in text
+    for caveat in CAVEATS:
+        assert caveat.split(":")[0] in text
+    assert "1.407" in text and "0.7304" in text, "the calibration slopes, as numbers"
+    assert "affine-invariant" in text, "orderings are safe even where magnitudes are not"
+    assert "prices LONG travel as CHEAPER" in text, "the dx/distance provenance caveat"
+    # the caveats are word-WRAPPED into the report, so compare on collapsed whitespace rather
+    # than raw substrings — an assertion on the unwrapped string tests the line breaks, not the
+    # content, and would go green on a report that had dropped the text and kept the header
+    collapsed = " ".join(text.split())
+    assert " ".join(CANNOT.split()) in collapsed, "the one thing it CANNOT do must be stated"
+    for caveat in CAVEATS:
+        assert " ".join(caveat.split()) in collapsed
+    # and the caveats must be in the MACHINE artifact too
+    payload = both.to_dict()
+    assert payload["honesty"]["caveats"] == list(CAVEATS)
+    assert payload["honesty"]["estimand"] == ESTIMAND
+    assert len(payload["honesty"]["cross_channel_properties_not_summable"]) == 19
+
+
+# --- the two-bar guarantee as a PRODUCT feature --------------------------------------------
+
+
+def test_default_run_emits_both_residual_families(both):
+    """Both families in the default output — neither alone is sufficient (SHAPDIFF-1's finding)."""
+    text = format_report(both)
+    assert "INTERNAL per-cell LMDI identity" in text
+    assert "INTERNAL sum(features) vs channel gap" in text
+    assert "EXTERNAL gap vs shipped table" in text
+    assert "EXTERNAL GAUGE TIE: OK" in text
+    assert both.gauge_tie_ok()
+
+
+def test_a_failed_gauge_tie_SUPPRESSES_the_tables_rather_than_annotating_them():
+    """THE refusal. A wrong weighting must produce NO attribution table at all.
+
+    This is the mechanism that makes the tool a product rather than an instrument. SHAPDIFF-1
+    measured that the internal sums-back identity passes at ~1e-16 under a weighting that is
+    wrong by 5.6e-2 ms/char, because both sides of that identity share the weight table.
+    SHAPDIFF-TCOND measured that the analogous Tcond error additionally INVERTS the answer (BG1
+    overtakes BG2). A tool that printed an interpretable table under those conditions would be
+    silently decomposing the wrong quantity — so the tables do not print.
+
+    Asserted as ABSENCE of the tables, which is what a downgrade to a mere warning would break.
+    """
+    control = shap_diff(FLAGSHIP_C3, GRAPHITE, channel="tcond", tcond_weighting="tcond-marginal")
+    assert not control.gauge_tie_ok()
+    text = format_report(control, columns=True)
+    assert "REFUSED: THE EXTERNAL GAUGE TIE FAILED" in text
+    assert "BLOCK CONTRIBUTIONS" not in text, "the primary table must be SUPPRESSED, not flagged"
+    assert "PER-FEATURE CONTRIBUTIONS" not in text
+    assert "COUPLED PROPERTIES" not in text
+    # the reason is stated, with the numbers
+    assert "tcond-marginal" in text
+    assert "1e-16" in text and "WRONG QUANTITY" in text
+    # the RECONCILIATION header still prints: a reader must see the residuals that condemned it
+    assert "RECONCILIATION" in text and "EXTERNAL GAUGE TIE: FAILED" in text
+    # and the good run is unaffected
+    good = shap_diff(FLAGSHIP_C3, GRAPHITE, channel="tcond")
+    assert good.gauge_tie_ok()
+    assert "BLOCK CONTRIBUTIONS" in format_report(good)
+
+
+def test_the_shuffle_control_still_reaches_its_table(both):
+    """The shuffle breaks the INTERNAL bars only, so it must NOT trigger the gauge refusal.
+
+    The two controls have to be distinguishable in the OUTPUT, not only in the residuals: a
+    refusal that fired on both would collapse the distinction SHAPDIFF-1 established between
+    "the arithmetic is broken" and "the quantity is wrong".
+    """
+    shuffled = shap_diff(FLAGSHIP_C3, GRAPHITE, shuffle_seed=0)
+    assert not shuffled.reconciles()
+    assert shuffled.gauge_tie_ok(), "shuffling redistributes attribution, not the total"
+    text = format_report(shuffled)
+    assert "RECONCILIATION FAILED" in text
+    assert "REFUSED" not in text
+    assert "BLOCK CONTRIBUTIONS" in text, "a different failure needs a different presentation"
+
+
+def test_gauge_refusal_threshold_is_the_registered_bar():
+    """The product's refusal bar is the registered ``gauge_tol``, not a second unregistered one."""
+    assert GAUGE_REFUSAL_MS == 1e-3
+    assert LEAKAGE_MS_FLOOR == 0.01
+
+
+# --- the rename ----------------------------------------------------------------------------
+
+
+def test_compare_is_the_registered_command_and_shap_diff_is_gone():
+    """COMPARE-1's rename: ``keybo compare`` exists, ``keybo shap-diff`` does not.
+
+    Removed rather than aliased: two documented entry points to one tool is exactly the kind of
+    ambiguity the rename was meant to resolve.
+    """
+    from keybo.cli.__main__ import _COMMANDS, build_parser
+
+    assert "compare" in _COMMANDS
+    assert "shap-diff" not in _COMMANDS
+    assert hasattr(_COMMANDS["compare"], "add_arguments")
+    assert hasattr(_COMMANDS["compare"], "run")
+    # it slots into the shared dispatch exactly as `analyze` does
+    parser = build_parser()
+    args = parser.parse_args(["compare", "flagship-c3", "graphite"])
+    assert args.command == "compare"
+    assert (args.layout_a, args.layout_b) == ("flagship-c3", "graphite")
+    assert args.channel == "both" and args.columns is False and args.top == 0
+    with pytest.raises(SystemExit):
+        parser.parse_args(["shap-diff", "flagship-c3", "graphite"])
+
+
+def test_help_disambiguates_compare_from_its_two_neighbours():
+    """A user must be able to tell ``compare`` from ``layout-diff`` and ``shap-report``."""
+    from keybo.cli import compare as compare_module
+
+    doc = compare_module.__doc__
+    assert "layout-diff" in doc and "shap-report" in doc
+    assert "N-GRAM" in doc, "layout-diff's unit"
+    assert "FEATURES" in doc, "compare's unit"
+    assert "analyze" in doc, "the sibling it matches"
+
+
+def test_compare_matches_analyze_flag_spellings():
+    """Parity with ``keybo analyze``: the overlapping flags are spelled identically."""
+    import argparse
+
+    from keybo.cli import analyze as analyze_module
+    from keybo.cli import compare as compare_module
+
+    def options(module):
+        parser = argparse.ArgumentParser()
+        module.add_arguments(parser)
+        return {option for action in parser._actions for option in action.option_strings}
+
+    shared = options(analyze_module) & options(compare_module)
+    for flag in ("--corpus", "--target-wpm", "--json"):
+        assert flag in shared, f"{flag} must be spelled the same as in analyze"
+
+
+def test_cli_accepts_a_raw_30_char_layout_like_analyze(capsys):
+    """``analyze`` takes registry names OR raw 30-char strings; so must ``compare``."""
+    rc = main(["compare", FLAGSHIP_C3, "graphite", "--channel", "t2", "--top-ngrams", "0"])
+    assert rc == 0
+    printed = capsys.readouterr().out
+    assert "BLOCK CONTRIBUTIONS" in printed
+    assert "RECONCILES: True" in printed
+
+
+def test_cli_json_carries_the_means_the_flags_and_the_caveats(tmp_path, capsys):
+    """The machine artifact must carry everything the human report does — plus no truncation."""
+    out = tmp_path / "compare.json"
+    rc = main(["compare", "flagship-c3", "graphite", "--json", str(out), "--top", "3"])
+    assert rc == 0
+    payload = json.loads(out.read_text())
+    json.loads(json.dumps(payload))  # no numpy scalars
+
+    tcond = payload["channels"]["tcond"]
+    assert len(tcond["contributions"]) == 46, "--top must NOT truncate the JSON"
+    bottom = next(c for c in payload["channels"]["t2"]["contributions"] if c["feature"] == "bottom")
+    assert bottom["mean_a"] == pytest.approx(0.07704719271934433, rel=1e-9)
+    assert bottom["mean_b"] == pytest.approx(0.11904612436920174, rel=1e-9)
+    assert bottom["mean_delta"] == pytest.approx(bottom["mean_b"] - bottom["mean_a"], rel=1e-12)
+    assert tcond["leakage_flags"]["bg1_bottom"] == "COUPLED"
+    assert tcond["leakage_flags"]["wpm"] == "NO-DIFF"
+    bg2_bottom = next(c for c in tcond["contributions"] if c["feature"] == "bg2_bottom")
+    assert bg2_bottom["flag"] == "COUPLED"
+    assert payload["honesty"]["gauge_tie_ok"] is True
+    assert payload["honesty"]["cross_channel_properties_not_summable"][0] == "bottom"
+    # the SHAPDIFF-1 compat block carries the new columns too
+    legacy = next(c for c in payload["contributions"] if c["feature"] == "bottom")
+    assert legacy["mean_a"] == pytest.approx(0.07704719271934433, rel=1e-9)
+    # blocks carry the two-column view
+    row = next(b for b in payload["channels"]["t2"]["blocks"] if b["block"] == "ROW")
+    assert row["leading_column"] == "bottom"
+    assert row["leading_mean_b"] == pytest.approx(0.11904612436920174, rel=1e-9)
+
+
+def test_cli_refuses_and_exits_nonzero_when_the_gauge_tie_fails(tmp_path, capsys):
+    """End to end: a wrong-weighting run prints no table and does not exit 0 as a plain run.
+
+    Run WITHOUT ``--control`` (which deliberately inverts the exit code) so the product's own
+    contract is what is tested: a run whose external tie fails must not look successful.
+    """
+    from keybo.data.corpus import load_frequencies, production_corpus_dir
+
+    freqs = load_frequencies(str(production_corpus_dir(None) / "bigrams.txt"))
+    control = shap_diff(
+        FLAGSHIP_C3, GRAPHITE, channel="t2", weighting="bigram-table", control_bigram_freqs=freqs
+    )
+    assert not control.gauge_tie_ok()
+    text = format_report(control, columns=True)
+    assert "REFUSED" in text and "BLOCK CONTRIBUTIONS" not in text
+    assert "bigram-table" in text
+    # the machine artifact says so too, rather than shipping a table with a quiet caveat
+    assert control.to_dict()["honesty"]["gauge_tie_ok"] is False
