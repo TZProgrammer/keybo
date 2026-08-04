@@ -353,6 +353,69 @@ def test_display_names_do_not_collide_with_a_served_column_or_each_other():
         assert display not in served, f"{display!r} is already a served column name"
 
 
+def test_display_names_do_not_collide_with_a_KNOWN_OTHER_FRAME_column():
+    """A display name must not be a column name used by ANOTHER frame in the campaign.
+
+    Not hypothetical: the ``interpframe`` branch's opt-in ``interp.1`` frame serves a column named
+    ``off_home_column`` that COUNTS BOTH KEYS (0/1/2), whereas the served ``lateral`` is a 0/1
+    one-hot on the LANDING key — they disagree on 180 of the 900 K30 pairs. Printing ``lateral``
+    as ``off_home_column`` would therefore have manufactured a FRESH collision the moment the two
+    branches merged, which is the defect this whole map exists to remove.
+
+    Pinned as a literal list rather than imported, because these frames live on a branch this one
+    does not contain; the list is the interface, and a new frame must be added to it on purpose.
+    """
+    other_frame_columns = {
+        # interp.1 (branch `interpframe`, BIGRAM_INTERP_FEATURE_NAMES)
+        "hand_conflict",
+        "row_span",
+        "lateral_span",
+        "same_hand_travel",
+        "row_load",
+        "row_arrival",
+        "bottom_bias",
+        "finger_load",
+        "off_home_column",
+        "roll_inward",
+        # the widened / kitchen-sink frames, which THIS branch already serves
+        "inwards_ordered",
+        "outwards_ordered",
+        "redirect_sfgated",
+        "bad_redirect_sfgated",
+        "half_scissor",
+        "row_skip",
+        "pinky_off_home",
+        "weak_finger_pair",
+        "finger_step",
+        "onehand",
+        "onehand_in",
+        "red_sfs",
+        "alt_sfs",
+        "sg_full_scissor",
+        "sg_half_scissor",
+        "sg_lsb",
+    }
+    # The widened/kitchen-sink half of that set IS importable here, so assert the literal covers
+    # it rather than trusting the transcription.
+    from keybo.features.schema import (
+        BIGRAM_KITCHENSINK_FEATURE_NAMES,
+        TRIGRAM_KITCHENSINK_FEATURE_NAMES,
+    )
+
+    live = set(BIGRAM_KITCHENSINK_FEATURE_NAMES) | set(TRIGRAM_KITCHENSINK_FEATURE_NAMES)
+    live -= set(BIGRAM_FEATURE_NAMES) | set(TRIGRAM_FEATURE_NAMES)
+    live = {n.removeprefix("bg1_").removeprefix("bg2_") for n in live}
+    assert live <= other_frame_columns, (
+        f"unlisted live opt-in columns: {sorted(live - other_frame_columns)}"
+    )
+
+    for column, (display, _, _) in GAUGE_COLLISIONS.items():
+        assert display not in other_frame_columns, (
+            f"{display!r} (for served {column!r}) is a column name another frame already uses "
+            "for a DIFFERENT predicate — that is a new name collision, not a fix"
+        )
+
+
 def test_display_names_do_not_collide_with_a_reported_gauge():
     """The whole point is to STOP colliding with gauge names — so the new names must not."""
     from keybo.analysis.redirects import REDIRECT_CLASSES

@@ -237,8 +237,16 @@ GAUGE_COLLISIONS: dict[str, tuple[str, str, str]] = {
     # They disagree on 252 of 900 ordered K30 pairs -- 126 each way. Included even though the
     # names are not character-identical: `lateral`/`lat-span` is the pair that actually misled
     # the SHAPDIFF-1 read-through, which is the defect this map exists to prevent.
+    #
+    # ⚠ The display name is `landing_off_home`, NOT the more obvious `off_home_column`, and the
+    # difference is load-bearing: the `interpframe` branch's opt-in `interp.1` frame serves a real
+    # column NAMED `off_home_column` that COUNTS BOTH KEYS (values 0/1/2 -- 576/288/36 of the 900
+    # K30 pairs), where this one is a 0/1 one-hot on the LANDING key alone. Measured: the two
+    # disagree on 180 of 900 pairs. Taking that name would have created a FRESH instance of the
+    # very defect this map exists to remove, the moment the two branches merged. `landing_`
+    # names the distinction that matters.
     "lateral": (
-        "off_home_column",
+        "landing_off_home",
         "the `lat-span` gauge (graded pairwise stretch)",
         "a LANDING-KEY one-hot for a finger's off-home column (|x| in {1,6}), a property of "
         "ONE key -- the gauge's geometry reaches the frame as `dx`, not here (126 pairs fire "

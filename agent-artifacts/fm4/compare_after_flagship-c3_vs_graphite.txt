@@ -33,7 +33,7 @@ RECONCILIATION (checked before any interpretation)
     GEOMETRY        +0.3081    30.9%  flagship-c3   dx                4.3023    4.5003
     WPM             -0.0922    -9.2%     graphite   wpm              90.0000   90.0000 [NO-DIFF]
     RELATIONAL      +0.0910     9.1%  flagship-c3   same_hand         0.2009    0.2128
-    FINGER          -0.0225    -2.3%     graphite   off_home_column    0.0714    0.0512
+    FINGER          -0.0225    -2.3%     graphite   landing_off_home    0.0714    0.0512
     SUM             +0.9981
 
     within-block parts (a partition of each block, so these sum to it):
@@ -47,7 +47,7 @@ RECONCILIATION (checked before any interpretation)
     feature              block          ms/char    share      favours   flagship…  graphite     Δvalue  flag
     bottom               ROW            +0.7453    74.7%  flagship-c3      0.0770    0.1190    +0.0420  
     dx                   GEOMETRY       +0.1678    16.8%  flagship-c3      4.3023    4.5003    +0.1979  
-    off_home_column      FINGER         -0.1362   -13.6%     graphite      0.0714    0.0512    -0.0202  
+    landing_off_home     FINGER         -0.1362   -13.6%     graphite      0.0714    0.0512    -0.0202  
     wpm                  WPM            -0.0922    -9.2%     graphite     90.0000   90.0000    +0.0000  NO-DIFF
     same_hand            RELATIONAL     +0.0855     8.6%  flagship-c3      0.2009    0.2128    +0.0119  
     angle                GEOMETRY       +0.0681     6.8%  flagship-c3      0.8601    0.9020    +0.0418  
@@ -72,7 +72,7 @@ RECONCILIATION (checked before any interpretation)
   TOP N-GRAMS per leading column (ms/char, corpus-weighted)
     bottom               '␣c'+0.1538  '␣f'-0.1243  '␣b'-0.1203  '␣w'-0.1146  '␣p'+0.1126
     dx                   'th'-0.0478  'in'+0.0432  'en'+0.0333  'an'+0.0277  'it'+0.0271
-    off_home_column      '␣c'-0.0576  '␣w'-0.0395  'ng'+0.0300  '␣.'-0.0219  'ec'-0.0196
+    landing_off_home     '␣c'-0.0576  '␣w'-0.0395  'ng'+0.0300  '␣.'-0.0219  'ec'-0.0196
     wpm                  '␣c'-0.0186  '␣w'+0.0175  '␣f'+0.0159  '␣b'+0.0149  '␣p'-0.0141
     same_hand            'of'+0.0248  'fo'+0.0216  'fi'+0.0192  'if'+0.0166  'lf'-0.0137
     angle                'nd'+0.0409  'io'+0.0257  'ke'-0.0221  'ho'-0.0203  'f.'+0.0173
@@ -111,7 +111,7 @@ RECONCILIATION (checked before any interpretation)
       top               +0.4064    -0.1146    +0.2918    flagship-c3
       distance          +0.2539    -0.1250    +0.1289    flagship-c3
       pinky             -0.1676    +0.0727    -0.0949       graphite
-      off_home_column    +0.0314    -0.1124    -0.0811       graphite
+      landing_off_home    +0.0314    -0.1124    -0.0811       graphite
       ring              -0.0117    +0.0855    +0.0738    flagship-c3
       middle            -0.0964    +0.0296    -0.0668       graphite
 
@@ -129,7 +129,7 @@ RECONCILIATION (checked before any interpretation)
     sg_dx                SKIPGRAM       +0.1580     7.2%  flagship-c3      3.6231    3.6973    +0.0742  
     bg2_distance         BG2            -0.1250    -5.7%     graphite      4.5754    4.8073    +0.2319  COUPLED
     bg2_top              BG2            -0.1146    -5.2%     graphite      0.2478    0.1979    -0.0499  COUPLED
-    bg2_off_home_column  BG2            -0.1124    -5.1%     graphite      0.0707    0.0507    -0.0200  COUPLED
+    bg2_landing_off_home BG2            -0.1124    -5.1%     graphite      0.0707    0.0507    -0.0200  COUPLED
     bg2_same_hand        BG2            +0.1112     5.1%  flagship-c3      0.1974    0.2093    +0.0119  
     sg_distance          SKIPGRAM       +0.1029     4.7%  flagship-c3      3.9678    4.0312    +0.0634  
     bg1_middle           BG1            -0.0964    -4.4%     graphite      0.2410    0.2599    +0.0189  COUPLED
@@ -139,7 +139,7 @@ RECONCILIATION (checked before any interpretation)
     bg1_dy               BG1            +0.0513     2.3%  flagship-c3      1.0307    1.0338    +0.0031  
     bg2_dy               BG2            +0.0476     2.2%  flagship-c3      1.0489    1.0456    -0.0033  
     bg2_home             BG2            -0.0337    -1.5%     graphite      0.5052    0.5131    +0.0079  
-    bg1_off_home_column  BG1            +0.0314     1.4%  flagship-c3      0.0714    0.0512    -0.0202  COUPLED
+    bg1_landing_off_home BG1            +0.0314     1.4%  flagship-c3      0.0714    0.0512    -0.0202  COUPLED
     bg2_middle           BG2            +0.0296     1.3%  flagship-c3      0.2347    0.2529    +0.0182  COUPLED
     wpm                  WPM            -0.0273    -1.2%     graphite     90.0000   90.0000    +0.0000  NO-DIFF
     bg2_index            BG2            +0.0230     1.0%  flagship-c3      0.2521    0.2136    -0.0385  
@@ -194,27 +194,27 @@ HOW TO READ THIS (and how not to)
       * bad_redirect_ungated (served column `bad_redirect`) is NOT the
         `bad_redirects_total` gauge (same-finger-gated): it is the no-index-finger
         redirect, again UNGATED -- 864 firings vs the gauge's 540 of 27,000 K30 triples.
+      * bg1_landing_off_home (served column `bg1_lateral`) is NOT the `lat-span` gauge
+        (graded pairwise stretch): it is a LANDING-KEY one-hot for a finger's off-home
+        column (|x| in {1,6}), a property of ONE key -- the gauge's geometry reaches the
+        frame as `dx`, not here (126 pairs fire one and not the other, in each direction).
       * bg1_lsb_dx1p5 (served column `bg1_lsb`) is NOT the `lsb` gauge (keymeow, |dx| >=
         2): it is index/middle stagger-adjusted dx > 1.5 -- a strict SUPERSET of the gauge
         (32 vs 24 firings of 900 K30 pairs; the 8 extra are exactly the dx == 1.75 pairs).
-      * bg1_off_home_column (served column `bg1_lateral`) is NOT the `lat-span` gauge
+      * bg2_landing_off_home (served column `bg2_lateral`) is NOT the `lat-span` gauge
         (graded pairwise stretch): it is a LANDING-KEY one-hot for a finger's off-home
         column (|x| in {1,6}), a property of ONE key -- the gauge's geometry reaches the
         frame as `dx`, not here (126 pairs fire one and not the other, in each direction).
       * bg2_lsb_dx1p5 (served column `bg2_lsb`) is NOT the `lsb` gauge (keymeow, |dx| >=
         2): it is index/middle stagger-adjusted dx > 1.5 -- a strict SUPERSET of the gauge
         (32 vs 24 firings of 900 K30 pairs; the 8 extra are exactly the dx == 1.75 pairs).
-      * bg2_off_home_column (served column `bg2_lateral`) is NOT the `lat-span` gauge
-        (graded pairwise stretch): it is a LANDING-KEY one-hot for a finger's off-home
-        column (|x| in {1,6}), a property of ONE key -- the gauge's geometry reaches the
-        frame as `dx`, not here (126 pairs fire one and not the other, in each direction).
-      * lsb_dx1p5 (served column `lsb`) is NOT the `lsb` gauge (keymeow, |dx| >= 2): it is
-        index/middle stagger-adjusted dx > 1.5 -- a strict SUPERSET of the gauge (32 vs 24
-        firings of 900 K30 pairs; the 8 extra are exactly the dx == 1.75 pairs).
-      * off_home_column (served column `lateral`) is NOT the `lat-span` gauge (graded
+      * landing_off_home (served column `lateral`) is NOT the `lat-span` gauge (graded
         pairwise stretch): it is a LANDING-KEY one-hot for a finger's off-home column (|x|
         in {1,6}), a property of ONE key -- the gauge's geometry reaches the frame as
         `dx`, not here (126 pairs fire one and not the other, in each direction).
+      * lsb_dx1p5 (served column `lsb`) is NOT the `lsb` gauge (keymeow, |dx| >= 2): it is
+        index/middle stagger-adjusted dx > 1.5 -- a strict SUPERSET of the gauge (32 vs 24
+        firings of 900 K30 pairs; the 8 extra are exactly the dx == 1.75 pairs).
       * redirect_ungated (served column `redirect`) is NOT the `redirect`/`redir` gauges
         (same-finger-gated): it is a direction reversal with NO same-finger gate, so a
         finger REPOSITIONING counts -- a strict superset of the gauges (4320 vs 2808 of
@@ -242,4 +242,4 @@ HOW TO READ THIS (and how not to)
   Such a difference is priced inside the features that ARE served, not reported as a
   remainder.
 
-wrote /tmp/fm4_work/compare_after.json
+wrote agent-artifacts/fm4/compare_after.json

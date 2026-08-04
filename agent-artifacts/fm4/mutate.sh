@@ -67,10 +67,10 @@ echo "=== M5: mirror bg1_/bg2_ for ALL entries incl trigram-level (the bug the t
 mutate "M5 mirror all levels" "$SD" 's|^        if col in _BIGRAM_LEVEL_COLLISIONS$|        if True|'
 
 echo "=== M6: a display name that collides with a served column ==="
-mutate "M6 display name = dx" "$SD" 's|^        "off_home_column",$|        "dx",|'
+mutate "M6 display name = dx" "$SD" 's|^        "landing_off_home",$|        "dx",|'
 
 echo "=== M7: a display name that collides with a GAUGE name ==="
-mutate "M7 display name = lat-span" "$SD" 's|^        "off_home_column",$|        "lat-span",|'
+mutate "M7 display name = lat-span" "$SD" 's|^        "landing_off_home",$|        "lat-span",|'
 
 echo "=== M8: drop the measured NUMBER from a note (turns evidence into opinion) ==="
 mutate "M8 note without a number" "$SD" 's|"index/middle stagger-adjusted dx > 1.5 -- a strict SUPERSET of the gauge (32 vs 24 "|"index/middle stagger-adjusted dx, a superset of the gauge ("|'
@@ -96,6 +96,9 @@ mutate "M13 is_lateral no |x|==6" "$CL" 's|^    return abs(x) in (1, 6)$|    ret
 
 echo "=== M14: is_scissor dy == 2 -> dy >= 2 (breaks the EQUAL verdict silently?) ==="
 mutate "M14 is_scissor dy >= 2" "$CL" 's|^    return abs(a\[1\] - b\[1\]) == 2$|    return abs(a[1] - b[1]) >= 2|'
+
+echo "=== M15: display name = off_home_column (interp.1 already uses it for a DIFFERENT predicate) ==="
+mutate "M15 display name = off_home_column" "$SD" 's|^        "landing_off_home",$|        "off_home_column",|'
 
 echo
 echo "================ SUMMARY ================"

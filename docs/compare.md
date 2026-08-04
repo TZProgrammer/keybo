@@ -147,7 +147,12 @@ ordered position pairs, all 27,000 ordered triples — against the gauge's *own*
 | `lsb` | `lsb` (keymeow, \|dx\| ≥ 2) | **DIFFERENT** — column fires 32, gauge 24; strict superset, the 8 extra are exactly the dx = 1.75 pairs | `lsb_dx1p5` |
 | `redirect` | `redirect` / `redir` | **DIFFERENT** — column fires 4320, both gauges 2808; the 1512 extra are exactly the same-finger-constituent firings | `redirect_ungated` |
 | `bad_redirect` | `bad_redirects_total` | **DIFFERENT** — column fires 864, gauge 540 | `bad_redirect_ungated` |
-| `lateral` | `lat-span` | **DIFFERENT** — a landing-KEY one-hot (invariant in the first key) vs a graded PAIRWISE stretch (symmetric); 126 pairs fire one and not the other, each way | `off_home_column` |
+| `lateral` | `lat-span` | **DIFFERENT** — a landing-KEY one-hot (invariant in the first key) vs a graded PAIRWISE stretch (symmetric); 126 pairs fire one and not the other, each way | `landing_off_home` |
+
+The display names are checked against the other frames too, not just the gauges: `interp.1` (branch
+`interpframe`) serves a real column called `off_home_column` that counts **both** keys (0/1/2) where
+this one is a 0/1 landing-key one-hot — they disagree on 180 of 900 pairs — so the obvious name
+would have manufactured a *fresh* collision on merge. Hence `landing_off_home`.
 
 `scissor` keeps its name deliberately: a shared name that is *truthful* is informative, and
 annotating it would train readers to ignore the annotation. So would renaming
