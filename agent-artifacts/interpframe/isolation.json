@@ -1,0 +1,62 @@
+{
+ "version_surface": {
+  "FEATURE_VERSION": "2026-07-05.3",
+  "len(BIGRAM_FEATURE_NAMES)": "20",
+  "len(TRIGRAM_FEATURE_NAMES)": "46",
+  "BIGRAM_FEATURE_NAMES[-1]": "wpm",
+  "TRIGRAM_FEATURE_NAMES[-1]": "wpm"
+ },
+ "matrix_checksums": {
+  "bigram_shape": [
+   961,
+   20
+  ],
+  "bigram_sum": 97940.95412101164,
+  "bigram_absmax": 90.0,
+  "trigram_shape": [
+   512,
+   46
+  ],
+  "trigram_sum": 59176.0
+ },
+ "published_vs_this_branch": {
+  "published": {
+   "card_a": 254.9761,
+   "card_b": 258.1696,
+   "gap_total": 3.1934,
+   "gap_t2": 0.9981,
+   "gap_tcond": 2.1953,
+   "t2_bottom": 0.7453,
+   "t2_dx": 0.1678,
+   "t2_lateral": -0.1362,
+   "t2_wpm": -0.0922,
+   "t2_same_hand": 0.0855,
+   "t2_angle": 0.0681,
+   "tcond_bg2_bottom": 0.7382,
+   "tcond_bg1_top": 0.4064,
+   "tcond_bg1_dx": 0.3874,
+   "tcond_bg1_bottom": -0.2337,
+   "tcond_sg_dx": 0.158
+  },
+  "measured": {
+   "card_a": 254.9761188060974,
+   "card_b": 258.1695631301549,
+   "gap_total": 3.1934436462523195,
+   "gap_t2": 0.9981034921613627,
+   "gap_tcond": 2.1953401540909567,
+   "t2_bottom": 0.745312201464654,
+   "t2_dx": 0.1678204009367888,
+   "t2_lateral": -0.1362065864509128,
+   "t2_wpm": -0.09218157967904322,
+   "t2_same_hand": 0.085528435777107,
+   "t2_angle": 0.06813263487055896,
+   "tcond_bg2_bottom": 0.7381605097234633,
+   "tcond_bg1_top": 0.40639856935133284,
+   "tcond_bg1_dx": 0.387404853005262,
+   "tcond_bg1_bottom": -0.23365590217135077,
+   "tcond_sg_dx": 0.15797847452961336
+  },
+  "tol": 0.0005
+ },
+ "all_pass": true
+}
