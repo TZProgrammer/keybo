@@ -1,0 +1,130 @@
+{
+ "strokes": "/local/home/zegertho/keybo-e2e/bistrokes31_v1.tsv",
+ "n_rows": 2202,
+ "seeds": [
+  0,
+  1,
+  2
+ ],
+ "wpm": 90.0,
+ "frame": [
+  "hand_conflict",
+  "row_span",
+  "lateral_span",
+  "same_hand_travel",
+  "row_load",
+  "row_arrival",
+  "bottom_bias",
+  "finger_load",
+  "off_home_column",
+  "roll_inward"
+ ],
+ "stamp": "2026-07-05.3+interp.1",
+ "monotone": [
+  1,
+  1,
+  1,
+  1,
+  1,
+  1,
+  1,
+  1,
+  1,
+  -1
+ ],
+ "models": {
+  "seed0": {
+   "path": "/tmp/goodhart_wk/models/interp_mono_seed0.json",
+   "feature_version": "2026-07-05.3+interp.1",
+   "feature_names": [
+    "hand_conflict",
+    "row_span",
+    "lateral_span",
+    "same_hand_travel",
+    "row_load",
+    "row_arrival",
+    "bottom_bias",
+    "finger_load",
+    "off_home_column",
+    "roll_inward"
+   ],
+   "interp_frame_record": {
+    "frame": "interp",
+    "monotone_constraints": [
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     -1
+    ]
+   }
+  },
+  "seed1": {
+   "path": "/tmp/goodhart_wk/models/interp_mono_seed1.json",
+   "feature_version": "2026-07-05.3+interp.1",
+   "feature_names": [
+    "hand_conflict",
+    "row_span",
+    "lateral_span",
+    "same_hand_travel",
+    "row_load",
+    "row_arrival",
+    "bottom_bias",
+    "finger_load",
+    "off_home_column",
+    "roll_inward"
+   ],
+   "interp_frame_record": {
+    "frame": "interp",
+    "monotone_constraints": [
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     -1
+    ]
+   }
+  },
+  "seed2": {
+   "path": "/tmp/goodhart_wk/models/interp_mono_seed2.json",
+   "feature_version": "2026-07-05.3+interp.1",
+   "feature_names": [
+    "hand_conflict",
+    "row_span",
+    "lateral_span",
+    "same_hand_travel",
+    "row_load",
+    "row_arrival",
+    "bottom_bias",
+    "finger_load",
+    "off_home_column",
+    "roll_inward"
+   ],
+   "interp_frame_record": {
+    "frame": "interp",
+    "monotone_constraints": [
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     -1
+    ]
+   }
+  }
+ }
+}
