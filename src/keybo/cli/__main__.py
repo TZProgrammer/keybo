@@ -9,6 +9,7 @@ from collections.abc import Sequence
 from keybo.cli import (
     analyze,
     build_corpus,
+    compare,
     effect_curves,
     fetch_data,
     inspect,
@@ -16,7 +17,6 @@ from keybo.cli import (
     optimize,
     process_data,
     score,
-    shap_diff,
     shap_report,
     train,
     tune,
@@ -38,7 +38,7 @@ _COMMANDS = {
     "analyze": analyze,
     "inspect": inspect,
     "shap-report": shap_report,
-    "shap-diff": shap_diff,
+    "compare": compare,
     "effect-curves": effect_curves,
     "layout-diff": layout_diff,
 }

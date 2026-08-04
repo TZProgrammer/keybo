@@ -1,17 +1,33 @@
-"""`keybo shap-diff` — per-feature attribution of the ms/char gap between two layouts."""
+"""`keybo compare` — why is layout A faster than layout B, per feature, with each board's value.
+
+The sibling of ``keybo analyze``. ``analyze`` SCORES boards on every gauge; ``compare`` EXPLAINS
+the ms/char speed GAP between exactly two of them, as a signed per-feature budget that sums back
+to the gap. Two neighbours it is deliberately NOT:
+
+* ``layout-diff`` ranks individual corpus N-GRAMS by frequency-weighted impact — *which strings
+  got slower*. ``compare`` attributes to FEATURES — *which properties of the boards did it*.
+* ``shap-report`` gives single-layout feature importances — *what the model uses*. ``compare`` is
+  a PAIR difference, and reports each board's own feature value beside each contribution.
+
+The headline is that pair of value columns: a contribution alone cannot tell you whether a board
+is faster because it does LESS of something or MORE of something the model prices as cheap.
+``bottom +0.7453 favours flagship-c3`` plus ``flagship 0.0770 / graphite 0.1190`` says it.
+"""
 
 from __future__ import annotations
 
 import argparse
 import json
 
-from keybo.analysis.shap_diff import format_report as format_shap_diff
+from keybo.analysis.shap_diff import format_report as format_compare
 from keybo.analysis.shap_diff import shap_diff
 from keybo.cli._paths import ensure_writable_output
 
 
 def add_arguments(parser: argparse.ArgumentParser) -> None:
-    parser.add_argument("layout_a", help="Baseline layout: a registry name or a 30-char string")
+    parser.add_argument(
+        "layout_a", help="Baseline layout: a registry name (like 'qwerty') or a 30-char string"
+    )
     parser.add_argument("layout_b", help="Comparison layout: a registry name or a 30-char string")
     parser.add_argument(
         "--corpus",
@@ -28,19 +44,27 @@ def add_arguments(parser: argparse.ArgumentParser) -> None:
         "share can reach 100%% -- a single channel is a PARTIAL answer and the report says so",
     )
     parser.add_argument(
+        "--columns",
+        action="store_true",
+        help="Also print the subordinate PER-COLUMN table. Off by default: a block sum is "
+        "invariant to how SHAP split credit between correlated columns and a per-column number "
+        "is not, so the primary result is the block table and the per-column split is opt-in",
+    )
+    parser.add_argument(
+        "--top",
+        type=int,
+        default=0,
+        help="With --columns, show only the N largest-|ms/char| columns per channel and NAME how "
+        "many were withheld (default 0 = all). The block table is never truncated: it is ~5 rows "
+        "and it is the primary result, so hiding part of it would hide part of the gap",
+    )
+    parser.add_argument(
         "--top-bigrams",
         "--top-ngrams",
         dest="top_ngrams",
         type=int,
         default=5,
         help="N-grams to name per leading column (0 to skip the block)",
-    )
-    parser.add_argument(
-        "--no-columns",
-        action="store_true",
-        help="Print only the BLOCK table. Blocks are the primary result either way: a block sum "
-        "is invariant to how SHAP split credit between correlated columns, and the per-column "
-        "split is not unique",
     )
     parser.add_argument(
         "--control",
@@ -105,9 +129,12 @@ def run(args: argparse.Namespace) -> int:
         channel=channel,
         **kwargs,
     )
-    print(format_shap_diff(diff, top_bigrams_k=args.top_ngrams, columns=not args.no_columns))
+    print(format_compare(diff, top_bigrams_k=args.top_ngrams, columns=args.columns, top=args.top))
 
     if args.json:
+        # The JSON is always COMPLETE — `--top` truncates the human table only. A machine
+        # artifact silently missing rows is the one place a truncation could be mistaken for a
+        # decomposition that did not cover the whole gap.
         with open(args.json, "w") as handle:
             json.dump(diff.to_dict(top_ngrams_k=max(args.top_ngrams, 1)), handle, indent=2)
         print(f"\nwrote {args.json}")
