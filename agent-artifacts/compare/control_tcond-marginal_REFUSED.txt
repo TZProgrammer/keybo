@@ -1,0 +1,34 @@
+COMPARE  flagship-c3 -> graphite   corpus=default  wpm=90
+  channel: both
+
+RECONCILIATION (checked before any interpretation)
+  ms/char shipped card()  flagship-c3: 254.9761   graphite: 258.1696   <- what `keybo analyze` prints
+  ms/char own-support     flagship-c3: 254.9761   graphite: 258.1696
+  ms/char common-support  flagship-c3: 270.0866   graphite: 271.7057
+  gap (b-a; +ve = flagship-c3 faster) : +1.6191 ms/char
+    T2 bigram channel    : +0.9981  (61.6%)  <- decomposed
+    Tcond trigram channel: +0.6210  (38.4%)  <- decomposed
+  DECOMPOSED SHARE: 100.0% of the gap    undecomposed: +0.0000 ms/char
+  coverage flagship-c3: 88.715%   graphite: 88.715%
+  common support is a no-op: True   coverage cost: +1.574e+00 ms/char
+  channel split vs total (rel)           1.755e-14
+  gap vs shipped card (abs ms/char)      1.574e+00
+  RECONCILES: False
+  EXTERNAL GAUGE TIE: FAILED   (bar 0.001 ms/char — the bar a WRONG WEIGHTING breaks and the internal sums-back identity cannot see)
+
+========================================================================================
+!! REFUSED: THE EXTERNAL GAUGE TIE FAILED — NO ATTRIBUTION TABLE IS SHOWN !!
+========================================================================================
+  This run's gap is 1.574e+00 ms/char away from the shipped card() gauge (bar 0.001).
+  channel tcond: gap +0.6210 vs shipped +2.1953  (off by 1.574e+00)
+  A decomposition can be internally self-consistent to ~1e-16 while decomposing the WRONG QUANTITY: both sides of the sums-back identity share the weight table, so a wrong weighting cancels out of it. Only this external tie catches that, and on the registered pair the analogous error INVERTED which block leads. The tables are therefore suppressed rather than annotated — there is nothing here to read.
+  NOTE: this run used tcond_weighting='tcond-marginal' (a control).
+
+control 'tcond-marginal' failed reconciliation, as required
+
+---TIMING---
+command: /local/home/zegertho/repos/keybo/.venv/bin/python -m keybo compare flagship-c3 graphite --control tcond-marginal
+elapsed_ms: 50907
+exit_code: 0
+timed_out: false
+---/TIMING---
