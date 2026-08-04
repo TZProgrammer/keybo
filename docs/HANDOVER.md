@@ -8,24 +8,53 @@ registered entries. Mainline suite: **1281 passed / 3 skipped / 0 failed** (meas
 
 ---
 
-## 1. ⚠ THREE THINGS A FRESH CLONE WILL NOT GIVE YOU
+## 1. WHAT A FRESH CLONE WILL NOT GIVE YOU (all three now resolved — read anyway)
 
-### 1.1 BLOCKER — the stroke data is 28 GB and is not in git
+### 1.1 The stroke data is not in git — but it is now REPRODUCIBLE (~8.5 min)
+
+**Read `tools/k31/README.md` first if you intend to train anything.** It is committed
+(`27288bf`) and carries the exact recipe. Short version:
 
 | path | size | tracked? |
 |---|--:|---|
 | `~/keybo-e2e/bistrokes31_v1.tsv` | **609,486,399 B (582 MB)** | **NO** (`git ls-files \| grep bistrokes31` → 0) |
-| `~/keybo-e2e/` (whole dir, incl. tristrokes) | **28 GB** | NO |
+| `~/keybo-e2e/tristrokes31_cond_v1.tsv` | **571,585,337 B (545 MB)** | NO |
+| `~/keybo-e2e/` (whole dir) | 28 GB — but **20 GB of it is the re-downloadable raw dump**, and most of the rest is superseded `v1`–`v5` tables | NO |
 
-**Every arm that trains or validates needs `bistrokes31_v1.tsv`.** Without it, `load_strokes` raises
-`FileNotFoundError` and *all* LOLO/gate/accuracy work is impossible. The trigram arms additionally need
-`~/keybo-e2e/tristrokes31_cond_v1.tsv` (the **conditioned K31** set — note the name; a sibling wasted a
-run pointing at `tristrokes31_v1.tsv`, which does not exist).
+**Only those two files matter — 1.1 GB, not 28 GB.** Every arm that trains or validates needs
+`bistrokes31_v1.tsv`; without it `load_strokes` raises `FileNotFoundError` and all LOLO/gate/accuracy work
+is impossible. Trigram arms additionally need `tristrokes31_cond_v1.tsv` (the **conditioned K31** set — note
+the name; a sibling wasted a run pointing at `tristrokes31_v1.tsv`, which does not exist).
 
-**Options:** transfer `keybo-e2e/` out of band (582 MB gets you the bigram line; 28 GB gets everything),
-or regenerate via the `fetch-data`/`process-data` pipeline. **What still works without it:** the shipped
-`data/models/k31/` surfaces (1.6 MB, *in* the repo), so `keybo analyze`, `keybo compare`, `keybo
-frame-collapse` and every layout comparison run fine. Only *retraining* is blocked.
+**Two routes, both fine:**
+1. **Copy** the 1.1 GB out of band (fastest).
+2. **Regenerate** — `keybo fetch-data` (public Aalto dump, URL in `keybo/data/download.py`) then
+   `K31_FILES_DIR=dataset/Keystrokes/files python tools/k31/k31_extract.py`. **504 s measured**, produces
+   *both* tables, deterministic (no RNG/parallelism/timestamps, `sorted()` file order).
+
+Either way, **verify you have the pinned artifacts** — the sha256s are preregistered in
+`PREREGISTRATIONS.md` (search `0f2663ad`) and were re-confirmed against the live files on 2026-08-04:
+```
+bistrokes31_v1.tsv        0f2663ad6ed42aa5...
+tristrokes31_cond_v1.tsv  46c6c3b1cc8919ad...
+```
+⚠ **The ledger records `sha256`, not `md5`.** Hashing with the wrong algorithm gives a "mismatch" that means
+nothing — that cost a confused round-trip already.
+
+⚠⚠ **`keybo process-data` does NOT reproduce these tables.** It has no flag for the 31-char maps
+(quote slot `(6,2)`: qwerty `'`, dvorak `-`, azerty `ù`, qwertz `ä`) or for BUF2-BOTH windowing. Run it and
+you get a **different, entirely plausible-looking table** that silently invalidates every published number.
+Use `tools/k31/k31_extract.py`. (An earlier draft of this document recommended `process-data` — that advice
+was wrong and is the reason `tools/k31/` now exists.)
+
+**What works with NO data at all:** the fitted surfaces are vendored in `data/models/k31/` (1.6 MB, 12 files,
+*in* the repo), so `keybo analyze`, `keybo compare`, `keybo frame-collapse` and every layout comparison run
+off a fresh clone. Only *retraining* needs the tables.
+
+**Table shape, because it misleads on contact:** `bistrokes31_v1.tsv` is **2202 lines** but 582 MB — one line
+per `(layout, position-pair, bigram)` with every raw observation inline as `(wpm, ms, participant, 0)`, ~93k
+fields on line 1. It is a small table of enormous rows; line-oriented tools will surprise you. Four layouts
+only (azerty, dvorak, qwerty, qwertz) — that is what makes LOLO 4-fold.
 
 ### 1.2 ~~BLOCKER~~ RESOLVED — all 91 branches are now on `origin`
 
@@ -39,7 +68,7 @@ Verified after pushing (not inferred from the push output, which reported `rc=0`
 nothing — see §9.1): **all 91 tips byte-identical local vs `origin`**, **`git rev-list --count --all --not
 --remotes` = 0** (was 268), and a negative control confirming a bogus branch name still fails to resolve.
 
-**A verified bundle now exists** (this was the migration's real blocker, so it is done, not left as a step):
+**A verified bundle also exists**, made before the branches were pushed:
 
 ```
 /local/home/zegertho/agent/state/keybo-optimization/artifacts/keybo-all-branches.bundle
@@ -60,8 +89,10 @@ git fetch ../keybo-all-branches.bundle 'refs/heads/*:refs/heads/*'          # in
 ```
 
 The bundle is now a **belt-and-braces second copy, no longer the only one** — the branches are on `origin`.
-Copy it if you want an offline snapshot; skip it if you are cloning from GitHub. **§1.1 (the 28 GB of stroke
-data) is now the ONLY remaining out-of-band transfer.**
+Copy it if you want an offline snapshot; skip it if you are cloning from GitHub.
+
+**There is no longer any mandatory out-of-band transfer.** Code: `git clone`. Data: regenerate in ~8.5 min
+(§1.1) or copy 1.1 GB as a shortcut. The only thing worth copying for pure convenience is §1.3.
 
 ### 1.3 Rescued artifact not in git
 
@@ -322,3 +353,26 @@ already in §9.1, both hit anyway.
 **Fix:** `xargs -a refspecs.txt -n 25 git push origin` (separate argv per refspec), then verify against
 `origin` directly — `git ls-remote --heads` diffed against `git for-each-ref refs/heads`, plus a negative
 control. **Never accept a push as landed on the basis of the command's own reported status.**
+
+### 9.6 The K31 tooling gap — closed after this document's first draft
+This document originally said the stroke tables could be regenerated "via the `fetch-data`/`process-data`
+pipeline." **That was wrong**, and it was the kind of wrong that produces a confident bad result rather than an
+error: `process-data` runs fine, emits a plausible table, and every number computed on it is quietly
+incomparable to the published ones. The real generator was a 149-line script living **outside the repo** at
+`~/keybo-e2e/k31_extract.py`, so no fresh clone could reproduce anything and no agent could have inferred it.
+
+Closed in `27288bf`: `tools/k31/` now holds the extraction script, the retrain script + LOLO gate, both
+original run logs (the evidence the ledger's K31 gate entries cite), and a README with the
+reproduce-and-verify recipe. Only hardcoded paths were parameterized (`KEYBO_SRC`, `K31_FILES_DIR`,
+`K31_BI_OUT`, `K31_TRI_OUT`, all defaulted); the logic was verified byte-identical to the originals by hashing
+with the path lines stripped, **with a negative control confirming a tampered `BUF_K` is detected** — so
+"identical" is a measurement, not an assumption.
+
+**Net effect on the migration:** copying data is now an 8.5-minute *shortcut*, not a dependency. The one
+irreplaceable thing left is nothing — the raw dump is public, the derivation is committed, and the outputs are
+sha256-pinned.
+
+**The generalizable lesson:** a data file being absent from git is a visible, self-announcing problem
+(`FileNotFoundError`). Its *generator* being absent is invisible — the nearest CLI command runs happily and
+gives you the wrong table. When recording "how to regenerate X", verify the recipe actually produces X's
+pinned hash; do not name the plausible-looking pipeline and move on.
