@@ -171,5 +171,10 @@ deeper multi-restart search it enables) is the next optimize upgrade.
 
 ## Design docs
 
+- `docs/analyzer.md` — `keybo analyze`: every gauge on one or many boards.
+- `docs/compare.md` — `keybo compare`: **why** one board is faster than another, attributed
+  per feature with each board's own feature value, plus the honesty layer (block-first output,
+  leakage flags, the cross-channel non-additivity refusal, and the external gauge tie that
+  suppresses the tables rather than annotating them).
 - `docs/specs/2026-07-03--rewrite-design.md` — architecture and decisions.
 - `docs/plans/2026-07-03-rewrite.md` — the phased, test-driven build plan.

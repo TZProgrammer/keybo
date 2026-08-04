@@ -1024,8 +1024,16 @@ def test_leakage_flags_are_computed_not_hardcoded(both):
     """The flags must come from the NUMBERS: perturb a contribution, watch the verdict move.
 
     A hand-listed flag set would pass every assertion above while being blind on any other
-    layout pair. Here the sign of one mate is flipped and the COUPLED verdict must vanish; the
-    magnitude of another is pushed below the floor and it must vanish too.
+    layout pair. Each clause moves ONE input and asserts the verdict follows.
+
+    ⚠ The dust clause must keep the mate's OPPOSITE sign, and this is the whole reason the
+    clause is written the way it is. A first draft used ``+LEAKAGE_MS_FLOOR/10``, which is the
+    same sign as ``bg2_bottom`` (+0.7382) — so the sign rule excluded the pair before the
+    magnitude floor was ever consulted, and the assertion passed for the WRONG REASON. Mutation
+    M9 (deleting the floor check entirely) caught it: the test stayed GREEN. With a NEGATIVE
+    dust value the pair is still opposite-signed and only the floor can exclude it, so M9 now
+    goes red. A passing assertion that cannot fail is not evidence — SHAPDIFF-1 recorded the
+    same lesson from a tautological additivity check that printed exactly 0.000e+00.
     """
     import dataclasses
 
@@ -1033,22 +1041,33 @@ def test_leakage_flags_are_computed_not_hardcoded(both):
     original = tcond.contributions
     try:
         bg1 = next(c for c in original if c.feature == "bg1_bottom")
+        bg2 = next(c for c in original if c.feature == "bg2_bottom")
+        assert bg1.ms_per_char < 0 < bg2.ms_per_char, "the fixture this test perturbs"
+
         tcond.contributions = [
             dataclasses.replace(c, ms_per_char=-c.ms_per_char) if c is bg1 else c for c in original
         ]
         assert "bg1_bottom" not in tcond.leakage(), "same-signed mates must NOT be flagged"
 
+        dust = -LEAKAGE_MS_FLOOR / 10  # NEGATIVE: still opposite bg2, so only the FLOOR can act
+        assert dust * bg2.ms_per_char < 0.0, "the dust must remain opposite-signed to its mate"
         tcond.contributions = [
-            dataclasses.replace(c, ms_per_char=LEAKAGE_MS_FLOOR / 10) if c is bg1 else c
-            for c in original
+            dataclasses.replace(c, ms_per_char=dust) if c is bg1 else c for c in original
         ]
-        assert "bg1_bottom" not in tcond.leakage(), "dust must NOT be flagged"
+        assert "bg1_bottom" not in tcond.leakage(), "sub-floor dust must NOT be flagged"
 
         wpm = next(c for c in original if c.feature == "wpm")
         tcond.contributions = [
             dataclasses.replace(c, mean_b=c.mean_b * 1.01) if c is wpm else c for c in original
         ]
         assert tcond.leakage().get("wpm") != "NO-DIFF", "differing means must clear NO-DIFF"
+
+        # and NO-DIFF needs the magnitude too: equal means with dust credit is not worth flagging
+        tcond.contributions = [
+            dataclasses.replace(c, ms_per_char=LEAKAGE_MS_FLOOR / 10) if c is wpm else c
+            for c in original
+        ]
+        assert "wpm" not in tcond.leakage(), "equal means + dust credit must NOT be flagged"
     finally:
         tcond.contributions = original
     assert tcond.leakage().get("wpm") == "NO-DIFF"
@@ -1084,6 +1103,13 @@ def test_block_table_carries_the_two_column_view_and_the_flag(both):
     A block spans a one-hot and a distance in key units, so there is deliberately no block-level
     mean — the block's LEADING column and its two values are the honest statement, and the block
     inherits any flag its columns raised.
+
+    ⚠ ``FINGER`` and ``BG1`` are asserted specifically because they are the blocks where the
+    largest-|ms| column is NOT the frame-order-first column (``lateral`` not ``pinky``;
+    ``bg1_top`` not ``bg1_bottom``). A first draft asserted only ``ROW``, whose two happen to
+    coincide at ``bottom`` — so mutation M10 (report ``columns[0]`` instead of the largest) left
+    the test GREEN. Any future assertion here must use a block where the two differ, or it
+    checks nothing about the selection rule.
     """
     text = format_report(both)
     row_block = next(b for b in both.t2.blocks() if b.block == "ROW")
@@ -1092,6 +1118,20 @@ def test_block_table_carries_the_two_column_view_and_the_flag(both):
     assert lead == "bottom"
     assert (mean_a, mean_b) == pytest.approx((0.0770, 0.1190), abs=5e-5)
     assert "0.0770" in text and "0.1190" in text
+
+    # the discriminating cases: leading must be the LARGEST-|ms| column, not the first one
+    finger = next(b for b in both.t2.blocks() if b.block == "FINGER")
+    assert finger.columns[0] == "pinky", "frame order (the wrong answer)"
+    assert finger.leading[0] == "lateral", "largest |ms/char| (the right answer)"
+    bg1 = next(b for b in both.tcond.blocks() if b.block == "BG1")
+    assert bg1.columns[0] == "bg1_bottom" and bg1.leading[0] == "bg1_top"
+    # and the leading column's means must be ITS OWN, not another column's
+    for channel in (both.t2, both.tcond):
+        by_name = {c.feature: c for c in channel.contributions}
+        for block in channel.blocks():
+            name, block_mean_a, block_mean_b = block.leading
+            assert name == max(block.columns, key=lambda n: abs(by_name[n].ms_per_char))
+            assert (block_mean_a, block_mean_b) == (by_name[name].mean_a, by_name[name].mean_b)
     wpm_block = next(b for b in both.t2.blocks() if b.block == "WPM")
     assert wpm_block.flag == "NO-DIFF" and "[NO-DIFF]" in text
     bg2 = next(b for b in both.tcond.blocks() if b.block == "BG2")
@@ -1245,6 +1285,35 @@ def test_gauge_refusal_threshold_is_the_registered_bar():
     """The product's refusal bar is the registered ``gauge_tol``, not a second unregistered one."""
     assert GAUGE_REFUSAL_MS == 1e-3
     assert LEAKAGE_MS_FLOOR == 0.01
+
+
+def test_the_per_channel_gauge_clause_is_load_bearing_only_off_the_natural_inputs(both):
+    """``gauge_tie_ok`` checks the per-CHANNEL tie as well as the total — a defence in depth.
+
+    ⚠ HONEST SCOPE, recorded because mutation M11 proved it: on every input reachable through
+    the public API the per-channel clause is REDUNDANT. Both weighting controls move a channel
+    gap AND the total by the same amount (measured: 1.5743e+00 on each for ``tcond-marginal``),
+    so deleting the clause changes no reachable verdict and no black-box test can kill it.
+
+    So this test does not pretend otherwise: it constructs the state directly. A channel whose
+    own tie has drifted while the total has NOT is arithmetically possible (two channels erring
+    in opposite directions would cancel in the total), and the clause is what catches it. That
+    is a real guarantee about the code, established by construction rather than by a natural
+    input that does not exist — which is the honest form of the claim.
+    """
+    import dataclasses
+
+    assert both.gauge_tie_ok(), "the fixture reconciles"
+    # only the CHANNEL tie drifts; the total is untouched — the clause's whole purpose
+    drifted = dataclasses.replace(
+        both, tcond=dataclasses.replace(both.tcond, resid_gap_vs_shipped=1.0)
+    )
+    assert drifted.resid_vs_card_gap <= GAUGE_REFUSAL_MS, "the total is deliberately still fine"
+    assert not drifted.gauge_tie_ok(), "a drifted CHANNEL must refuse even when the total agrees"
+    assert "REFUSED" in format_report(drifted)
+    # and the mirror: only the total drifts
+    total_only = dataclasses.replace(both, resid_vs_card_gap=1.0)
+    assert not total_only.gauge_tie_ok()
 
 
 # --- the rename ----------------------------------------------------------------------------
