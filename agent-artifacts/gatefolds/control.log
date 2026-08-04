@@ -1,0 +1,25 @@
+[tree] keybo.__file__ = /local/home/zegertho/repos/keybo-wt-gatefolds/src/keybo/__init__.py
+[tree] branch = gatefolds  HEAD = d55b021
+[tree] threads = OMP=1
+[    0.0s] loading /local/home/zegertho/keybo-e2e/bistrokes31_v1.tsv
+[  212.9s] 2202 rows; layouts ['azerty', 'dvorak', 'qwerty', 'qwertz']
+
+============================================================================================
+PATCH SELF-TEST (an ablation that silently no-ops would read as a PASS)
+============================================================================================
+  unpatched served: wpm col at 50wpm=50.000 at 130wpm=130.000  -> varies: True
+  patched served:   wpm col at 50wpm=72.693 at 130wpm=72.693  -> varies: False
+  PASS: the pin makes the served vector bit-identical across wpm, other columns untouched
+[  214.2s] ARM CUR: validate() 4 folds x 3 seeds  kw={}
+[  682.3s] ARM CUR: done. config {'seeds': [0, 1, 2], 'holdouts': ['azerty', 'dvorak', 'qwerty', 'qwertz'], 'wpm_lo': 40, 'wpm_hi': 140, 'bucket_width': 20, 'min_cell_samples': 10, 'n_boot': 10, 'train_params': {'n_jobs': 8}, 'direction': False, 'kitchensink': False, 'interp': False, 'monotone': True}
+[  682.3s] checkpointed CUR -> control.json
+[  683.9s]   CUR-INVARIANT: pinning the model's wpm column to the constant 72.692997
+[  683.9s]   CUR-INVARIANT: to_ms will still receive each cell's TRUE bucket midpoint
+[  683.9s] ARM CUR-INVARIANT: validate() 4 folds x 3 seeds  kw={}
+[ 1154.6s] ARM CUR-INVARIANT: done. config {'seeds': [0, 1, 2], 'holdouts': ['azerty', 'dvorak', 'qwerty', 'qwertz'], 'wpm_lo': 40, 'wpm_hi': 140, 'bucket_width': 20, 'min_cell_samples': 10, 'n_boot': 10, 'train_params': {'n_jobs': 8}, 'direction': False, 'kitchensink': False, 'interp': False, 'monotone': True}
+[ 1154.6s]   CUR-INVARIANT: patches restored
+[ 1154.6s] checkpointed CUR-INVARIANT -> control.json
+
+SANITY: fold-seed cells with bucket_rhos IDENTICAL between CUR and CUR-INVARIANT: 0/12
+[ 1154.6s] wrote /local/home/zegertho/repos/keybo-wt-gatefolds/agent-artifacts/gatefolds/control.json
+[ 1154.6s] SENTINEL /tmp/gatefolds_wk/control.sentinel
