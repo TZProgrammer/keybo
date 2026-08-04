@@ -268,3 +268,54 @@ For every refused (fold, bucket): Δρ, the GC3 measured reseed floor **at that 
 (|Δρ| − floor), and the support. Reported BEFORE any p-value (INVARIANT 8). Bootstrap: resample which
 seeds fill the baseline and report how often each structural verdict survives, beside the registered
 result, never instead of it.
+
+---
+
+# §7 AMENDMENT 2 — H-PACE RESOLVED BY CONSTRUCTION, and the CUR-NOWPM PROVENANCE CHECK
+
+Registered before the numbers in §7.2 exist; §7.1 is a code fact, cited not measured.
+
+## §7.1 H-PACE IS EXCLUDED BY CONSTRUCTION, and here is the proof rather than an argument
+
+`Cell.wpm` is documented and implemented as **the bucket midpoint** (`validate.py:56`
+`wpm: float  # bucket midpoint — the wpm fed to the model`; assigned at `validate.py:112`
+`wpm=bucket + bucket_width / 2`). So **within one wpm bucket every cell carries the SAME wpm**.
+`to_ms` computes `ms = exp(pred) * 12000 / wpm`; with `wpm` constant across a bucket that is a
+**strictly positive constant multiplier** on every prediction in that bucket, hence a **strictly
+monotone transform of the whole bucket** — and the gate's statistic is a **within-bucket Spearman ρ**,
+which is invariant under it.
+
+⇒ **H-PACE CANNOT move any per-bucket ρ, for any frame, under any pace-handling choice.** My §1
+registration said H-PACE was "not excludable a priori because cells carry per-cell wpm" — that
+premise was WRONG (cells carry per-BUCKET wpm), and I record the error rather than quietly dropping
+it. **H-PACE: REFUTED, by construction.**
+
+**The empirical confirmation, which is why this is not just an argument:** INTERPFRAME-1's CONFOUNDED
+CUR-NOWPM (converted at ONE global constant pace, 72.693) and its FIXED re-run (converted at each
+cell's true bucket midpoint) have **byte-identical `bucket_rhos` on all 12 fold×seed cells** — while
+their wmae differs enormously (25.4788 vs 16.0123) and τ differs (0.333 vs 1.0). The conversion moved
+every magnitude and no rank. Measured, not assumed.
+
+## §7.2 CUR-NOWPM's PROVENANCE — my H-BASIS result must not ride on the confounded arm
+
+`agent-artifacts/interpframe/lolo.json`'s `CUR-NOWPM` block is the **CONFOUNDED** arm (pooled wmae
+25.4788, τ 0.333). The fixed re-run lives in a separate file, `lolo_nowpm_fixed.json`. Registered
+consequence, decided before looking at any verdict: because §7.1 proves the conversion cannot move a
+within-bucket ρ, and because the two arms' `bucket_rhos` are verified byte-identical, **the H-BASIS
+gate verdict is unaffected by which file it is read from** — but I will (a) re-score H-BASIS
+explicitly from `lolo_nowpm_fixed.json`, (b) assert the two verdicts agree, and (c) quote the FIXED
+arm's magnitudes (wmae +6.0741, Δρ −0.0152, τ 1.0) whenever a magnitude is quoted. If the two
+verdicts disagree, the fixed one governs and I report the discrepancy as the headline.
+
+## §7.3 The remaining live question, and the ONE arm that can decide it
+
+After §6/§7, the surviving mechanism is **level-shift sensitivity**: the gate refuses on a per-bucket
+ρ *level* difference exceeding 0.005, and every retrained arm — interp or served — moves some
+high-wpm bucket by 0.01–0.10. The decisive control is therefore SEEDNOISE (§6.2, running): a served
+frame whose *only* change is the seed.
+* Registered in advance: **if SEEDNOISE fails structurally, the gate refuses noise and the 4/4
+  pattern is a GATE ARTIFACT.** **If SEEDNOISE passes, the gate does discriminate retraining-noise
+  from a frame change**, and the honest verdict becomes "the gate is doing its job, and EVERY frame
+  perturbation of this size — including served-basis ones — genuinely moves high-wpm ρ", i.e. a
+  BOTH verdict with the frame-defect half generalized beyond interpretability.
+* I register both readings NOW so neither can be chosen after the fact.
