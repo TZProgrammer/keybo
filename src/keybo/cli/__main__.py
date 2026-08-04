@@ -11,6 +11,7 @@ from keybo.cli import (
     build_corpus,
     effect_curves,
     fetch_data,
+    frame_collapse,
     inspect,
     layout_diff,
     optimize,
@@ -41,6 +42,7 @@ _COMMANDS = {
     "shap-diff": shap_diff,
     "effect-curves": effect_curves,
     "layout-diff": layout_diff,
+    "frame-collapse": frame_collapse,
 }
 
 
