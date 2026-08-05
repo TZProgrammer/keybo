@@ -82,9 +82,18 @@ def test_the_old_predicates_blind_spot_is_LAYOUT_DEPENDENT() -> None:
 
     Asserts the *shape* (a large fold spread, qwerty best-covered, graphite worst) rather than
     the exact ratios, so a corpus refresh cannot silently delete the motivation.
+
+    Deliberately NOT ``NAMED_LAYOUTS.items()`` — this is a claim about the specific five
+    layouts registered when the test was written (2026-08-01), not about whatever the
+    registry happens to hold later. A later-added layout could legitimately score worse than
+    graphite on this metric without that saying anything about graphite's own coverage.
     """
+    original_named_layouts = {
+        name: NAMED_LAYOUTS[name]
+        for name in ("qwerty", "dvorak", "colemak", "graphite", "semimak")
+    }
     coverage = {}
-    for name, chars in NAMED_LAYOUTS.items():
+    for name, chars in original_named_layouts.items():
         layout = Layout(chars, GEOM)
         flagged = phenomenon = 0.0
         for bigram, freq in _CORPUS.items():

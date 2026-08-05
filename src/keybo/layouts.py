@@ -10,6 +10,7 @@ NAMED_LAYOUTS: dict[str, str] = {
     "colemak": "qwfpgjluy;arstdhneiozxcvbkm,./",
     "graphite": "bldwz'foujnrtsgyhaeixqmcvkp,.-",
     "semimak": "flhvz'wuoysrntkcdeaixjbmqpg,.-",
+    "flagship-c3": "pyou'vgdnmheai.cstrlkjz,-wfbxq",
 }
 
 BASELINE = "qwerty"
